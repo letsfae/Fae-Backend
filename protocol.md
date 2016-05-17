@@ -8,7 +8,7 @@ Base URL：`https://api.letsfae.com/`
 
 根据rest标准，版本信息需要标注在header中。如果无版本号，默认为最新版本（建议手动维护版本号）。
 
-`Accept: application/vnd.faeapp.v1+json`
+`Accept: application/x.faeapp.v1+json`
 
 版本号形式为`v1`, `v2`, `v3`... 只有major，minor更新需要在原版本中自行维护。
 
@@ -70,7 +70,7 @@ no
 
 ### parameters
 
-| Name | type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | password | string | 密码 |
 | email | string | 电邮 |
@@ -86,7 +86,7 @@ Status: 201
 
 ## 登陆 Login
 
-`POST /auth`
+`POST /authentication`
 
 ### auth
 
@@ -94,7 +94,7 @@ no
 
 ### parameters
 
-| Name | type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | name | string | 用户名 |
 | email | string | 电邮 |
@@ -113,7 +113,7 @@ Status: 201
 
 ## 登出 logout
 
-`DELETE /auth/:user_id`
+`DELETE /authentication/:user_id`
 
 ### auth
 
@@ -133,7 +133,7 @@ no
 
 ### parameters
 
-| Name | type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | email | string | 电邮 |
 
@@ -151,7 +151,7 @@ no
 
 ### parameters
 
-| Name | type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | code | string | 邮件中的6位验证数字（用字符串形式传递） |
 
