@@ -12,13 +12,16 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('Fae API v1');
 });
 
-Route::get('hello/{name}', function($name) {
-	echo 'Hello '.$name;
-});
+$api = app('Dingo\Api\Routing\Router');
 
-Route::get('resttest', function() {
-	return response()->json(['name' => 'Abigail', 'state' => 'CA']);
+$api->version('v1', function ($api) {
+    $API_ROOT = 'App\Api\v1\Controllers\\';
+
+    $api->post('users', $API_ROOT.'UserController@signUp');
+
+    $api->post('authentication', $API_ROOT.'AuthenticationController@login');
+    $api->delete('authentication', $API_ROOT.'AuthenticationController@logout');
 });
