@@ -16,7 +16,7 @@ Base URL：`https://api.letsfae.com/`
 
 - request及response编码为utf-8。
 - response返回格式均为json。
-- request的body如果为json会特殊注明，否则为form-data。
+- request的body如果为json会特殊注明，否则为x-www-form-urlencoded（`Content-Type: application/x-www-form-urlencoded`）。
 
 ## 参数及过滤信息
 
@@ -45,7 +45,7 @@ Base URL：`https://api.letsfae.com/`
 
 所有需要身份验证的request需要带有auth header。 目前使用basic auth，但不同于标准auth使用user和password，fae的auth header构造：
 
-`Authorization: Basic base64(user_id:token)`
+`Authorization: FAE base64(user_id:token)`
 
 ## 开放接口
 
@@ -57,6 +57,13 @@ Base URL：`https://api.letsfae.com/`
 - 在header中`fae-client-id`字段需为20bytes长度特定值。
 	- iphone客户端为`gu3v0KaU7jLS7SGdS2Rb`。
 	- android客户端为`SEoSmdtAftpDhgLkI8MX`。
+
+## 错误返回
+	{
+		"status_code": @number,
+		"error": @string,
+		"message": @string
+	}
 
 # 接口功能
 
@@ -72,12 +79,12 @@ no
 
 | Name | Type | Description |
 | --- | --- | --- |
-| password | string | 密码 |
-| email | string | 电邮 |
-| firstname | string | 名字 |
-| lastname | string | 姓氏 |
-| birthday | string | 生日 |
-| gender | string | 性别 |
+| password | string(8-16) | 密码 |
+| email | string(50) | 电邮 |
+| firstname | string(50) | 名字 |
+| lastname | string(50) | 姓氏 |
+| birthday | string(YYYY-MM-DD) | 生日 |
+| gender | string("male", "female") | 性别 |
 
 ### response
 
@@ -96,9 +103,9 @@ no
 
 | Name | Type | Description |
 | --- | --- | --- |
-| name | string | 用户名 |
-| email | string | 电邮 |
-| password | string | 密码 |
+| username | string(30) | 用户名 |
+| email | string(50) | 电邮 |
+| password | string(8-16) | 密码 |
 
 此处用户名和电邮选一个即可（OR关系，另一个字段不用），如果同时存在，以email为准。
 
@@ -107,9 +114,22 @@ no
 Status: 201
 
 	{
-		user_id: @number
-		token: @string
+		"user_id": @number
+		"token": @string
 	}
+
+### request example
+
+Header
+	
+	Accept: application/x.faeapp.v1+json
+	Content-Type: application/x-www-form-urlencoded
+	
+Body
+
+	name: test
+	email: test@letsfae.com
+	password: 123456	
 
 ## 登出 logout
 
@@ -123,6 +143,14 @@ yes
 
 Status: 204
 
+### request example
+
+Header
+	
+	Accept: application/x.faeapp.v1+json
+	Content-Type: application/x-www-form-urlencoded
+	Authorization: FAE XXXXXXXXXXXXX
+
 ## 获取重置登陆的Email
 
 `POST /reset_login`
@@ -135,7 +163,7 @@ no
 
 | Name | Type | Description |
 | --- | --- | --- |
-| email | string | 电邮 |
+| email | string(50) | 电邮 |
 
 ### response
 
@@ -153,7 +181,7 @@ no
 
 | Name | Type | Description |
 | --- | --- | --- |
-| code | string | 邮件中的6位验证数字（用字符串形式传递） |
+| code | string(6) | 邮件中的6位验证数字（用字符串形式传递） |
 
 ### response
 
