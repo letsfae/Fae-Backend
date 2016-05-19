@@ -12,16 +12,21 @@
 */
 
 Route::get('/', function () {
-    return view('Fae API v1');
+	return view('welcome', ['title' => 'Fae API v1']);
 });
 
 $api = app('Dingo\Api\Routing\Router');
 
 $api->version('v1', function ($api) {
-    $API_ROOT = 'App\Api\v1\Controllers\\';
+    $api->post('users', 'App\Api\v1\Controllers\UserController@signUp');
+    $api->post('authentication', 'App\Api\v1\Controllers\AuthenticationController@login');
+    $api->post('reset_login', 'App\Api\v1\Controllers\ResetLoginController@sendResetCode');
+    $api->put('reset_login', 'App\Api\v1\Controllers\ResetLoginController@verifyResetCode');
+});
 
-    $api->post('users', $API_ROOT.'UserController@signUp');
+$api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], function ($api) {
+    $api->delete('authentication/{user_id}', 'App\Api\v1\Controllers\AuthenticationController@logout');
 
-    $api->post('authentication', $API_ROOT.'AuthenticationController@login');
-    $api->delete('authentication', $API_ROOT.'AuthenticationController@logout');
+    // functions
+    $api->get('users', 'App\Api\v1\Controllers\UserController@getProfile');
 });

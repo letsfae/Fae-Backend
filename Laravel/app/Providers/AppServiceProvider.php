@@ -14,6 +14,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         //
+        app('Dingo\Api\Auth\Auth')->extend('fae', function ($app) {
+            return new \App\Api\v1\Providers\FaeAuthorizationProvider();
+        });
     }
 
     /**
