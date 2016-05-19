@@ -15,7 +15,6 @@ use Illuminate\Http\Response;
 class UserController extends Controller
 {
     public function __construct(Request $request)
-    {
     	$this->request = $request;
     }
 
@@ -28,7 +27,9 @@ class UserController extends Controller
     {
     	$input = $request->all();
     	if($request->has('email'))
+        {
     	    $input['email'] = strtolower($input['email']);
+        }
     	$validator = Validator::make($input, [
             'email' => 'required|unique:users,email|max:50|email',
             'password' => 'required|between:8,16',
@@ -44,7 +45,9 @@ class UserController extends Controller
     		return false;
     	}
     	else
+        {
     		return true;
+        }
     }
 
     public function store(Request $request) 
@@ -62,5 +65,9 @@ class UserController extends Controller
     		$response->setStatusCode(201);
     		$response->send();
     	}
+    }
+
+    public function getProfile() {
+    	echo 'In get profile';
     }
 }
