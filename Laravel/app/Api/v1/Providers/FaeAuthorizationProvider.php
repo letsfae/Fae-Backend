@@ -22,8 +22,9 @@ class FaeAuthorizationProvider extends Authorization
         $this->validateAuthorizationHeader($request);
         $authStr = $request->headers->get('authorization');
         if(Str::startsWith(strtolower($authStr), 'fae ')) {
-            $authArray = explode(':', base64_decode(substr($authStr, 4)));
-            if($authArray[0] === '1' && $authArray[1] === '123456') {
+            list($user_id, $token, $session_id) = explode(':', base64_decode(substr($authStr, 4)));
+            // get user_id and token from session table with session_id
+            if($user_id === '1' && $token === '123456') {
                 return;
             }
         }

@@ -17,11 +17,15 @@ class AuthenticationController extends Controller
     }
 
     public function login() {
-    	// echo 'login';
-    	return $this->response->array(['token' => '123456']);
+        // validation
+
+        // generate token
+
+        // create session in db
+        // record device_id...
     }
 
     public function logout() {
-    	echo 'logout';
+        // delete session with session_id
     }
 }
