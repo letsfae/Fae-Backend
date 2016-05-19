@@ -43,9 +43,9 @@ Base URL：`https://api.letsfae.com/`
 
 登陆成功后会返回user_id和token。
 
-所有需要身份验证的request需要带有auth header。 目前使用basic auth，但不同于标准auth使用user和password，fae的auth header构造：
+所有需要身份验证的request需要带有auth header。 Fae的auth header构造：
 
-`Authorization: FAE base64(user_id:token)`
+`Authorization: FAE base64(user_id:token:session_id)`
 
 ## 开放接口
 
@@ -53,15 +53,13 @@ Base URL：`https://api.letsfae.com/`
 
 对于Fae自身客户端：
 
-- 在header中`user-agent`字段值需为`Fae client-XXXX`，XXXX内容可自行标注（如iphone4, iphone6s, nexus6...）。
-- 在header中`fae-client-id`字段需为20bytes长度特定值。
-	- iphone客户端为`gu3v0KaU7jLS7SGdS2Rb`。
-	- android客户端为`SEoSmdtAftpDhgLkI8MX`。
+- 在header中`User-Agent`字段值需标注设备（如iphone4, iphone6s, nexus6...）。
+- 在header中`Fae-Client-Version`字段为客户端版本（如ios-0.0.1）。
+- 在header中`Device-ID`字段为设备ID。
 
 ## 错误返回
 	{
 		"status_code": @number,
-		"error": @string,
 		"message": @string
 	}
 
@@ -116,14 +114,19 @@ Status: 201
 	{
 		"user_id": @number
 		"token": @string
+		"session_id": @number
 	}
 
 ### request example
 
 Header
 	
+	POST /authentication HTTP/1.1
 	Accept: application/x.faeapp.v1+json
 	Content-Type: application/x-www-form-urlencoded
+	User-Agent: iphone6s
+	Fae-Client-Version: ios-0.0.1
+	Device-ID: gu3v0KaU7jLS7SGdS2Rb
 	
 Body
 
@@ -147,9 +150,12 @@ Status: 204
 
 Header
 	
+	DELETE /authentication/1 HTTP/1.1
 	Accept: application/x.faeapp.v1+json
-	Content-Type: application/x-www-form-urlencoded
-	Authorization: FAE XXXXXXXXXXXXX
+	User-Agent: iphone6s
+	Fae-Client-Version: ios-0.0.1
+	Device-ID: gu3v0KaU7jLS7SGdS2Rb
+	Authorization: FAE MToxMjM0NTY6MQ==
 
 ## 获取重置登陆的Email
 

@@ -18,10 +18,16 @@ class ResetLoginController extends Controller
     }
 
     public function sendResetCode() {
+        // validation
 
+        // generate code & store user_id and code to verification table
+
+        // send code to this email
     }
 
     public function verifyResetCode() {
+        // validation
 
+        // compare user_id and code with data in verification table
     }
 }
