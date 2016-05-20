@@ -21,11 +21,12 @@ class CreateUsersTable extends Migration
             $table->string('first_name',20)->nullable();
             $table->string('last_name',20)->nullable();
             $table->enum('gender',['male','female'])->nullable();
-            $table->dateTime('birthday')->nullable();
-            $table->integer('role')->nullable();
+            $table->date('birthday')->nullable();
+            $table->integer('role')->default(0);
             $table->text('address')->nullable();
             $table->timestamps();
             $table->unique('user_name');
+            $table->unique('email');
         });
     }
 

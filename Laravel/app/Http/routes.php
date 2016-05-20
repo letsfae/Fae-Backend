@@ -10,7 +10,7 @@
 | and give it the controller to call when that URI is requested.
 |
 */
-
+use Illuminate\Http\Response;
 Route::get('/', function () {
     return view('Fae API v1');
 });
@@ -19,9 +19,7 @@ $api = app('Dingo\Api\Routing\Router');
 
 $api->version('v1', function ($api) {
     $API_ROOT = 'App\Api\v1\Controllers\\';
-
     $api->post('users', $API_ROOT.'UserController@signUp');
-
     $api->post('authentication', $API_ROOT.'AuthenticationController@login');
     $api->delete('authentication', $API_ROOT.'AuthenticationController@logout');
 });
