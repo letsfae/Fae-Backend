@@ -10,7 +10,7 @@
 | and give it the controller to call when that URI is requested.
 |
 */
-use Illuminate\Http\Response;
+
 Route::get('/', function () {
 	return view('welcome', ['title' => 'Fae API v1']);
 });

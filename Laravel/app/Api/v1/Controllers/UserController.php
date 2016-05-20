@@ -15,6 +15,7 @@ use Illuminate\Http\Response;
 class UserController extends Controller
 {
     public function __construct(Request $request)
+    {
     	$this->request = $request;
     }
 
@@ -42,29 +43,23 @@ class UserController extends Controller
     	{
     		throw new StoreResourceFailedException('Could not create new user.',$validator->errors());
     		// throw new UnprocessableEntityHttpException('Could not create new user.');
-    		return false;
     	}
-    	else
-        {
-    		return true;
-        }
     }
 
     public function store(Request $request) 
     {
-    	if(UserController::validation($request))
-    	{   		
-    		$user = new Users;
-    		$user->email = strtolower($request->email);
-    		$user->password = bcrypt($request->password);
-    		$user->first_name = $request->first_name;
-    		$user->last_name = $request->last_name;
-    		$user->birthday = $request->birthday;
-    		$user->save();
-    		$response = new Response();
-    		$response->setStatusCode(201);
-    		$response->send();
-    	}
+    	UserController::validation($request);
+
+		$user = new Users;
+		$user->email = strtolower($request->email);
+		$user->password = bcrypt($request->password);
+		$user->first_name = $request->first_name;
+		$user->last_name = $request->last_name;
+		$user->birthday = $request->birthday;
+		$user->save();
+		$response = new Response();
+		$response->setStatusCode(201);
+		$response->send();
     }
 
     public function getProfile() {
