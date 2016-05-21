@@ -8,12 +8,13 @@ use Validator;
 use App\Users;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Dingo\Api\Exception\StoreResourceFailedException;
-use Illuminate\Http\Response;
+use Dingo\Api\Routing\Helpers;
 
 // use App\Http\Requests;
 
 class UserController extends Controller
 {
+    use Helpers;
 
     public function __construct(Request $request)
     {
@@ -22,7 +23,7 @@ class UserController extends Controller
 
     public function signUp() 
     {
-     	UserController::store($this->request);
+     	return UserController::store($this->request);
     }
 
     public function validation(Request $request)
@@ -58,9 +59,7 @@ class UserController extends Controller
 		$user->last_name = $request->last_name;
 		$user->birthday = $request->birthday;
 		$user->save();
-		$response = new Response();
-		$response->setStatusCode(201);
-		$response->send();
+        return $this->response->created();
     }
 
     public function getProfile() {
