@@ -58,9 +58,13 @@ Base URL：`https://api.letsfae.com/`
 - 在header中`Device-ID`字段为设备ID。
 
 ## 错误返回
+
+如果出现错误，http header status code将为非2XX的形式。body中有如下json对象返回。其中errors中为为具体错误字段。
+
 	{
 		"status_code": @number,
-		"message": @string
+		"message": @string,
+		"errors": {}
 	}
 
 # 接口功能
