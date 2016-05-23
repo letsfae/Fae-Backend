@@ -21,7 +21,7 @@ class AuthenticationController extends Controller
 
         // generate token
 
-        // create session in db
+        // create session in db (if exists, replace it)
         // record device_id...
     }
 
