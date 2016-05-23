@@ -23,10 +23,12 @@ class UserController extends Controller
 
     public function signUp() 
     {
-     	return UserController::store($this->request);
+        UserController::signUpValidation($this->request);
+     	UserController::signUpStore($this->request);
+        return $this->response->created();
     }
 
-    public function validation(Request $request)
+    private function signUpValidation(Request $request)
     {
     	$input = $request->all();
     	if($request->has('email'))
@@ -48,10 +50,8 @@ class UserController extends Controller
     	}
     }
 
-    public function store(Request $request) 
+    private function signUpStore(Request $request) 
     {
-    	UserController::validation($request);
-
 		$user = new Users;
 		$user->email = strtolower($request->email);
 		$user->password = bcrypt($request->password);
@@ -59,10 +59,13 @@ class UserController extends Controller
 		$user->last_name = $request->last_name;
 		$user->birthday = $request->birthday;
 		$user->save();
-        return $this->response->created();
     }
 
     public function getProfile() {
     	echo 'In get profile';
+    }
+
+    public function updateProfile() {
+        echo 'In update profile';
     }
 }

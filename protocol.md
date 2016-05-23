@@ -59,7 +59,7 @@ Base URL：`https://api.letsfae.com/`
 
 ## 错误返回
 
-如果出现错误，http header status code将为非2XX的形式。body中有如下json对象返回。其中errors中为为具体错误字段。
+如果出现错误，http header status code将为4XX或5XX的形式。body中有如下json对象返回（其中errors中为具体错误字段）。
 
 	{
 		"status_code": @number,
@@ -83,8 +83,8 @@ no
 | --- | --- | --- |
 | password | string(8-16) | 密码 |
 | email | string(50) | 电邮 |
-| firstname | string(50) | 名字 |
-| lastname | string(50) | 姓氏 |
+| first_name | string(50) | 名字 |
+| last_name | string(50) | 姓氏 |
 | birthday | string(YYYY-MM-DD) | 生日 |
 | gender | string("male", "female") | 性别 |
 
@@ -105,7 +105,7 @@ no
 
 | Name | Type | Description |
 | --- | --- | --- |
-| username | string(30) | 用户名 |
+| user_name | string(30) | 用户名 |
 | email | string(50) | 电邮 |
 | password | string(8-16) | 密码 |
 
