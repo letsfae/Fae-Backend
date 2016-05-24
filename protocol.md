@@ -163,7 +163,7 @@ Header
 
 ## 获取重置登陆的Email
 
-`POST /reset_login`
+`POST /reset_login/code`
 
 ### auth
 
@@ -179,9 +179,9 @@ no
 
 Status: 201
 
-## 验证重置登陆
+## 验证重置登陆code
 
-`PUT /reset_login`
+`PUT /reset_login/code`
 
 ### auth
 
@@ -191,7 +191,30 @@ no
 
 | Name | Type | Description |
 | --- | --- | --- |
+| email | string(50) | 电邮 |
 | code | string(6) | 邮件中的6位验证数字（用字符串形式传递） |
+
+code有效时长为发送出来后的30分钟。
+
+### response
+
+Status: 201
+
+## 验证code后重置密码
+
+`PUT /reset_login/password`
+
+### auth
+
+no
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| email | string(50) | 电邮 |
+| code | string(6) | 邮件中的6位验证数字（用字符串形式传递） |
+| password | string(8-16) | 密码 |
 
 ### response
 

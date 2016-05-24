@@ -20,8 +20,9 @@ $api = app('Dingo\Api\Routing\Router');
 $api->version('v1', function ($api) {
     $api->post('users', 'App\Api\v1\Controllers\UserController@signUp');
     $api->post('authentication', 'App\Api\v1\Controllers\AuthenticationController@login');
-    $api->post('reset_login', 'App\Api\v1\Controllers\ResetLoginController@sendResetCode');
-    $api->put('reset_login', 'App\Api\v1\Controllers\ResetLoginController@verifyResetCode');
+    $api->post('reset_login/code', 'App\Api\v1\Controllers\ResetLoginController@sendResetCode');
+    $api->put('reset_login/code', 'App\Api\v1\Controllers\ResetLoginController@verifyResetCode');
+    $api->put('reset_login/password', 'App\Api\v1\Controllers\ResetLoginController@resetPassword');
 });
 
 $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], function ($api) {

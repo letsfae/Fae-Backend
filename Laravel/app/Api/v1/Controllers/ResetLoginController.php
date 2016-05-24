@@ -30,4 +30,8 @@ class ResetLoginController extends Controller
 
         // compare user_id and code with data in verification table
     }
+
+    public function resetPassword() {
+        
+    }
 }
