@@ -24,7 +24,7 @@ $api->version('v1', function ($api) {
     $api->put('reset_login', 'App\Api\v1\Controllers\ResetLoginController@verifyResetCode');
 });
 
-$api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], function ($api) {
+	$api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], function ($api) {
     $api->delete('authentication/{user_id}', 'App\Api\v1\Controllers\AuthenticationController@logout');
 
     // functions

@@ -7,6 +7,7 @@ use Dingo\Api\Routing\Route;
 use Dingo\Api\Auth\Provider\Authorization;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use App\Sessions;
 
 class FaeAuthorizationProvider extends Authorization
 {
@@ -21,14 +22,20 @@ class FaeAuthorizationProvider extends Authorization
     {
         $this->validateAuthorizationHeader($request);
         $authStr = $request->headers->get('authorization');
-        if(Str::startsWith(strtolower($authStr), 'fae ')) {
+        if(Str::startsWith(strtolower($authStr), 'fae '))
+        {
             list($user_id, $token, $session_id) = explode(':', base64_decode(substr($authStr, 4)));
             // get user_id and token from session table with session_id
-            if($user_id === '1' && $token === '123456') {
-                return;
+            $session = Sessions::find($session_id);
+            if(! is_null($session))
+            {
+                if($user_id === strval($session->user_id) && $token === $session->token) 
+                {
+                    $request->self_user_id = $user_id;
+                    return;
+                }
             }
         }
-
         throw new UnauthorizedHttpException('Invalid token');
     }
 

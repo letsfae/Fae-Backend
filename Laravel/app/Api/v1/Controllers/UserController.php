@@ -8,6 +8,7 @@ use Validator;
 use App\Users;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Dingo\Api\Exception\StoreResourceFailedException;
+use Dingo\Api\Exception\UpdateResourceFailedException;
 use Dingo\Api\Routing\Helpers;
 
 // use App\Http\Requests;
@@ -25,6 +26,26 @@ class UserController extends Controller
     {
         UserController::signUpValidation($this->request);
      	UserController::signUpStore($this->request);
+        return $this->response->created();
+    }
+
+    public function getProfile() 
+    {
+        $user = Users::find($this->request->self_user_id);
+        if(! is_null($user))
+        {
+            $profile = array('id' => $user->id, 'email' => $user->email, 'user_name' => $user->user_name, 
+                'first_name' => $user->first_name, 'last_name' => $user->last_name, 'gender' => $user->gender,
+                'birthday' => $user->birthday, 'role' => $user->role, 'address' => $user->address);
+            return $this->response->array($profile);
+        }
+        return $this->response->errorNotFound();
+    }
+
+    public function updateProfile() 
+    {
+        UserController::updateProfileValidation($this->request);
+        UserController::updateProfileUpdate($this->request);
         return $this->response->created();
     }
 
@@ -57,15 +78,48 @@ class UserController extends Controller
 		$user->password = bcrypt($request->password);
 		$user->first_name = $request->first_name;
 		$user->last_name = $request->last_name;
+        $user->gender = $request->gender;
 		$user->birthday = $request->birthday;
 		$user->save();
     }
 
-    public function getProfile() {
-    	echo 'In get profile';
+    private function updateProfileValidation(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'first_name' => 'string|max:50',
+            'last_name' => 'string|max:50',
+            'gender' => 'in:male,female',
+            'birthday' => 'date_format:Y-m-d|before:tomorrow|after:1900-00-00',
+        ]);
+        if($validator->fails())
+        {
+            throw new UpdateResourceFailedException('Could not update user profile.',$validator->errors());
+        }
     }
 
-    public function updateProfile() {
-        echo 'In update profile';
+    private function updateProfileUpdate(Request $request)
+    {
+        if(count($request->all()) > 1)
+        {
+            throw new UpdateResourceFailedException('Could not update user profile.');
+        }
+        $user = Users::find($request->self_user_id);
+        if($request->has('first_name'))
+        {
+            $user->first_name = $request->first_name;
+        }
+        else if($request->has('last_name'))
+        {
+            $user->last_name = $request->last_name;
+        }
+        else if($request->has('gender'))
+        {
+            $user->gender = $request->gender;
+        }
+        else if($request->has('birthday'))
+        {
+            $user->birthday = $request->birthday;
+        }
+        $user->save();
     }
 }

@@ -14,8 +14,7 @@ class CreateVerificationsTable extends Migration
     {
         Schema::create('verifications', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id')->unsigned();
-            $table->foreign('user_id')->references('id')->on('users');  
+            $table->string('email',50); 
             $table->string('code',20);     
             $table->timestamps();
         });
@@ -28,6 +27,6 @@ class CreateVerificationsTable extends Migration
      */
     public function down()
     {
-        Scheme::drop('verifications');
+        Schema::drop('verifications');
     }
 }
