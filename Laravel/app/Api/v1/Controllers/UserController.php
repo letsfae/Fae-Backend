@@ -61,11 +61,15 @@ class UserController extends Controller
 		$user->save();
     }
 
-    public function getProfile() {
+    public function getSelfProfile() {
     	echo 'In get profile';
     }
 
-    public function updateProfile() {
+    public function getProfile($user_id) {
+        echo 'In get profile of user: '.$user_id;
+    }
+
+    public function updateSelfProfile() {
         echo 'In update profile';
     }
 }

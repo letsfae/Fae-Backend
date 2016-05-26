@@ -25,6 +25,7 @@ class FaeAuthorizationProvider extends Authorization
             list($user_id, $token, $session_id) = explode(':', base64_decode(substr($authStr, 4)));
             // get user_id and token from session table with session_id
             if($user_id === '1' && $token === '123456') {
+                $request->self_user_id = $user_id; // overwrite self_user_id
                 return;
             }
         }
