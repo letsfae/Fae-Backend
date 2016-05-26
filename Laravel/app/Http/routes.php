@@ -25,7 +25,7 @@ $api->version('v1', function ($api) {
 });
 
 	$api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], function ($api) {
-    $api->delete('authentication/{user_id}', 'App\Api\v1\Controllers\AuthenticationController@logout');
+    $api->delete('authentication', 'App\Api\v1\Controllers\AuthenticationController@logout');
 
     // functions
     $api->get('users/profile', 'App\Api\v1\Controllers\UserController@getProfile');

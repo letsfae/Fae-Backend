@@ -99,26 +99,26 @@ class UserController extends Controller
 
     private function updateProfileUpdate(Request $request)
     {
-        if(count($request->all()) > 1)
-        {
-            throw new UpdateResourceFailedException('Could not update user profile.');
-        }
         $user = Users::find($request->self_user_id);
         if($request->has('first_name'))
         {
             $user->first_name = $request->first_name;
         }
-        else if($request->has('last_name'))
+        if($request->has('last_name'))
         {
             $user->last_name = $request->last_name;
         }
-        else if($request->has('gender'))
+        if($request->has('gender'))
         {
             $user->gender = $request->gender;
         }
-        else if($request->has('birthday'))
+        if($request->has('birthday'))
         {
             $user->birthday = $request->birthday;
+        }
+        if($request->has('address'))
+        {
+            $user->address = $request->address;
         }
         $user->save();
     }
