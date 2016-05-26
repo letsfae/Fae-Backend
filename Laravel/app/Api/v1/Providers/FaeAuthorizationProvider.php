@@ -32,6 +32,7 @@ class FaeAuthorizationProvider extends Authorization
                 if($user_id === strval($session->user_id) && $token === $session->token) 
                 {
                     $request->self_user_id = $user_id;
+                    $request->self_session_id = $session_id;
                     return;
                 }
             }

@@ -99,6 +99,10 @@ class UserController extends Controller
 
     private function updateProfileUpdate(Request $request)
     {
+        if(count($request->all()) == 0)
+        {
+            return $this->response->errorBadRequest();
+        }
         $user = Users::find($request->self_user_id);
         if($request->has('first_name'))
         {
