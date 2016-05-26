@@ -29,6 +29,6 @@ class CreateFriendRequestsTable extends Migration
      */
     public function down()
     {
-        Scheme::drop('friend_requests');
+        Schema::drop('friend_requests');
     }
 }

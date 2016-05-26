@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Validator;
 use App\Users;
+// use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Dingo\Api\Exception\StoreResourceFailedException;
 use Dingo\Api\Routing\Helpers;
@@ -41,6 +42,7 @@ class UserController extends Controller
             'first_name' => 'required|string|max:50',
             'last_name' => 'required|string|max:50',
             'gender' => 'required|in:male,female',
+            'user_name' => 'required|max:50',
             'birthday' => 'required|date_format:Y-m-d|before:tomorrow|after:1900-00-00',
         ]);
     	if($validator->fails())
@@ -58,6 +60,8 @@ class UserController extends Controller
 		$user->first_name = $request->first_name;
 		$user->last_name = $request->last_name;
 		$user->birthday = $request->birthday;
+        $user->gender = $request->gender;
+        $user->user_name = $request->user_name;
 		$user->save();
     }
 

@@ -28,6 +28,6 @@ class CreateVerificationsTable extends Migration
      */
     public function down()
     {
-        Scheme::drop('verifications');
+        Schema::drop('verifications');
     }
 }
