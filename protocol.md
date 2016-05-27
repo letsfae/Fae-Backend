@@ -39,6 +39,8 @@ Base URL：`https://api.letsfae.com/`
 - 422 Unprocesable entity [POST/PUT/PATCH] 当创建一个对象时，发生一个验证错误。
 - 500 INTERNAL SERVER ERROR [*]：服务器发生错误，用户将无法判断发出的请求是否成功。
 
+* 需要注意的是，本协议中用POST代替PUT，因此只会出现POST, GET, DELETE三种动词。
+
 ## 身份验证
 
 登陆成功后会返回user_id和token。
@@ -140,7 +142,7 @@ Body
 
 ## 登出 logout
 
-`DELETE /authentication/:user_id`
+`DELETE /authentication`
 
 ### auth
 
@@ -220,3 +222,56 @@ no
 
 Status: 201
 
+## 获取用户自己的资料 get self profile
+
+`GET /users/profile`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	{
+		"id": @string,
+		"email": @string,
+		"user_name": @string,
+		"first_name": @string,
+		"last_name": @string,
+		"gender": @string,
+		"birthday": @string,
+		"address": @string,
+		"role": @number
+	}
+
+## 获取其他用户资料 get profile
+
+`GET /users/profile/:user_id`
+
+其余同get self profile
+
+## 更新自己的资料 update self profile
+
+`POST /users/profile`
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| first_name | string(50) | 名字 |
+| last_name | string(50) | 姓氏 |
+| birthday | string(YYYY-MM-DD) | 生日 |
+| gender | string("male", "female") | 性别 |
+| address | string | 地址 |
+
+所有字段均为可选，但必须至少包含一个字段。
+
+### response
+
+Status: 201
