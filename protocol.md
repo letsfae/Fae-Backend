@@ -204,7 +204,7 @@ Status: 201
 
 ## 验证code后重置密码
 
-`PUT /reset_login/password`
+`POST /reset_login/password`
 
 ### auth
 

@@ -67,6 +67,7 @@ class ResetLoginController extends Controller
             $message->to($this->request->email);
         });
 
+        return $this->response->created();
         
     }
 
@@ -93,8 +94,10 @@ class ResetLoginController extends Controller
             return $this->response->errorNotFound();
         }else{
             if($verification[0]->code == $input['code']){
-                if ($verification[0]->created_at->diffInMinutes()>30)
+                if ($verification[0]->created_at->diffInMinutes()>30) {
                     return $this->response->errorNotFound();
+                }
+                return $this->response->created();
                 //$verification[0]->delete();
             }else{
                 return $this->response->errorNotFound();
@@ -134,6 +137,8 @@ class ResetLoginController extends Controller
                 $user[0]->password = bcrypt($input['password']);
                 $user[0]->login_count = 0;
                 $user[0]->save();
+                
+                return $this->response->created();
             }else{
                 return $this->response->errorNotFound();
             }
