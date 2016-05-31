@@ -39,8 +39,6 @@ Base URL：`https://api.letsfae.com/`
 - 422 Unprocesable entity [POST/PUT/PATCH] 当创建一个对象时，发生一个验证错误。
 - 500 INTERNAL SERVER ERROR [*]：服务器发生错误，用户将无法判断发出的请求是否成功。
 
-* 需要注意的是，本协议中用POST代替PUT，因此只会出现POST, GET, DELETE三种动词。
-
 ## 身份验证
 
 登陆成功后会返回user_id和token。
@@ -57,7 +55,7 @@ Base URL：`https://api.letsfae.com/`
 
 - 在header中`User-Agent`字段值需标注设备（如iphone4, iphone6s, nexus6...）。
 - 在header中`Fae-Client-Version`字段为客户端版本（如ios-0.0.1）。
-- 在header中`Device-ID`字段为设备ID。
+- 在header中`Device-ID`字段为设备ID（该id必须是全局唯一的，因为每个设备仅允许一个合法用户登录，因此相同device-id的新用户登录会导致前一个该设备上的用户被替换，即默认认为前一个用户强制退出），建议此id使用手机的uuid。
 
 ## 错误返回
 
@@ -177,6 +175,8 @@ no
 | --- | --- | --- |
 | email | string(50) | 电邮 |
 
+code有效时长为发送出来后的30分钟，30分钟内再次获取code为原code。
+
 ### response
 
 Status: 201
@@ -195,8 +195,6 @@ no
 | --- | --- | --- |
 | email | string(50) | 电邮 |
 | code | string(6) | 邮件中的6位验证数字（用字符串形式传递） |
-
-code有效时长为发送出来后的30分钟。
 
 ### response
 
@@ -235,7 +233,7 @@ yes
 Status: 200
 
 	{
-		"id": @string,
+		"id": @number,
 		"email": @string,
 		"user_name": @string,
 		"first_name": @string,
@@ -243,14 +241,15 @@ Status: 200
 		"gender": @string,
 		"birthday": @string,
 		"address": @string,
-		"role": @number
+		"role": @number,
+		"mini_avatar": @number 地图上显示的用户小头像，未设置则默认为0
 	}
 
 ## 获取其他用户资料 get profile
 
 `GET /users/profile/:user_id`
 
-其余同get self profile
+其余同get self profile。
 
 ## 更新自己的资料 update self profile
 
@@ -269,9 +268,52 @@ yes
 | birthday | string(YYYY-MM-DD) | 生日 |
 | gender | string("male", "female") | 性别 |
 | address | string | 地址 |
+| mini_avatar | number | 地图头像小图标 |
 
 所有字段均为可选，但必须至少包含一个字段。
 
 ### response
 
 Status: 201
+
+## 设置头像 set self avatar
+
+`POST /files/avatar`
+
+### auth
+
+yes
+
+### parameters
+
+类型为form-data。
+
+| Name | Description |
+| --- | --- |
+| avatar | 图片内容 |
+
+图片格式必须为jpeg，大小为500x500px。
+
+### response
+
+Status: 201
+
+## 获取头像 get self avatar
+
+`GET /files/avatar`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+Body图片数据，其中`Content-Type`为`image/jpeg`。
+
+## 获取其他用户头像 get avatar
+
+`GET /files/avatar/:user_id`
+
+其余同get self profile。

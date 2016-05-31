@@ -25,6 +25,7 @@ class CreateUsersTable extends Migration
             $table->integer('role')->default(0);
             $table->text('address')->nullable();
             $table->timestamps();
+            $table->integer('mini_avatar')->default(0);
             $table->unique('user_name');
             $table->unique('email');
         });

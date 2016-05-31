@@ -25,7 +25,6 @@ class AuthenticationController extends Controller {
         AuthenticationController::loginValidation($this->request);
         $email = '';
         $user_name = '';
-        echo $email;
         if ($this->request->has('email')) {
             $email = strtolower($this->request->email);
         }
@@ -38,8 +37,8 @@ class AuthenticationController extends Controller {
             $email = $user_table->email;
         }
         $credentials = [
-                'email' => $email,
-                'password' => $password
+            'email' => $email,
+            'password' => $password
         ];
         $users = Users::where('email', '=', $email)->first();
         if (Auth::attempt($credentials)) {  
