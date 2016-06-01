@@ -27,7 +27,7 @@ class FileEntryController extends Controller
     	$self_user_id = $this->request->self_user_id;
     	$file = $this->request->avatar;
 		// $extension = $file->getClientOriginalExtension();
-		Storage::disk('local')->put('avatar/'.$self_user_id.'.png', File::get($file));
+		Storage::disk('local')->put('avatar/'.$self_user_id.'.jpg', File::get($file));
         return $this->response->created();
     }
 
@@ -38,10 +38,10 @@ class FileEntryController extends Controller
 
     public function getAvatar($user_id) {
     	try {
-			$file = Storage::disk('local')->get('avatar/'.$user_id.'.png');
+			$file = Storage::disk('local')->get('avatar/'.$user_id.'.jpg');
 		} catch(\Exception $e) {
 			return $this->response->errorNotFound();
 		}
-		return response($file, 200)->header('Content-Type', 'image/png');
+		return response($file, 200)->header('Content-Type', 'image/jpeg');
     }
 }
