@@ -22,6 +22,9 @@ Base URL：`https://api.letsfae.com/`
 
 参数通过request body或get参数实现，具体参见接口功能。
 
+- GET的filters在url参数中，如`/xxxxx?param1=AAA&param2=BBB`。注意url需要使用urlencode编码。
+- POST/PUT/DELETE的parameters内容在header中。
+
 ## 状态码
 
 接口调用成功后，如果成功则返回2xx。如果有错误，错误在error字段中。
@@ -317,3 +320,207 @@ Body图片数据，其中`Content-Type`为`image/jpeg`。
 `GET /files/avatar/:user_id`
 
 其余同get self profile。
+
+---
+
+**以下内容正在实现中**
+
+---
+
+## 同步消息
+
+`GET /sync`
+
+用于获取同步消息数量（即是否有新的同步消息），也可用于判断是否已经连接（比如重新进入app后判断用户是否在登陆状态）。
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	{
+		"friend_request": @number,
+		"chat": @number,
+		"active": @boolean
+	}
+
+## 激活当前设备 set active
+
+`POST /map/active`
+
+一个用户多设备登陆后只有一台激活设备，新的设备激活将导致该用户其他设备转为非激活状态。默认第一台登陆设备为激活设备。
+
+### auth
+
+yes
+
+### response
+
+Status: 201
+
+## 获取当前用户激活设备状态 get active
+
+`GET /map/active`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	{
+		"is_active": @boolean 当前设备是否激活,
+		"active_device_id": @string 被激活设备的id
+	}
+
+## 更新用户自身的当前坐标
+
+`POST /map/user`
+
+每隔一段固定时间跟新一次。
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| geolocation | (latitude,longitude) | 坐标 |
+
+### response
+
+Status: 201
+
+如果返回422，可能已经失去激活状态，可通过激活接口查询。
+
+## 获取地图数据
+
+`GET /map`
+
+### auth
+
+yes
+
+### filters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| center | number | 中心点 |
+| radius (optional) | number | 半径，默认值为200m |
+| type (optional) | string("user","comment") | 筛选类型，默认为所有，类型之间用逗号隔开 |
+| max_count (optional) | number | 返回节点最大数量，默认为30，最大为100） |
+
+对于一直在更新的user点，可以每隔一段时间获取一次。
+
+### response
+
+Status: 200
+
+	[
+		{
+			"type": @string,
+			"geolocation": {
+				"latitude": @number,
+				"longtitude": @number
+			},
+			"created_at": @string
+			...
+		},
+		{...},
+		{...}
+	]
+
+返回一个array, 每个object一定包含type，geolocation和created_at，其他内容依据type决定（可参见具体类型的相关接口）。
+
+## 发布comment
+
+`POST /comment`
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| content | text | 内容 |
+| geolocation | (latitude,longitude) | 坐标 |
+
+### response
+
+Status: 201
+
+	{
+		"comment_id": @number
+	}
+
+
+## 获取comment
+
+`GET /comment/:comment_id`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	{
+		"id": @number,
+		"user_id": @number
+		"content": @string,
+		"geolocation": {
+			"latitude": @number,
+			"longtitude": @number
+		},
+		"created_at": @string
+	}
+
+## 获取某个用户的所有comment
+
+`GET /comment/user/:user_id`
+
+### auth
+
+yes
+
+### filters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| start_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围 |
+| end_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围 |
+| page | number | 页数，默认为第1页（头30条） |
+
+过滤参数均为可选。
+
+### response
+
+Status: 200
+
+	[
+		{...},
+		{...}
+	]
+
+## 删除comment
+
+`DELETE /comment/:comment_id`
+
+### auth
+
+yes
+
+### response
+
+Status: 204

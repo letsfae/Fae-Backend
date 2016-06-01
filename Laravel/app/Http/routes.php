@@ -27,7 +27,7 @@ $api->version('v1', function ($api) {
     $api->post('reset_login/password', 'App\Api\v1\Controllers\ResetLoginController@resetPassword');
 });
 
-	$api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], function ($api) {
+$api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], function ($api) {
     $api->delete('authentication', 'App\Api\v1\Controllers\AuthenticationController@logout');
 
     // profile
@@ -38,4 +38,16 @@ $api->version('v1', function ($api) {
     $api->post('files/avatar', 'App\Api\v1\Controllers\FileEntryController@setSelfAvatar');
     $api->get('files/avatar', 'App\Api\v1\Controllers\FileEntryController@getSelfAvatar');
     $api->get('files/avatar/{user_id}', 'App\Api\v1\Controllers\FileEntryController@getAvatar');
+    //synchronization
+    $api->get('/sync', 'App\Api\v1\Controllers\SyncController@getSync');
+    //map
+    $api->get('/map', 'App\Api\v1\Controllers\MapController@getMap');
+    $api->post('/map/user', 'App\Api\v1\Controllers\MapController@updateUserLocation');
+    $api->post('/map/active', 'App\Api\v1\Controllers\MapController@setActive');
+    $api->get('/map/active', 'App\Api\v1\Controllers\MapController@getActive');
+    //comment
+    $api->post('/comment', 'App\Api\v1\Controllers\CommentController@createComment');
+    $api->get('/comment/{comment_id}', 'App\Api\v1\Controllers\CommentController@getComment');
+    $api->delete('/comment/{comment_id}', 'App\Api\v1\Controllers\CommentController@deleteComment');
+    $api->get('/comment/users/{user_id}', 'App\Api\v1\Controllers\CommentController@getUserComment');
 });
