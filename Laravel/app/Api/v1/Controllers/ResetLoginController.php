@@ -56,7 +56,16 @@ class ResetLoginController extends Controller
             $new_verification->code = $verification_code;
             $new_verification->save();
         }else{
-            $verification_code = $verification[0]->code;
+            if ($verification[0]->created_at->diffInMinutes()>30) {
+                $verification[0]->delete();
+                
+                $new_verification = new Verifications;
+                $new_verification->email = $input['email'];
+                $new_verification->code = $verification_code;
+                $new_verification->save();
+            }else{
+                $verification_code = $verification[0]->code;
+            }
         }
         
         // send code to this email
