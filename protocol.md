@@ -250,7 +250,7 @@ Status: 200
 
 ## 获取其他用户资料 get profile
 
-`GET /users/profile/:user_id`
+`GET /users/:user_id/profile`
 
 其余同get self profile。
 
@@ -441,7 +441,7 @@ Status: 200
 
 ## 发布comment
 
-`POST /comment`
+`POST /comments`
 
 ### auth
 
@@ -465,7 +465,7 @@ Status: 201
 
 ## 获取comment
 
-`GET /comment/:comment_id`
+`GET /comments/:comment_id`
 
 ### auth
 
@@ -488,7 +488,7 @@ Status: 200
 
 ## 获取某个用户的所有comment
 
-`GET /comment/user/:user_id`
+`GET /comments/user/:user_id`
 
 ### auth
 
@@ -516,7 +516,7 @@ Status: 200
 
 ## 删除comment
 
-`DELETE /comment/:comment_id`
+`DELETE /comments/:comment_id`
 
 ### auth
 

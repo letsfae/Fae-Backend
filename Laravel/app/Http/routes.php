@@ -33,7 +33,7 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     // profile
     $api->post('users/profile', 'App\Api\v1\Controllers\UserController@updateSelfProfile');
     $api->get('users/profile', 'App\Api\v1\Controllers\UserController@getSelfProfile');
-    $api->get('users/profile/{user_id}', 'App\Api\v1\Controllers\UserController@getProfile');
+    $api->get('users/{user_id}/profile', 'App\Api\v1\Controllers\UserController@getProfile');
     // avatar
     $api->post('files/avatar', 'App\Api\v1\Controllers\FileEntryController@setSelfAvatar');
     $api->get('files/avatar', 'App\Api\v1\Controllers\FileEntryController@getSelfAvatar');
@@ -46,8 +46,8 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->post('/map/active', 'App\Api\v1\Controllers\MapController@setActive');
     $api->get('/map/active', 'App\Api\v1\Controllers\MapController@getActive');
     //comment
-    $api->post('/comment', 'App\Api\v1\Controllers\CommentController@createComment');
-    $api->get('/comment/{comment_id}', 'App\Api\v1\Controllers\CommentController@getComment');
-    $api->delete('/comment/{comment_id}', 'App\Api\v1\Controllers\CommentController@deleteComment');
-    $api->get('/comment/users/{user_id}', 'App\Api\v1\Controllers\CommentController@getUserComment');
+    $api->post('/comments', 'App\Api\v1\Controllers\CommentController@createComment');
+    $api->get('/comments/{comment_id}', 'App\Api\v1\Controllers\CommentController@getComment');
+    $api->delete('/comments/{comment_id}', 'App\Api\v1\Controllers\CommentController@deleteComment');
+    $api->get('/comments/users/{user_id}', 'App\Api\v1\Controllers\CommentController@getUserComments');
 });

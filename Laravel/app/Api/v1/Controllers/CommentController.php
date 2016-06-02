@@ -22,6 +22,6 @@ class CommentController extends Controller {
     public function deleteComment($comment_id) {
     }
 
-    public function getUserComment($user_id) {
+    public function getUserComments($user_id) {
     }
 }

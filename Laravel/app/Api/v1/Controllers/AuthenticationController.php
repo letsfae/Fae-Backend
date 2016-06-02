@@ -2,14 +2,15 @@
 
 namespace App\Api\v1\Controllers;
 
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Illuminate\Support\Facades\Hash;
 use Dingo\Api\Exception\DeleteResourceFailedException;
 use Dingo\Api\Routing\Helpers;
-use Illuminate\Support\Facades\Hash;
 use Auth;
 use Validator;
+use Config;
 use App\Sessions;
 use App\Users;
 
@@ -67,7 +68,12 @@ class AuthenticationController extends Controller {
                 $session_id = $session->id;
             }
             $users->login_count = 0;
-            return $this->response->created($location = null, $content = array('user_id' => $user_id, 'token' => $token, 'session_id' => $session_id));
+
+            $content = array('user_id' => $user_id, 'token' => $token, 'session_id' => $session_id);
+            if(Config::get('app.debug')) {
+                $content['debug_base64ed'] = base64_encode($user_id.':'.$token.':'.$session_id);
+            }
+            return $this->response->created(null, $content);
         } 
         else {
             if ($users == null) {
