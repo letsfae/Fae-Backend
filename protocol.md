@@ -392,7 +392,8 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| geolocation | latitude,longitude | 坐标 |
+| geo_latitide | number | 纬度 |
+| geo_longtitude | number | 经度 |
 
 ### response
 
@@ -412,7 +413,8 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| center | latitude,longitude | 中心点 |
+| geo_latitude | number | 中心点纬度 |
+| geo_longtitude | number | 中心点经度 |
 | radius (optional) | number | 半径，默认值为200m |
 | type (optional) | string("user","comment") | 筛选类型，默认为所有，类型之间用逗号隔开 |
 | max_count (optional) | number | 返回节点最大数量，默认为30，最大为100） |
@@ -452,7 +454,8 @@ yes
 | Name | Type | Description |
 | --- | --- | --- |
 | content | text | 内容 |
-| geolocation | latitude,longitude | 坐标 |
+| geo_latitide | number | 纬度 |
+| geo_longtitude | number | 经度 |
 
 ### response
 
@@ -508,11 +511,16 @@ yes
 
 Status: 200
 
-	pages: @number
-	[
-		{...},
-		{...}
-	]
+	{
+		page: @number,
+		total_pages: @number,
+		comments: [
+			{...},
+			{...}
+		]
+	}
+
+具体数组内对象同“获取comment”所得到的对象。
 
 ## 删除comment
 
