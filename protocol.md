@@ -223,6 +223,34 @@ no
 
 Status: 201
 
+## 验证email是否存在
+
+`GET /existence/email/:email`
+
+### auth
+
+no
+
+### response
+
+Status: 200
+
+存在则返回错误
+
+## 验证user name是否存在
+
+`GET /existence/user_name/:user_name`
+
+### auth
+
+no
+
+### response
+
+Status: 200
+
+存在则返回错误
+
 ## 获取用户自己的资料 get self profile
 
 `GET /users/profile`
@@ -392,7 +420,7 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| geo_latitide | number | 纬度 |
+| geo_latitude | number | 纬度 |
 | geo_longtitude | number | 经度 |
 
 ### response
@@ -454,7 +482,7 @@ yes
 | Name | Type | Description |
 | --- | --- | --- |
 | content | text | 内容 |
-| geo_latitide | number | 纬度 |
+| geo_latitude | number | 纬度 |
 | geo_longtitude | number | 经度 |
 
 ### response
