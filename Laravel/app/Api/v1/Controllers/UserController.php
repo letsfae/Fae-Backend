@@ -34,7 +34,7 @@ class UserController extends Controller
         $user = Users::find($user_id);
         if(! is_null($user))
         {
-            $profile = array('id' => $user->id, 'email' => $user->email, 'user_name' => $user->user_name, 
+            $profile = array('user_id' => $user->id, 'email' => $user->email, 'user_name' => $user->user_name, 
                 'first_name' => $user->first_name, 'last_name' => $user->last_name, 'gender' => $user->gender,
                 'birthday' => $user->birthday, 'role' => $user->role, 'address' => $user->address, 'mini_avatar' => $user->mini_avatar);
             return $this->response->array($profile);

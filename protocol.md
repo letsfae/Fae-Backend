@@ -264,7 +264,7 @@ yes
 Status: 200
 
 	{
-		"id": @number,
+		"user_id": @number,
 		"email": @string,
 		"user_name": @string,
 		"first_name": @string,
@@ -421,7 +421,7 @@ yes
 | Name | Type | Description |
 | --- | --- | --- |
 | geo_latitude | number | 纬度 |
-| geo_longtitude | number | 经度 |
+| geo_longitude | number | 经度 |
 
 ### response
 
@@ -442,7 +442,7 @@ yes
 | Name | Type | Description |
 | --- | --- | --- |
 | geo_latitude | number | 中心点纬度 |
-| geo_longtitude | number | 中心点经度 |
+| geo_longitude | number | 中心点经度 |
 | radius (optional) | number | 半径，默认值为200m |
 | type (optional) | string("user","comment") | 筛选类型，默认为所有，类型之间用逗号隔开 |
 | max_count (optional) | number | 返回节点最大数量，默认为30，最大为100） |
@@ -458,7 +458,7 @@ Status: 200
 			"type": @string,
 			"geolocation": {
 				"latitude": @number,
-				"longtitude": @number
+				"longitude": @number
 			},
 			"created_at": @string
 			...
@@ -483,7 +483,7 @@ yes
 | --- | --- | --- |
 | content | text | 内容 |
 | geo_latitude | number | 纬度 |
-| geo_longtitude | number | 经度 |
+| geo_longitude | number | 经度 |
 
 ### response
 
@@ -507,12 +507,12 @@ yes
 Status: 200
 
 	{
-		"id": @number,
+		"comment_id": @number,
 		"user_id": @number
 		"content": @string,
 		"geolocation": {
 			"latitude": @number,
-			"longtitude": @number
+			"longitude": @number
 		},
 		"created_at": @string
 	}
