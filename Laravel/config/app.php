@@ -159,7 +159,8 @@ return [
         /*
          * Dingo API...
          */
-        Dingo\Api\Provider\LaravelServiceProvider::class
+        Dingo\Api\Provider\LaravelServiceProvider::class,
+        Phaza\LaravelPostgis\DatabaseServiceProvider::class,
 
     ],
 

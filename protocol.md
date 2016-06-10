@@ -72,7 +72,7 @@ Base URL：`https://api.letsfae.com/`
 
 # 接口功能
 
-## 注册 Sign up
+## 注册 Sign up :white_check_mark:
 
 `POST /users`
 
@@ -96,7 +96,7 @@ no
 Status: 201
 
 
-## 登陆 Login
+## 登陆 Login :white_check_mark:
 
 `POST /authentication`
 
@@ -141,7 +141,7 @@ Body
 	email: test@letsfae.com
 	password: 123456	
 
-## 登出 logout
+## 登出 logout :white_check_mark:
 
 `DELETE /authentication`
 
@@ -164,7 +164,7 @@ Header
 	Device-ID: gu3v0KaU7jLS7SGdS2Rb
 	Authorization: FAE MToxMjM0NTY6MQ==
 
-## 获取重置登陆的Email
+## 获取重置登陆的Email :white_check_mark:
 
 `POST /reset_login/code`
 
@@ -184,7 +184,7 @@ code有效时长为发送出来后的30分钟，30分钟内再次获取code为�
 
 Status: 201
 
-## 验证重置登陆code
+## 验证重置登陆code :white_check_mark:
 
 `PUT /reset_login/code`
 
@@ -203,7 +203,7 @@ no
 
 Status: 201
 
-## 验证code后重置密码
+## 验证code后重置密码 :white_check_mark:
 
 `POST /reset_login/password`
 
@@ -251,7 +251,7 @@ Status: 200
 
 存在则返回错误
 
-## 获取用户自己的资料 get self profile
+## 获取用户自己的资料 get self profile :white_check_mark:
 
 `GET /users/profile`
 
@@ -276,13 +276,13 @@ Status: 200
 		"mini_avatar": @number 地图上显示的用户小头像，未设置则默认为0
 	}
 
-## 获取其他用户资料 get profile
+## 获取其他用户资料 get profile :white_check_mark:
 
 `GET /users/:user_id/profile`
 
 其余同get self profile。
 
-## 更新自己的资料 update self profile
+## 更新自己的资料 update self profile :white_check_mark:
 
 `POST /users/profile`
 
@@ -307,7 +307,7 @@ yes
 
 Status: 201
 
-## 设置头像 set self avatar
+## 设置头像 set self avatar :white_check_mark:
 
 `POST /files/avatar`
 
@@ -329,7 +329,7 @@ yes
 
 Status: 201
 
-## 获取头像 get self avatar
+## 获取头像 get self avatar :white_check_mark:
 
 `GET /files/avatar`
 
@@ -343,7 +343,7 @@ Status: 200
 
 Body图片数据，其中`Content-Type`为`image/jpeg`。
 
-## 获取其他用户头像 get avatar
+## 获取其他用户头像 get avatar :white_check_mark:
 
 `GET /files/avatar/:user_id`
 
@@ -379,7 +379,7 @@ Status: 200
 
 `POST /map/active`
 
-一个用户多设备登陆后只有一台激活设备，新的设备激活将导致该用户其他设备转为非激活状态。默认第一台登陆设备为激活设备，激活设备退出后将随机选择一台设备作为新的激活设备。
+一个用户多设备登陆后只有一台激活设备，新的设备激活将导致该用户其他设备转为非激活状态。默认最后登陆设备为激活设备，激活设备退出后将随机选择一台设备作为新的激活设备。
 
 ### auth
 
