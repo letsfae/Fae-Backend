@@ -42,10 +42,16 @@ class AuthenticationController extends Controller {
             'password' => $password
         ];
         $users = Users::where('email', '=', $email)->first();
+        if ($users == null) {
+            throw new AccessDeniedHttpException('Bad request, No such users exist!');
+        }
         if (Auth::attempt($credentials)) {  
             $token = str_random(30);
             $device_id = $this->request->header('Device_ID');
             $client_version = $this->request->header('Fae-Client-Version'); 
+            if ($token == null || $device_id == null || $client_version == null) {
+                throw new AccessDeniedHttpException('Bad request, Please verify your input header!');
+            }
             $user_id = $users->id;
             //create session in db (if exists, replace it)
             $session_back = Sessions::where('device_id', '=', $device_id)->first();
