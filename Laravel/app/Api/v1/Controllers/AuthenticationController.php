@@ -49,8 +49,14 @@ class AuthenticationController extends Controller {
             $token = str_random(30);
             $device_id = $this->request->header('Device_ID');
             $client_version = $this->request->header('Fae-Client-Version'); 
-            if ($token == null || $device_id == null || $client_version == null) {
-                throw new AccessDeniedHttpException('Bad request, Please verify your input header!');
+            $input = array('token' => $token, '$device_id' => $device_id, 'client_version' => $client_version);
+            $validator = Validator::make($input, [
+            'token' => 'required|max:200',
+            'device_id' => 'required|max:200',
+            'client_version' => 'required|max:200',
+            ]);
+            if($validator->fails()) {            
+                 throw new AccessDeniedHttpException('Bad request, Please verify your input header!');             
             }
             $user_id = $users->id;
             //create session in db (if exists, replace it)
