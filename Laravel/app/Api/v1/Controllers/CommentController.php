@@ -114,12 +114,12 @@ class CommentController extends Controller {
             }
             if ($page * 30 > $total) {
                 for ($i = ($page - 1) * 30; $i < $total; $i++) {
-                    $result[] = array('page' => $page, 'pages' => $pages, 'comments' => array('comment_id' => $comment_id[$i], 'user_id' => $user_id[$i], 'content' => $totalComments[$i], 'geolocation' => array('latitude' => $lat[$i], 'longitude' => $lng[$i]), 'created_at' => $created_at[$i]));
+                    $result[] = array('page' => $page, 'total_pages' => $pages, 'comments' => array('comment_id' => $comment_id[$i], 'user_id' => $user_id[$i], 'content' => $totalComments[$i], 'geolocation' => array('latitude' => $lat[$i], 'longitude' => $lng[$i]), 'created_at' => $created_at[$i]));
                 }
             }
             else {
                 for ($i = ($page - 1) * 30; $i < ($page - 1) * 30 + 30; $i++) {
-                    $result[] = array('page' => $page, 'pages' => $pages, 'comments' => array('comment_id' => $comment_id[$i], 'user_id' => $user_id[$i], 'content' => $totalComments[$i], 'geolocation' => array('latitude' => $lat[$i], 'longitude' => $lng[$i]), 'created_at' => $created_at[$i]));
+                    $result[] = array('page' => $page, 'total_pages' => $pages, 'comments' => array('comment_id' => $comment_id[$i], 'user_id' => $user_id[$i], 'content' => $totalComments[$i], 'geolocation' => array('latitude' => $lat[$i], 'longitude' => $lng[$i]), 'created_at' => $created_at[$i]));
                 }
             }
             return $this->response->array($result);
