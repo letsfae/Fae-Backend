@@ -1,7 +1,8 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
+//use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Phaza\LaravelPostgis\Schema\Blueprint;
 
 class CreateSessionsTable extends Migration
 {
@@ -19,6 +20,8 @@ class CreateSessionsTable extends Migration
             $table->string('token',50);
             $table->string('device_id',200);
             $table->string('client_version',50);
+            $table->point('location')->nullable();
+            $table->boolean('active')->default(false);
             $table->timestamps();
         });
     }
