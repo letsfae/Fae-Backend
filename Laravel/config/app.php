@@ -147,7 +147,6 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
-
         /*
          * Application Service Providers...
          */
@@ -159,7 +158,12 @@ return [
         /*
          * Dingo API...
          */
-        Dingo\Api\Provider\LaravelServiceProvider::class
+        Dingo\Api\Provider\LaravelServiceProvider::class,
+
+        /*
+         * Postgis
+         */
+        Phaza\LaravelPostgis\DatabaseServiceProvider::class
 
     ],
 

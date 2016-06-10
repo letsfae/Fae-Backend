@@ -4,9 +4,61 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c2646877cf695e18ff701f72202f1642",
-    "content-hash": "faa0041cfffdfa5fef6beb316173aaa7",
+    "hash": "5966eb2557b6b0295ffcd8fb8d31d28f",
+    "content-hash": "f59c9baa103dd63d34e45bd8ee8a340d",
     "packages": [
+        {
+            "name": "bosnadev/database",
+            "version": "0.16",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Bosnadev/Database.git",
+                "reference": "c2748d118415d30ce69b792448689285d01ffdb9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Bosnadev/Database/zipball/c2748d118415d30ce69b792448689285d01ffdb9",
+                "reference": "c2748d118415d30ce69b792448689285d01ffdb9",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/database": "~5.0",
+                "php": ">=5.4",
+                "ramsey/uuid": "~3.0"
+            },
+            "require-dev": {
+                "doctrine/dbal": "~2.5",
+                "mockery/mockery": "0.9.*",
+                "php": ">=5.4",
+                "phpunit/phpunit": "~4.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Bosnadev\\Database\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Mirza Pasic",
+                    "email": "mirza.pasic@edu.fit.ba"
+                },
+                {
+                    "name": "Peter Haza",
+                    "email": "peter.haza@gmail.com"
+                }
+            ],
+            "description": "Eloquent Extended, added some PostgreSql features",
+            "keywords": [
+                "database",
+                "eloquent",
+                "laravel",
+                "mysql",
+                "postgresql"
+            ],
+            "time": "2016-04-27 15:18:36"
+        },
         {
             "name": "classpreloader/classpreloader",
             "version": "3.0.0",
@@ -295,286 +347,6 @@
             "time": "2015-08-31 12:32:49"
         },
         {
-            "name": "doctrine/cache",
-            "version": "v1.6.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/doctrine/cache.git",
-                "reference": "f8af318d14bdb0eff0336795b428b547bd39ccb6"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/cache/zipball/f8af318d14bdb0eff0336795b428b547bd39ccb6",
-                "reference": "f8af318d14bdb0eff0336795b428b547bd39ccb6",
-                "shasum": ""
-            },
-            "require": {
-                "php": "~5.5|~7.0"
-            },
-            "conflict": {
-                "doctrine/common": ">2.2,<2.4"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "~4.8|~5.0",
-                "predis/predis": "~1.0",
-                "satooshi/php-coveralls": "~0.6"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.6.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Doctrine\\Common\\Cache\\": "lib/Doctrine/Common/Cache"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Roman Borschel",
-                    "email": "roman@code-factory.org"
-                },
-                {
-                    "name": "Benjamin Eberlei",
-                    "email": "kontakt@beberlei.de"
-                },
-                {
-                    "name": "Guilherme Blanco",
-                    "email": "guilhermeblanco@gmail.com"
-                },
-                {
-                    "name": "Jonathan Wage",
-                    "email": "jonwage@gmail.com"
-                },
-                {
-                    "name": "Johannes Schmitt",
-                    "email": "schmittjoh@gmail.com"
-                }
-            ],
-            "description": "Caching library offering an object-oriented API for many cache backends",
-            "homepage": "http://www.doctrine-project.org",
-            "keywords": [
-                "cache",
-                "caching"
-            ],
-            "time": "2015-12-31 16:37:02"
-        },
-        {
-            "name": "doctrine/collections",
-            "version": "v1.3.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/doctrine/collections.git",
-                "reference": "6c1e4eef75f310ea1b3e30945e9f06e652128b8a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/collections/zipball/6c1e4eef75f310ea1b3e30945e9f06e652128b8a",
-                "reference": "6c1e4eef75f310ea1b3e30945e9f06e652128b8a",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.2"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "~4.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.2.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Doctrine\\Common\\Collections\\": "lib/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Roman Borschel",
-                    "email": "roman@code-factory.org"
-                },
-                {
-                    "name": "Benjamin Eberlei",
-                    "email": "kontakt@beberlei.de"
-                },
-                {
-                    "name": "Guilherme Blanco",
-                    "email": "guilhermeblanco@gmail.com"
-                },
-                {
-                    "name": "Jonathan Wage",
-                    "email": "jonwage@gmail.com"
-                },
-                {
-                    "name": "Johannes Schmitt",
-                    "email": "schmittjoh@gmail.com"
-                }
-            ],
-            "description": "Collections Abstraction library",
-            "homepage": "http://www.doctrine-project.org",
-            "keywords": [
-                "array",
-                "collections",
-                "iterator"
-            ],
-            "time": "2015-04-14 22:21:58"
-        },
-        {
-            "name": "doctrine/common",
-            "version": "v2.6.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/doctrine/common.git",
-                "reference": "a579557bc689580c19fee4e27487a67fe60defc0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/common/zipball/a579557bc689580c19fee4e27487a67fe60defc0",
-                "reference": "a579557bc689580c19fee4e27487a67fe60defc0",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/annotations": "1.*",
-                "doctrine/cache": "1.*",
-                "doctrine/collections": "1.*",
-                "doctrine/inflector": "1.*",
-                "doctrine/lexer": "1.*",
-                "php": "~5.5|~7.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "~4.8|~5.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.7.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Doctrine\\Common\\": "lib/Doctrine/Common"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Roman Borschel",
-                    "email": "roman@code-factory.org"
-                },
-                {
-                    "name": "Benjamin Eberlei",
-                    "email": "kontakt@beberlei.de"
-                },
-                {
-                    "name": "Guilherme Blanco",
-                    "email": "guilhermeblanco@gmail.com"
-                },
-                {
-                    "name": "Jonathan Wage",
-                    "email": "jonwage@gmail.com"
-                },
-                {
-                    "name": "Johannes Schmitt",
-                    "email": "schmittjoh@gmail.com"
-                }
-            ],
-            "description": "Common Library for Doctrine projects",
-            "homepage": "http://www.doctrine-project.org",
-            "keywords": [
-                "annotations",
-                "collections",
-                "eventmanager",
-                "persistence",
-                "spl"
-            ],
-            "time": "2015-12-25 13:18:31"
-        },
-        {
-            "name": "doctrine/dbal",
-            "version": "v2.5.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/doctrine/dbal.git",
-                "reference": "abbdfd1cff43a7b99d027af3be709bc8fc7d4769"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/abbdfd1cff43a7b99d027af3be709bc8fc7d4769",
-                "reference": "abbdfd1cff43a7b99d027af3be709bc8fc7d4769",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/common": ">=2.4,<2.7-dev",
-                "php": ">=5.3.2"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "4.*",
-                "symfony/console": "2.*"
-            },
-            "suggest": {
-                "symfony/console": "For helpful console commands such as SQL execution and import of files."
-            },
-            "bin": [
-                "bin/doctrine-dbal"
-            ],
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.5.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Doctrine\\DBAL\\": "lib/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Roman Borschel",
-                    "email": "roman@code-factory.org"
-                },
-                {
-                    "name": "Benjamin Eberlei",
-                    "email": "kontakt@beberlei.de"
-                },
-                {
-                    "name": "Guilherme Blanco",
-                    "email": "guilhermeblanco@gmail.com"
-                },
-                {
-                    "name": "Jonathan Wage",
-                    "email": "jonwage@gmail.com"
-                }
-            ],
-            "description": "Database Abstraction Layer",
-            "homepage": "http://www.doctrine-project.org",
-            "keywords": [
-                "database",
-                "dbal",
-                "persistence",
-                "queryobject"
-            ],
-            "time": "2016-01-05 22:11:12"
-        },
-        {
             "name": "doctrine/inflector",
             "version": "v1.1.0",
             "source": {
@@ -694,6 +466,104 @@
                 "parser"
             ],
             "time": "2014-09-09 13:34:57"
+        },
+        {
+            "name": "geo-io/interface",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/geo-io/interface.git",
+                "reference": "cdbb55801e3f8d5485227c2031cc7a3c16ccd06a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/geo-io/interface/zipball/cdbb55801e3f8d5485227c2031cc7a3c16ccd06a",
+                "reference": "cdbb55801e3f8d5485227c2031cc7a3c16ccd06a",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "GeoIO\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jan Sorgalla",
+                    "email": "jsorgalla@gmail.com"
+                }
+            ],
+            "description": "Geo I/O base interfaces.",
+            "keywords": [
+                "geo",
+                "geometry",
+                "io"
+            ],
+            "time": "2015-04-17 18:52:52"
+        },
+        {
+            "name": "geo-io/wkb-parser",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/geo-io/wkb-parser.git",
+                "reference": "cceee8f4e8b2058f3f1a0372c930140f23fe1ee1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/geo-io/wkb-parser/zipball/cceee8f4e8b2058f3f1a0372c930140f23fe1ee1",
+                "reference": "cceee8f4e8b2058f3f1a0372c930140f23fe1ee1",
+                "shasum": ""
+            },
+            "require": {
+                "geo-io/interface": "~1.0",
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "mockery/mockery": "~0.9.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "GeoIO\\WKB\\Parser\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jan Sorgalla",
+                    "email": "jsorgalla@gmail.com"
+                }
+            ],
+            "description": "Well-known binary (WKB) Parser.",
+            "keywords": [
+                "geo",
+                "geometry",
+                "io",
+                "parser",
+                "wkb"
+            ],
+            "time": "2015-06-30 04:19:13"
         },
         {
             "name": "jakub-onderka/php-console-color",
@@ -841,17 +711,70 @@
             "time": "2015-12-05 17:17:57"
         },
         {
-            "name": "laravel/framework",
-            "version": "v5.2.32",
+            "name": "jmikola/geojson",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/laravel/framework.git",
-                "reference": "f688217113f70b01d0e127da9035195415812bef"
+                "url": "https://github.com/jmikola/geojson.git",
+                "reference": "6ec3016cc0215667b7775f6ead7bd0337ad66eee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/f688217113f70b01d0e127da9035195415812bef",
-                "reference": "f688217113f70b01d0e127da9035195415812bef",
+                "url": "https://api.github.com/repos/jmikola/geojson/zipball/6ec3016cc0215667b7775f6ead7bd0337ad66eee",
+                "reference": "6ec3016cc0215667b7775f6ead7bd0337ad66eee",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~3.7"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "GeoJson\\": "src/"
+                },
+                "classmap": [
+                    "stubs/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jeremy Mikola",
+                    "email": "jmikola@gmail.com"
+                }
+            ],
+            "description": "GeoJSON implementation for PHP",
+            "homepage": "https://github.com/jmikola/geojson",
+            "keywords": [
+                "geo",
+                "geojson",
+                "geospatial"
+            ],
+            "time": "2015-09-27 15:35:21"
+        },
+        {
+            "name": "laravel/framework",
+            "version": "v5.2.35",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/framework.git",
+                "reference": "d2b6b0fe32fab610d356c22e74a6ffd101b0f513"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/d2b6b0fe32fab610d356c22e74a6ffd101b0f513",
+                "reference": "d2b6b0fe32fab610d356c22e74a6ffd101b0f513",
                 "shasum": ""
             },
             "require": {
@@ -967,7 +890,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2016-05-17 13:24:40"
+            "time": "2016-05-30 17:42:01"
         },
         {
             "name": "league/flysystem",
@@ -1384,6 +1307,56 @@
             "time": "2016-03-18 20:34:03"
         },
         {
+            "name": "phaza/laravel-postgis",
+            "version": "3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/njbarrett/laravel-postgis.git",
+                "reference": "accec379af8ceba903ceb10df37beeb9bfb411cc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/njbarrett/laravel-postgis/zipball/accec379af8ceba903ceb10df37beeb9bfb411cc",
+                "reference": "accec379af8ceba903ceb10df37beeb9bfb411cc",
+                "shasum": ""
+            },
+            "require": {
+                "bosnadev/database": "~0.16",
+                "geo-io/wkb-parser": "^1.0",
+                "illuminate/database": "^5.2",
+                "jmikola/geojson": "^1.0",
+                "php": ">=5.5"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "~0.3",
+                "illuminate/pagination": "~5.0",
+                "mockery/mockery": "0.9.*",
+                "phpunit/phpunit": "~4.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Phaza\\LaravelPostgis\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Peter Haza",
+                    "email": "peter.haza@gmail.com"
+                },
+                {
+                    "name": "Nicholas Barrett",
+                    "email": "njbarrett7@gmail.com"
+                }
+            ],
+            "description": "Postgis extensions for laravel. Aims to make it easy to work with geometries from laravel models",
+            "time": "2016-05-21 08:00:18"
+        },
+        {
             "name": "phpdocumentor/reflection-docblock",
             "version": "2.0.4",
             "source": {
@@ -1541,6 +1514,86 @@
                 "shell"
             ],
             "time": "2016-03-09 05:03:14"
+        },
+        {
+            "name": "ramsey/uuid",
+            "version": "3.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ramsey/uuid.git",
+                "reference": "b4fe3b7387cb323fd15ad5837cae992422c9fa5c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ramsey/uuid/zipball/b4fe3b7387cb323fd15ad5837cae992422c9fa5c",
+                "reference": "b4fe3b7387cb323fd15ad5837cae992422c9fa5c",
+                "shasum": ""
+            },
+            "require": {
+                "paragonie/random_compat": "^1.0|^2.0",
+                "php": ">=5.4"
+            },
+            "replace": {
+                "rhumsaa/uuid": "self.version"
+            },
+            "require-dev": {
+                "apigen/apigen": "^4.1",
+                "codeception/aspect-mock": "1.0.0",
+                "goaop/framework": "1.0.0-alpha.2",
+                "ircmaxell/random-lib": "^1.1",
+                "jakub-onderka/php-parallel-lint": "^0.9.0",
+                "mockery/mockery": "^0.9.4",
+                "moontoast/math": "^1.1",
+                "phpunit/phpunit": "^4.7|^5.0",
+                "satooshi/php-coveralls": "^0.6.1",
+                "squizlabs/php_codesniffer": "^2.3"
+            },
+            "suggest": {
+                "ext-libsodium": "Provides the PECL libsodium extension for use with the SodiumRandomGenerator",
+                "ext-uuid": "Provides the PECL UUID extension for use with the PeclUuidTimeGenerator and PeclUuidRandomGenerator",
+                "ircmaxell/random-lib": "Provides RandomLib for use with the RandomLibAdapter",
+                "moontoast/math": "Provides support for converting UUID to 128-bit integer (in string form).",
+                "ramsey/uuid-console": "A console application for generating UUIDs with ramsey/uuid",
+                "ramsey/uuid-doctrine": "Allows the use of Ramsey\\Uuid\\Uuid as Doctrine field type."
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Ramsey\\Uuid\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Marijn Huizendveld",
+                    "email": "marijn.huizendveld@gmail.com"
+                },
+                {
+                    "name": "Thibaud Fabre",
+                    "email": "thibaud@aztech.io"
+                },
+                {
+                    "name": "Ben Ramsey",
+                    "email": "ben@benramsey.com",
+                    "homepage": "https://benramsey.com"
+                }
+            ],
+            "description": "Formerly rhumsaa/uuid. A PHP 5.4+ library for generating RFC 4122 version 1, 3, 4, and 5 universally unique identifiers (UUID).",
+            "homepage": "https://github.com/ramsey/uuid",
+            "keywords": [
+                "guid",
+                "identifier",
+                "uuid"
+            ],
+            "time": "2016-04-24 00:30:41"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -1714,16 +1767,16 @@
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v3.0.6",
+            "version": "v3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/event-dispatcher.git",
-                "reference": "807dde98589f9b2b00624dca326740380d78dbbc"
+                "reference": "0343b2cedd0edb26cdc791212a8eb645c406018b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/807dde98589f9b2b00624dca326740380d78dbbc",
-                "reference": "807dde98589f9b2b00624dca326740380d78dbbc",
+                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/0343b2cedd0edb26cdc791212a8eb645c406018b",
+                "reference": "0343b2cedd0edb26cdc791212a8eb645c406018b",
                 "shasum": ""
             },
             "require": {
@@ -1743,7 +1796,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.0-dev"
+                    "dev-master": "3.1-dev"
                 }
             },
             "autoload": {
@@ -1770,7 +1823,7 @@
             ],
             "description": "Symfony EventDispatcher Component",
             "homepage": "https://symfony.com",
-            "time": "2016-05-05 06:56:13"
+            "time": "2016-04-12 18:27:47"
         },
         {
             "name": "symfony/finder",
@@ -3553,16 +3606,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v3.0.6",
+            "version": "v3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "0047c8366744a16de7516622c5b7355336afae96"
+                "reference": "eca51b7b65eb9be6af88ad7cc91685f1556f5c9a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/0047c8366744a16de7516622c5b7355336afae96",
-                "reference": "0047c8366744a16de7516622c5b7355336afae96",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/eca51b7b65eb9be6af88ad7cc91685f1556f5c9a",
+                "reference": "eca51b7b65eb9be6af88ad7cc91685f1556f5c9a",
                 "shasum": ""
             },
             "require": {
@@ -3571,7 +3624,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.0-dev"
+                    "dev-master": "3.1-dev"
                 }
             },
             "autoload": {
@@ -3598,7 +3651,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2016-03-04 07:55:57"
+            "time": "2016-05-26 21:46:24"
         }
     ],
     "aliases": [],
