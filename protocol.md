@@ -223,7 +223,7 @@ no
 
 Status: 201
 
-## 验证email是否存在
+## 验证email是否存在 :white_check_mark:
 
 `GET /existence/email/:email`
 
@@ -235,9 +235,11 @@ no
 
 Status: 200
 
-存在则返回错误
+	{
+		"existence": @boolean
+	}
 
-## 验证user name是否存在
+## 验证user name是否存在 :white_check_mark:
 
 `GET /existence/user_name/:user_name`
 
@@ -249,7 +251,9 @@ no
 
 Status: 200
 
-存在则返回错误
+	{
+		"existence": @boolean
+	}
 
 ## 获取用户自己的资料 get self profile :white_check_mark:
 
@@ -348,12 +352,6 @@ Body图片数据，其中`Content-Type`为`image/jpeg`。
 `GET /files/avatar/:user_id`
 
 其余同get self profile。
-
----
-
-**以下内容正在实现中**
-
----
 
 ## 同步消息
 
@@ -469,7 +467,20 @@ Status: 200
 
 返回一个array, 每个object一定包含type，geolocation和created_at，其他内容依据type决定（可参见具体类型的相关接口）。
 
-## 发布comment
+对于user点，考虑到用户隐私问题，服务器会返回5个一定范围内的随机点, 格式如下：
+
+	{
+		"type": "user",
+		"geolocation": [
+			{
+				"latitude": @number,
+				"longitude": @number
+			},
+			...
+		]
+	}
+
+## 发布comment :white_check_mark:
 
 `POST /comments`
 
@@ -494,7 +505,7 @@ Status: 201
 	}
 
 
-## 获取comment
+## 获取comment :white_check_mark:
 
 `GET /comments/:comment_id`
 
@@ -517,7 +528,7 @@ Status: 200
 		"created_at": @string
 	}
 
-## 获取某个用户的所有comment
+## 获取某个用户的所有comment :white_check_mark:
 
 `GET /comments/user/:user_id`
 
@@ -550,7 +561,7 @@ Status: 200
 
 具体数组内对象同“获取comment”所得到的对象。
 
-## 删除comment
+## 删除comment :white_check_mark:
 
 `DELETE /comments/:comment_id`
 
