@@ -27,8 +27,8 @@ $api->version('v1', function ($api) {
     $api->post('reset_login/password', 'App\Api\v1\Controllers\ResetLoginController@resetPassword');
 
     // existence
-    $api->get('existence/email/{$email}', 'App\Api\v1\Controllers\ExistenceController@email');
-    $api->get('existence/user_name/{$user_name}', 'App\Api\v1\Controllers\ExistenceController@userName');
+    $api->get('existence/email/{email}', 'App\Api\v1\Controllers\ExistenceController@email');
+    $api->get('existence/user_name/{user_name}', 'App\Api\v1\Controllers\ExistenceController@userName');
 });
 
 $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], function ($api) {
