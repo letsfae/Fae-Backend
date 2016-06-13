@@ -14,29 +14,43 @@ class ExistenceController extends Controller {
     use Helpers;
     
     public function __construct(Request $request) {
-    	$this->request = $request;
+        $this->request = $request;
     }
 
-    public function email($email) {	
-		if ((filter_var($email, FILTER_VALIDATE_EMAIL) == false) || empty($email)) {
-    		throw new AccessDeniedHttpException('Bad request, Please check your input email type!'); 
-		}
-		$user = Users::where('email', '=', $email)->first();
-		if ($user == null) {
-			throw new AccessDeniedHttpException('Bad request, No such email exists!');
-		}
-		return $this->response->array(null);            
+    public function email($email) {
+        $input = array('email' => strtolower($email));
+        $validator = Validator::make($input, [
+        'email' => 'required|max:50|email',
+        ]);
+        if($validator->fails())
+        {            
+            throw new AccessDeniedHttpException('Bad request, Please verify your email format!');
+        }
+        $user = Users::where('email', '=', $email)->first();
+        $existence = True;
+        if ($user == null) {
+            $existence = False;
+        }
+        $result = array('existence' => $existence);
+        return $this->response->array($result);
     }
 
     public function userName($user_name) {
-    	if (empty($user_name)) {
-    		throw new AccessDeniedHttpException('Bad request, Please check your input user_name!'); 
-    	}
-    	$user = Users::where('user_name', '=', $user_name)->first();
-    	if ($user == null) {
-			throw new AccessDeniedHttpException('Bad request, No such user_name exists!');
-		}
-		return $this->response->array(null); 
+        $input = array('user_name' => $user_name);
+        $validator = Validator::make($input, [
+            'user_name' => 'required|max:50',
+        ]);
+        if($validator->fails())
+        {            
+            throw new AccessDeniedHttpException('Bad request, Please verify your user_name format!');
+        }
+        $user = Users::where('user_name', '=', $user_name)->first();
+        $existence = True;
+        if ($user == null) {
+            $existence = False;
+        }
+        $result = array('existence' => $existence);
+        return $this->response->array($result);
 
     }
 }
