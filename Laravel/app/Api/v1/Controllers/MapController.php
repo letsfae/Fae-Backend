@@ -62,14 +62,12 @@ class MapController extends Controller
             {
                 case 'user':
                     $sessions = DB::select("select * from sessions s where st_dwithin(s.location,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true) limit :max_count", array('longitude' => $longitude, 'latitude' => $latitude, 'radius' => $radius, 'max_count' => $max_count));
-                    var_dump($sessions);
                     foreach($sessions as $session)
                     {
                         $location = Geometry::fromWKB($session->location); 
                         $info[] = ['type'=>'user','geolocation'=>['latitude'=>$location->getLat(),
                         'longitude'=>$location->getLng()],'created_at'=>$session->created_at];
                     }
-                    var_dump($info);
                     continue;
                 case 'comment':
                     $comments = DB::select("select * from comments c where st_dwithin(c.geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true) limit :max_count", array('longitude' => $longitude, 'latitude'=> $latitude, 'radius' => $radius, 'max_count' => $max_count));
