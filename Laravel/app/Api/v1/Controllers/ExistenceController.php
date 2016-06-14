@@ -18,7 +18,8 @@ class ExistenceController extends Controller {
     }
 
     public function email($email) {
-        $input = array('email' => strtolower($email));
+        $email = strtolower($email);
+        $input = array('email' => $email);
         $validator = Validator::make($input, [
         'email' => 'required|max:50|email',
         ]);
