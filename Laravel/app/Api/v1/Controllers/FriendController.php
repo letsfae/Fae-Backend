@@ -16,11 +16,22 @@ class FriendController extends Controller {
     }
 
     public function requestFriend() {
+
     }
 
     public function acceptFriend() {
+
     }
 
-    public function deleteFriend() {
+    public function ignoreFriend() {
+
+    }
+
+    public function deleteFriend($user_id) {
+        
+    }
+
+    public function getAllRequests() {
+
     }
 }

@@ -56,8 +56,10 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->get('/comments/users/{user_id}', 'App\Api\v1\Controllers\CommentController@getUserComments');
     // friends
     $api->post('/friends/request', 'App\Api\v1\Controllers\FriendController@requestFriend');
-    $api->post('/friends/accept', 'App\Api\v1\Controllers\FriendController@acceptFriend');
-    $api->delete('/friends', 'App\Api\v1\Controllers\FriendController@deleteFriend');
+    $api->get('/friends/request', 'App\Api\v1\Controllers\FriendController@getAllRequests');
+    $api->post('/friends/accept', 'App\Api\v1\Controllers\FriendController@acceptRequest');
+    $api->post('/friends/ignore', 'App\Api\v1\Controllers\FriendController@ignoreRequest');
+    $api->delete('/friends/{user_id}', 'App\Api\v1\Controllers\FriendController@deleteFriend');
     // chats    
 
 });

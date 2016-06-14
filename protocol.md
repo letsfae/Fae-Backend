@@ -353,7 +353,7 @@ Body图片数据，其中`Content-Type`为`image/jpeg`。
 
 其余同get self profile。
 
-## 同步消息
+## 同步消息 :white_check_mark:
 
 `GET /sync`
 
@@ -368,12 +368,12 @@ yes
 Status: 200
 
 	{
-		"friend_request": @number,
-		"chat": @number,
-		"active": @boolean
+		"friend_request": @number 好友请求数量,
+		"chat": @number 未读消息数量,
+		"active": @boolean 当前设备是否为激活设备
 	}
 
-## 激活当前设备 set active
+## 激活当前设备 set active :white_check_mark:
 
 `POST /map/active`
 
@@ -387,7 +387,7 @@ yes
 
 Status: 201
 
-## 获取当前用户激活设备状态 get active
+## 获取当前用户激活设备状态 get active :white_check_mark:
 
 `GET /map/active`
 
@@ -404,7 +404,7 @@ Status: 200
 		"active_device_id": @string 被激活设备的id
 	}
 
-## 更新用户自身的当前坐标
+## 更新用户自身的当前坐标 :white_check_mark:
 
 `POST /map/user`
 
@@ -467,7 +467,7 @@ Status: 200
 
 返回一个array, 每个object一定包含type，geolocation和created_at，其他内容依据type决定（可参见具体类型的相关接口）。
 
-对于user点，考虑到用户隐私问题，服务器会返回5个一定范围内的随机点, 格式如下：
+对于user类型的点，考虑到用户隐私问题，服务器会返回5个一定范围内的随机点, 格式如下：
 
 	{
 		"type": "user",
@@ -476,7 +476,10 @@ Status: 200
 				"latitude": @number,
 				"longitude": @number
 			},
-			...
+			{...},
+			{...},
+			{...},
+			{...}
 		]
 	}
 
@@ -540,8 +543,8 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| start_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围 |
-| end_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围 |
+| start_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为1970-01-01 00:00:00 |
+| end_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为当前日期和时间 |
 | page | number | 页数，默认为第1页（头30条） |
 
 过滤参数均为可选。
@@ -572,3 +575,96 @@ yes
 ### response
 
 Status: 204
+
+## 发起好友请求
+
+`POST /friends/request`
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| requested_user_id | number | 被请求用户id |
+
+### response
+
+Status: 201
+
+## 确认好友请求
+
+`POST /friends/accept`
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| friend_request_id | number | 好友请求id |
+
+### response
+
+Status: 201
+
+## 忽略好友请求
+
+`POST /friends/ignore`
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| friend_request_id | number | 好友请求id |
+
+### response
+
+Status: 201
+
+## 删除好友
+
+`DELETE /friends/:user_id`
+
+### auth
+
+yes
+
+### response
+
+Status: 204
+
+## 获取所有好友请求
+
+`GET /friends/request`
+
+当sync接口中得到friend_request数量不为0的时候，可请求该接口获取所有朋友请求。
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	[
+		{
+			"friend_request_id": @number,
+			"request_user_id": @number,
+			"request_user_name": @string,
+			"request_email": @string,
+			"created_at": @string
+		},
+		...		
+	]
+
+此处冗余了user_name及email，方便显示。
