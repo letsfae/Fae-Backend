@@ -74,7 +74,7 @@ class AuthenticationController extends Controller {
                 $session->device_id = $device_id;
                 $session->client_version = $client_version;
                 $session->save();
-                MapController::setUserActive($session_back->id);
+                MapController::setUserActive($session->id);
                 $session_id = $session->id;
             }
             $users->login_count = 0;
