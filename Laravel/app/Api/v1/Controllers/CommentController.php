@@ -38,9 +38,12 @@ class CommentController extends Controller {
     }
 
     public function getComment($comment_id) {
+        if (!is_numeric($comment_id)) {
+            throw new AccessDeniedHttpException('Bad request, Please type the correct comment_id format!');
+        }
         $comments = Comments::where('id', '=', $comment_id)->first();
         if ($comments == null) {
-            throw new AccessDeniedHttpException('Bad request, No such comments exist!');      
+            throw new AccessDeniedHttpException('Bad request, No such comments exist!');
         }
         else {
             $user_id = $comments->user_id;
@@ -56,6 +59,9 @@ class CommentController extends Controller {
     }
 
     public function deleteComment($comment_id) {
+        if (!is_numeric($comment_id)) {
+            throw new AccessDeniedHttpException('Bad request, Please type the correct comment_id format!');
+        }
         $comments = Comments::where('id', '=', $comment_id)->first();
         if ($comments == null) {
             throw new DeleteResourceFailedException('Delete failed');
@@ -67,6 +73,9 @@ class CommentController extends Controller {
     }
 
     public function getUserComments($user_id) {
+        if (!is_numeric($user_id)) {
+            throw new AccessDeniedHttpException('Bad request, Please type the correct user_id format!');
+        }
         CommentController::getUserValidation($this->request);
         $start_time = $this->request->start_time;
         $end_time = $this->request->end_time;
@@ -84,13 +93,13 @@ class CommentController extends Controller {
         $page = intval($page);
         $comments = Comments::where('user_id','=', $user_id)->where('created_at','>=', $start_time)->where('created_at','<=', $end_time)->orderBy('created_at', 'desc')->get();
         if ($comments == null) {
-            throw new AccessDeniedHttpException('Bad request, No such comment exists!');      
+            throw new AccessDeniedHttpException('Bad request, No such comment exists!');
         }
         else {
             $total = $comments->count();
             $pages = intval($total / 30) + 1;
             if ($pages < $page) {
-                throw new AccessDeniedHttpException('Bad request, Please select the correct page!');      
+                throw new AccessDeniedHttpException('Bad request, Please select the correct page!');
             }
             $totalComments = array();
             $comment_id = array();
@@ -131,8 +140,8 @@ class CommentController extends Controller {
             'geo_latitude' => 'required|numeric|between:-90,90',
             'content' => 'required|max:500',
         ]);
-        if($validator->fails()) {            
-            throw new AccessDeniedHttpException('Bad request, Please verify your input!');             
+        if($validator->fails()) {
+            throw new AccessDeniedHttpException('Bad request, Please verify your input!');
         }
     }
     private function getUserValidation(Request $request) {
@@ -141,8 +150,8 @@ class CommentController extends Controller {
             'start_time' => 'regex:/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/',
             'end_time' => 'regex:/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/',
         ]);
-        if($validator->fails()) {            
-            throw new AccessDeniedHttpException('Bad request, Please verify your input!');             
+        if($validator->fails()) {
+            throw new AccessDeniedHttpException('Bad request, Please verify your input!');
         }
     }
 }
