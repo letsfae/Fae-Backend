@@ -64,9 +64,21 @@ class MapController extends Controller
                     $sessions = DB::select("select * from sessions s where st_dwithin(s.location,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true) limit :max_count", array('longitude' => $longitude, 'latitude' => $latitude, 'radius' => $radius, 'max_count' => $max_count));
                     foreach($sessions as $session)
                     {
-                        $location = Geometry::fromWKB($session->location); 
-                        $info[] = ['type'=>'user','geolocation'=>['latitude'=>$location->getLat(),
-                        'longitude'=>$location->getLng()],'created_at'=>$session->created_at];
+                        $location = Geometry::fromWKB($session->location);
+                        $locations = array();
+                        for($i = 0; $i < 5; $i++)
+                        {
+                            $distance = mt_rand(1,100);
+                            $degree = mt_rand(0,360);
+                            $locations_original = DB::select("select ST_AsText(ST_Project(ST_SetSRID(ST_Point(:longitude, :latitude),4326),:distance, radians(:degree)))", array('longitude' => $location->getLng(),'latitude'=>$location->getLat(),'distance'=>$distance,'degree'=>$degree));
+                            $locations[] = Point::fromWKT($locations_original[0]->st_astext);
+                        } 
+                        $info[] = ['type'=>'user','user_id' => $session->user_id,'geolocation'=>[['latitude'=>$locations[0]->getLat(),
+                        'longitude'=>$locations[0]->getLng()],['latitude'=>$locations[1]->getLat(),
+                        'longitude'=>$locations[0]->getLng()],['latitude'=>$locations[2]->getLat(),
+                        'longitude'=>$locations[0]->getLng()],['latitude'=>$locations[3]->getLat(),
+                        'longitude'=>$locations[0]->getLng()],['latitude'=>$locations[4]->getLat(),
+                        'longitude'=>$locations[0]->getLng()]],'created_at'=>$session->created_at];
                     }
                     continue;
                 case 'comment':

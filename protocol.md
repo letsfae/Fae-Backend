@@ -427,7 +427,7 @@ Status: 201
 
 如果返回422，可能已经失去激活状态，可通过激活接口查询。
 
-## 获取地图数据
+## 获取地图数据 :white_check_mark:
 
 `GET /map`
 
@@ -471,6 +471,7 @@ Status: 200
 
 	{
 		"type": "user",
+		"user_id": @number,
 		"geolocation": [
 			{
 				"latitude": @number,

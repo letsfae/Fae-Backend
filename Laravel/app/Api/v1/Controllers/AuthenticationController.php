@@ -13,7 +13,7 @@ use Validator;
 use Config;
 use App\Sessions;
 use App\Users;
-use App\Api\V1\Controllers\MapController;
+use App\Api\v1\Controllers\MapController;
 
 class AuthenticationController extends Controller {
     use Helpers;
