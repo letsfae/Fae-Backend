@@ -27,8 +27,8 @@ class MapController extends Controller
     {
         $this->getMapValidation($this->request);
         $location = new Point($this->request->geo_latitude,$this->request->geo_longitude);
-        $longitude = -90;
-        $latitude = 5;
+        $longitude = $this->request->geo_longitude;
+        $latitude = $this->request->geo_latitude;
         $radius = $this->request->has('radius') ? $this->request->radius:200;
         $max_count = $this->request->has('max_count') ? $this->request->max_count:30;
         $type = array();
