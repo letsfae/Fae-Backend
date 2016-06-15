@@ -21,7 +21,7 @@ class CreateSessionsTable extends Migration
             $table->string('device_id',200);
             $table->string('client_version',50);
             $table->point('location')->nullable();
-            $table->boolean('active')->default(false);
+            $table->boolean('is_mobile')->default(false);
             $table->timestamps();
         });
     }

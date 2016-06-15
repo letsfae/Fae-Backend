@@ -34,6 +34,7 @@ class FaeAuthorizationProvider extends Authorization
                     // overwrite
                     $request->self_user_id = $user_id;
                     $request->self_session_id = $session_id;
+                    $request->self_device_id = $device_id;
                     return;
                 }
             }

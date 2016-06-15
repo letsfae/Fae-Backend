@@ -139,7 +139,42 @@ Body
 
 	name: test
 	email: test@letsfae.com
-	password: 123456	
+	password: 123456
+
+## 登陆（新版）
+
+`POST /authentication`
+
+### auth
+
+no
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| user_name | string(30) | 用户名 |
+| email | string(50) | 电邮 |
+| password | string(8-16) | 密码 |
+| device_id(optional) | string(1~150) | 设备id，默认为空 |
+| is_mobile(optional) | boolean | 是否为移动端，默认为false |
+
+此处用户名和电邮选一个即可（OR关系，另一个字段不用），如果同时存在，以email为准。
+
+device_id用于服务器向客户端做pushback notification，如果为空（或者不存在）则不推送。
+
+is_mobile如果为true，则会踢掉用当前账号登陆的另一台移动设备（非mobile设备不受影响）。
+
+### response
+
+Status: 201
+
+	{
+		"user_id": @number
+		"token": @string
+		"session_id": @number
+	}
+
 
 ## 登出 logout :white_check_mark:
 
