@@ -1,6 +1,6 @@
 # 接口概况
 
-本接口用于FaeApp前后端通信。通信协议采用应用层协议HTTP(s)。
+本接口用于Fae App前后端通信。通信协议采用应用层协议HTTP(s)。
 
 Base URL：`https://api.letsfae.com/`
 
@@ -404,46 +404,14 @@ Status: 200
 
 	{
 		"friend_request": @number 好友请求数量,
-		"chat": @number 未读消息数量,
-		"active": @boolean 当前设备是否为激活设备
-	}
-
-## 激活当前设备 set active :white_check_mark:
-
-`POST /map/active`
-
-一个用户多设备登陆后只有一台激活设备，新的设备激活将导致该用户其他设备转为非激活状态。默认最后登陆设备为激活设备，激活设备退出后将随机选择一台设备作为新的激活设备。
-
-### auth
-
-yes
-
-### response
-
-Status: 201
-
-## 获取当前用户激活设备状态 get active :white_check_mark:
-
-`GET /map/active`
-
-### auth
-
-yes
-
-### response
-
-Status: 200
-
-	{
-		"is_active": @boolean 当前设备是否激活,
-		"active_device_id": @string 被激活设备的id
+		"chat": @number 未读消息数量
 	}
 
 ## 更新用户自身的当前坐标 :white_check_mark:
 
 `POST /map/user`
 
-每隔一段固定时间跟新一次。
+每隔一段固定时间跟新一次。只有移动设备有权限更新坐标，其余设备无权限。
 
 ### auth
 
@@ -460,7 +428,7 @@ yes
 
 Status: 201
 
-如果返回422，可能已经失去激活状态，可通过激活接口查询。
+如果返回422，可能原因是当前并非移动设备。
 
 ## 获取地图数据 :white_check_mark:
 
@@ -569,7 +537,7 @@ Status: 200
 
 ## 获取某个用户的所有comment :white_check_mark:
 
-`GET /comments/user/:user_id`
+`GET /comments/users/:user_id`
 
 ### auth
 
@@ -704,3 +672,23 @@ Status: 200
 	]
 
 此处冗余了user_name及email，方便显示。
+
+## 获取好友列表
+
+...
+
+# 反推接口
+
+当有相关事件产生后，服务器会主动反推消息。如果客户端没有注册device_id，则无法收到反推消息，此时可通过sync接口主动查看是否存在未处理消息（或直接通过其他接口调用返回的错误判断当前状态）。
+
+所有反推消息格式均为json，会使用type字段标识具体的反推类型。
+
+## 用户从其他设备登陆 authentication other user
+
+	{
+		"type": "authentication_other_user",
+		"device_id": @number 其他设备的设备id（该字段可能为空）,
+		"fae_client_version": @string 其他设备客户端版本号,
+		"user_agent": @string 其他设备客户端标识,
+		"auth": @boolean 如果为true，说明用户登录仍然合法，否则说明已经被挤下线（此时auth已经失效）
+	}
