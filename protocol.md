@@ -290,9 +290,9 @@ Status: 200
 		"existence": @boolean
 	}
 
-## 获取用户自己的资料 get self profile :white_check_mark:
+## 获取用户自己的账户信息 get self account
 
-`GET /users/profile`
+`GET /users/account`
 
 ### auth
 
@@ -303,27 +303,19 @@ yes
 Status: 200
 
 	{
-		"user_id": @number,
 		"email": @string,
 		"user_name": @string,
 		"first_name": @string,
 		"last_name": @string,
 		"gender": @string,
 		"birthday": @string,
-		"address": @string,
-		"role": @number,
-		"mini_avatar": @number 地图上显示的用户小头像，未设置则默认为0
+		"fae_number": @string(xxx-xxx-xxx),
+		"phone": @string(xxx-xxx-xxxx)
 	}
 
-## 获取其他用户资料 get profile :white_check_mark:
+## 更新自己的账户信息 update self account
 
-`GET /users/:user_id/profile`
-
-其余同get self profile。
-
-## 更新自己的资料 update self profile :white_check_mark:
-
-`POST /users/profile`
+`POST /users/account`
 
 ### auth
 
@@ -337,8 +329,153 @@ yes
 | last_name | string(50) | 姓氏 |
 | birthday | string(YYYY-MM-DD) | 生日 |
 | gender | string("male", "female") | 性别 |
-| address | string | 地址 |
+| phone | string(xxx-xxx-xxxx) | 电话 |
+| fae_number | string(xxx-xxx-xxx) | fae number |
+| user_name | string(30) | 用户名 |
+| email | string(50) | 电邮 |
+
+所有字段均为可选，但必须至少包含一个字段。
+
+### response
+
+Status: 201
+
+## 更新自己的密码 update password
+
+`POST /users/account/password`
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| old_password | string(8-16) | 老密码 |
+| new_password | string(8-16) | 新密码 |
+
+### response
+
+Status: 201
+
+## 获取用户自己的资料 get self profile (待定)
+
+`GET /users/profile`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	{
+		"mini_avatar": @number 地图上显示的用户小头像，未设置则默认为0
+	}
+
+## 获取其他用户资料 get profile (待定)
+
+`GET /users/:user_id/profile`
+
+其余同get self profile。
+
+需要注意的是，获取到的字段仅包含用户设定为公开的字段。
+
+## 更新自己的资料 update self profile (待定)
+
+`POST /users/profile`
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
 | mini_avatar | number | 地图头像小图标 |
+
+所有字段均为可选，但必须至少包含一个字段。
+
+### response
+
+Status: 201
+
+## 获取用户自己的资料隐私设定 get self profile privacy (待定)
+
+`GET /users/profile/privacy`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	{
+		"name": @boolean
+	}
+
+## 更新自己的资料隐私设定 update self profile privacy (待定)
+
+`POST /users/profile/privacy`
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| name | boolean | 默认为true |
+
+所有字段均为可选，但必须至少包含一个字段。
+
+### response
+
+Status: 201
+
+## 获取用户自己的状态 get self status
+
+`GET /users/status`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	{
+		"status": @number 0~4分别表示offline/online/no distrub/busy/away,
+		"message": @string
+	}
+
+## 获取其他用户资料 get status
+
+`GET /users/:user_id/status`
+
+其余同get self status。
+
+## 更新自己的状态 update self status
+
+`POST /users/status`
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| status | number | 0:offline, 1:online, 2:no distrub, 3:busy, 4:away |
+| message | string(30) | 短状态 |
 
 所有字段均为可选，但必须至少包含一个字段。
 
@@ -683,12 +820,27 @@ Status: 200
 
 所有反推消息格式均为json，会使用type字段标识具体的反推类型。
 
-## 用户从其他设备登陆 authentication other user
+## 用户从其他设备登陆 authentication other device
 
 	{
-		"type": "authentication_other_user",
+		"type": "authentication_other_device",
 		"device_id": @number 其他设备的设备id（该字段可能为空）,
 		"fae_client_version": @string 其他设备客户端版本号,
 		"user_agent": @string 其他设备客户端标识,
 		"auth": @boolean 如果为true，说明用户登录仍然合法，否则说明已经被挤下线（此时auth已经失效）
+	}
+
+## 好友请求 friends new request
+
+	{
+		"type": "friends_new_request",
+		"request_user_id": @number 请求用户
+	}
+
+## 好友请求回复 friends request reponse
+
+	{
+		"type": "friends_request_reponse",
+		"requesteed_user_id": @number 被请求用户,
+		"result": @string("accept","ignore")
 	}
