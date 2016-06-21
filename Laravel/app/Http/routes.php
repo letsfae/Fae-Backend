@@ -34,10 +34,20 @@ $api->version('v1', function ($api) {
 $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], function ($api) {
     $api->delete('/authentication', 'App\Api\v1\Controllers\AuthenticationController@logout');
 
+    // account
+    $api->post('/users/account', 'App\Api\v1\Controllers\UserController@updateAccount');
+    $api->get('/users/account', 'App\Api\v1\Controllers\UserController@getAccount');
+    $api->post('/users/account/password', 'App\Api\v1\Controllers\UserController@updatePassword');
     // profile
     $api->post('/users/profile', 'App\Api\v1\Controllers\UserController@updateSelfProfile');
     $api->get('/users/profile', 'App\Api\v1\Controllers\UserController@getSelfProfile');
     $api->get('/users/{user_id}/profile', 'App\Api\v1\Controllers\UserController@getProfile');
+    // $api->post('/users/profile/privacy', 'App\Api\v1\Controllers\UserController@updatePrivacy');
+    // $api->get('/users/profile/privacy', 'App\Api\v1\Controllers\UserController@getPrivacy');
+    // status
+    $api->post('/users/status', 'App\Api\v1\Controllers\UserController@updateSelfStatus');
+    $api->get('/users/status', 'App\Api\v1\Controllers\UserController@getSelfStatus');
+    $api->get('/users/{user_id}/status', 'App\Api\v1\Controllers\UserController@getStatus');
     // avatar
     $api->post('/files/avatar', 'App\Api\v1\Controllers\FileEntryController@setSelfAvatar');
     $api->get('/files/avatar', 'App\Api\v1\Controllers\FileEntryController@getSelfAvatar');
@@ -47,8 +57,6 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     // map
     $api->get('/map', 'App\Api\v1\Controllers\MapController@getMap');
     $api->post('/map/user', 'App\Api\v1\Controllers\MapController@updateUserLocation');
-    $api->post('/map/active', 'App\Api\v1\Controllers\MapController@setActive');
-    $api->get('/map/active', 'App\Api\v1\Controllers\MapController@getActive');
     // comment
     $api->post('/comments', 'App\Api\v1\Controllers\CommentController@createComment');
     $api->get('/comments/{comment_id}', 'App\Api\v1\Controllers\CommentController@getComment');

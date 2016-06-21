@@ -290,7 +290,7 @@ Status: 200
 		"existence": @boolean
 	}
 
-## 获取用户自己的账户信息 get self account
+## 获取用户账户信息 get account
 
 `GET /users/account`
 
@@ -313,7 +313,7 @@ Status: 200
 		"phone": @string(xxx-xxx-xxxx)
 	}
 
-## 更新自己的账户信息 update self account
+## 更新账户信息 update account
 
 `POST /users/account`
 
@@ -452,15 +452,15 @@ yes
 Status: 200
 
 	{
-		"status": @number 0~4分别表示offline/online/no distrub/busy/away,
+		"status": @number 0~5分别表示offline/online/no distrub/busy/away/invisible,
 		"message": @string
 	}
 
-## 获取其他用户资料 get status
+## 获取其他用户状态 get status
 
 `GET /users/:user_id/status`
 
-其余同get self status。
+基本同get self status。需要注意的是，获取其他用户的状态时（自身user_id除外），该用户的invisible状态将无法获取到（即使该用户状态为invisible，返回状态仍为offline）。
 
 ## 更新自己的状态 update self status
 
@@ -474,8 +474,8 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| status | number | 0:offline, 1:online, 2:no distrub, 3:busy, 4:away |
-| message | string(30) | 短状态 |
+| status | number | 0:offline, 1:online, 2:no distrub, 3:busy, 4:away, 5:invisible |
+| message | string(100) | 短状态（可以为空） |
 
 所有字段均为可选，但必须至少包含一个字段。
 
@@ -841,6 +841,6 @@ Status: 200
 
 	{
 		"type": "friends_request_reponse",
-		"requesteed_user_id": @number 被请求用户,
+		"requested_user_id": @number 被请求用户,
 		"result": @string("accept","ignore")
 	}

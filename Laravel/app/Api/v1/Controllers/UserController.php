@@ -130,4 +130,28 @@ class UserController extends Controller
         }
         $user->save();
     }
+
+    public function updateAccount() {
+
+    }
+
+    public function getAccount() {
+        
+    }
+
+    public function updatePassword() {
+        
+    }
+
+    public function updateSelfStatus() {
+        
+    }
+
+    public function getSelfStatus() {
+        
+    }
+
+    public function getStatus() {
+        
+    }
 }
