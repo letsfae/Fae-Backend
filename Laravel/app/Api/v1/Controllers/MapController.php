@@ -58,10 +58,14 @@ class MapController extends Controller
         $info = array();
         foreach($type as $t)
         {
+            if($max_count <= 0)
+            {
+                break;
+            }
             switch($t)
             {
                 case 'user':
-                    $sessions = DB::select("select * from sessions s where st_dwithin(s.location,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true) limit :max_count", array('longitude' => $longitude, 'latitude' => $latitude, 'radius' => $radius, 'max_count' => $max_count));
+                    $sessions = DB::select("SELECT user_id,location,created_at FROM sessions s WHERE st_dwithin(s.location,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true) LIMIT :max_count", array('longitude' => $longitude, 'latitude' => $latitude, 'radius' => $radius, 'max_count' => $max_count));
                     foreach($sessions as $session)
                     {
                         $location = Geometry::fromWKB($session->location);
@@ -79,14 +83,16 @@ class MapController extends Controller
                         'longitude'=>$locations[0]->getLng()],['latitude'=>$locations[3]->getLat(),
                         'longitude'=>$locations[0]->getLng()],['latitude'=>$locations[4]->getLat(),
                         'longitude'=>$locations[0]->getLng()]],'created_at'=>$session->created_at];
+                        $max_count--;
                     }
                     continue;
                 case 'comment':
-                    $comments = DB::select("select * from comments c where st_dwithin(c.geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true) limit :max_count", array('longitude' => $longitude, 'latitude'=> $latitude, 'radius' => $radius, 'max_count' => $max_count));
+                    $comments = DB::select("SELECT user_id,content,geolocation,created_at FROM comments c WHERE st_dwithin(c.geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true) LIMIT :max_count", array('longitude' => $longitude, 'latitude'=> $latitude, 'radius' => $radius, 'max_count' => $max_count));
                     foreach($comments as $comment)
                     {
                         $location = Geometry::fromWKB($comment->geolocation);
                         $info[] = ['type'=>'comment','user_id' => $comment->user_id,'content' => $comment->content ,'geolocation'=>['latitude'=>$location->getLat(), 'longitude'=>$location->getLng()],'created_at'=>$comment->created_at];
+                        $max_count--;
                     }
                     continue;
                 default:
