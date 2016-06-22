@@ -137,14 +137,7 @@ class AuthenticationController extends Controller {
     {
         $session = Sessions::find($this->request->self_session_id);
         Auth::logout();
-        $flag = $session->active;
         $session->delete();
-        $new_session = Sessions::where('user_id', $this->request->self_user_id)->first();
-        if(!is_null($new_session) && $flag == true)
-        {
-            $new_session->active = true;
-            $new_session->save();
-        }
         return $this->response->noContent();
     }
 }

@@ -23,7 +23,7 @@ $api->version('v1', function ($api) {
 
     // verification
     $api->post('/reset_login/code', 'App\Api\v1\Controllers\ResetLoginController@sendResetCode');
-    $api->put('/reset_login/code', 'App\Api\v1\Controllers\ResetLoginController@verifyResetCode');
+    $api->post('/reset_login/code/verify', 'App\Api\v1\Controllers\ResetLoginController@verifyResetCode');
     $api->post('/reset_login/password', 'App\Api\v1\Controllers\ResetLoginController@resetPassword');
 
     // existence

@@ -30,17 +30,17 @@ Base URL：`https://api.letsfae.com/`
 接口调用成功后，如果成功则返回2xx。如果有错误，错误在error字段中。
 
 - 200 OK [GET]：服务器成功返回用户请求的数据，该操作是幂等的（Idempotent）。
-- 201 CREATED [POST/PUT/PATCH]：用户新建或修改数据成功。
+- 201 Created [POST/PUT/PATCH]：用户新建或修改数据成功。
 - 202 Accepted [*]：表示一个请求已经进入后台排队（异步任务）
-- 204 NO CONTENT [DELETE]：用户删除数据成功。
-- 400 INVALID REQUEST [POST/PUT/PATCH]：用户发出的请求有错误，服务器没有进行新建或修改数据的操作，该操作是幂等的。
+- 204 No Content [DELETE]：用户删除数据成功。
+- 400 Invalid Request [POST/PUT/PATCH]：用户发出的请求有错误，服务器没有进行新建或修改数据的操作，该操作是幂等的。
 - 401 Unauthorized [*]：表示用户没有权限（令牌、用户名、密码错误）。
 - 403 Forbidden [*] 表示用户得到授权（与401错误相对），但是访问是被禁止的。
-- 404 NOT FOUND [*]：用户发出的请求针对的是不存在的记录，服务器没有进行操作，该操作是幂等的。
+- 404 Not Found [*]：用户发出的请求针对的是不存在的记录，服务器没有进行操作，该操作是幂等的。
 - 406 Not Acceptable [GET]：用户请求的格式不可得（比如用户请求JSON格式，但是只有XML格式）。
 - 410 Gone [GET]：用户请求的资源被永久删除，且不会再得到的。
-- 422 Unprocesable entity [POST/PUT/PATCH] 当创建一个对象时，发生一个验证错误。
-- 500 INTERNAL SERVER ERROR [*]：服务器发生错误，用户将无法判断发出的请求是否成功。
+- 422 Unprocesable Entity [POST/PUT/PATCH] 当创建一个对象时，发生一个验证错误。
+- 500 Internal Server Error [*]：服务器发生错误，用户将无法判断发出的请求是否成功。
 
 ## 身份验证
 
@@ -58,7 +58,6 @@ Base URL：`https://api.letsfae.com/`
 
 - 在header中`User-Agent`字段值需标注设备（如iphone4, iphone6s, nexus6...）。
 - 在header中`Fae-Client-Version`字段为客户端版本（如ios-0.0.1）。
-- 在header中`Device-ID`字段为设备ID（该id必须是全局唯一的，因为每个设备仅允许一个合法用户登录，因此相同device-id的新用户登录会导致前一个该设备上的用户被替换，即默认认为前一个用户强制退出），建议此id使用手机的uuid。
 
 ## 错误返回
 
@@ -133,7 +132,6 @@ Header
 	Content-Type: application/x-www-form-urlencoded
 	User-Agent: iphone6s
 	Fae-Client-Version: ios-0.0.1
-	Device-ID: gu3v0KaU7jLS7SGdS2Rb
 	
 Body
 
@@ -196,7 +194,6 @@ Header
 	Accept: application/x.faeapp.v1+json
 	User-Agent: iphone6s
 	Fae-Client-Version: ios-0.0.1
-	Device-ID: gu3v0KaU7jLS7SGdS2Rb
 	Authorization: FAE MToxMjM0NTY6MQ==
 
 ## 获取重置登陆的Email :white_check_mark:
@@ -221,7 +218,7 @@ Status: 201
 
 ## 验证重置登陆code :white_check_mark:
 
-`PUT /reset_login/code`
+`POST /reset_login/code/verify`
 
 ### auth
 
