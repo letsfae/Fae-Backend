@@ -14,6 +14,7 @@ use Config;
 use App\Sessions;
 use App\Users;
 use App\Api\v1\Controllers\MapController;
+use Davibennun\LaravelPushNotification\Facades\PushNotification;
 
 class AuthenticationController extends Controller {
     use Helpers;
@@ -50,42 +51,80 @@ class AuthenticationController extends Controller {
         if ($users == null) {
             throw new AccessDeniedHttpException('Bad request, No such users exist!');
         }
+        
+        $is_mobile = false;
+        $device_id = '';
+        if ($this->request->has('is_mobile')){
+            $is_mobile_input = array('is_mobile' => $this->request->is_mobile);
+            $is_mobile_validator = Validator::make($is_mobile_input, [
+                'is_mobile' => 'required|boolean',
+            ]);
+            if($is_mobile_validator->fails()) {            
+                 throw new AccessDeniedHttpException('Bad request, is_mobile value is wrong!');             
+            }
+            $is_mobile = ($this->request->is_mobile);
+        }
+        if ($is_mobile == true){
+            $device_id_input = array('device_id' => $this->request->device_id);
+            $device_id_validator = Validator::make($device_id_input, [
+                'device_id' => 'required|between:1,150',
+            ]);
+            if($device_id_validator->fails()) {            
+                 throw new AccessDeniedHttpException('Bad request, device id is wrong!');             
+            }
+            $device_id = $this->request->device_id;
+        }
+        
+        
         if (Auth::attempt($credentials)) {  
             $token = str_random(30);
-            $device_id = $this->request->header('Device-ID');
             $client_version = $this->request->header('Fae-Client-Version'); 
-            $input = array('device_id' => $device_id, 'client_version' => $client_version);
+            $input = array(/*'device_id' => $device_id, */'client_version' => $client_version);
             $validator = Validator::make($input, [
-            'device_id' => 'required|max:200',
-            'client_version' => 'required|max:50',
+                //'device_id' => 'required|max:200',
+                'client_version' => 'required|max:50',
             ]);
             if($validator->fails()) {            
                  throw new AccessDeniedHttpException('Bad request, Please verify your input header!');             
             }
             $user_id = $users->id;
             //create session in db (if exists, replace it)
-            $session_back = Sessions::where('device_id', $device_id)->first();
-            $session_active = Sessions::where('user_id', $user_id)->where('active', true)->first();
+            //------------------------------------
+            //$session_back = Sessions::where('device_id', $device_id)->first();
+            //$session_active = Sessions::where('user_id', $user_id)->where('active', true)->first();
+            $session_back = Sessions::where('user_id', $user_id)->first();
             $session_id = '';
             if ($session_back != null)
             {
+                if(Config::get('app.pushback')==true) {
+                    AuthenticationController::pushNotificationCurrentUser($session_back->device_id, $device_id, $client_version);
+                }
+                
                 $session_back->token = $token;
-                $session_back->user_id = $user_id;
+                //$session_back->user_id = $user_id;
+                if ($is_mobile == true){
+                    $session_back->is_mobile = $is_mobile;
+                    $session_back->device_id = $device_id;
+                }
                 $session_back->client_version = $client_version;
                 $session_back->save();
-                MapController::setUserActive($session_back->id);
+                //MapController::setUserActive($session_back->id);
                 $session_id = $session_back->id;
-            //session does not exist
+                //session does not exist
             }
             else
             {
+                //---------------------------------
                 $session = new Sessions();
                 $session->user_id = $user_id;
                 $session->token = $token;
-                $session->device_id = $device_id;
+                if ($is_mobile == true){
+                    $session->is_mobile = $is_mobile;
+                    $session->device_id = $device_id;
+                }                
                 $session->client_version = $client_version;
                 $session->save();
-                MapController::setUserActive($session->id);
+                //MapController::setUserActive($session->id);
                 $session_id = $session->id;
             }
             $users->login_count = 0;
@@ -130,6 +169,24 @@ class AuthenticationController extends Controller {
         if($validator->fails())
         {            
             throw new AccessDeniedHttpException('Bad request, Please verify your information!');             
+        }
+    }
+    
+   private function pushNotificationCurrentUser($previous_device_id, $device_id, $fae_client_version){
+        $auth = ($previous_device_id != '');
+        $message = PushNotification::Message('Other device is loging in',array(
+            'type' => 'authentication_other_device',
+            'device_id' => $device_id,
+            'fae_client_version' => $fae_client_version,
+            'auth' => $auth
+        ));
+
+        $collection = PushNotification::app('appNameIOS')
+            ->to($previous_device_id)
+            ->send($message);
+        // get response for each device push
+        foreach ($collection->pushManager as $push) {
+            $response = $push->getAdapter()->getResponse();
         }
     }
 

@@ -94,52 +94,7 @@ no
 
 Status: 201
 
-
-## 登陆 Login :white_check_mark:
-
-`POST /authentication`
-
-### auth
-
-no
-
-### parameters
-
-| Name | Type | Description |
-| --- | --- | --- |
-| user_name | string(30) | 用户名 |
-| email | string(50) | 电邮 |
-| password | string(8-16) | 密码 |
-
-此处用户名和电邮选一个即可（OR关系，另一个字段不用），如果同时存在，以email为准。
-
-### response
-
-Status: 201
-
-	{
-		"user_id": @number
-		"token": @string
-		"session_id": @number
-	}
-
-### request example
-
-Header
-	
-	POST /authentication HTTP/1.1
-	Accept: application/x.faeapp.v1+json
-	Content-Type: application/x-www-form-urlencoded
-	User-Agent: iphone6s
-	Fae-Client-Version: ios-0.0.1
-	
-Body
-
-	name: test
-	email: test@letsfae.com
-	password: 123456
-
-## 登陆（新版）
+## 登陆 :white_check_mark:
 
 `POST /authentication`
 
@@ -185,16 +140,6 @@ yes
 ### response
 
 Status: 204
-
-### request example
-
-Header
-	
-	DELETE /authentication/1 HTTP/1.1
-	Accept: application/x.faeapp.v1+json
-	User-Agent: iphone6s
-	Fae-Client-Version: ios-0.0.1
-	Authorization: FAE MToxMjM0NTY6MQ==
 
 ## 获取重置登陆的Email :white_check_mark:
 
