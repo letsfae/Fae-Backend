@@ -25,6 +25,8 @@ Base URL：`https://api.letsfae.com/`
 - GET的filters在url参数中，如`/xxxxx?param1=AAA&param2=BBB`。注意url需要使用urlencode编码。
 - POST/PUT/DELETE的parameters内容在header中。
 
+所有参数，如果为可选（optional），则可以不存在（有默认值）；但如果设置了key，则value必须存在。
+
 ## 状态码
 
 接口调用成功后，如果成功则返回2xx。如果有错误，错误在error字段中。
@@ -114,9 +116,13 @@ no
 
 此处用户名和电邮选一个即可（OR关系，另一个字段不用），如果同时存在，以email为准。
 
-device_id用于服务器向客户端做pushback notification，如果为空（或者不存在）则不推送。
+device_id用于服务器向客户端做pushback notification，如果不存在则不推送。
 
 is_mobile如果为true，则会踢掉用当前账号登陆的另一台移动设备（非mobile设备不受影响）。
+
+如果相同device_id账号登陆不同用户，前一个用户会被挤下线。
+
+login出现3次错误后用户账户将被永久禁止登陆，解禁需调用reset_login接口。
 
 ### response
 
@@ -435,7 +441,7 @@ yes
 
 ### parameters
 
-类型为form-data。
+类型为form-data（特别注意此时Content-Type不要设置）。
 
 | Name | Description |
 | --- | --- |
@@ -758,7 +764,7 @@ Status: 200
 
 # 反推接口
 
-当有相关事件产生后，服务器会主动反推消息。如果客户端没有注册device_id，则无法收到反推消息，此时可通过sync接口主动查看是否存在未处理消息（或直接通过其他接口调用返回的错误判断当前状态）。
+当有相关事件产生后，服务器会主动反推消息（仅对`is_mobile`为true的设备推送）。如果客户端没有注册device_id，则无法收到反推消息，此时可通过sync接口主动查看是否存在未处理消息（或直接通过其他接口调用返回的错误判断当前状态）。
 
 所有反推消息格式均为json，会使用type字段标识具体的反推类型。
 
