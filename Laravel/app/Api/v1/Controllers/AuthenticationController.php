@@ -47,7 +47,7 @@ class AuthenticationController extends Controller {
         
         // check is_mobile and device_id
         $is_mobile = false;
-        $device_id = -1;
+        $device_id = null;
         if ($this->request->has('is_mobile')){
             $is_mobile_input = $this->request->is_mobile;
             if ( $is_mobile_input == 'true' || $is_mobile_input == 'TRUE' || $is_mobile_input == 'True' || $is_mobile_input == '1'){
@@ -107,11 +107,11 @@ class AuthenticationController extends Controller {
                 $previous_mobile_index = $key;
             }
             if( $value->is_mobile && $is_mobile){
-                if(Config::get('app.pushback')==true && $value->device_id != -1 ) {
+                if(Config::get('app.pushback')==true && !empty($value->device_id)) {
                     AuthenticationController::pushNotificationCurrentUser($value->device_id, $device_id, $client_version, true);
                 }
             }
-            if( ($value->is_mobile && $is_mobile) || ($value->device_id == $device_id && $device_id != -1 ) ){
+            if( ($value->is_mobile && $is_mobile) || ($device_id != null && !empty($value->device_id) && $value->device_id == $device_id   ) ){
                 $value->token = $token;
                 $value->is_mobile = $is_mobile;
                 $value->device_id = $device_id;
@@ -132,9 +132,9 @@ class AuthenticationController extends Controller {
             $session = new Sessions();
             $session->user_id = $user_id;
             $session->token = $token;
-            $session->is_mobile = $is_mobile;        
+            $session->is_mobile = $is_mobile;
             $session->device_id = $device_id;
-                    
+            
             $session->client_version = $client_version;
             $session->save();
             $session_id = $session->id;
@@ -191,7 +191,6 @@ class AuthenticationController extends Controller {
     public function logout()
     {
         $session = Sessions::find($this->request->self_session_id);
-        Auth::logout();
         $session->delete();
         return $this->response->noContent();
     }

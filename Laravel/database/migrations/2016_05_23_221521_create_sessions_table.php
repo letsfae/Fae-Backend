@@ -18,7 +18,7 @@ class CreateSessionsTable extends Migration
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
             $table->string('token',50);
-            $table->string('device_id',200);
+            $table->string('device_id',200)->nullable();
             $table->string('client_version',50);
             $table->point('location')->nullable();
             $table->boolean('is_mobile')->default(false);
