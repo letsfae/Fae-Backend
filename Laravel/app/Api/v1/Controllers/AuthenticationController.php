@@ -65,7 +65,6 @@ class AuthenticationController extends Controller {
             $user_id = $users->id;
             //create session in db (if exists, replace it)
             $session_back = Sessions::where('device_id', $device_id)->first();
-            $session_active = Sessions::where('user_id', $user_id)->where('active', true)->first();
             $session_id = '';
             if ($session_back != null)
             {
@@ -73,7 +72,6 @@ class AuthenticationController extends Controller {
                 $session_back->user_id = $user_id;
                 $session_back->client_version = $client_version;
                 $session_back->save();
-                MapController::setUserActive($session_back->id);
                 $session_id = $session_back->id;
             //session does not exist
             }
@@ -85,7 +83,6 @@ class AuthenticationController extends Controller {
                 $session->device_id = $device_id;
                 $session->client_version = $client_version;
                 $session->save();
-                MapController::setUserActive($session->id);
                 $session_id = $session->id;
             }
             $users->login_count = 0;
@@ -137,14 +134,7 @@ class AuthenticationController extends Controller {
     {
         $session = Sessions::find($this->request->self_session_id);
         Auth::logout();
-        $flag = $session->active;
         $session->delete();
-        $new_session = Sessions::where('user_id', $this->request->self_user_id)->first();
-        if(!is_null($new_session) && $flag == true)
-        {
-            $new_session->active = true;
-            $new_session->save();
-        }
         return $this->response->noContent();
     }
 }
