@@ -143,6 +143,10 @@ class UserController extends Controller
         
     }
 
+    public function verifyPassword() {
+        
+    }
+
     public function updateSelfStatus() {
         
     }

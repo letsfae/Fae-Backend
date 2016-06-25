@@ -125,7 +125,7 @@ class MapController extends Controller
         {
             return $this->response->errorNotFound();
         }
-        if($session->active)
+        if($session->is_mobile)
         {
             $session->location = new Point($this->request->geo_latitude,$this->request->geo_longitude);
             $session->save();
@@ -147,36 +147,5 @@ class MapController extends Controller
         {
             throw new UpdateResourceFailedException('Could not update user location.',$validator->errors());
         }
-    }
-
-    public function setActive()
-    {
-        $this->setUserActive($this->request->self_session_id);
-        return $this->response->created();
-    }
-
-    public static function setUserActive($session_id)
-    {
-        $session = Sessions::find($session_id);
-        $session->active = true;
-        $session->save();
-        $sessions = Sessions::where('user_id',$session->user_id)->where('id','!=',$session_id)->get();
-        foreach($sessions as $session)
-        {
-            $session->active = false;
-            $session->save();
-        }
-    }
-
-    public function getActive() 
-    {
-        $session = Sessions::find($this->request->self_session_id);
-        $session_active = Sessions::where('user_id',$this->request->self_user_id)->where('active',true)->first();
-        if(!is_null($session) && !is_null($session_active))
-        {
-            $info = array('is_active' => $session->active, 'active_device_id' => $session_active->device_id);
-            return $this->response->array($info);
-        }
-        return $this->response->errorNotFound();
     }
 }

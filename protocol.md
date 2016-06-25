@@ -25,7 +25,7 @@ Base URL：`https://api.letsfae.com/`
 - GET的filters在url参数中，如`/xxxxx?param1=AAA&param2=BBB`。注意url需要使用urlencode编码。
 - POST/PUT/DELETE的parameters内容在header中。
 
-所有参数，如果为可选（optional），则可以不存在（有默认值）；但如果设置了key，则value必须存在。
+所有参数，如果为可选（optional），则可以不存在（有默认值）；但如果设置了key，则value必须存在（除非另有说明）。
 
 ## 状态码
 
@@ -257,7 +257,6 @@ Status: 200
 		"last_name": @string,
 		"gender": @string,
 		"birthday": @string,
-		"fae_number": @string(xxx-xxx-xxx),
 		"phone": @string(xxx-xxx-xxxx)
 	}
 
@@ -278,11 +277,30 @@ yes
 | birthday | string(YYYY-MM-DD) | 生日 |
 | gender | string("male", "female") | 性别 |
 | phone | string(xxx-xxx-xxxx) | 电话 |
-| fae_number | string(xxx-xxx-xxx) | fae number |
 | user_name | string(30) | 用户名 |
 | email | string(50) | 电邮 |
 
 所有字段均为可选，但必须至少包含一个字段。
+
+### response
+
+Status: 201
+
+## 测试自身密码是否正确 verify password
+
+`POST /users/account/password/verify`
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| password | string(8-16) |密码 |
+
+密码验证如果3次错误，则自动锁定并退出（Auth失效）。解锁需使用reset login的接口。
 
 ### response
 
@@ -531,9 +549,11 @@ yes
 | geo_longitude | number | 中心点经度 |
 | radius (optional) | number | 半径，默认值为200m |
 | type (optional) | string("user","comment") | 筛选类型，默认为所有，类型之间用逗号隔开 |
-| max_count (optional) | number | 返回节点最大数量，默认为30，最大为100） |
+| max_count (optional) | number | 返回节点最大数量，默认为30，最大为100 |
 
 对于一直在更新的user点，可以每隔一段时间获取一次。
+
+当获取多种类型节点时，节点返回数量和节点类型顺序及max_count有关（如：第一种节点数量为N，则第二种节点数量最多返回`max_count - N`，如果`N >= max_count`，则没有第二种节点返回）。
 
 ### response
 
@@ -774,7 +794,6 @@ Status: 200
 		"type": "authentication_other_device",
 		"device_id": @number 其他设备的设备id（该字段可能为空）,
 		"fae_client_version": @string 其他设备客户端版本号,
-		"user_agent": @string 其他设备客户端标识,
 		"auth": @boolean 如果为true，说明用户登录仍然合法，否则说明已经被挤下线（此时auth已经失效）
 	}
 

@@ -38,6 +38,7 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->post('/users/account', 'App\Api\v1\Controllers\UserController@updateAccount');
     $api->get('/users/account', 'App\Api\v1\Controllers\UserController@getAccount');
     $api->post('/users/account/password', 'App\Api\v1\Controllers\UserController@updatePassword');
+    $api->post('/users/account/password/verify', 'App\Api\v1\Controllers\UserController@verifyPassword');
     // profile
     $api->post('/users/profile', 'App\Api\v1\Controllers\UserController@updateSelfProfile');
     $api->get('/users/profile', 'App\Api\v1\Controllers\UserController@getSelfProfile');

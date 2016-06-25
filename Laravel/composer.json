@@ -7,7 +7,7 @@
     "require": {
         "php": ">=5.5.9",
         "laravel/framework": "5.2.*",
-        "dingo/api": "1.0.*@dev",
+        "dingo/api": "dev-master",
         "phaza/laravel-postgis": "3.*",
         "davibennun/laravel-push-notification": "dev-laravel5"
     },
@@ -49,5 +49,7 @@
     },
     "config": {
         "preferred-install": "dist"
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
