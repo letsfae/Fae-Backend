@@ -87,11 +87,11 @@ class MapController extends Controller
                     }
                     continue;
                 case 'comment':
-                    $comments = DB::select("SELECT user_id,content,geolocation,created_at FROM comments c WHERE st_dwithin(c.geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true) LIMIT :max_count", array('longitude' => $longitude, 'latitude'=> $latitude, 'radius' => $radius, 'max_count' => $max_count));
+                    $comments = DB::select("SELECT id,user_id,content,geolocation,created_at FROM comments c WHERE st_dwithin(c.geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true) LIMIT :max_count", array('longitude' => $longitude, 'latitude'=> $latitude, 'radius' => $radius, 'max_count' => $max_count));
                     foreach($comments as $comment)
                     {
                         $location = Geometry::fromWKB($comment->geolocation);
-                        $info[] = ['type'=>'comment','user_id' => $comment->user_id,'content' => $comment->content ,'geolocation'=>['latitude'=>$location->getLat(), 'longitude'=>$location->getLng()],'created_at'=>$comment->created_at];
+                        $info[] = ['type'=>'comment','comment_id' => $comment->id,'user_id' => $comment->user_id,'content' => $comment->content ,'geolocation'=>['latitude'=>$location->getLat(), 'longitude'=>$location->getLng()],'created_at'=>$comment->created_at];
                         $max_count--;
                     }
                     continue;
