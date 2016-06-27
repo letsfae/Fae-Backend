@@ -81,12 +81,7 @@ class AuthenticationController extends Controller {
             $users->login_count = $login_count;
             $users->save();
             
-            //forbid user when login time over 3;
-            if ($login_count >= 3){
-                throw new AccessDeniedHttpException('You have tried to login '.$login_count.' times, please change your password!');
-            }else{
-                throw new AccessDeniedHttpException('Bad request, Password incorrect!');  
-            }
+            throw new AccessDeniedHttpException('Bad request, Password incorrect!');  
         }
         $user_id = $users->id;
         
