@@ -44,6 +44,10 @@ class AuthenticationController extends Controller {
         if ($users == null) {
             throw new AccessDeniedHttpException('Bad request, No such users exist!');
         }
+        //forbid user when login time over 3;
+        if ($users->login_count >= 3){
+            throw new AccessDeniedHttpException('You have tried to login '.($users->login_count).' times, please change your password!');
+        }
         
         // check is_mobile and device_id
         $is_mobile = false;
@@ -78,10 +82,10 @@ class AuthenticationController extends Controller {
             $users->save();
             
             //forbid user when login time over 3;
-            if ($login_count > 3){
+            if ($login_count >= 3){
                 throw new AccessDeniedHttpException('You have tried to login '.$login_count.' times, please change your password!');
             }else{
-                throw new AccessDeniedHttpException('Bad request, Please verify your information!');  
+                throw new AccessDeniedHttpException('Bad request, Password incorrect!');  
             }
         }
         $user_id = $users->id;
