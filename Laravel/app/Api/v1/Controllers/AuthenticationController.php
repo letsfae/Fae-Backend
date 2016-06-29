@@ -8,6 +8,7 @@ use Dingo\Api\Exception\DeleteResourceFailedException;
 use Dingo\Api\Routing\Helpers;
 use Validator;
 use Config;
+use App\User_exts;
 use App\Sessions;
 use App\Users;
 use App\Api\v1\Controllers\MapController;
@@ -39,6 +40,10 @@ class AuthenticationController extends Controller {
         $users = Users::where('email', '=', $email)->first();
         if ($users == null) {
             throw new AccessDeniedHttpException('Bad request, No such users exist!');
+        }
+        //forbid user when login time over 3;
+        if ($users->login_count >= 3){
+            throw new AccessDeniedHttpException('You have tried to login '.($users->login_count).' times, please change your password!');
         }
         
         // check is_mobile and device_id
@@ -73,12 +78,7 @@ class AuthenticationController extends Controller {
             $users->login_count = $login_count;
             $users->save();
             
-            //forbid user when login time over 3;
-            if ($login_count > 3){
-                throw new AccessDeniedHttpException('You have tried to login '.$login_count.' times, please change your password!');
-            }else{
-                throw new AccessDeniedHttpException('Bad request, Please verify your information!');  
-            }
+            throw new AccessDeniedHttpException('Bad request, Password incorrect!');  
         }
         $user_id = $users->id;
         
@@ -137,6 +137,15 @@ class AuthenticationController extends Controller {
         $users->login_count = 0;
         $users->save();
         
+        
+        $user_exts = User_exts::find($user_id);
+        if ( $user_exts != null ){
+            if($user_exts->status ==0){
+                $user_exts->status = 1;
+            }
+            $user_exts->save();
+        }
+        
         //------------------------------------ printout result ------------------------------------
         $content = array('user_id' => $user_id, 'token' => $token, 'session_id' => $session_id);
         //var_dump($content);
@@ -184,7 +193,19 @@ class AuthenticationController extends Controller {
     public function logout()
     {
         $session = Sessions::find($this->request->self_session_id);
-        $session->delete();
+        if($session!= null){
+            $user_id = $session->user_id;
+            $session->delete();
+            
+            $remaining_sessions = Sessions::where('user_id', $user_id)->first();
+            if( $remaining_sessions == null){
+                 $user_exts = User_exts::find($user_id);
+                 if ( $user_exts != null ){
+                    $user_exts->status = 0;
+                    $user_exts->save();
+                 }
+            }
+        }
         return $this->response->noContent();
     }
 }
