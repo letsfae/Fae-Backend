@@ -7,7 +7,7 @@ use Illuminate\Routing\Controller;
 use Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Users;
-use App\Profiles;
+use App\User_exts;
 use App\Sessions;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Dingo\Api\Exception\StoreResourceFailedException;
@@ -36,9 +36,9 @@ class UserController extends Controller
         $user->gender = $this->request->gender;
         $user->birthday = $this->request->birthday;
         $user->save();
-        $profile = new Profiles;
-        $profile->user_id = $user->id;
-        $profile->save();
+        $user_exts = new User_exts;
+        $user_exts->user_id = $user->id;
+        $user_exts->save();
         return $this->response->created();
     }
 
@@ -201,16 +201,16 @@ class UserController extends Controller
     public function updateSelfStatus() 
     {
         $this->updateSelfStatusValidation($this->request);
-        $profile = Profiles::find($this->request->self_user_id);
+        $user_exts = User_exts::find($this->request->self_user_id);
         if($this->request->has('status'))
         {
-            $profile->status = $this->request->status;
+            $user_exts->status = $this->request->status;
         }
         if($this->request->has('message'))
         {
-            $profile->message = $this->request->message;
+            $user_exts->message = $this->request->message;
         }
-        $profile->save();
+        $user_exts->save();
         return $this->response->created();
     }    
 
@@ -221,18 +221,18 @@ class UserController extends Controller
 
     public function getStatus($user_id) 
     {
-        $profile = Profiles::find($user_id);
-        if(is_null($profile))
+        $user_exts = User_exts::find($user_id);
+        if(is_null($user_exts))
         {
             return $this->response->errorNotFound();
         }
-        if($user_id != $this->request->self_user_id && $profile->status == 5)
+        if($user_id != $this->request->self_user_id && $user_exts->status == 5)
         {
-            $info[] = ['status' => 0, 'message' => $profile->message];
+            $info[] = ['status' => 0, 'message' => $user_exts->message];
         }
         else
         {
-            $info[] = ['status' => $profile->status, 'message' => $profile->message];
+            $info[] = ['status' => $user_exts->status, 'message' => $user_exts->message];
         }
         return $this->response->array($info);
     }
