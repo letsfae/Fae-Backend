@@ -16,7 +16,8 @@ class Sessions extends Model
         'location' => Point::class,
     ];
 
-    public function users() {
-    	return $this->belongsTo('App\Users');
+    public function users() 
+    {
+    	return $this->belongsTo('App\Users','user_id','id');
     } 
 }
