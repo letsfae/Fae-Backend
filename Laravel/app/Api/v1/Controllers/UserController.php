@@ -158,4 +158,20 @@ class UserController extends Controller
     public function getStatus() {
         
     }
+
+    public function updateEmail() {
+        
+    }
+
+    public function verifyEmail() {
+        
+    }
+
+    public function updatePhone() {
+        
+    }
+
+    public function verifyPhone() {
+        
+    }
 }

@@ -122,7 +122,7 @@ is_mobile如果为true，则会踢掉用当前账号登陆的另一台移动设�
 
 如果相同device_id账号登陆不同用户，前一个用户会被挤下线。
 
-login出现3次错误后用户账户将被永久禁止登陆，解禁需调用reset_login接口。
+login出现3次错误后用户账户将被永久禁止登陆（即第4次无法登陆），解禁需调用reset_login接口。
 
 ### response
 
@@ -276,11 +276,9 @@ yes
 | last_name | string(50) | 姓氏 |
 | birthday | string(YYYY-MM-DD) | 生日 |
 | gender | string("male", "female") | 性别 |
-| phone | string(xxx-xxx-xxxx) | 电话 |
-| user_name | string(30) | 用户名 |
-| email | string(50) | 电邮 |
+| user_name | string(30) | 用户名（该接口可能会被单独提取并设置） |
 
-所有字段均为可选，但必须至少包含一个字段。
+所有字段均为可选，但必须至少包含一个字段。这些接口没有特殊操作（有特殊操作的请使用特定接口，如更新password）。
 
 ### response
 
@@ -320,6 +318,82 @@ yes
 | --- | --- | --- |
 | old_password | string(8-16) | 老密码 |
 | new_password | string(8-16) | 新密码 |
+
+### response
+
+Status: 201
+
+## 更新自己的邮箱 update email
+
+`POST /users/account/email`
+
+更新email后新邮箱会收到验证码，需调用verify email接口完成email验证。code有效时长为发送出来后的30分钟。
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| email | string(50) | 新email地址 |
+
+### response
+
+Status: 201
+
+## 验证邮箱 verify email
+
+`POST /users/account/email/verify`
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| code | string(6) | 6位验证数字，以字符串形式传递 |
+
+### response
+
+Status: 201
+
+## 更新自己的电话 update phone
+
+`POST /users/account/phone`
+
+更新phone number后该号码手机会收到验证码，需调用verify phone接口完成phone验证。code有效时长为发送出来后的30分钟。
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| phone | string(xxx-xxx-xxxx) | 新电话 |
+
+### response
+
+Status: 201
+
+## 验证电话 verify phone
+
+`POST /users/account/phone/verify`
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| code | string(6) | 6位验证数字，以字符串形式传递 |
 
 ### response
 
@@ -489,7 +563,9 @@ Body图片数据，其中`Content-Type`为`image/jpeg`。
 
 `GET /files/avatar/:user_id`
 
-其余同get self profile。
+其余同get self avatar。
+
+*此处应前端要求，不需要auth即可使用该接口。
 
 ## 同步消息 :white_check_mark:
 

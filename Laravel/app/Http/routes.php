@@ -29,6 +29,9 @@ $api->version('v1', function ($api) {
     // existence
     $api->get('/existence/email/{email}', 'App\Api\v1\Controllers\ExistenceController@email');
     $api->get('/existence/user_name/{user_name}', 'App\Api\v1\Controllers\ExistenceController@userName');
+
+    // avatar (* for front-end requirement)
+    $api->get('/files/avatar/{user_id}', 'App\Api\v1\Controllers\FileEntryController@getAvatar');
 });
 
 $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], function ($api) {
@@ -39,6 +42,10 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->get('/users/account', 'App\Api\v1\Controllers\UserController@getAccount');
     $api->post('/users/account/password', 'App\Api\v1\Controllers\UserController@updatePassword');
     $api->post('/users/account/password/verify', 'App\Api\v1\Controllers\UserController@verifyPassword');
+    $api->post('/users/account/email', 'App\Api\v1\Controllers\UserController@updateEmail');
+    $api->post('/users/account/email/verify', 'App\Api\v1\Controllers\UserController@verifyEmail');
+    $api->post('/users/account/phone', 'App\Api\v1\Controllers\UserController@updatePhone');
+    $api->post('/users/account/phone/verify', 'App\Api\v1\Controllers\UserController@verifyPhone');
     // profile
     $api->post('/users/profile', 'App\Api\v1\Controllers\UserController@updateSelfProfile');
     $api->get('/users/profile', 'App\Api\v1\Controllers\UserController@getSelfProfile');
@@ -52,7 +59,7 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     // avatar
     $api->post('/files/avatar', 'App\Api\v1\Controllers\FileEntryController@setSelfAvatar');
     $api->get('/files/avatar', 'App\Api\v1\Controllers\FileEntryController@getSelfAvatar');
-    $api->get('/files/avatar/{user_id}', 'App\Api\v1\Controllers\FileEntryController@getAvatar');
+    // $api->get('/files/avatar/{user_id}', 'App\Api\v1\Controllers\FileEntryController@getAvatar'); // moved to unauth
     // synchronization
     $api->get('/sync', 'App\Api\v1\Controllers\SyncController@getSync');
     // map
