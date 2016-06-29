@@ -20,10 +20,10 @@ class CreateUsersTable extends Migration
             $table->string('user_name',30)->nullable();
             $table->string('first_name',20)->nullable();
             $table->string('last_name',20)->nullable();
+            $table->string('phone',20)->nullable();
             $table->enum('gender',['male','female'])->nullable();
             $table->date('birthday')->nullable();
             $table->integer('role')->default(0);
-            $table->text('address')->nullable();
             $table->timestamps();
             $table->integer('mini_avatar')->default(0);
             $table->unique('user_name');

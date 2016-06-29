@@ -31,7 +31,7 @@ $api->version('v1', function ($api) {
     $api->get('/existence/user_name/{user_name}', 'App\Api\v1\Controllers\ExistenceController@userName');
 });
 
-$api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], function ($api) {
+    $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], function ($api) {
     $api->delete('/authentication', 'App\Api\v1\Controllers\AuthenticationController@logout');
 
     // account
