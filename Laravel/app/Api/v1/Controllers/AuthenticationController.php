@@ -10,6 +10,7 @@ use Dingo\Api\Exception\DeleteResourceFailedException;
 use Dingo\Api\Routing\Helpers;
 use Validator;
 use Config;
+use App\User_exts;
 use App\Sessions;
 use App\Users;
 use App\Api\v1\Controllers\MapController;
@@ -141,6 +142,15 @@ class AuthenticationController extends Controller {
         $users->login_count = 0;
         $users->save();
         
+        
+        $user_exts = User_exts::find($user_id);
+        if ( $user_exts != null ){
+            if($user_exts->status ==0){
+                $user_exts->status = 1;
+            }
+            $user_exts->save();
+        }
+        
         //------------------------------------ printout result ------------------------------------
         $content = array('user_id' => $user_id, 'token' => $token, 'session_id' => $session_id);
         //var_dump($content);
@@ -190,7 +200,19 @@ class AuthenticationController extends Controller {
     public function logout()
     {
         $session = Sessions::find($this->request->self_session_id);
-        $session->delete();
+        if($session!= null){
+            $user_id = $session->user_id;
+            $session->delete();
+            
+            $remaining_sessions = Sessions::where('user_id', $user_id)->first();
+            if( $remaining_sessions == null){
+                 $user_exts = User_exts::find($user_id);
+                 if ( $user_exts != null ){
+                    $user_exts->status = 0;
+                    $user_exts->save();
+                 }
+            }
+        }
         return $this->response->noContent();
     }
 }
