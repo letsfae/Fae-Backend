@@ -121,17 +121,9 @@ class UserController extends Controller
         {
             $user->birthday = $this->request->birthday;
         }
-        if($this->request->has('phone'))
-        {
-            $user->phone = $this->request->phone;
-        }
         if($this->request->has('user_name'))
         {
             $user->user_name = $this->request->user_name;
-        }
-        if($this->request->has('email'))
-        {
-            $user->email = $this->request->email;
         }
         $user->save();
         return $this->response->created();
@@ -281,8 +273,7 @@ class UserController extends Controller
             'gender' => 'in:male,female',
             'birthday' => 'filled|date_format:Y-m-d|before:tomorrow|after:1900-00-00',
             'phone' => 'filled|string|max:30',
-            'user_name' => 'filled|string|max:30|unique:users,user_name',
-            'email' => 'filled|string|max:50|unique:users,email',
+            'user_name' => 'filled|unique:users,user_name|regex:/^[a-zA-Z][a-zA-Z0-9_]{5,29}$/',
         ]);
         if($validator->fails())
         {
