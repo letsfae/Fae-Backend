@@ -501,7 +501,7 @@ Status: 200
 
 用户的状态不被服务器保留：即当用户的第一台设备登陆时，状态置位为online，最后一台设备退出时，状态置位为offline。
 
-## 获取其他用户状态 get status
+## 获取其他用户状态 get status :white_check_mark:
 
 `GET /users/:user_id/status`
 
@@ -864,6 +864,105 @@ Status: 200
 ## 获取好友列表
 
 ...
+
+## 发送新聊天消息 send chat message
+
+`POST /chats`
+
+在发给firebase聊天信息的同时，也需要发给服务器一份聊天消息。
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| receiver_id | number | 目标用户id |
+| message | string | 具体内容 |
+| type | string('text','image') | 区分内容的类型 |
+| firebase_id | string | firebase的id备份 |
+
+### response
+
+Status: 201
+
+	{
+		"chat_id": @number
+	}
+
+## 获取未读消息 get unread message
+
+`GET /chats/unread`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	[
+		{
+			"chat_id": @number,
+			"firebase_id": @string,
+			"sender_id": @number,
+			"last_message": @string,
+			"type": @string,
+			"unread_count": @number
+		},
+		{...},
+		{...}
+	]
+
+## 标记已读消息 mark read
+
+`POST /chats/read`
+
+此接口用于标记消息已读，调用后则将置0该用户在该会话中的未读消息数量。
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| chat_id | number | 聊天id |
+
+### response
+
+Status: 201
+
+## 获取该用户所有聊天消息 get chat history
+
+`GET /chats`
+
+一般在初始化聊天列表时调用。
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	[
+		{
+			"chat_id": @number,
+			"firebase_id": @string,
+			"with_user_id": @number 与该id用户聊天,
+			"last_message": @string,
+			"type": @string,
+			"unread_count": @number
+		},
+		{...},
+		{...}
+	]
 
 # 反推接口
 
