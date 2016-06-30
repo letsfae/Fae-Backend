@@ -13,6 +13,8 @@ class Comments extends Model
 	protected $postgisFields = [
 	  'geolocation' => Point::class,
 	];
+	protected $fillable = array('user_id', 'content', 'geolocation');
+
 	public function users() {
     	return $this->belongsTo('App\Users');
     }

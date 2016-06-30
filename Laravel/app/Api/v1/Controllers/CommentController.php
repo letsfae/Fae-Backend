@@ -91,8 +91,8 @@ class CommentController extends Controller {
             $page = '1';
         }
         $page = intval($page);
-        $comments = Comments::where('user_id','=', $user_id)->where('created_at','>=', $start_time)->where('created_at','<=', $end_time)->orderBy('created_at', 'desc')->get();
-        if ($comments == null) {
+        $comments = Comments::where('user_id', '=', $user_id)->where('created_at', '>=', $start_time)->where('created_at', '<=', $end_time)->orderBy('created_at', 'desc')->get();
+        if ($comments->first() == null) {
             throw new AccessDeniedHttpException('Bad request, No such comment exists!');
         }
         else {
