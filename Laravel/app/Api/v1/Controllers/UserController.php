@@ -202,6 +202,10 @@ class UserController extends Controller
         {
             $user_exts->message = $this->request->message;
         }
+        if(!is_null($this->request->message) && empty($this->request->message))
+        {
+            $user_exts->message = null;
+        }
         $user_exts->save();
         return $this->response->created();
     }    
@@ -299,8 +303,25 @@ class UserController extends Controller
             'status' => 'filled|required_without:message|integer|between:0,5',
             'message' => 'required_without:status|string|max:100',
         ]);
+
+
         if($validator->fails())
         {
+            if(!is_null($request->message) && empty($request->message))
+            {
+                if($request->has('status'))
+                {
+                    $validator = Validator::make($request->all(), [
+                        'status' => 'integer|between:0,5'
+                    ]);
+                    if($validator->fails())
+                    {
+                        throw new UpdateResourceFailedException('Could not update user status.',$validator->errors());
+                    }
+                }
+                return;
+            }
+           
             throw new UpdateResourceFailedException('Could not update user status.',$validator->errors());
         }
     }

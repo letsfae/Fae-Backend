@@ -238,7 +238,7 @@ Status: 200
 		"existence": @boolean
 	}
 
-## 获取用户账户信息 get account
+## 获取用户账户信息 get account :white_check_mark:
 
 `GET /users/account`
 
@@ -260,7 +260,7 @@ Status: 200
 		"phone": @string(xxx-xxx-xxxx)
 	}
 
-## 更新账户信息 update account
+## 更新账户信息 update account :white_check_mark:
 
 `POST /users/account`
 
@@ -284,7 +284,7 @@ yes
 
 Status: 201
 
-## 测试自身密码是否正确 verify password
+## 测试自身密码是否正确 verify password :white_check_mark:
 
 `POST /users/account/password/verify`
 
@@ -304,7 +304,7 @@ yes
 
 Status: 201
 
-## 更新自己的密码 update password
+## 更新自己的密码 update password :white_check_mark:
 
 `POST /users/account/password`
 
@@ -479,7 +479,7 @@ yes
 
 Status: 201
 
-## 获取用户自己的状态 get self status
+## 获取用户自己的状态 get self status :white_check_mark:
 
 `GET /users/status`
 
@@ -496,13 +496,20 @@ Status: 200
 		"message": @string
 	}
 
+
+一个用户的状态在不同设备之间共享。
+
+用户的状态不被服务器保留：即当用户的第一台设备登陆时，状态置位为online，最后一台设备退出时，状态置位为offline。
+
 ## 获取其他用户状态 get status
 
 `GET /users/:user_id/status`
 
-基本同get self status。需要注意的是，获取其他用户的状态时（自身user_id除外），该用户的invisible状态将无法获取到（即使该用户状态为invisible，返回状态仍为offline）。
+基本同get self status。
 
-## 更新自己的状态 update self status
+需要注意的是，获取其他用户的状态时（自身user_id除外），该用户的invisible状态将无法获取到（即使该用户状态为invisible，返回状态仍为offline）。
+
+## 更新自己的状态 update self status :white_check_mark:
 
 `POST /users/status`
 
