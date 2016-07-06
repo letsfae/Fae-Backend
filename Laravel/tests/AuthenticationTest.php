@@ -18,16 +18,18 @@ class AuthenticationTest extends TestCase {
     /** @test */
     public function setUp() {
         parent::setUp();
-        $this->domain = Config::get('api.domain'); 
-        // $this->markTestSkipped();  
+        $this->domain = Config::get('api.domain');    
     } 
 
     public function tearDown() {
         parent::tearDown();
+        $this->beforeApplicationDestroyed(function () {
+            DB::disconnect();
+        });
     }
 
     // test the login is successful.
-    public function testLogin() { 
+    public function testLogin() {  
         $user = Users::create([
             'email' => 'letsfae@126.com',
             'password' => bcrypt('letsfaego'),
@@ -63,7 +65,7 @@ class AuthenticationTest extends TestCase {
     }
 
     //test the input format of the contents!
-    public function testLogin1() { 
+    public function testLogin1() {  
         $parameters = array(
             'email' => 'letsfae126.com', // no @ in the email;
             'password' => 'letsfaego',
@@ -84,7 +86,7 @@ class AuthenticationTest extends TestCase {
     }
 
     // test the user exists
-    public function testLogin2() { 
+    public function testLogin2() {  
         $user = Users::create([
             'email' => 'letsfae@126.com',
             'password' => bcrypt('letsfaego'),
@@ -115,7 +117,7 @@ class AuthenticationTest extends TestCase {
     }
 
     //to test whether the togin time is more than 3! 
-    public function testLogin3() { 
+    public function testLogin3() {  
         $user = Users::create([
             'email' => 'letsfae@126.com',
             'password' => bcrypt('letsfaego'),
@@ -146,7 +148,7 @@ class AuthenticationTest extends TestCase {
     }
 
     //to test whether the password is wrong! 
-    public function testLogin4() { 
+    public function testLogin4() {  
         $user = Users::create([
             'email' => 'letsfae@126.com',
             'password' => bcrypt('letsfaego'),
@@ -177,7 +179,7 @@ class AuthenticationTest extends TestCase {
     }
 
    // test whether the input format of the header is right!
-    public function testLogin5() { 
+    public function testLogin5() {  
         $user = Users::create([
             'email' => 'letsfae@126.com',
             'password' => bcrypt('letsfaego'),
@@ -185,7 +187,7 @@ class AuthenticationTest extends TestCase {
             'last_name' => 'zhang',
             'gender' => 'male',
             'birthday' => '1992-02-02', 
-             'login_count' => 0,
+            'login_count' => 0,
         ]);
         $parameters = array(
             'email' => 'letsfae@126.com', 
@@ -207,27 +209,94 @@ class AuthenticationTest extends TestCase {
         $this->assertEquals(true, $result);
     }
 
-    public function testLogout() { 
+    // test whether the format of device_id is right!
+    public function testLogin6() {  
         $user = Users::create([
             'email' => 'letsfae@126.com',
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'gender' => 'male',
-            'birthday' => '1992-02-02',
-            'login_count' => 0, 
+            'birthday' => '1992-02-02', 
+            'login_count' => 0,
         ]);
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
             'user_name' => 'kevin',
+            //wrong format of device_id.
+            'device_id' => 'gu3v0KaU7jLS7SGdS2Rbgu3v0KaU7jLS7SGdS2Rbgu3v0KaU7jLS7SGdS2Rbgu3v0KaU7jLS7SGdS2Rbgu3v0KaU7jLS7SGdS2Rbgu3v0KaU7jLS7SGdS2Rbgu3v0KaU7jLS7SGdS2Rbgu3v0KaU7jLS7SGdS2Rb',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($response->getContent());
+        $result = false;
+        if ($response->status() == '403' && $array->message == 'Bad request, device id is wrong!') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);
+    }
+
+    // test whether the format of is_mobile is right!
+    public function testLogin7() {  
+        $user = Users::create([
+            'email' => 'letsfae@126.com',
+            'password' => bcrypt('letsfaego'),
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'gender' => 'male',
+            'birthday' => '1992-02-02', 
+            'login_count' => 0,
+        ]);
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'kevin',
+            //wrong format of is_mobile.
+            'is_mobile' => 'false1', 
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($response->getContent());
+        $result = false;
+        if ($response->status() == '403' && $array->message == 'Bad request, is_mobile is wrong!') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);
+    }
+
+    public function testLogout() { 
+        $parameter = array(
+            'email' => 'letsfae@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
             'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'kevin',
+        );
+        $server1 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
             'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
         );
-        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server1));
         $array = json_decode($login_response->getContent());
         $servers2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 

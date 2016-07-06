@@ -163,7 +163,9 @@ return [
         /*
          * Postgis
          */
-        Phaza\LaravelPostgis\DatabaseServiceProvider::class
+        Phaza\LaravelPostgis\DatabaseServiceProvider::class,
+        
+        Davibennun\LaravelPushNotification\LaravelPushNotificationServiceProvider::class
 
     ],
 
@@ -210,7 +212,14 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
+        
+        'PushNotification' => Davibennun\LaravelPushNotification\Facades\PushNotification::class,
 
     ],
+    
+    /*
+     * push back
+     */
+    'pushback' => env('APP_PUSHBACK', 'false'),
 
 ];

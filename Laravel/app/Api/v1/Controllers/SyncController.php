@@ -34,18 +34,8 @@ class SyncController extends Controller {
         else {
             $sum = $chat->sum('unread_count');
         }
-        $session = Sessions::where('user_id', '=', $to_user_id)->first();
-        $active = $session->active;
-        $user_active = False;
-        if ($session == null) {
-            throw new AccessDeniedHttpException('Bad request, No such sessions exist!');
-        }
-        else {
-            if ($active == 1) {
-                $user_active = (bool)$active;
-            }
-        }
-        $info = array('friend_request' => $friend_request, 'chat' => $sum, 'active' => $user_active);
+        
+        $info = array('friend_request' => $friend_request, 'chat' => $sum);
         return $this->response->array($info);
     }
 }

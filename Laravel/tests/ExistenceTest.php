@@ -16,7 +16,6 @@ class ExistenceTest extends TestCase {
      * @return void
      */
     use DatabaseMigrations;
-    use Helpers;
     /** @test */
     public function setUp() {
         parent::setUp();
@@ -25,6 +24,9 @@ class ExistenceTest extends TestCase {
 
     public function tearDown() {
         parent::tearDown();
+        $this->beforeApplicationDestroyed(function () {
+            DB::disconnect();
+        });
     }
 
     //the correct response of the method of checking whether the email exists!

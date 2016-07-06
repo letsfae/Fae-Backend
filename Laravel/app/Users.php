@@ -10,8 +10,13 @@ class Users extends Model implements AuthenticatableContract
 {
 	use Authenticatable;
     protected $table = 'users';
-    public function sessions() {
-    	return $this->hasMany('App\Sessions');
+    public function hasManySessions() 
+    {
+    	return $this->hasMany('App\Sessions','user_id','id');
+    }
+    public function hasOneProfile() 
+    {
+    	return $this->hasOne('App\Profiles','user_id','id');
     }
 
 	protected $fillable = array('email', 'password', 'user_name', 'first_name', 'last_name', 'gender', 'birthday', 'login_count');

@@ -22,11 +22,14 @@ class CommentTest extends TestCase {
     /** @test */
     public function setUp() {
         parent::setUp();
-        $this->domain = Config::get('api.domain');
+        $this->domain = Config::get('api.domain'); 
     } 
 
     public function tearDown() {
         parent::tearDown();
+        $this->beforeApplicationDestroyed(function () {
+            DB::disconnect();
+        });
     }
 
     // the correct response of the create comment.
@@ -317,7 +320,7 @@ class CommentTest extends TestCase {
         //create the comments.
         for ($i = 0; $i < 31; $i++) {
             $response[$i] = $this->call('post', 'http://'.$this->domain.'/comments', $parameters[$i], [], [], $this->transformHeadersToServerVars($server2)); 
-            sleep(1);
+            // sleep(1);
             $this->refreshApplication();
         } 
         $content = array(

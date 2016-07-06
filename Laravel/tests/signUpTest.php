@@ -16,8 +16,7 @@ class signUpTest extends TestCase {
      *
      * @return void
      */
-    use DatabaseMigrations;
-    use Helpers;
+    use DatabaseMigrations; 
     /** @test */
     public function setUp() {
         parent::setUp();
@@ -26,6 +25,9 @@ class signUpTest extends TestCase {
 
     public function tearDown() {
         parent::tearDown();
+        $this->beforeApplicationDestroyed(function () {
+            DB::disconnect();
+        });
     }
 
     // the correct response of the register.

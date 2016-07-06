@@ -58,10 +58,14 @@ class MapController extends Controller
         $info = array();
         foreach($type as $t)
         {
+            if($max_count <= 0)
+            {
+                break;
+            }
             switch($t)
             {
                 case 'user':
-                    $sessions = DB::select("select * from sessions s where st_dwithin(s.location,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true) limit :max_count", array('longitude' => $longitude, 'latitude' => $latitude, 'radius' => $radius, 'max_count' => $max_count));
+                    $sessions = DB::select("SELECT user_id,location,created_at FROM sessions s WHERE st_dwithin(s.location,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true) LIMIT :max_count", array('longitude' => $longitude, 'latitude' => $latitude, 'radius' => $radius, 'max_count' => $max_count));
                     foreach($sessions as $session)
                     {
                         $location = Geometry::fromWKB($session->location);
@@ -79,14 +83,16 @@ class MapController extends Controller
                         'longitude'=>$locations[0]->getLng()],['latitude'=>$locations[3]->getLat(),
                         'longitude'=>$locations[0]->getLng()],['latitude'=>$locations[4]->getLat(),
                         'longitude'=>$locations[0]->getLng()]],'created_at'=>$session->created_at];
+                        $max_count--;
                     }
                     continue;
                 case 'comment':
-                    $comments = DB::select("select * from comments c where st_dwithin(c.geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true) limit :max_count", array('longitude' => $longitude, 'latitude'=> $latitude, 'radius' => $radius, 'max_count' => $max_count));
+                    $comments = DB::select("SELECT id,user_id,content,geolocation,created_at FROM comments c WHERE st_dwithin(c.geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true) LIMIT :max_count", array('longitude' => $longitude, 'latitude'=> $latitude, 'radius' => $radius, 'max_count' => $max_count));
                     foreach($comments as $comment)
                     {
                         $location = Geometry::fromWKB($comment->geolocation);
-                        $info[] = ['type'=>'comment','user_id' => $comment->user_id,'content' => $comment->content ,'geolocation'=>['latitude'=>$location->getLat(), 'longitude'=>$location->getLng()],'created_at'=>$comment->created_at];
+                        $info[] = ['type'=>'comment','comment_id' => $comment->id,'user_id' => $comment->user_id,'content' => $comment->content ,'geolocation'=>['latitude'=>$location->getLat(), 'longitude'=>$location->getLng()],'created_at'=>$comment->created_at];
+                        $max_count--;
                     }
                     continue;
                 default:
@@ -119,7 +125,7 @@ class MapController extends Controller
         {
             return $this->response->errorNotFound();
         }
-        if($session->active)
+        if($session->is_mobile)
         {
             $session->location = new Point($this->request->geo_latitude,$this->request->geo_longitude);
             $session->save();
@@ -141,36 +147,5 @@ class MapController extends Controller
         {
             throw new UpdateResourceFailedException('Could not update user location.',$validator->errors());
         }
-    }
-
-    public function setActive()
-    {
-        $this->setUserActive($this->request->self_session_id);
-        return $this->response->created();
-    }
-
-    public static function setUserActive($session_id)
-    {
-        $session = Sessions::find($session_id);
-        $session->active = true;
-        $session->save();
-        $sessions = Sessions::where('user_id',$session->user_id)->where('id','!=',$session_id)->get();
-        foreach($sessions as $session)
-        {
-            $session->active = false;
-            $session->save();
-        }
-    }
-
-    public function getActive() 
-    {
-        $session = Sessions::find($this->request->self_session_id);
-        $session_active = Sessions::where('user_id',$this->request->self_user_id)->where('active',true)->first();
-        if(!is_null($session) && !is_null($session_active))
-        {
-            $info = array('is_active' => $session->active, 'active_device_id' => $session_active->device_id);
-            return $this->response->array($info);
-        }
-        return $this->response->errorNotFound();
     }
 }
