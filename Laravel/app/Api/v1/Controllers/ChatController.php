@@ -26,4 +26,9 @@ class ChatController extends Controller {
     public function getHistory() {
         
     }
+
+    public function delete($chat_id) {
+        
+    }
 }
+

@@ -81,4 +81,5 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->get('/chats/unread', 'App\Api\v1\Controllers\ChatController@getUnread');
     $api->post('/chats/read', 'App\Api\v1\Controllers\ChatController@markRead');
     $api->get('/chats', 'App\Api\v1\Controllers\ChatController@getHistory');
+    $api->delete('/chats/{chat_id}', 'App\Api\v1\Controllers\ChatController@delete');
 });

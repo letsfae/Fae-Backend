@@ -882,7 +882,6 @@ yes
 | receiver_id | number | 目标用户id |
 | message | string | 具体内容 |
 | type | string('text','image') | 区分内容的类型 |
-| firebase_id | string | firebase的id备份 |
 
 ### response
 
@@ -891,6 +890,8 @@ Status: 201
 	{
 		"chat_id": @number
 	}
+
+chat_id为聊天双方的聊天室id，对服务器来说，A和B聊天及B和A聊天被视为在同一个聊天室中进行。
 
 ## 获取未读消息 get unread message
 
@@ -907,15 +908,17 @@ Status: 200
 	[
 		{
 			"chat_id": @number,
-			"firebase_id": @string,
-			"sender_id": @number,
 			"last_message": @string,
-			"type": @string,
+			"last_message_sender_id": @number,
+			"last_message_timestamp": @string,
+			"last_message_type": @string,
 			"unread_count": @number
 		},
 		{...},
 		{...}
 	]
+
+可通过unread_count来获取有几条消息未读，从而实现“阅后即焚”（即通过unread_count来实现只获取最近的n条消息）。
 
 ## 标记已读消息 mark read
 
@@ -954,15 +957,30 @@ Status: 200
 	[
 		{
 			"chat_id": @number,
-			"firebase_id": @string,
 			"with_user_id": @number 与该id用户聊天,
 			"last_message": @string,
-			"type": @string,
+			"last_message_sender_id": @number,
+			"last_message_type": @string,
+			"last_message_timestamp": @string,
 			"unread_count": @number
 		},
 		{...},
 		{...}
 	]
+
+## 删除聊天（室） delete chat
+
+`DELETE /chats/:chat_id`
+
+此接口用于删除聊天室。聊天双方中任意一方执行删除操作后，双方的聊天信息都将被永久删除，未读消息也将不被保留。
+
+### auth
+
+yes
+
+### response
+
+Status: 204
 
 # 反推接口
 
