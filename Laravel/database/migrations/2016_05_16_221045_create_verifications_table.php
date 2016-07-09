@@ -14,7 +14,9 @@ class CreateVerificationsTable extends Migration
     {
         Schema::create('verifications', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('email',50);
+            $table->enum('type',['resetpassword','phone','email']);
+            $table->string('email',50)->nullable();
+            $table->string('phone',20)->nullable();
             $table->string('code',20);
             $table->timestamps();
         });
