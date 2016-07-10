@@ -165,7 +165,9 @@ return [
          */
         Phaza\LaravelPostgis\DatabaseServiceProvider::class,
         
-        Davibennun\LaravelPushNotification\LaravelPushNotificationServiceProvider::class
+        Davibennun\LaravelPushNotification\LaravelPushNotificationServiceProvider::class,
+        
+        Aloha\Twilio\Support\Laravel\ServiceProvider::class
 
     ],
 
@@ -214,6 +216,8 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         
         'PushNotification' => Davibennun\LaravelPushNotification\Facades\PushNotification::class,
+        
+        'Twilio' => Aloha\Twilio\Support\Laravel\Facade::class,
 
     ],
     

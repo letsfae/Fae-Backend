@@ -49,9 +49,10 @@ class ResetLoginController extends Controller
         
         // generate code & store user_id and code to verification table
         $verification_code = (string)rand(111111,999999);
-        $verification = Verifications::where('email','=', $input['email'])->get();
+        $verification = Verifications::where('email','=', $input['email'])->where('type','=', 'resetpassword')->get();
         if( is_null($verification) || ( count($verification)==0 ) ){
             $new_verification = new Verifications;
+            $new_verification->type = 'resetpassword';
             $new_verification->email = $input['email'];
             $new_verification->code = $verification_code;
             $new_verification->save();
@@ -60,6 +61,7 @@ class ResetLoginController extends Controller
                 $verification[0]->delete();
                 
                 $new_verification = new Verifications;
+                $new_verification->type = 'resetpassword';
                 $new_verification->email = $input['email'];
                 $new_verification->code = $verification_code;
                 $new_verification->save();
@@ -98,7 +100,7 @@ class ResetLoginController extends Controller
     	}
         
         // compare user_id and code with data in verification table
-        $verification = Verifications::where('email','=', $input['email'])->get();
+        $verification = Verifications::where('email','=', $input['email'])->where('type','=', 'resetpassword')->get();
         if( is_null($verification) || ( count($verification)==0 ) ){
             return $this->response->errorNotFound();
         }else{
@@ -133,7 +135,7 @@ class ResetLoginController extends Controller
     	}
         
         // compare user_id and code with data in verification table
-        $verification = Verifications::where('email','=', $input['email'])->get();
+        $verification = Verifications::where('email','=', $input['email'])->where('type','=', 'resetpassword')->get();
         if( is_null($verification) || ( count($verification)==0 ) ){
             return $this->response->errorNotFound();
         }else{

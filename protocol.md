@@ -323,7 +323,7 @@ yes
 
 Status: 201
 
-## 更新自己的邮箱 update email
+## 更新自己的邮箱 update email :white_check_mark:
 
 `POST /users/account/email`
 
@@ -343,7 +343,7 @@ yes
 
 Status: 201
 
-## 验证邮箱 verify email
+## 验证邮箱 verify email :white_check_mark:
 
 `POST /users/account/email/verify`
 
@@ -355,13 +355,14 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
+| email | string(50) | 新email地址 |
 | code | string(6) | 6位验证数字，以字符串形式传递 |
 
 ### response
 
 Status: 201
 
-## 更新自己的电话 update phone
+## 更新自己的电话 update phone :white_check_mark:
 
 `POST /users/account/phone`
 
@@ -381,7 +382,7 @@ yes
 
 Status: 201
 
-## 验证电话 verify phone
+## 验证电话 verify phone :white_check_mark:
 
 `POST /users/account/phone/verify`
 
@@ -393,6 +394,7 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
+| phone | string(xxx-xxx-xxxx) | 新电话 |
 | code | string(6) | 6位验证数字，以字符串形式传递 |
 
 ### response
