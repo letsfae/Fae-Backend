@@ -379,6 +379,10 @@ class UserController extends Controller
         }
         
         // send code to this email
+        $user = Users::find($this->request->self_user_id);
+        $user->email = $input['email'];
+        $user->email_verified = false;
+        $user->save();
         
         Mail::raw($verification_code, function ($message) {
             $message->from('auto-reply@letsfae.com', 'Laravel');
@@ -474,6 +478,11 @@ class UserController extends Controller
         }
         
         // send code to this phone
+        $user = Users::find($this->request->self_user_id);
+        $user->phone = $input['phone'];
+        $user->phone_verified = false;
+        $user->save();
+        
         Twilio::message($input['phone'], $verification_code);
         
         return $this->response->created();        
