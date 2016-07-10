@@ -281,7 +281,6 @@ class UserController extends Controller
             'last_name' => 'filled|string|max:50',
             'gender' => 'in:male,female',
             'birthday' => 'filled|date_format:Y-m-d|before:tomorrow|after:1900-00-00',
-            'phone' => 'filled|string|max:30',
             'user_name' => 'filled|unique:users,user_name|regex:/^[a-zA-Z][a-zA-Z0-9_]{5,29}$/',
         ]);
         if($validator->fails())
@@ -379,6 +378,10 @@ class UserController extends Controller
         }
         
         // send code to this email
+        $user = Users::find($this->request->self_user_id);
+        $user->email = $input['email'];
+        $user->email_verified = false;
+        $user->save();
         
         Mail::raw($verification_code, function ($message) {
             $message->from('auto-reply@letsfae.com', 'Laravel');
@@ -474,6 +477,11 @@ class UserController extends Controller
         }
         
         // send code to this phone
+        $user = Users::find($this->request->self_user_id);
+        $user->phone = $input['phone'];
+        $user->phone_verified = false;
+        $user->save();
+        
         Twilio::message($input['phone'], $verification_code);
         
         return $this->response->created();        
