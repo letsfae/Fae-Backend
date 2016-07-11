@@ -73,6 +73,8 @@ Base URL：`https://api.letsfae.com/`
 
 # 接口功能
 
+[文件类接口](protocol_files.md)
+
 ## 注册 Sign up :white_check_mark:
 
 `POST /users`
@@ -252,12 +254,14 @@ Status: 200
 
 	{
 		"email": @string,
+		"email_verified": @boolean,
 		"user_name": @string,
 		"first_name": @string,
 		"last_name": @string,
 		"gender": @string,
 		"birthday": @string,
-		"phone": @string(xxx-xxx-xxxx)
+		"phone": @string(xxx-xxx-xxxx),
+		"phone_verified": @boolean
 	}
 
 ## 更新账户信息 update account :white_check_mark:
@@ -279,6 +283,8 @@ yes
 | user_name | string(30) | 用户名（该接口可能会被单独提取并设置） |
 
 所有字段均为可选，但必须至少包含一个字段。这些接口没有特殊操作（有特殊操作的请使用特定接口，如更新password）。
+
+需要注意的是，user_name格式要求为：字母开头，仅可包含大小写字母、数字及下划线，长度6-30。
 
 ### response
 
@@ -531,50 +537,6 @@ yes
 ### response
 
 Status: 201
-
-## 设置头像 set self avatar :white_check_mark:
-
-`POST /files/avatar`
-
-### auth
-
-yes
-
-### parameters
-
-类型为form-data（特别注意此时Content-Type不要设置）。
-
-| Name | Description |
-| --- | --- |
-| avatar | 图片内容 |
-
-图片格式必须为jpeg，大小为500x500px。
-
-### response
-
-Status: 201
-
-## 获取头像 get self avatar :white_check_mark:
-
-`GET /files/avatar`
-
-### auth
-
-yes
-
-### response
-
-Status: 200
-
-Body图片数据，其中`Content-Type`为`image/jpeg`。
-
-## 获取其他用户头像 get avatar :white_check_mark:
-
-`GET /files/avatar/:user_id`
-
-其余同get self avatar。
-
-*此处应前端要求，不需要auth即可使用该接口。
 
 ## 同步消息 :white_check_mark:
 
@@ -983,6 +945,83 @@ yes
 ### response
 
 Status: 204
+
+## 获取某个用户NameCard
+
+`GET /users/:user_id/name_card`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	{
+		"nick_name": @string,
+		"short_intro": @string,
+		"tags": [
+			{
+			"tag_id": @number,
+			"tag_title": @string
+			},
+			{...},
+			{...}
+		],
+		"gender": @string 同account中的设置
+	}
+
+## 获取自己的NameCard
+
+`GET /users/name_card`
+
+其余同获取某个用户NameCard。
+
+## 获取所有NameCard所属的tag
+
+`GET /users/name_card/tags`
+
+此接口用于获得所有系统内置的namecard的tag。
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	[
+		{
+			"tag_id": @number,
+			"tag_title": @string
+		},
+		{...},
+		{...}
+	]
+
+## 更新NameCard
+
+`POST /users/name_card`
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| nick_name | string(50) | 昵称 |
+| short_intro | string(200) | 短介绍（可为空） |
+| tag_ids | number | 所有tag的id，使用;分割，最多3个tag |
+
+必须出现以上至少一个字段。
+
+### response
+
+Status: 201
 
 # 反推接口
 

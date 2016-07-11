@@ -47,61 +47,6 @@ class UserController extends Controller
         return $this->response->created();
     }
 
-    public function getProfile($user_id) 
-    {
-        $user = Users::find($user_id);
-        if(! is_null($user))
-        {
-            $profile = array('user_id' => $user->id, 'email' => $user->email, 'user_name' => $user->user_name, 
-                'first_name' => $user->first_name, 'last_name' => $user->last_name, 'gender' => $user->gender,
-                'birthday' => $user->birthday, 'role' => $user->role, 'address' => $user->address, 'mini_avatar' => $user->mini_avatar);
-            return $this->response->array($profile);
-        }
-        return $this->response->errorNotFound();
-    }
-
-    public function getSelfProfile() 
-    {
-        return $this->getProfile($this->request->self_user_id);
-    }
-
-    public function updateSelfProfile() 
-    {
-        UserController::updateProfileValidation($this->request);
-        UserController::updateProfileUpdate($this->request);
-        return $this->response->created();
-    }
-
-    private function updateProfileUpdate(Request $request)
-    {
-        if(count($request->all()) == 0)
-        {
-            return $this->response->errorBadRequest();
-        }
-        $user = Users::find($request->self_user_id);
-        if($request->has('first_name'))
-        {
-            $user->first_name = $request->first_name;
-        }
-        if($request->has('last_name'))
-        {
-            $user->last_name = $request->last_name;
-        }
-        if($request->has('gender'))
-        {
-            $user->gender = $request->gender;
-        }
-        if($request->has('birthday'))
-        {
-            $user->birthday = $request->birthday;
-        }
-        if($request->has('address'))
-        {
-            $user->address = $request->address;
-        }
-        $user->save();
-    }
-
     public function updateAccount() 
     {
         $this->updateAccountValidation($this->request);
@@ -139,9 +84,17 @@ class UserController extends Controller
         $user = Users::find($this->request->self_user_id);
         if(! is_null($user))
         {
-            $account = array('email' => $user->email, 'user_name' => $user->user_name, 
-                'first_name' => $user->first_name, 'last_name' => $user->last_name, 'gender' => $user->gender,
-                'birthday' => $user->birthday, 'phone' => $user->phone);
+            $account = array(
+                'email' => $user->email,
+                'email_verified' => $user->email_verfied,
+                'user_name' => $user->user_name,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'gender' => $user->gender,
+                'birthday' => $user->birthday,
+                'phone' => $user->phone,
+                'phone_verified' => $user->phone_verified
+            );
             return $this->response->array($account);
         }
         return $this->response->errorNotFound();
@@ -260,20 +213,6 @@ class UserController extends Controller
         }
     }
 
-    private function updateProfileValidation(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'first_name' => 'string|max:50',
-            'last_name' => 'string|max:50',
-            'gender' => 'in:male,female',
-            'birthday' => 'date_format:Y-m-d|before:tomorrow|after:1900-00-00',
-        ]);
-        if($validator->fails())
-        {
-            throw new UpdateResourceFailedException('Could not update user profile.',$validator->errors());
-        }
-    }
-
     private function updateAccountValidation(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -285,7 +224,7 @@ class UserController extends Controller
         ]);
         if($validator->fails())
         {
-            throw new UpdateResourceFailedException('Could not update user profile.',$validator->errors());
+            throw new UpdateResourceFailedException('Could not update user account.',$validator->errors());
         }
     }
 

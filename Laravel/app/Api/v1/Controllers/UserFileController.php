@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use Dingo\Api\Routing\Helpers;
 
-class FileEntryController extends Controller
+class UserFileController extends Controller
 {
     use Helpers;
 
@@ -43,5 +43,22 @@ class FileEntryController extends Controller
 			return $this->response->errorNotFound();
 		}
 		return response($file, 200)->header('Content-Type', 'image/jpeg');
+    }
+
+
+    public function updateNameCardPhoto() {
+
+    }
+
+    public function deleteNameCardPhoto($position) {
+
+    }
+
+    public function getNameCardPhoto($user_id, $position) {
+
+    }
+
+    public function getSelfNameCardPhoto($position) {
+        return $this->getNameCardPhoto($this->request->self_user_id, $position);
     }
 }
