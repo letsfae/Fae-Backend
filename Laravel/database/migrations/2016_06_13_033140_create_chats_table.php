@@ -15,13 +15,17 @@ class CreateChatsTable extends Migration
         Schema::create('chats', function(Blueprint $table)
         {
             $table->increments('id');
-            $table->integer('from_user_id')->unsigned();
-            $table->foreign('from_user_id')->references('id')->on('users');
-            $table->integer('to_user_id')->unsigned();
-            $table->foreign('to_user_id')->references('id')->on('users');
+            $table->integer('user_a_id');
+            $table->foreign('user_a_id')->references('id')->on('users');
+            $table->integer('user_b_id');
+            $table->foreign('user_b_id')->references('id')->on('users');
+            $table->integer('last_message_sender_id');
+            $table->foreign('last_message_sender_id')->references('id')->on('users');
             $table->text('last_message');
-            $table->integer('unread_count')->default(0);
-            $table->string('firebase_id',30);
+            $table->timestamp('last_message_timestamp');
+            $table->string('last_message_type',10);
+            $table->integer('user_a_unread_count')->default(0);
+            $table->integer('user_b_unread_count')->default(0);
             $table->timestamps();
         });
     }

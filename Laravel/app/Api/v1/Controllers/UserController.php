@@ -113,7 +113,7 @@ class UserController extends Controller
             {
                 $session = Sessions::find($this->request->self_session_id);
                 $session->delete();
-                throw new UnauthorizedHttpException('Incorrect password, automatically lougout');
+                throw new UnauthorizedHttpException(null, 'Incorrect password, automatically lougout');
             }
             
             return response()->json([
@@ -144,7 +144,7 @@ class UserController extends Controller
                 {
                     $session = Sessions::find($this->request->self_session_id);
                     $session->delete();
-                    throw new UnauthorizedHttpException('Incorrect password, automatically lougout');
+                    throw new UnauthorizedHttpException(null, 'Incorrect password, automatically lougout');
                 }
                 
                 return response()->json([
