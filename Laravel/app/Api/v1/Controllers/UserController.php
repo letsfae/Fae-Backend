@@ -32,7 +32,7 @@ class UserController extends Controller
 
     public function signUp() 
     {
-        UserController::signUpValidation($this->request);
+        $this->signUpValidation($this->request);
         $user = new Users;
         $user->email = strtolower($this->request->email);
         $user->password = bcrypt($this->request->password);
@@ -67,8 +67,8 @@ class UserController extends Controller
 
     public function updateSelfProfile() 
     {
-        UserController::updateProfileValidation($this->request);
-        UserController::updateProfileUpdate($this->request);
+        $this->updateProfileValidation($this->request);
+        $this->updateProfileUpdate($this->request);
         return $this->response->created();
     }
 
@@ -160,9 +160,9 @@ class UserController extends Controller
             {
                 $session = Sessions::find($this->request->self_session_id);
                 $session->delete();
-                throw new UnauthorizedHttpException('Incorrect password, automatically lougout');
+                throw new UnauthorizedHttpException(null, 'Incorrect password, automatically lougout');
             }
-            throw new UnauthorizedHttpException('Incorrect password, you still have '.(3-$user->login_count).' chances');
+            throw new UnauthorizedHttpException(null, 'Incorrect password, you still have '.(3-$user->login_count).' chances');
         }
         $user->password = bcrypt($this->request->new_password);
         $user->login_count = 0;
@@ -184,9 +184,9 @@ class UserController extends Controller
                 {
                     $session = Sessions::find($this->request->self_session_id);
                     $session->delete();
-                    throw new UnauthorizedHttpException('Incorrect password, automatically lougout');
+                    throw new UnauthorizedHttpException(null, 'Incorrect password, automatically lougout');
                 }
-                throw new UnauthorizedHttpException('Incorrect password, please verify your information!');
+                throw new UnauthorizedHttpException(null, 'Incorrect password, please verify your information!');
             }
             $user->login_count = 0;
             $user->save();
