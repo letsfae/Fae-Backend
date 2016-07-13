@@ -49,8 +49,9 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->get('/users/{user_id}/profile', 'App\Api\v1\Controllers\UserProfileController@getProfile');
     // $api->post('/users/profile/privacy', 'App\Api\v1\Controllers\UserProfileController@updatePrivacy');
     // $api->get('/users/profile/privacy', 'App\Api\v1\Controllers\UserProfileController@getPrivacy');
-    // namecard
+    // name card
     $api->get('/users/{user_id}/name_card', 'App\Api\v1\Controllers\UserNameCardController@getNameCard');
+    $api->get('/users/name_card', 'App\Api\v1\Controllers\UserNameCardController@getSelfNameCard');
     $api->get('/users/name_card/tags', 'App\Api\v1\Controllers\UserNameCardController@getAllTags');
     $api->post('/users/name_card', 'App\Api\v1\Controllers\UserNameCardController@updateNameCard');
     // status

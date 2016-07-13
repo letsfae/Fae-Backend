@@ -17,6 +17,10 @@ class UserNameCardController extends Controller {
 
     }
 
+    public function getSelfNameCard() {
+        return $this->getNameCard($this->request->self_user_id);
+    }
+
     public function getAllTags() {
 
     }

@@ -829,6 +829,13 @@ Status: 200
 
 ...
 
+
+----------
+
+聊天类接口调用流程：sync->get unread获取到unread array->[get one from firebase]->mark read（仅对从firebase读取到的那条）->send / 继续回unread array处理剩余消息，get history仅用于构筑初始化列表
+
+----------
+
 ## 发送新聊天消息 send chat message
 
 `POST /chats`
@@ -963,8 +970,9 @@ Status: 200
 		"short_intro": @string,
 		"tags": [
 			{
-			"tag_id": @number,
-			"tag_title": @string
+				"tag_id": @number,
+				"title": @string,
+				"color": @string
 			},
 			{...},
 			{...}
@@ -995,7 +1003,8 @@ Status: 200
 	[
 		{
 			"tag_id": @number,
-			"tag_title": @string
+			"title": @string,
+			"color": @string
 		},
 		{...},
 		{...}
