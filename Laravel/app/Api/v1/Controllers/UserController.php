@@ -115,7 +115,14 @@ class UserController extends Controller
                 $session->delete();
                 throw new UnauthorizedHttpException('Incorrect password, automatically lougout');
             }
-            throw new UnauthorizedHttpException('Incorrect password, you still have '.(3-$user->login_count).' chances');
+            
+            return response()->json([
+                'message' => 'Incorrect password, you still have '.(3-$user->login_count).' chances',
+                'status_code' => 401,
+                'login_count' => $users->login_count,
+            ], 401);
+            
+            //throw new UnauthorizedHttpException('Incorrect password, you still have '.(3-$user->login_count).' chances');
         }
         $user->password = bcrypt($this->request->new_password);
         $user->login_count = 0;
@@ -139,7 +146,13 @@ class UserController extends Controller
                     $session->delete();
                     throw new UnauthorizedHttpException('Incorrect password, automatically lougout');
                 }
-                throw new UnauthorizedHttpException('Incorrect password, please verify your information!');
+                
+                return response()->json([
+                    'message' => 'Bad request, Password incorrect!',
+                    'status_code' => 401,
+                    'login_count' => $users->login_count,
+                ], 401);
+                //throw new UnauthorizedHttpException('Incorrect password, please verify your information!');
             }
             $user->login_count = 0;
             $user->save();

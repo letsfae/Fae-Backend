@@ -78,7 +78,13 @@ class AuthenticationController extends Controller {
             $users->login_count = $login_count;
             $users->save();
             
-            throw new AccessDeniedHttpException('Bad request, Password incorrect!');  
+            return response()->json([
+                'message' => 'Bad request, Password incorrect!',
+                'status_code' => 403,
+                'login_count' => $users->login_count,
+            ], 403);
+            
+            //throw new AccessDeniedHttpException('Bad request, Password incorrect!');  
         }
         $user_id = $users->id;
         
