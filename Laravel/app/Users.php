@@ -19,7 +19,7 @@ class Users extends Model implements AuthenticatableContract
     	return $this->hasOne('App\Profiles','user_id','id');
     }
 
-	protected $fillable = array('email', 'password', 'user_name', 'first_name', 'last_name', 'gender', 'birthday', 'login_count');
+	protected $fillable = array('email', 'phone', 'password', 'user_name', 'first_name', 'last_name', 'gender', 'birthday', 'login_count');
     public function comments() {
     	return $this->hasMany('App\Comments');
     }

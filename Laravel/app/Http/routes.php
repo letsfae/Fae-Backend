@@ -12,7 +12,7 @@
 */
 
 Route::get('/', function () {
-	return view('welcome', ['title' => 'Fae API v1']);
+    return view('welcome', ['title' => 'Fae API v1']);
 });
 
 $api = app('Dingo\Api\Routing\Router');
@@ -76,6 +76,10 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->post('/friends/accept', 'App\Api\v1\Controllers\FriendController@acceptRequest');
     $api->post('/friends/ignore', 'App\Api\v1\Controllers\FriendController@ignoreRequest');
     $api->delete('/friends/{user_id}', 'App\Api\v1\Controllers\FriendController@deleteFriend');
-    // chats    
-
+    // chats
+    $api->post('/chats', 'App\Api\v1\Controllers\ChatController@send');
+    $api->get('/chats/unread', 'App\Api\v1\Controllers\ChatController@getUnread');
+    $api->post('/chats/read', 'App\Api\v1\Controllers\ChatController@markRead');
+    $api->get('/chats', 'App\Api\v1\Controllers\ChatController@getHistory');
+    $api->delete('/chats/{chat_id}', 'App\Api\v1\Controllers\ChatController@delete');
 });

@@ -9,12 +9,17 @@ use Illuminate\Support\Facades\Hash;
 use App\Users;
 use App\User_exts;
 use App\Sessions;
+use App\Verifications;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Dingo\Api\Exception\StoreResourceFailedException;
 use Dingo\Api\Exception\UpdateResourceFailedException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Dingo\Api\Routing\Helpers;
+
+use Mail;
+
+use Twilio;
 
 class UserController extends Controller
 {
@@ -278,7 +283,6 @@ class UserController extends Controller
             'last_name' => 'filled|string|max:50',
             'gender' => 'in:male,female',
             'birthday' => 'filled|date_format:Y-m-d|before:tomorrow|after:1900-00-00',
-            'phone' => 'filled|string|max:30',
             'user_name' => 'filled|unique:users,user_name|regex:/^[a-zA-Z][a-zA-Z0-9_]{5,29}$/',
         ]);
         if($validator->fails())
@@ -327,18 +331,196 @@ class UserController extends Controller
     }
 
     public function updateEmail() {
+        // validation
+        $input = $this->request->all();
+        if($this->request->has('email')){
+    	    $input['email'] = strtolower($input['email']);
+        }
         
+        $validator = Validator::make($input, [
+            'email' => 'required|max:50|email'
+        ]);
+        
+        if($validator->fails())
+    	{
+    		throw new StoreResourceFailedException('Could not verify.',$validator->errors());
+    	}
+        
+        $user = Users::where('email','=',$input['email'])->get();
+        if( ( count($user)!=0 ) ){
+            $current_user = Users::find($this->request->self_user_id);
+            if ($current_user->email != $user[0]->email){
+                throw new AccessDeniedHttpException('Email already in use, please use another one!');
+            }
+        }
+        
+        // generate code & store user_id and code to verification table
+        $verification_code = (string)rand(111111,999999);
+        $verification = Verifications::where('email','=', $input['email'])->where('type','=', 'email')->get();
+        if( is_null($verification) || ( count($verification)==0 ) ){
+            $new_verification = new Verifications;
+            $new_verification->type = 'email';
+            $new_verification->email = $input['email'];
+            $new_verification->code = $verification_code;
+            $new_verification->save();
+        }else{
+            if ($verification[0]->created_at->diffInMinutes()>30) {
+                $verification[0]->delete();
+                
+                $new_verification = new Verifications;
+                $new_verification->type = 'email';
+                $new_verification->email = $input['email'];
+                $new_verification->code = $verification_code;
+                $new_verification->save();
+            }else{
+                $verification_code = $verification[0]->code;
+            }
+        }
+        
+        // send code to this email
+        $user = Users::find($this->request->self_user_id);
+        $user->email = $input['email'];
+        $user->email_verified = false;
+        $user->save();
+        
+        Mail::raw($verification_code, function ($message) {
+            $message->from('auto-reply@letsfae.com', 'Laravel');
+
+            $message->to($this->request->email);
+        });
+
+        return $this->response->created();
     }
 
     public function verifyEmail() {
+        // validation
+        $input = $this->request->all();
+        if($this->request->has('email')){
+    	    $input['email'] = strtolower($input['email']);
+        }
         
+        $validator = Validator::make($input, [
+            'email' => 'required|max:50|email',
+            'code' => 'required|string|max:6'
+        ]);
+        
+        if($validator->fails())
+    	{
+    		throw new StoreResourceFailedException('Could not update email.',$validator->errors());
+    	}
+        
+        // compare user_id and code with data in verification table
+        $verification = Verifications::where('email','=', $input['email'])->where('type','=', 'email')->get();
+        if( is_null($verification) || ( count($verification)==0 ) ){
+            return $this->response->errorNotFound();
+        }else{
+            if($verification[0]->code == $input['code']){
+                if ($verification[0]->created_at->diffInMinutes()>30)
+                    return $this->response->errorNotFound();
+                $verification[0]->delete();
+                
+                //$user = Users::where('email','=',$input['email'])->get();
+                $user = Users::find($this->request->self_user_id);
+                $user->email = $input['email'];
+                $user->email_verified = true;
+                $user->save();
+                
+                return $this->response->created();
+            }else{
+                return $this->response->errorNotFound();
+            }
+        }
     }
 
     public function updatePhone() {
+        // validation
+        $input = $this->request->all();
         
+        $validator = Validator::make($input, [
+            'phone' => 'required|max:20'
+        ]);
+        
+        if($validator->fails())
+    	{
+    		throw new StoreResourceFailedException('Could not verify.',$validator->errors());
+    	}
+        
+        $user = Users::where('phone','=',$input['phone'])->get();
+        if( ( count($user)!=0 ) ){
+            $current_user = Users::find($this->request->self_user_id);
+            if ($current_user->phone != $user[0]->phone){
+                throw new AccessDeniedHttpException('Phone number already in use, please use another one!');
+            }
+        }
+        
+        // generate code & store user_id and code to verification table
+        $verification_code = (string)rand(111111,999999);
+        $verification = Verifications::where('phone','=', $input['phone'])->where('type','=', 'phone')->get();
+        if( is_null($verification) || ( count($verification)==0 ) ){
+            $new_verification = new Verifications;
+            $new_verification->type = 'phone';
+            $new_verification->phone = $input['phone'];
+            $new_verification->code = $verification_code;
+            $new_verification->save();
+        }else{
+            if ($verification[0]->created_at->diffInMinutes()>30) {
+                $verification[0]->delete();
+                
+                $new_verification = new Verifications;
+                $new_verification->type = 'phone';
+                $new_verification->phone = $input['phone'];
+                $new_verification->code = $verification_code;
+                $new_verification->save();
+            }else{
+                $verification_code = $verification[0]->code;
+            }
+        }
+        
+        // send code to this phone
+        $user = Users::find($this->request->self_user_id);
+        $user->phone = $input['phone'];
+        $user->phone_verified = false;
+        $user->save();
+        
+        Twilio::message($input['phone'], $verification_code);
+        
+        return $this->response->created();        
     }
 
     public function verifyPhone() {
+        // validation
+        $input = $this->request->all();
         
+        $validator = Validator::make($input, [
+            'phone' => 'required|max:20',
+            'code' => 'required|string|max:6'
+        ]);
+        
+        if($validator->fails())
+    	{
+    		throw new StoreResourceFailedException('Could not update phone.',$validator->errors());
+    	}
+        
+        // compare user_id and code with data in verification table
+        $verification = Verifications::where('phone','=', $input['phone'])->where('type','=', 'phone')->get();
+        if( is_null($verification) || ( count($verification)==0 ) ){
+            return $this->response->errorNotFound();
+        }else{
+            if($verification[0]->code == $input['code']){
+                if ($verification[0]->created_at->diffInMinutes()>30)
+                    return $this->response->errorNotFound();
+                $verification[0]->delete();
+                
+                //$user = Users::where('email','=',$input['email'])->get();
+                $user = Users::find($this->request->self_user_id);
+                $user->phone = $input['phone'];
+                $user->phone_verified = true;
+                $user->save();
+                
+                return $this->response->created();
+            }else{
+                return $this->response->errorNotFound();
+            }
+        }
     }
 }
