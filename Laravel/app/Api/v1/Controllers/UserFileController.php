@@ -8,6 +8,12 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use Dingo\Api\Routing\Helpers;
 
+
+use Illuminate\Filesystem\Filesystem;
+use Validator;
+
+use Dingo\Api\Exception\StoreResourceFailedException;
+
 class UserFileController extends Controller
 {
     use Helpers;
@@ -47,15 +53,39 @@ class UserFileController extends Controller
 
 
     public function updateNameCardPhoto() {
-
+        // validation
+    	$input = $this->request->all();
+        $validator = Validator::make($input, [
+            'position' => 'required|integer|min:1|max:8',
+            'photo' => 'mimes:jpeg,jpg,png,gif|required|max:4096'
+        ]);
+        
+        if($validator->fails()){
+    		throw new StoreResourceFailedException('Could not update NameCard Photo.',$validator->errors());
+    	}
+        
+        // store file
+    	$self_user_id = $this->request->self_user_id;
+    	$file = $this->request->photo;
+        $position = $this->request->position;
+        
+		Storage::disk('local')->put('name_card_photo/'.$self_user_id.'_0'.$position, File::get($file));
+        return $this->response->created();
     }
 
     public function deleteNameCardPhoto($position) {
-
+        $self_user_id = $this->request->self_user_id;
+        Storage::delete('name_card_photo/'.$self_user_id.'_0'.$position);
     }
 
     public function getNameCardPhoto($user_id, $position) {
-
+    	try {
+			$file = Storage::disk('local')->get('name_card_photo/'.$user_id.'_0'.$position);
+            $mimetype = Storage::mimeType('name_card_photo/'.$user_id.'_0'.$position);
+		} catch(\Exception $e) {
+			return $this->response->errorNotFound();
+		}
+		return response($file, 200)->header('Content-Type', $mimetype);
     }
 
     public function getSelfNameCardPhoto($position) {
