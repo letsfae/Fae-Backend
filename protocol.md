@@ -836,7 +836,7 @@ Status: 200
 
 ----------
 
-## 发送新聊天消息 send chat message
+## 发送新聊天消息 send chat message :white_check_mark:
 
 `POST /chats`
 
@@ -864,7 +864,7 @@ Status: 201
 
 chat_id为聊天双方的聊天室id，对服务器来说，A和B聊天及B和A聊天被视为在同一个聊天室中进行。
 
-## 获取未读消息 get unread message
+## 获取未读消息 get unread message :white_check_mark:
 
 `GET /chats/unread`
 
@@ -891,7 +891,7 @@ Status: 200
 
 可通过unread_count来获取有几条消息未读，从而实现“阅后即焚”（即通过unread_count来实现只获取最近的n条消息）。
 
-## 标记已读消息 mark read
+## 标记已读消息 mark read :white_check_mark:
 
 `POST /chats/read`
 
@@ -911,7 +911,7 @@ yes
 
 Status: 201
 
-## 获取该用户所有聊天消息 get chat history
+## 获取该用户所有聊天消息 get chat history :white_check_mark:
 
 `GET /chats`
 
@@ -939,7 +939,7 @@ Status: 200
 		{...}
 	]
 
-## 删除聊天（室） delete chat
+## 删除聊天（室） delete chat :white_check_mark:
 
 `DELETE /chats/:chat_id`
 

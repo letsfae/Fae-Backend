@@ -44,7 +44,7 @@ Body图片数据，其中`Content-Type`为`image/jpeg`。
 
 *此处应前端要求，不需要auth即可使用该接口。
 
-## 设置NameCard图片
+## 设置NameCard图片 :white_check_mark:
 
 `POST /files/users/name_card_photo`
 
@@ -63,11 +63,13 @@ yes
 
 图片位置决定了更新哪个位置的图片得到更新，后端不会对图片进行向前填充（即位置1不存在时位置2图片向前填充）。
 
+图片大小需小于4MB。
+
 ### response
 
 Status: 201
 
-## 删除NameCard图片
+## 删除NameCard图片 :white_check_mark:
 
 `DELETE /files/users/name_card_photo/:position`
 
@@ -79,7 +81,7 @@ yes
 
 Status: 204
 
-## 获取NameCard指定位置图片
+## 获取NameCard指定位置图片 :white_check_mark:
 
 `GET /files/users/:user_id/name_card_photo/:position`
 
@@ -93,7 +95,7 @@ Status: 200
 
 Body图片数据。
 
-## 获取自身的NameCard指定位置图片
+## 获取自身的NameCard指定位置图片 :white_check_mark:
 
 `GET /files/users/name_card_photo/:position`
 
