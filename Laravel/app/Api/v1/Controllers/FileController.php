@@ -16,12 +16,20 @@ class FileController extends Controller {
     public function upload() {
     }
 
-    public function delete($file_id) {
-    }
-
     public function getAttribute($file_id) {
     }
 
     public function getData($file_id) {
+    }
+
+    /**
+     * only for controller
+     */
+    public function ref($file_id) {
+
+    }
+
+    public function deref($file_id) {
+
     }
 }

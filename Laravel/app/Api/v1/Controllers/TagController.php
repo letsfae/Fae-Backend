@@ -21,4 +21,15 @@ class TagController extends Controller {
 
     public function getOne($tag_id) {
     }
+
+    /**
+     * only for controller
+     */
+    public function ref($tag_id) {
+
+    }
+
+    public function deref($tag_id) {
+
+    }
 }

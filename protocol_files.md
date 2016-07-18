@@ -17,6 +17,7 @@ yes
 | Name | Description |
 | --- | --- |
 | data | 文件内容（采用mine形式，因此带有文件名及扩展名） |
+| type | string('image','video') |
 | description (optional) | 语义化的文件描述 |
 | custom_tag (optional) | 标签化的文件描述 |
 
@@ -61,23 +62,10 @@ Status: 200
 		"file_name": @string,
 		"created_at": @string,
 		"type": @string,
+		"mine_type": @string,
 		"description": @string,
 		"custom_tag": @string
 	}
-
-## 删除文件
-
-`DELETE /files/:file_id`
-
-### auth
-
-yes
-
-只能删除自身的或有权限删除的文件。
-
-### response
-
-Status: 204
 
 # 文件类专项接口
 
