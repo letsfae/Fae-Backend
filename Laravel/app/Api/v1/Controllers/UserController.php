@@ -16,9 +16,8 @@ use Dingo\Api\Exception\UpdateResourceFailedException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Dingo\Api\Routing\Helpers;
-
+use App\Name_cards;
 use Mail;
-
 use Twilio;
 
 class UserController extends Controller
@@ -44,36 +43,50 @@ class UserController extends Controller
         $user_exts = new User_exts;
         $user_exts->user_id = $user->id;
         $user_exts->save();
+        $nameCard = new Name_cards;
+        $nameCard->user_id = $user->id;
+        $nameCard->save();
         return $this->response->created();
     }
 
     public function updateAccount() 
     {
         $this->updateAccountValidation($this->request);
-        if(count($this->request->all()) == 0)
-        {
-            return $this->response->errorBadRequest();
-        }
+        $flag = true;
         $user = Users::find($this->request->self_user_id);
         if($this->request->has('first_name'))
         {
+            $flag = false;
             $user->first_name = $this->request->first_name;
         }
         if($this->request->has('last_name'))
         {
+            $flag = false;
             $user->last_name = $this->request->last_name;
         }
         if($this->request->has('gender'))
         {
+            $flag = false;
             $user->gender = $this->request->gender;
         }
         if($this->request->has('birthday'))
         {
+            $flag = false;
             $user->birthday = $this->request->birthday;
         }
         if($this->request->has('user_name'))
         {
+            $flag = false;
             $user->user_name = $this->request->user_name;
+        }
+        if($this->request->has('mini_avatar'))
+        {
+            $flag = false;
+            $user->mini_avatar = $this->request->mini_avatar;
+        }
+        if($flag)
+        {
+            return $this->response->errorBadRequest();
         }
         $user->save();
         return $this->response->created();
@@ -93,7 +106,8 @@ class UserController extends Controller
                 'gender' => $user->gender,
                 'birthday' => $user->birthday,
                 'phone' => $user->phone,
-                'phone_verified' => $user->phone_verified
+                'phone_verified' => $user->phone_verified,
+                'mini_avatar' => $user->mini_avatar,
             );
             return $this->response->array($account);
         }
@@ -234,6 +248,7 @@ class UserController extends Controller
             'gender' => 'in:male,female',
             'birthday' => 'filled|date_format:Y-m-d|before:tomorrow|after:1900-00-00',
             'user_name' => 'filled|unique:users,user_name|regex:/^[a-zA-Z][a-zA-Z0-9_]{5,29}$/',
+            'mini_avatar' => 'filled|integer|between:0,32',
         ]);
         if($validator->fails())
         {

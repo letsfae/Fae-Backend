@@ -55,7 +55,7 @@ class ChatController extends Controller
             $chat->user_b_unread_count++;
         }
         $chat->save();
-        return $this->response->array(['chat_id' => $chat->id]);
+        return $this->response->created(null, ['chat_id' => $chat->id]);
     }
 
     public function getUnread() 
