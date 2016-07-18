@@ -80,18 +80,27 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->post('/chats/read', 'App\Api\v1\Controllers\ChatController@markRead');
     $api->get('/chats', 'App\Api\v1\Controllers\ChatController@getHistory');
     $api->delete('/chats/{chat_id}', 'App\Api\v1\Controllers\ChatController@delete');
+    // tags
+    $api->post('/tags', 'App\Api\v1\Controllers\TagController@create');
+    $api->get('/tags', 'App\Api\v1\Controllers\TagController@getArray');
+    $api->get('/tags/{tag_id}', 'App\Api\v1\Controllers\TagController@getOne');
 });
 
 /**
  * Files
  */
 $api->version('v1', function ($api) {
-    // image files (* no auth due to the request of front-end)
+    // * no auth due to the request of front-end
+    $api->get('/files/{file_id}/data', 'App\Api\v1\Controllers\FileController@getData');
     $api->get('/files/users/{user_id}/avatar', 'App\Api\v1\Controllers\UserFileController@getAvatar');
     $api->get('/files/users/{user_id}/name_card_photo/{position}', 'App\Api\v1\Controllers\UserFileController@getNameCardPhoto');
 });
 
 $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], function ($api) {
+    // general
+    $api->post('/files', 'App\Api\v1\Controllers\FileController@upload');
+    $api->get('/files/{file_id}/attribute', 'App\Api\v1\Controllers\FileController@getAttribute');
+    $api->delete('/files/{file_id}', 'App\Api\v1\Controllers\FileController@delete');
     // avatar
     $api->post('/files/users/avatar', 'App\Api\v1\Controllers\UserFileController@setSelfAvatar');
     $api->get('/files/users/avatar', 'App\Api\v1\Controllers\UserFileController@getSelfAvatar');

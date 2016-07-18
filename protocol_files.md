@@ -1,5 +1,86 @@
 # 文件类接口
 
+除非特别说明，否则上传时parameters的类型为form-data，特别注意此时Content-Type不要设置。
+
+# 文件类通用接口
+
+## 上传文件
+
+`POST /files`
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Description |
+| --- | --- |
+| data | 文件内容（采用mine形式，因此带有文件名及扩展名） |
+| description (optional) | 语义化的文件描述 |
+| custom_tag (optional) | 标签化的文件描述 |
+
+文件大小需小于10MB。
+
+### response
+
+Status: 201
+
+	{
+		"file_id": @number
+	}
+
+## 获取文件内容
+
+`GET /files/:file_id/data`
+
+### auth
+
+no
+
+### response
+
+Status: 200
+
+body为文件内容。
+
+## 获取文件属性
+
+`GET /files/:file_id/attribute`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	{
+		"file_id": @number,
+		"file_name": @string,
+		"created_at": @string,
+		"type": @string,
+		"description": @string,
+		"custom_tag": @string
+	}
+
+## 删除文件
+
+`DELETE /files/:file_id`
+
+### auth
+
+yes
+
+只能删除自身的或有权限删除的文件。
+
+### response
+
+Status: 204
+
+# 文件类专项接口
+
 ## 设置头像 set self avatar :white_check_mark:
 
 `POST /files/users/avatar`
@@ -9,8 +90,6 @@
 yes
 
 ### parameters
-
-类型为form-data（特别注意此时Content-Type不要设置）。
 
 | Name | Description |
 | --- | --- |
@@ -42,8 +121,6 @@ Body图片数据，其中`Content-Type`为`image/jpeg`。
 
 其余同get self avatar。
 
-*此处应前端要求，不需要auth即可使用该接口。
-
 ## 设置NameCard图片 :white_check_mark:
 
 `POST /files/users/name_card_photo`
@@ -53,8 +130,6 @@ Body图片数据，其中`Content-Type`为`image/jpeg`。
 yes
 
 ### parameters
-
-类型为form-data（特别注意此时Content-Type不要设置）。
 
 | Name | Description |
 | --- | --- |
