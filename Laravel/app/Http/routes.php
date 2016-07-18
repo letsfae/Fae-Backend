@@ -100,7 +100,6 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     // general
     $api->post('/files', 'App\Api\v1\Controllers\FileController@upload');
     $api->get('/files/{file_id}/attribute', 'App\Api\v1\Controllers\FileController@getAttribute');
-    $api->delete('/files/{file_id}', 'App\Api\v1\Controllers\FileController@delete');
     // avatar
     $api->post('/files/users/avatar', 'App\Api\v1\Controllers\UserFileController@setSelfAvatar');
     $api->get('/files/users/avatar', 'App\Api\v1\Controllers\UserFileController@getSelfAvatar');
