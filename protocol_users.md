@@ -470,7 +470,7 @@ yes
 
 Status: 201
 
-## 获取某个用户NameCard
+## 获取某个用户NameCard :white_check_mark:
 
 `GET /users/:user_id/name_card`
 
@@ -497,13 +497,13 @@ Status: 200
 		"gender": @string 同account中的设置
 	}
 
-## 获取自己的NameCard
+## 获取自己的NameCard :white_check_mark:
 
 `GET /users/name_card`
 
 其余同获取某个用户NameCard。
 
-## 获取所有NameCard所属的tag
+## 获取所有NameCard所属的tag :white_check_mark:
 
 `GET /users/name_card/tags`
 
@@ -527,7 +527,7 @@ Status: 200
 		{...}
 	]
 
-## 更新NameCard
+## 更新NameCard :white_check_mark:
 
 `POST /users/name_card`
 
