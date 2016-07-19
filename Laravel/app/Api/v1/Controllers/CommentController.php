@@ -12,8 +12,9 @@ use Illuminate\Routing\Controller;
 use Dingo\Api\Routing\Helpers;
 use App\Comments;
 use Auth;
+use App\Api\v1\Interfaces\PinInterface;
 
-class CommentController extends Controller {
+class CommentController extends Controller implements PinInterface {
     use Helpers;
     use PostgisTrait;
     
@@ -21,7 +22,7 @@ class CommentController extends Controller {
         $this->request = $request;
     }
 
-    public function createComment() {
+    public function create() {
         CommentController::createValidation($this->request);
         $lat = $this->request->geo_latitude;
         $lng = $this->request->geo_longitude;
@@ -37,7 +38,11 @@ class CommentController extends Controller {
         return $this->response->created(null, $comment);
     }
 
-    public function getComment($comment_id) {
+    public function update($comment_id) {
+        
+    }
+
+    public function getOne($comment_id) {
         if (!is_numeric($comment_id)) {
             throw new AccessDeniedHttpException('Bad request, Please type the correct comment_id format!');
         }
@@ -58,7 +63,7 @@ class CommentController extends Controller {
         }
     }
 
-    public function deleteComment($comment_id) {
+    public function delete($comment_id) {
         if (!is_numeric($comment_id)) {
             throw new AccessDeniedHttpException('Bad request, Please type the correct comment_id format!');
         }
@@ -72,7 +77,7 @@ class CommentController extends Controller {
         return $this->response->noContent();
     }
 
-    public function getUserComments($user_id) {
+    public function getFromUser($user_id) {
         if (!is_numeric($user_id)) {
             throw new AccessDeniedHttpException('Bad request, Please type the correct user_id format!');
         }
