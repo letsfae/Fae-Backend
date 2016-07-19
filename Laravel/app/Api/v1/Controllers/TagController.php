@@ -25,11 +25,11 @@ class TagController extends Controller {
     /**
      * only for controller
      */
-    public function ref($tag_id) {
+    public static function ref($tag_id) {
 
     }
 
-    public function deref($tag_id) {
+    public static function deref($tag_id) {
 
     }
 }

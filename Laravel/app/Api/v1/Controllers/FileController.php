@@ -25,11 +25,11 @@ class FileController extends Controller {
     /**
      * only for controller
      */
-    public function ref($file_id) {
+    public static function ref($file_id) {
 
     }
 
-    public function deref($file_id) {
+    public static function deref($file_id) {
 
     }
 }
