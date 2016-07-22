@@ -18,7 +18,7 @@ class MediaController extends Controller implements PinInterface {
     }
 
     public function update($media_id) {
-
+        
     }
 
     public function getOne($media_id) {
