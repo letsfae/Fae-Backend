@@ -18,8 +18,8 @@ class AccountTest extends TestCase {
     public function setUp() {
         parent::setUp();
         $this->domain = Config::get('api.domain'); 
-        $this->testEmail = Config::get('api.testEmail');
-        $this->testPhone = Config::get('api.testPhone');
+        $this->testEmail = getenv('Test_Email');
+        $this->testPhone = getenv('Test_Phone');
         // $this->markTestSkipped(); 
     } 
 
@@ -32,7 +32,7 @@ class AccountTest extends TestCase {
 
     //test correct response of the method of updating account.
     public function testUpdateAccount() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -78,7 +78,7 @@ class AccountTest extends TestCase {
 
     //test whether the input format is right.
     public function testUpdateAccount1() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -115,9 +115,9 @@ class AccountTest extends TestCase {
             'user_name' => 'fae',
         ); 
         $response = $this->call('post', 'http://'.$this->domain.'/users/account', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
-        $array2 = json_decode($response->getContent());
+        $array2 = json_decode($response->getContent()); 
         $result = false;
-        if ($response->status() == '422' && $array2->message == 'Could not update user profile.' && $array2->errors->user_name[0] == 'The user name format is invalid.') {
+        if ($response->status() == '422' && $array2->message == 'Could not update user account.' && $array2->errors->user_name[0] == 'The user name format is invalid.') {
             $result = true;
         }
         $this->assertEquals(true, $result);
@@ -125,7 +125,7 @@ class AccountTest extends TestCase {
 
     //test whether input parameters exist.
     public function testUpdateAccount2() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -167,7 +167,7 @@ class AccountTest extends TestCase {
 
     //test correct response of the method of getting account.
     public function testGetAccount() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -215,7 +215,7 @@ class AccountTest extends TestCase {
 
     //test correct response of the method of Updating password.
     public function testUpdatePassword() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -258,7 +258,7 @@ class AccountTest extends TestCase {
 
     //test whether the input format is right.
     public function testUpdatePassword1() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -301,7 +301,7 @@ class AccountTest extends TestCase {
 
     //test whether the login_count is over 3 with the methid of updating password.
     public function testUpdatePassword2() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -349,7 +349,7 @@ class AccountTest extends TestCase {
 
     //test whether the old_password is right.
     public function testUpdatePassword3() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -384,8 +384,14 @@ class AccountTest extends TestCase {
         ); 
         $response = $this->call('post', 'http://'.$this->domain.'/users/account/password', $parameters2, [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent());
+        $result = false; 
+        $this->seeJson([
+                'message' => 'Incorrect password, you still have 2 chances',
+                'status_code' => 401,
+                'login_count' => $array2->login_count,
+        ]);
         $result = false;
-        if ($response->status() == '401' && $array2->message == 'Incorrect password, you still have 2 chances') {
+        if ($response->status() == '401') {
             $result = true;
         }
         $this->assertEquals(true, $result);
@@ -393,7 +399,7 @@ class AccountTest extends TestCase {
 
     //test correct response of the method of verifying password.
     public function testVerifyPassword() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -435,7 +441,7 @@ class AccountTest extends TestCase {
 
     //test whether the input parameters exist.
     public function testVerifyPassword1() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -475,7 +481,7 @@ class AccountTest extends TestCase {
 
     //test whether the password is right.
     public function testVerifyPassword2() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -509,16 +515,22 @@ class AccountTest extends TestCase {
         ); 
         $response = $this->call('post', 'http://'.$this->domain.'/users/account/password/verify', $parameters2, [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent());
+        $result = false; 
+        $this->seeJson([
+                'message' => 'Bad request, Password incorrect!',
+                'status_code' => 401,
+                'login_count' => $array2->login_count,
+        ]);
         $result = false;
-        if ($response->status() == '401' && $array2->message == 'Incorrect password, please verify your information!') {
+        if ($response->status() == '401') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);
     }
 
     //test whether the login_count is over 3 with the methid of verifying password.
     public function testVerifyPassword3() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -565,7 +577,7 @@ class AccountTest extends TestCase {
 
     //test correct response of the method of updating self status.
     public function testUpdateSelfStatus() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $parameter = array(
             'email' => 'letsfae@126.com',
@@ -614,7 +626,7 @@ class AccountTest extends TestCase {
 
     //test whether the format of the inout is right.
     public function testUpdateSelfStatus1() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $parameter = array(
             'email' => 'letsfae@126.com',
@@ -663,7 +675,7 @@ class AccountTest extends TestCase {
 
     //test the response is correct with the inout of message is empty.
     public function testUpdateSelfStatus2() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $parameter = array(
             'email' => 'letsfae@126.com',
@@ -712,7 +724,7 @@ class AccountTest extends TestCase {
 
     //test correct response of the method of getting status.
     public function testGetStatus() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $parameter = array(
             'email' => 'letsfae@126.com',
@@ -761,7 +773,7 @@ class AccountTest extends TestCase {
 
     //test whether the user_id exists.
     public function testGetStatus1() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $parameter = array(
             'email' => 'letsfae@126.com',
@@ -807,8 +819,7 @@ class AccountTest extends TestCase {
 
     //test the response of other users with status 5.
     public function testGetStatus2() {
-        $this->markTestSkipped(); 
-        // $this->markTestSkipped();
+        // $this->markTestSkipped();  
         //register of the user.
         $parameter = array(
             'email' => 'letsfae@126.com',
@@ -870,7 +881,7 @@ class AccountTest extends TestCase {
 
     //test correct response of the method of getting self status.
     public function testGetSelfStatus() { 
-        $this->markTestSkipped();  
+        // $this->markTestSkipped();  
         //register of the user.
         $parameter = array(
             'email' => 'letsfae@126.com',

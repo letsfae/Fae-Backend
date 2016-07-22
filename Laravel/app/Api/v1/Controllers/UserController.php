@@ -16,9 +16,8 @@ use Dingo\Api\Exception\UpdateResourceFailedException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Dingo\Api\Routing\Helpers;
-
+use App\Name_cards;
 use Mail;
-
 use Twilio;
 
 class UserController extends Controller
@@ -44,91 +43,50 @@ class UserController extends Controller
         $user_exts = new User_exts;
         $user_exts->user_id = $user->id;
         $user_exts->save();
+        $nameCard = new Name_cards;
+        $nameCard->user_id = $user->id;
+        $nameCard->save();
         return $this->response->created();
-    }
-
-    public function getProfile($user_id) 
-    {
-        $user = Users::find($user_id);
-        if(! is_null($user))
-        {
-            $profile = array('user_id' => $user->id, 'email' => $user->email, 'user_name' => $user->user_name, 
-                'first_name' => $user->first_name, 'last_name' => $user->last_name, 'gender' => $user->gender,
-                'birthday' => $user->birthday, 'role' => $user->role, 'address' => $user->address, 'mini_avatar' => $user->mini_avatar);
-            return $this->response->array($profile);
-        }
-        return $this->response->errorNotFound();
-    }
-
-    public function getSelfProfile() 
-    {
-        return $this->getProfile($this->request->self_user_id);
-    }
-
-    public function updateSelfProfile() 
-    {
-        UserController::updateProfileValidation($this->request);
-        UserController::updateProfileUpdate($this->request);
-        return $this->response->created();
-    }
-
-    private function updateProfileUpdate(Request $request)
-    {
-        if(count($request->all()) == 0)
-        {
-            return $this->response->errorBadRequest();
-        }
-        $user = Users::find($request->self_user_id);
-        if($request->has('first_name'))
-        {
-            $user->first_name = $request->first_name;
-        }
-        if($request->has('last_name'))
-        {
-            $user->last_name = $request->last_name;
-        }
-        if($request->has('gender'))
-        {
-            $user->gender = $request->gender;
-        }
-        if($request->has('birthday'))
-        {
-            $user->birthday = $request->birthday;
-        }
-        if($request->has('address'))
-        {
-            $user->address = $request->address;
-        }
-        $user->save();
     }
 
     public function updateAccount() 
     {
         $this->updateAccountValidation($this->request);
-        if(count($this->request->all()) == 0)
-        {
-            return $this->response->errorBadRequest();
-        }
+        $flag = true;
         $user = Users::find($this->request->self_user_id);
         if($this->request->has('first_name'))
         {
+            $flag = false;
             $user->first_name = $this->request->first_name;
         }
         if($this->request->has('last_name'))
         {
+            $flag = false;
             $user->last_name = $this->request->last_name;
         }
         if($this->request->has('gender'))
         {
+            $flag = false;
             $user->gender = $this->request->gender;
         }
         if($this->request->has('birthday'))
         {
+            $flag = false;
             $user->birthday = $this->request->birthday;
         }
         if($this->request->has('user_name'))
         {
+            $flag = false;
             $user->user_name = $this->request->user_name;
+        }
+        if($this->request->has('mini_avatar'))
+        {
+            $flag = false;
+            $user->mini_avatar = $this->request->mini_avatar;
+        }
+        if($flag)
+        {
+            return $this->response->errorBadRequest();
         }
         $user->save();
         return $this->response->created();
@@ -139,9 +97,18 @@ class UserController extends Controller
         $user = Users::find($this->request->self_user_id);
         if(! is_null($user))
         {
-            $account = array('email' => $user->email, 'user_name' => $user->user_name, 
-                'first_name' => $user->first_name, 'last_name' => $user->last_name, 'gender' => $user->gender,
-                'birthday' => $user->birthday, 'phone' => $user->phone);
+            $account = array(
+                'email' => $user->email,
+                'email_verified' => $user->email_verfied,
+                'user_name' => $user->user_name,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'gender' => $user->gender,
+                'birthday' => $user->birthday,
+                'phone' => $user->phone,
+                'phone_verified' => $user->phone_verified,
+                'mini_avatar' => $user->mini_avatar,
+            );
             return $this->response->array($account);
         }
         return $this->response->errorNotFound();
@@ -161,8 +128,15 @@ class UserController extends Controller
                 $session = Sessions::find($this->request->self_session_id);
                 $session->delete();
                 throw new UnauthorizedHttpException(null, 'Incorrect password, automatically lougout');
-            }
-            throw new UnauthorizedHttpException(null, 'Incorrect password, you still have '.(3-$user->login_count).' chances');
+            } 
+            
+            return response()->json([
+                'message' => 'Incorrect password, you still have '.(3-$user->login_count).' chances',
+                'status_code' => 401,
+                'login_count' => $user->login_count,
+            ], 401);
+
+            //throw new UnauthorizedHttpException('Incorrect password, you still have '.(3-$user->login_count).' chances');
         }
         $user->password = bcrypt($this->request->new_password);
         $user->login_count = 0;
@@ -185,8 +159,14 @@ class UserController extends Controller
                     $session = Sessions::find($this->request->self_session_id);
                     $session->delete();
                     throw new UnauthorizedHttpException(null, 'Incorrect password, automatically lougout');
-                }
-                throw new UnauthorizedHttpException(null, 'Incorrect password, please verify your information!');
+                } 
+                
+                return response()->json([
+                    'message' => 'Bad request, Password incorrect!',
+                    'status_code' => 401,
+                    'login_count' => $user->login_count,
+                ], 401);
+                //throw new UnauthorizedHttpException('Incorrect password, please verify your information!');
             }
             $user->login_count = 0;
             $user->save();
@@ -262,20 +242,6 @@ class UserController extends Controller
         }
     }
 
-    private function updateProfileValidation(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'first_name' => 'string|max:50',
-            'last_name' => 'string|max:50',
-            'gender' => 'in:male,female',
-            'birthday' => 'date_format:Y-m-d|before:tomorrow|after:1900-00-00',
-        ]);
-        if($validator->fails())
-        {
-            throw new UpdateResourceFailedException('Could not update user profile.',$validator->errors());
-        }
-    }
-
     private function updateAccountValidation(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -284,10 +250,11 @@ class UserController extends Controller
             'gender' => 'in:male,female',
             'birthday' => 'filled|date_format:Y-m-d|before:tomorrow|after:1900-00-00',
             'user_name' => 'filled|unique:users,user_name|regex:/^[a-zA-Z][a-zA-Z0-9_]{5,29}$/',
+            'mini_avatar' => 'filled|integer|between:0,32',
         ]);
         if($validator->fails())
         {
-            throw new UpdateResourceFailedException('Could not update user profile.',$validator->errors());
+            throw new UpdateResourceFailedException('Could not update user account.',$validator->errors());
         }
     }
 

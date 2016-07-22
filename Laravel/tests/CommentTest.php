@@ -19,7 +19,7 @@ class CommentTest extends TestCase {
     public function setUp() {
         parent::setUp();
         $this->domain = Config::get('api.domain'); 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
     } 
 
     public function tearDown() {
@@ -48,16 +48,14 @@ class CommentTest extends TestCase {
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
         );
         //login of the user.
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
         $array = json_decode($login_response->getContent());
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
             'Authorization' => 'FAE '.$array->debug_base64ed,
         );
         $parameters2 = array(
@@ -96,16 +94,14 @@ class CommentTest extends TestCase {
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
         );
         //login of the user.
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
         $array = json_decode($login_response->getContent());
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
             'Authorization' => 'FAE '.$array->debug_base64ed,
         );
         $parameters2 = array(
@@ -142,16 +138,14 @@ class CommentTest extends TestCase {
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
         );
         //login of the user.
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
         $array = json_decode($login_response->getContent());
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
             'Authorization' => 'FAE '.$array->debug_base64ed,
         );
         $parameters2 = array(
@@ -201,16 +195,14 @@ class CommentTest extends TestCase {
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
         );
         //login of the user.
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
         $array = json_decode($login_response->getContent());
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
             'Authorization' => 'FAE '.$array->debug_base64ed,
         );
         //the format of the comment_id is not valid.
@@ -243,16 +235,14 @@ class CommentTest extends TestCase {
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
         );
         //login of the user.
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
         $array = json_decode($login_response->getContent());
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
             'Authorization' => 'FAE '.$array->debug_base64ed,
         );
         $parameters2 = array(
@@ -293,16 +283,14 @@ class CommentTest extends TestCase {
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
         );
         //login of the user.
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
         $array = json_decode($login_response->getContent());
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
             'Authorization' => 'FAE '.$array->debug_base64ed,
         );
         $parameters = array();
@@ -377,8 +365,7 @@ class CommentTest extends TestCase {
     }
 
     //test whether the format of the user_id is valid.
-    public function testUserCommentsCanBeGot2() { 
-        // $this->markTestSkipped();
+    public function testUserCommentsCanBeGot2() {  
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -396,16 +383,14 @@ class CommentTest extends TestCase {
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
         );
         //login of the user.
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
         $array = json_decode($login_response->getContent());
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
             'Authorization' => 'FAE '.$array->debug_base64ed,
         );
         //the format of the user_id is not valid.
@@ -438,16 +423,14 @@ class CommentTest extends TestCase {
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
         );
         //login of the user.
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
         $array = json_decode($login_response->getContent());
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
             'Authorization' => 'FAE '.$array->debug_base64ed,
         );
         //get the comment.
@@ -485,8 +468,7 @@ class CommentTest extends TestCase {
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
         );
         //login of the user.
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
@@ -499,8 +481,7 @@ class CommentTest extends TestCase {
         ); 
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
             'Authorization' => 'FAE '.$array->debug_base64ed,
         );
         $response2 = $this->call('post', 'http://'.$this->domain.'/comments', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
@@ -540,8 +521,7 @@ class CommentTest extends TestCase {
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
         );
         //login of the user.
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
@@ -554,8 +534,7 @@ class CommentTest extends TestCase {
         ); 
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
             'Authorization' => 'FAE '.$array->debug_base64ed,
         );
         $response2 = $this->call('post', 'http://'.$this->domain.'/comments', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
@@ -594,8 +573,7 @@ class CommentTest extends TestCase {
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
         );
         //login of the user.
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
@@ -608,8 +586,7 @@ class CommentTest extends TestCase {
         ); 
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
             'Authorization' => 'FAE '.$array->debug_base64ed,
         );
         $response2 = $this->call('post', 'http://'.$this->domain.'/comments', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
@@ -639,8 +616,7 @@ class CommentTest extends TestCase {
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
         );
         //login of the user.
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
@@ -653,8 +629,7 @@ class CommentTest extends TestCase {
         ); 
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
             'Authorization' => 'FAE '.$array->debug_base64ed,
         );
         $response2 = $this->call('post', 'http://'.$this->domain.'/comments', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
@@ -689,8 +664,7 @@ class CommentTest extends TestCase {
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
         );
         //login of the user.
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
@@ -703,8 +677,7 @@ class CommentTest extends TestCase {
         ); 
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
             'Authorization' => 'FAE '.$array->debug_base64ed,
         );
         $response2 = $this->call('post', 'http://'.$this->domain.'/comments', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 

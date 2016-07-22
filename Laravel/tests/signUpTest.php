@@ -17,7 +17,7 @@ class signUpTest extends TestCase {
     public function setUp() {
         parent::setUp();
         $this->domain = Config::get('api.domain'); 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
     } 
 
     public function tearDown() {

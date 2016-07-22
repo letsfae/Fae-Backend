@@ -4,6 +4,7 @@ use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Users;
+use App\Sessions;
  
 
 //you should first test login and then comment the method of testLogin and test logout
@@ -18,7 +19,7 @@ class AuthenticationTest extends TestCase {
     public function setUp() {
         parent::setUp();
         $this->domain = Config::get('api.domain');   
-        $this->markTestSkipped();  
+        // $this->markTestSkipped();  
     } 
 
     public function tearDown() {
@@ -29,7 +30,8 @@ class AuthenticationTest extends TestCase {
     }
 
     // test the login is successful.
-    public function testLogin() {  
+    public function testLogin() { 
+        // $this->markTestSkipped();  
         $user = Users::create([
             'email' => 'letsfae@126.com',
             'password' => bcrypt('letsfaego'),
@@ -46,8 +48,7 @@ class AuthenticationTest extends TestCase {
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
         );
         $response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
         $array = json_decode($response->getContent());
@@ -57,15 +58,18 @@ class AuthenticationTest extends TestCase {
                  'session_id' => $array->session_id,
                  'debug_base64ed' => $array->debug_base64ed,
         ]);
+        $session = Sessions::where('user_id', '=', 1)->first();
         $result = false;
         if ($response->status() == '201') {
             $result = true;
         }
         $this->assertEquals(true, $result);
+        $this->seeInDatabase('sessions', ['token' => $session->token, 'is_mobile' => false, 'device_id' => null, 'client_version' => 'ios-0.0.1']);
     }
 
     //test the input format of the contents!
     public function testLogin1() {  
+        // $this->markTestSkipped(); 
         $parameters = array(
             'email' => 'letsfae126.com', // no @ in the email;
             'password' => 'letsfaego',
@@ -73,8 +77,7 @@ class AuthenticationTest extends TestCase {
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1',  
         );
         $response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
         $array = json_decode($response->getContent());
@@ -87,6 +90,7 @@ class AuthenticationTest extends TestCase {
 
     // test the user exists
     public function testLogin2() {  
+        // $this->markTestSkipped(); 
         $user = Users::create([
             'email' => 'letsfae@126.com',
             'password' => bcrypt('letsfaego'),
@@ -104,8 +108,7 @@ class AuthenticationTest extends TestCase {
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1',  
         );
         $response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
         $array = json_decode($response->getContent());
@@ -117,7 +120,8 @@ class AuthenticationTest extends TestCase {
     }
 
     //to test whether the togin time is more than 3! 
-    public function testLogin3() {  
+    public function testLogin3() { 
+        // $this->markTestSkipped();  
         $user = Users::create([
             'email' => 'letsfae@126.com',
             'password' => bcrypt('letsfaego'),
@@ -135,8 +139,7 @@ class AuthenticationTest extends TestCase {
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1',  
         );
         $response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
         $array = json_decode($response->getContent());
@@ -149,6 +152,7 @@ class AuthenticationTest extends TestCase {
 
     //to test whether the password is wrong! 
     public function testLogin4() {  
+        // $this->markTestSkipped(); 
         $user = Users::create([
             'email' => 'letsfae@126.com',
             'password' => bcrypt('letsfaego'),
@@ -166,8 +170,7 @@ class AuthenticationTest extends TestCase {
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1',  
         );
         $response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
         $array = json_decode($response->getContent());
@@ -180,6 +183,7 @@ class AuthenticationTest extends TestCase {
 
    // test whether the input format of the header is right!
     public function testLogin5() {  
+        // $this->markTestSkipped(); 
         $user = Users::create([
             'email' => 'letsfae@126.com',
             'password' => bcrypt('letsfaego'),
@@ -198,7 +202,6 @@ class AuthenticationTest extends TestCase {
             'Accept' => 'application/x.faeapp.v1+json', 
             //wrong input header! 
             'Fae-Client-Version' => 'ios-0.0.1_limit_over_50_limit_over_50_limit_over_50_limit_over_50_limit_over_50_limit_over_50_limit_over_50_limit_over_50', 
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
         );
         $response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
         $array = json_decode($response->getContent());
@@ -211,6 +214,7 @@ class AuthenticationTest extends TestCase {
 
     // test whether the format of device_id is right!
     public function testLogin6() {  
+        // $this->markTestSkipped(); 
         $user = Users::create([
             'email' => 'letsfae@126.com',
             'password' => bcrypt('letsfaego'),
@@ -241,7 +245,8 @@ class AuthenticationTest extends TestCase {
     }
 
     // test whether the format of is_mobile is right!
-    public function testLogin7() {  
+    public function testLogin7() { 
+        // $this->markTestSkipped();  
         $user = Users::create([
             'email' => 'letsfae@126.com',
             'password' => bcrypt('letsfaego'),
@@ -271,7 +276,49 @@ class AuthenticationTest extends TestCase {
         $this->assertEquals(true, $result);
     }
 
+    //test the response when the input is_mobile is true , which is the same as the is_mobile in the database.
+    public function testLogin8() {  
+        // $this->markTestSkipped(); 
+        $user = Users::create([
+            'email' => 'letsfae@126.com',
+            'password' => bcrypt('letsfaego'),
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'gender' => 'male',
+            'birthday' => '1992-02-02', 
+            'login_count' => 0,
+        ]);
+        $parameters1 = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'kevin',  
+            'is_mobile' => 'true',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
+        $parameters2 = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'kevin', 
+            'is_mobile' => 'true', 
+            'device_id' => 'gu3v0KaU7jLS7SGdS2Rb'
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters2, [], [], $this->transformHeadersToServerVars($server));
+        $session = Sessions::where('user_id', '=', 1)->first();
+        $array = json_decode($response->getContent()); 
+        $this->seeInDatabase('sessions', ['token' => $session->token, 'is_mobile' => true, 'device_id' => 'gu3v0KaU7jLS7SGdS2Rb', 'client_version' => 'ios-0.0.1']);
+    }
+
     public function testLogout() { 
+        // $this->markTestSkipped(); 
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -293,15 +340,13 @@ class AuthenticationTest extends TestCase {
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
         );
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server1));
         $array = json_decode($login_response->getContent());
         $servers2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Device-ID' => 'gu3v0KaU7jLS7SGdS2Rb',
+            'Fae-Client-Version' => 'ios-0.0.1', 
             'Authorization' => 'FAE '.$array->debug_base64ed,
         );
         $logout_response = $this->call('delete', 'http://'.$this->domain.'/authentication', [], [], [], $this->transformHeadersToServerVars($servers2));

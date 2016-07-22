@@ -3,31 +3,31 @@
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use App\Users;
-use App\Verifications;
+use App\Chats;
 
-class resetLoginTest extends TestCase {
+class ChatTest extends TestCase {
     /**
      * A basic test example.
      *
      * @return void
      */
-    use DatabaseMigrations; 
+    use DatabaseMigrations;
     /** @test */
     public function setUp() {
         parent::setUp();
-        $this->domain = Config::get('api.domain'); 
-        $this->testEmail = getenv('Test_Email'); 
+        $this->domain = Config::get('api.domain');  
         // $this->markTestSkipped(); 
     } 
 
     public function tearDown() {
+        $this->beforeApplicationDestroyed(function () {
+            DB::disconnect();
+        });
         parent::tearDown();
     }
 
-    //test the correct response of the method of sendResetCode.
-    public function testSendResetCode() {
-        // $this->markTestSkipped();   
+    //test correct response of the method of sending message.
+    public function testSend() {   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -43,7 +43,7 @@ class resetLoginTest extends TestCase {
         $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
         $this->refreshApplication();
         $parameter2 = array(
-            'email' => $this->testEmail,
+            'email' => 'letsfae@yahoo.com',
             'password' => 'letsfaego',
             'first_name' => 'kevin2',
             'last_name' => 'zhang',
@@ -68,26 +68,32 @@ class resetLoginTest extends TestCase {
         //login of the user.
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server1));
         $this->refreshApplication();
-        $parameters2 = array(
-            'email' => $this->testEmail,
-        );
+        $array = json_decode($login_response->getContent());
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );  
+        $parameters2 = array(
+             'receiver_id' => 2,
+             'message' => 'Hello world',
+             'type' => 'text',
         );
-        $response = $this->call('post', 'http://'.$this->domain.'/reset_login/code', $parameters2, [], [], $this->transformHeadersToServerVars($server2));
-        $verification = Verifications::where('email','=', $this->testEmail)->first();
+        $response = $this->call('post', 'http://'.$this->domain.'/chats', $parameters2, [], [], $this->transformHeadersToServerVars($server2));   
+        $array2 = json_decode($response->getContent()); 
+        $this->seeJson([
+                'chat_id' => $array2->chat_id,
+        ]);
         $result = false;
         if ($response->status() == '201') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
-        $this->seeInDatabase('verifications', ['type' => 'resetpassword', 'email' => $this->testEmail, 'code' => $verification->code]);
-    }  
+        $this->assertEquals(true, $result);
+        $this->seeInDatabase('chats', ['user_a_id' => 1, 'user_b_id' => 2, 'user_b_unread_count' => 1]);
+    }
 
     //test whether the input format is correct.
-    public function testSendResetCode2() {
-        // $this->markTestSkipped();   
+    public function testSend2() {  
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -103,7 +109,7 @@ class resetLoginTest extends TestCase {
         $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
         $this->refreshApplication();
         $parameter2 = array(
-            'email' => $this->testEmail,
+            'email' => 'letsfae@yahoo.com',
             'password' => 'letsfaego',
             'first_name' => 'kevin2',
             'last_name' => 'zhang',
@@ -128,25 +134,29 @@ class resetLoginTest extends TestCase {
         //login of the user.
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server1));
         $this->refreshApplication();
-        //no input.
-        $parameters2 = array( 
-        );
+        $array = json_decode($login_response->getContent());
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );  
+        //no such receiver_id in the user table.
+        $parameters2 = array(
+             'receiver_id' => 3,
+             'message' => 'Hello world',
+             'type' => 'text',
         );
-        $response = $this->call('post', 'http://'.$this->domain.'/reset_login/code', $parameters2, [], [], $this->transformHeadersToServerVars($server2));
+        $response = $this->call('post', 'http://'.$this->domain.'/chats', $parameters2, [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent());  
-        $result = false; 
-        if ($response->status() == '422' && $array2->message == 'Could not verify.' && $array2->errors->email[0] == 'The email field is required.') {
+        $result = false;
+        if ($response->status() == '422' && $array2->message == 'Could not send message.' && $array2->errors->receiver_id[0] == 'The selected receiver id is invalid.') {
             $result = true;
         }
         $this->assertEquals(true, $result);
     }
 
-    //test whether the user exists in the database.
-    public function testSendResetCode3() {
-        // $this->markTestSkipped();   
+    //test whether the unread messages has been marked.
+    public function testSend3() {  
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -160,54 +170,9 @@ class resetLoginTest extends TestCase {
             'Fae-Client-Version' => 'ios-0.0.1',
         );
         $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
-        $this->refreshApplication(); 
-        $parameters = array(
-            'email' => 'letsfae@126.com', 
-            'password' => 'letsfaego',
-            'user_name' => 'kevin',
-        );
-        $server1 = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-        );
-        //login of the user.
-        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server1));
-        $this->refreshApplication(); 
-        $parameters2 = array(
-            'email' => $this->testEmail,
-        );
-        $server2 = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
-        );
-        $response = $this->call('post', 'http://'.$this->domain.'/reset_login/code', $parameters2, [], [], $this->transformHeadersToServerVars($server2));
-        $array2 = json_decode($response->getContent()); 
-        $result = false;
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
-            $result = true;
-        }
-        $this->assertEquals(true, $result); 
-    }
-
-    //test how the database of verifications changed after the code existing more than 30 minitues.
-    public function testSendResetCode4() {
-        // $this->markTestSkipped(); 
-        $parameter = array(
-            'email' => 'letsfae@126.com',
-            'password' => 'letsfaego',
-            'first_name' => 'kevin',
-            'last_name' => 'zhang',
-            'gender' => 'male',
-            'birthday' => '1992-02-02',
-        );
-        $server = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-        );
-        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter, [], [], $this->transformHeadersToServerVars($server));
         $this->refreshApplication();
         $parameter2 = array(
-            'email' => $this->testEmail,
+            'email' => 'letsfae@yahoo.com',
             'password' => 'letsfaego',
             'first_name' => 'kevin2',
             'last_name' => 'zhang',
@@ -233,100 +198,268 @@ class resetLoginTest extends TestCase {
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server1));
         $this->refreshApplication();
         $array = json_decode($login_response->getContent());
-        $server2 = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
-        ); 
-        $parameters2 = array(
-            'email' => $this->testEmail,
-        );
-        $verification = Verifications::create([
-            'type' => 'resetpassword',
-            'email' => $this->testEmail,
-            'code' => '-10000',
-            'created_at' => '2016-07-10 01:57:33'
-        ]);
-        $response = $this->call('post', 'http://'.$this->domain.'/reset_login/code', $parameters2, [], [], $this->transformHeadersToServerVars($server2));
-        $array2 = json_decode($response->getContent()); 
-        $verifications = Verifications::where('email','=', $this->testEmail)->first();
-        $result = false;
-        if ($verifications->code != '-10000') {
-            $result = true;
-        }  
-        $this->assertTrue($result);
-    }
-
-    //test correct response of the method of VerifyResetCode.
-    public function testVerifyResetCode() {
-        // $this->markTestSkipped(); 
-        $parameter = array(
-            'email' => 'letsfae@126.com',
-            'password' => 'letsfaego',
-            'first_name' => 'kevin',
-            'last_name' => 'zhang',
-            'gender' => 'male',
-            'birthday' => '1992-02-02',
-        );
-        $server = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-        );
-        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter, [], [], $this->transformHeadersToServerVars($server));
-        $this->refreshApplication();
-        $parameter2 = array(
-            'email' => $this->testEmail,
-            'password' => 'letsfaego',
-            'first_name' => 'kevin2',
-            'last_name' => 'zhang',
-            'gender' => 'male',
-            'birthday' => '1992-02-02',
-        );
-        $server = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-        );
-        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
-        $this->refreshApplication();
-        $parameters = array(
-            'email' => 'letsfae@126.com', 
-            'password' => 'letsfaego',
-            'user_name' => 'kevin',
-        );
-        $server1 = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-        );
-        //login of the user.
-        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server1));
-        $this->refreshApplication();
-        $array = json_decode($login_response->getContent());
-        $verification = Verifications::create([
-            'type' => 'resetpassword',
-            'email' => $this->testEmail,
-            'code' => '555555',
+        $chat = Chats::create([
+            'user_a_id' => 1,
+            'user_b_id' => 2,
+            'last_message_sender_id' => 1,
+            'last_message' => 'Hello world',
+            'last_message_type' => 'text',
+            'user_a_unread_count' => 1,
+            'user_b_unread_count' => 1,
+            'last_message_timestamp' => '2016-07-16 22:19:17',
         ]);
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
-        ); 
-        //verify email.
+            'Fae-Client-Version' => 'ios-0.0.1',
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );   
         $parameters2 = array(
-            'email' => $this->testEmail,
-            'code' => '555555'
+             'receiver_id' => 2,
+             'message' => 'Hello world2',
+             'type' => 'text',
         );
-        $response = $this->call('post', 'http://'.$this->domain.'/reset_login/code/verify', $parameters2, [], [], $this->transformHeadersToServerVars($server2));
+        $response = $this->call('post', 'http://'.$this->domain.'/chats', $parameters2, [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent());  
-        $result = false; 
+        $result = false;
+        if ($response->status() == '400' && $array2->message == 'Please mark unread messages before sending new messages!') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);
+    }
+
+    //test the response when the sender_id is the same as the receiver_id. 
+    public function testSend4() {   
+        $parameter1 = array(
+            'email' => 'letsfae@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
+        $parameter2 = array(
+            'email' => 'letsfae@yahoo.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin2',
+            'last_name' => 'zhang',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'kevin',
+        );
+        $server1 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server1));
+        $this->refreshApplication();
+        $array = json_decode($login_response->getContent());
+        $chat = Chats::create([
+            'user_a_id' => 1,
+            'user_b_id' => 2,
+            'last_message_sender_id' => 1,
+            'last_message' => 'Hello world',
+            'last_message_type' => 'text',
+            'user_a_unread_count' => 0,
+            'user_b_unread_count' => 1,
+            'last_message_timestamp' => '2016-07-16 22:19:17',
+        ]);
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );   
+        $parameters2 = array(
+             'receiver_id' => 1,
+             'message' => 'Hello world2',
+             'type' => 'text',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/chats', $parameters2, [], [], $this->transformHeadersToServerVars($server2));   
+        $array2 = json_decode($response->getContent());
+        $result = false;
+        if ($response->status() == '400' && $array2->message == 'You can not send messages to yourself!') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);
+    }
+
+    //test correct response of the method of getting unread. 
+    public function testGetUnread() {  
+        $parameter1 = array(
+            'email' => 'letsfae@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
+        $parameter2 = array(
+            'email' => 'letsfae@yahoo.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin2',
+            'last_name' => 'zhang',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'kevin',
+        );
+        $server1 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server1));
+        $this->refreshApplication();
+        $array = json_decode($login_response->getContent());
+        $chat = Chats::create([
+            'user_a_id' => 1,
+            'user_b_id' => 2,
+            'last_message_sender_id' => 1,
+            'last_message' => 'Hello world',
+            'last_message_type' => 'text',
+            'user_a_unread_count' => 1,
+            'user_b_unread_count' => 1,
+            'last_message_timestamp' => '2016-07-16 22:19:17',
+        ]);
+        $chat1 = Chats::create([
+            'user_a_id' => 1,
+            'user_b_id' => 2,
+            'last_message_sender_id' => 1,
+            'last_message' => 'Hello world2',
+            'last_message_type' => 'text',
+            'user_a_unread_count' => 1,
+            'user_b_unread_count' => 1,
+            'last_message_timestamp' => '2016-07-16 22:19:20',
+        ]);
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );   
+        $response = $this->call('get', 'http://'.$this->domain.'/chats/unread', [], [], [], $this->transformHeadersToServerVars($server2));   
+        $array2 = json_decode($response->getContent()); 
+        for ($i = 0; $i < 2; $i++) {
+            $this->seeJson([
+                    'chat_id' => $array2[0]->chat_id,
+                    'last_message' => $array2[0]->last_message,
+                    'last_message_sender_id' => $array2[0]->last_message_sender_id,
+                    'last_message_timestamp' => $array2[0]->last_message_timestamp,
+                    'last_message_type' => $array2[0]->last_message_type,
+                    'unread_count' => $array2[0]->unread_count,
+            ]);
+        }
+        $result = false;
+        if ($response->status() == '200') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);
+    }
+
+    //test correct response of the method of marking read. 
+    public function testMarkRead() {   
+        $parameter1 = array(
+            'email' => 'letsfae@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
+        $parameter2 = array(
+            'email' => 'letsfae@yahoo.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin2',
+            'last_name' => 'zhang',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'kevin',
+        );
+        $server1 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server1));
+        $this->refreshApplication();
+        $array = json_decode($login_response->getContent());
+        $chat = Chats::create([
+            'user_a_id' => 1,
+            'user_b_id' => 2,
+            'last_message_sender_id' => 1,
+            'last_message' => 'Hello world',
+            'last_message_type' => 'text',
+            'user_a_unread_count' => 1,
+            'user_b_unread_count' => 1,
+            'last_message_timestamp' => '2016-07-16 22:19:17',
+        ]); 
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );   
+        $parameters2 = array(
+              'chat_id' => 1,
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/chats/read', $parameters2, [], [], $this->transformHeadersToServerVars($server2));   
+        $array2 = json_decode($response->getContent()); 
+        $result = false;
         if ($response->status() == '201') {
             $result = true;
         }
-        $this->assertEquals(true, $result);  
+        $this->assertEquals(true, $result);
+        $this->seeInDatabase('chats', ['user_a_unread_count' => 0]);
     }
 
-    //test whether the input format is right.
-    public function testVerifyResetCode2() {
-        // $this->markTestSkipped(); 
-        $parameter = array(
+    //test whether the input format is right. 
+    public function testMarkRead2() {   
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
             'first_name' => 'kevin',
@@ -338,10 +471,10 @@ class resetLoginTest extends TestCase {
             'Accept' => 'application/x.faeapp.v1+json', 
             'Fae-Client-Version' => 'ios-0.0.1',
         );
-        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter, [], [], $this->transformHeadersToServerVars($server));
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
         $this->refreshApplication();
         $parameter2 = array(
-            'email' => $this->testEmail,
+            'email' => 'letsfae@yahoo.com',
             'password' => 'letsfaego',
             'first_name' => 'kevin2',
             'last_name' => 'zhang',
@@ -367,33 +500,37 @@ class resetLoginTest extends TestCase {
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server1));
         $this->refreshApplication();
         $array = json_decode($login_response->getContent());
-        $verification = Verifications::create([
-            'type' => 'resetpassword',
-            'email' => $this->testEmail,
-            'code' => '555555',
-        ]);
+        $chat = Chats::create([
+            'user_a_id' => 1,
+            'user_b_id' => 2,
+            'last_message_sender_id' => 1,
+            'last_message' => 'Hello world',
+            'last_message_type' => 'text',
+            'user_a_unread_count' => 1,
+            'user_b_unread_count' => 1,
+            'last_message_timestamp' => '2016-07-16 22:19:17',
+        ]); 
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
-        ); 
-        //wrong format of the code.
+            'Fae-Client-Version' => 'ios-0.0.1',
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );   
+        //the chat_id does not exist in the chats database.
         $parameters2 = array(
-            'email' => $this->testEmail,
-            'code' => '55555555'
+              'chat_id' => 2,
         );
-        $response = $this->call('post', 'http://'.$this->domain.'/reset_login/code/verify', $parameters2, [], [], $this->transformHeadersToServerVars($server2));
-        $array2 = json_decode($response->getContent()); 
-        $result = false; 
-        if ($response->status() == '422' && $array2->message == 'Could not verify.' && $array2->errors->code[0] == 'The code may not be greater than 6 characters.') {
+        $response = $this->call('post', 'http://'.$this->domain.'/chats/read', $parameters2, [], [], $this->transformHeadersToServerVars($server2));   
+        $array2 = json_decode($response->getContent());  
+        $result = false;
+        if ($response->status() == '422' && $array2->message == 'Could not mark unread message.' && $array2->errors->chat_id[0] == 'The selected chat id is invalid.') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);
     }
 
-    //test whether the data of the verification exists.
-    public function testVerifyResetCode3() {
-        // $this->markTestSkipped(); 
-        $parameter = array(
+    //test correct response of the method of getting history. 
+    public function testGetHistory() {   
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
             'first_name' => 'kevin',
@@ -405,10 +542,10 @@ class resetLoginTest extends TestCase {
             'Accept' => 'application/x.faeapp.v1+json', 
             'Fae-Client-Version' => 'ios-0.0.1',
         );
-        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter, [], [], $this->transformHeadersToServerVars($server));
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
         $this->refreshApplication();
         $parameter2 = array(
-            'email' => $this->testEmail,
+            'email' => 'letsfae@yahoo.com',
             'password' => 'letsfaego',
             'first_name' => 'kevin2',
             'last_name' => 'zhang',
@@ -434,27 +571,54 @@ class resetLoginTest extends TestCase {
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server1));
         $this->refreshApplication();
         $array = json_decode($login_response->getContent());
+        $chat = Chats::create([
+            'user_a_id' => 1,
+            'user_b_id' => 2,
+            'last_message_sender_id' => 1,
+            'last_message' => 'Hello world',
+            'last_message_type' => 'text',
+            'user_a_unread_count' => 1,
+            'user_b_unread_count' => 1,
+            'last_message_timestamp' => '2016-07-16 22:19:17',
+        ]);
+        $chat1 = Chats::create([
+            'user_a_id' => 1,
+            'user_b_id' => 2,
+            'last_message_sender_id' => 1,
+            'last_message' => 'Hello world2',
+            'last_message_type' => 'text',
+            'user_a_unread_count' => 1,
+            'user_b_unread_count' => 1,
+            'last_message_timestamp' => '2016-07-16 22:19:20',
+        ]);
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
-        ); 
-        $parameters2 = array(
-            'email' => $this->testEmail,
-            'code' => '555555'
-        );
-        $response = $this->call('post', 'http://'.$this->domain.'/reset_login/code/verify', $parameters2, [], [], $this->transformHeadersToServerVars($server2));
-        $array2 = json_decode($response->getContent()); 
+            'Fae-Client-Version' => 'ios-0.0.1',
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );   
+        $response = $this->call('get', 'http://'.$this->domain.'/chats', [], [], [], $this->transformHeadersToServerVars($server2));   
+        $array2 = json_decode($response->getContent());  
+        for ($i = 0; $i < 2; $i++) {
+            $this->seeJson([
+                    'chat_id' => $array2[0]->chat_id,
+                    'with_user_id' => $array2[0]->with_user_id,
+                    'last_message' => $array2[0]->last_message,
+                    'last_message_sender_id' => $array2[0]->last_message_sender_id,
+                    'last_message_type' => $array2[0]->last_message_type,
+                    'last_message_timestamp' => $array2[0]->last_message_timestamp,
+                    'unread_count' => $array2[0]->unread_count,
+            ]);
+        }
         $result = false;
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
+        if ($response->status() == '200') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);
     }
 
-    //test the response when the input code is not the same as the code in verifications table.
-    public function testVerifyResetCode4() {
-        // $this->markTestSkipped(); 
-        $parameter = array(
+    //test correct response of the method of deleting message. 
+    public function testDelete() {   
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
             'first_name' => 'kevin',
@@ -466,10 +630,10 @@ class resetLoginTest extends TestCase {
             'Accept' => 'application/x.faeapp.v1+json', 
             'Fae-Client-Version' => 'ios-0.0.1',
         );
-        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter, [], [], $this->transformHeadersToServerVars($server));
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
         $this->refreshApplication();
         $parameter2 = array(
-            'email' => $this->testEmail,
+            'email' => 'letsfae@yahoo.com',
             'password' => 'letsfaego',
             'first_name' => 'kevin2',
             'last_name' => 'zhang',
@@ -495,33 +659,30 @@ class resetLoginTest extends TestCase {
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server1));
         $this->refreshApplication();
         $array = json_decode($login_response->getContent());
-        $verification = Verifications::create([
-            'type' => 'resetpassword',
-            'email' => $this->testEmail,
-            'code' => '555555',
-        ]);
+        $chat = Chats::create([
+            'user_a_id' => 1,
+            'user_b_id' => 2,
+            'last_message_sender_id' => 1,
+            'last_message' => 'Hello world',
+            'last_message_type' => 'text',
+            'user_a_unread_count' => 1,
+            'user_b_unread_count' => 1,
+            'last_message_timestamp' => '2016-07-16 22:19:17',
+        ]); 
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
-        ); 
-        //the code is not the same as the code in the database.
-        $parameters2 = array(
-            'email' => $this->testEmail,
-            'code' => '555556'
-        );
-        $response = $this->call('post', 'http://'.$this->domain.'/reset_login/code/verify', $parameters2, [], [], $this->transformHeadersToServerVars($server2));
-        $array2 = json_decode($response->getContent()); 
-        $result = false;
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
-            $result = true;
-        }
-        $this->assertEquals(true, $result); 
+            'Fae-Client-Version' => 'ios-0.0.1',
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );   
+        //delete the chat information of with the selected chat_id.
+        $response = $this->call('delete', 'http://'.$this->domain.'/chats/1', [], [], [], $this->transformHeadersToServerVars($server2));   
+        $array2 = json_decode($response->getContent());  
+        $this->assertResponseStatus(204);
     }
 
-    //test what is the response when the data has created more than 30 minitues in the verifications table.
-    public function testVerifyResetCode5() {
-        // $this->markTestSkipped(); 
-        $parameter = array(
+    //test whether the input format is right. 
+    public function testDelete2() {  
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
             'first_name' => 'kevin',
@@ -533,10 +694,10 @@ class resetLoginTest extends TestCase {
             'Accept' => 'application/x.faeapp.v1+json', 
             'Fae-Client-Version' => 'ios-0.0.1',
         );
-        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter, [], [], $this->transformHeadersToServerVars($server));
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
         $this->refreshApplication();
         $parameter2 = array(
-            'email' => $this->testEmail,
+            'email' => 'letsfae@yahoo.com',
             'password' => 'letsfaego',
             'first_name' => 'kevin2',
             'last_name' => 'zhang',
@@ -562,34 +723,34 @@ class resetLoginTest extends TestCase {
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server1));
         $this->refreshApplication();
         $array = json_decode($login_response->getContent());
-        $verification = Verifications::create([
-            'type' => 'resetpassword',
-            'email' => $this->testEmail,
-            'code' => '555555',
-            'created_at' => '2016-07-10 01:57:33'
-        ]);
+        $chat = Chats::create([
+            'user_a_id' => 1,
+            'user_b_id' => 2,
+            'last_message_sender_id' => 1,
+            'last_message' => 'Hello world',
+            'last_message_type' => 'text',
+            'user_a_unread_count' => 1,
+            'user_b_unread_count' => 1,
+            'last_message_timestamp' => '2016-07-16 22:19:17',
+        ]); 
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
-        ); 
-        //the code is not the same as the code in the database.
-        $parameters2 = array(
-            'email' => $this->testEmail,
-            'code' => '555555'
-        );
-        $response = $this->call('post', 'http://'.$this->domain.'/reset_login/code/verify', $parameters2, [], [], $this->transformHeadersToServerVars($server2));
-        $array2 = json_decode($response->getContent()); 
+            'Fae-Client-Version' => 'ios-0.0.1',
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );   
+        //the chat_id does not exist in the chats database.
+        $response = $this->call('delete', 'http://'.$this->domain.'/chats/2', [], [], [], $this->transformHeadersToServerVars($server2));   
+        $array2 = json_decode($response->getContent());  
         $result = false;
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
+        if ($response->status() == '422' && $array2->message == 'Could not delete chat.' && $array2->errors->chat_id[0] == 'The selected chat id is invalid.') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);
     }
 
-    //test correct response of the method of resetPassword.
-    public function testResetPassword() {
-        // $this->markTestSkipped(); 
-        $parameter = array(
+    //test whether the user who have logged in have the right to delete this chat.
+    public function testDelete3() {   
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
             'first_name' => 'kevin',
@@ -601,10 +762,10 @@ class resetLoginTest extends TestCase {
             'Accept' => 'application/x.faeapp.v1+json', 
             'Fae-Client-Version' => 'ios-0.0.1',
         );
-        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter, [], [], $this->transformHeadersToServerVars($server));
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
         $this->refreshApplication();
         $parameter2 = array(
-            'email' => $this->testEmail,
+            'email' => 'letsfae@yahoo.com',
             'password' => 'letsfaego',
             'first_name' => 'kevin2',
             'last_name' => 'zhang',
@@ -616,6 +777,20 @@ class resetLoginTest extends TestCase {
             'Fae-Client-Version' => 'ios-0.0.1',
         );
         $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
+        $parameter3 = array(
+            'email' => 'letsfae@gmial.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin3',
+            'last_name' => 'zhang',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter3, [], [], $this->transformHeadersToServerVars($server));
         $this->refreshApplication();
         $parameters = array(
             'email' => 'letsfae@126.com', 
@@ -630,294 +805,28 @@ class resetLoginTest extends TestCase {
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server1));
         $this->refreshApplication();
         $array = json_decode($login_response->getContent());
-        $verification = Verifications::create([
-            'type' => 'resetpassword',
-            'email' => $this->testEmail,
-            'code' => '555555',
-        ]);
+        $chat = Chats::create([
+            'user_a_id' => 2,
+            'user_b_id' => 3,
+            'last_message_sender_id' => 1,
+            'last_message' => 'Hello world',
+            'last_message_type' => 'text',
+            'user_a_unread_count' => 1,
+            'user_b_unread_count' => 1,
+            'last_message_timestamp' => '2016-07-16 22:19:17',
+        ]); 
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
-        ); 
-        //verify email.
-        $parameters2 = array(
-            'email' => $this->testEmail,
-            'code' => '555555',
-            'password' => 'updateletsfaego'
-        );
-        $response = $this->call('post', 'http://'.$this->domain.'/reset_login/password', $parameters2, [], [], $this->transformHeadersToServerVars($server2));
-        $array2 = json_decode($response->getContent()); 
-        $result = false; 
-        if ($response->status() == '201') {
-            $result = true;
-        }
-        $this->assertEquals(true, $result);  
-        $this->seeInDatabase('users', ['email' => $this->testEmail, 'login_count' => 0]);
-    }
-
-    //test whether the input format is right.
-    public function testResetPassword2() {
-        // $this->markTestSkipped(); 
-        $parameter = array(
-            'email' => 'letsfae@126.com',
-            'password' => 'letsfaego',
-            'first_name' => 'kevin',
-            'last_name' => 'zhang',
-            'gender' => 'male',
-            'birthday' => '1992-02-02',
-        );
-        $server = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
             'Fae-Client-Version' => 'ios-0.0.1',
-        );
-        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter, [], [], $this->transformHeadersToServerVars($server));
-        $this->refreshApplication();
-        $parameter2 = array(
-            'email' => $this->testEmail,
-            'password' => 'letsfaego',
-            'first_name' => 'kevin2',
-            'last_name' => 'zhang',
-            'gender' => 'male',
-            'birthday' => '1992-02-02',
-        );
-        $server = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-        );
-        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
-        $this->refreshApplication();
-        $parameters = array(
-            'email' => 'letsfae@126.com', 
-            'password' => 'letsfaego',
-            'user_name' => 'kevin',
-        );
-        $server1 = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-        );
-        //login of the user.
-        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server1));
-        $this->refreshApplication();
-        $array = json_decode($login_response->getContent());
-        $verification = Verifications::create([
-            'type' => 'resetpassword',
-            'email' => $this->testEmail,
-            'code' => '555555',
-        ]);
-        $server2 = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
-        ); 
-        //wrong format of the code.
-        $parameters2 = array(
-            'email' => $this->testEmail,
-            'code' => '55555555',
-            'password' => 'updateletsfaego'
-        );
-        $response = $this->call('post', 'http://'.$this->domain.'/reset_login/password', $parameters2, [], [], $this->transformHeadersToServerVars($server2));
-        $array2 = json_decode($response->getContent());
-        $result = false; 
-        if ($response->status() == '422' && $array2->message == 'Could not reset.' && $array2->errors->code[0] == 'The code may not be greater than 6 characters.') {
-            $result = true;
-        }
-        $this->assertEquals(true, $result); 
-    }
-
-    //test whether the data of the verification exists.
-    public function testResetPassword3() {
-        // $this->markTestSkipped(); 
-        $parameter = array(
-            'email' => 'letsfae@126.com',
-            'password' => 'letsfaego',
-            'first_name' => 'kevin',
-            'last_name' => 'zhang',
-            'gender' => 'male',
-            'birthday' => '1992-02-02',
-        );
-        $server = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-        );
-        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter, [], [], $this->transformHeadersToServerVars($server));
-        $this->refreshApplication();
-        $parameter2 = array(
-            'email' => $this->testEmail,
-            'password' => 'letsfaego',
-            'first_name' => 'kevin2',
-            'last_name' => 'zhang',
-            'gender' => 'male',
-            'birthday' => '1992-02-02',
-        );
-        $server = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-        );
-        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
-        $this->refreshApplication();
-        $parameters = array(
-            'email' => 'letsfae@126.com', 
-            'password' => 'letsfaego',
-            'user_name' => 'kevin',
-        );
-        $server1 = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-        );
-        //login of the user.
-        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server1));
-        $this->refreshApplication();
-        $array = json_decode($login_response->getContent()); 
-        $server2 = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
-        );  
-        $parameters2 = array(
-            'email' => $this->testEmail,
-            'code' => '555555',
-            'password' => 'updateletsfaego'
-        );
-        $response = $this->call('post', 'http://'.$this->domain.'/reset_login/password', $parameters2, [], [], $this->transformHeadersToServerVars($server2));
-        $array2 = json_decode($response->getContent());
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );   
+        //the user who have logged in is not with user_a_id or user_b_id.
+        $response = $this->call('delete', 'http://'.$this->domain.'/chats/1', [], [], [], $this->transformHeadersToServerVars($server2));   
+        $array2 = json_decode($response->getContent());   
         $result = false;
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
+        if ($response->status() == '401' && $array2->message == 'Bad request, you have no right to delete this chat') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
-    }
-
-    //test the response when the input code is not the same as the code in verifications table.
-    public function testResetPassword4() {
-        // $this->markTestSkipped(); 
-        $parameter = array(
-            'email' => 'letsfae@126.com',
-            'password' => 'letsfaego',
-            'first_name' => 'kevin',
-            'last_name' => 'zhang',
-            'gender' => 'male',
-            'birthday' => '1992-02-02',
-        );
-        $server = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-        );
-        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter, [], [], $this->transformHeadersToServerVars($server));
-        $this->refreshApplication();
-        $parameter2 = array(
-            'email' => $this->testEmail,
-            'password' => 'letsfaego',
-            'first_name' => 'kevin2',
-            'last_name' => 'zhang',
-            'gender' => 'male',
-            'birthday' => '1992-02-02',
-        );
-        $server = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-        );
-        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
-        $this->refreshApplication();
-        $parameters = array(
-            'email' => 'letsfae@126.com', 
-            'password' => 'letsfaego',
-            'user_name' => 'kevin',
-        );
-        $server1 = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-        );
-        //login of the user.
-        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server1));
-        $this->refreshApplication();
-        $array = json_decode($login_response->getContent()); 
-        $verification = Verifications::create([
-            'type' => 'resetpassword',
-            'email' => $this->testEmail,
-            'code' => '555555',
-        ]);
-        $server2 = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
-        ); 
-        //the code is not the same as the code in the database.
-        $parameters2 = array(
-            'email' => $this->testEmail,
-            'code' => '555556',
-            'password' => 'updateletsfaego'
-        );
-        $response = $this->call('post', 'http://'.$this->domain.'/reset_login/password', $parameters2, [], [], $this->transformHeadersToServerVars($server2));
-        $array2 = json_decode($response->getContent());
-        $result = false;
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
-            $result = true;
-        }
-        $this->assertEquals(true, $result); 
-    }
-
-    //test what is the response when the data has created more than 30 minitues in the verifications table.
-    public function testResetPassword5() {
-        // $this->markTestSkipped(); 
-        $parameter = array(
-            'email' => 'letsfae@126.com',
-            'password' => 'letsfaego',
-            'first_name' => 'kevin',
-            'last_name' => 'zhang',
-            'gender' => 'male',
-            'birthday' => '1992-02-02',
-        );
-        $server = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-        );
-        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter, [], [], $this->transformHeadersToServerVars($server));
-        $this->refreshApplication();
-        $parameter2 = array(
-            'email' => $this->testEmail,
-            'password' => 'letsfaego',
-            'first_name' => 'kevin2',
-            'last_name' => 'zhang',
-            'gender' => 'male',
-            'birthday' => '1992-02-02',
-        );
-        $server = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-        );
-        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
-        $this->refreshApplication();
-        $parameters = array(
-            'email' => 'letsfae@126.com', 
-            'password' => 'letsfaego',
-            'user_name' => 'kevin',
-        );
-        $server1 = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-        );
-        //login of the user.
-        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server1));
-        $this->refreshApplication();
-        $array = json_decode($login_response->getContent()); 
-        $verification = Verifications::create([
-            'type' => 'resetpassword',
-            'email' => $this->testEmail,
-            'code' => '555555',
-            'created_at' => '2016-07-10 01:57:33'
-        ]);
-        $server2 = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
-        );  
-        $parameters2 = array(
-            'email' => $this->testEmail,
-            'code' => '555555',
-            'password' => 'updateletsfaego'
-        );
-        $response = $this->call('post', 'http://'.$this->domain.'/reset_login/password', $parameters2, [], [], $this->transformHeadersToServerVars($server2));
-        $array2 = json_decode($response->getContent());
-        $result = false;
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
-            $result = true;
-        }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);
     }
 }
