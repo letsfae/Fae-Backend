@@ -133,7 +133,7 @@ class UserController extends Controller
             return response()->json([
                 'message' => 'Incorrect password, you still have '.(3-$user->login_count).' chances',
                 'status_code' => 401,
-                'login_count' => $users->login_count,
+                'login_count' => $user->login_count,
             ], 401);
             
             //throw new UnauthorizedHttpException('Incorrect password, you still have '.(3-$user->login_count).' chances');
@@ -164,7 +164,7 @@ class UserController extends Controller
                 return response()->json([
                     'message' => 'Bad request, Password incorrect!',
                     'status_code' => 401,
-                    'login_count' => $users->login_count,
+                    'login_count' => $user->login_count,
                 ], 401);
                 //throw new UnauthorizedHttpException('Incorrect password, please verify your information!');
             }
