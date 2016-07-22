@@ -14,7 +14,7 @@ class MediaController extends Controller implements PinInterface {
     }
 
     public function create() {
-
+        
     }
 
     public function update($media_id) {

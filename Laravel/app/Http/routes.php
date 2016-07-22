@@ -75,7 +75,6 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->get('/medias/{media_id}', 'App\Api\v1\Controllers\MediaController@getOne');
     $api->delete('/medias/{media_id}', 'App\Api\v1\Controllers\MediaController@delete');
     $api->get('/medias/users/{user_id}', 'App\Api\v1\Controllers\MediaController@getFromUser');
-    );
     // faevor
     $api->post('/faevors', 'App\Api\v1\Controllers\FaevorController@create');
     $api->post('/faevors/{faevor_id}', 'App\Api\v1\Controllers\FaevorController@update');
