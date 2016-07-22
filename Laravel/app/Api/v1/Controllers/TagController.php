@@ -41,19 +41,13 @@ class TagController extends Controller implements RefInterface {
     {
         $this->getArrayValidation($this->request);
         $page = $this->request->has('page') ? $this->request->page : 1;
-        // $hasType = $this->request->has('type') ? true : false;
         $total_pages = intval(Tags::count()/30) + 1;
         $info = array();
-        // if($hasType)
-        // {
-        //     $tags = Tags::where('type', $this->request->type)->orderBy('reference_count','desc')->skip(30 * ($page - 1))->take(30)->get();
-        // }
         $tags = Tags::orderBy('reference_count','desc')->orderBy('title','asc')->orderBy('id','asc')->skip(30 * ($page - 1))->take(30)->get();
         foreach ($tags as $tag)
         {
             $info[] = array('tag_id' => $tag->id, 'title' => $tag->title, 'color' => $tag->color);    
         }
-        //return response($info, 200)->header('page', $page)->header('total_pages', $total_pages);
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
     }
 
