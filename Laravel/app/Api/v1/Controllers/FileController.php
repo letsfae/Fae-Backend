@@ -24,7 +24,7 @@ class FileController extends Controller implements RefInterface {
     	$input = $this->request->all();
         $validator = Validator::make($input, [
             'type' => 'required|in:image,video',
-            'data' => 'mimes:jpeg,jpg,png,gif,m4v,avi,flv,mp4,mov|required|max:10240',
+            'file' => 'mimes:jpeg,jpg,png,gif,m4v,avi,flv,mp4,mov|required|max:10240',
             'description' => 'string',
             'custom_tag ' => 'string'
         ]);
@@ -43,7 +43,7 @@ class FileController extends Controller implements RefInterface {
             substr($random_name_raw,20);
         
         //store the file in the file system
-        $file = $this->request->data;
+        $file = $this->request->file;
         Storage::disk('local')->put('files/'.$file_name_storage, File::get($file));
         
         
