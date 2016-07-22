@@ -71,7 +71,7 @@ class ChatController extends Controller
         foreach($unreads as $unread)
         {
             $unread_count = ($this->request->self_user_id == $unread->user_a_id) ? $unread->user_a_unread_count:$unread->user_b_unread_count;
-            $messages[] = ['chat_id' => $unread->id, 'last_message' => $unread->last_message, 'last_message_sender_id' => $unread->last_message_sender_id, 'last_message_timestamp' => $unread->last_message_timestamp, 'last_message_type' => $unread->last_message_type, 'unread_count' => $unread_count];
+            $messages[] = ['chat_id' => $unread->id, 'last_message' => $unread->last_message, 'last_message_sender_id' => $unread->last_message_sender_id, 'last_message_timestamp' => $unread->last_message_timestamp->format('Y-m-d H:i:s'), 'last_message_type' => $unread->last_message_type, 'unread_count' => $unread_count];
         }
         return $this->response->array($messages);
     }
@@ -116,7 +116,7 @@ class ChatController extends Controller
         {
             $with_user_id = ($this->request->self_user_id == $chat->user_a_id) ? $chat->user_b_id:$chat->user_a_id;
             $unread_count = ($this->request->self_user_id == $chat->user_a_id) ? $chat->user_a_unread_count:$chat->user_b_unread_count;
-            $info[] = ['chat_id' => $chat->id, 'with_user_id' => $with_user_id, 'last_message' => $chat->last_message, 'last_message_sender_id' => $chat->last_message_sender_id, 'last_message_type' => $chat->last_message_type, 'last_message_timestamp' => $chat->last_message_timestamp, 'unread_count' => $unread_count];
+            $info[] = ['chat_id' => $chat->id, 'with_user_id' => $with_user_id, 'last_message' => $chat->last_message, 'last_message_sender_id' => $chat->last_message_sender_id, 'last_message_type' => $chat->last_message_type, 'last_message_timestamp' => $chat->last_message_timestamp->format('Y-m-d H:i:s'), 'unread_count' => $unread_count];
         }
         return $this->response->array($info);
     }

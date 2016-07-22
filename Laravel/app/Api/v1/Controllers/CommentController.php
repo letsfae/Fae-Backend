@@ -57,7 +57,7 @@ class CommentController extends Controller implements PinInterface {
             $geolocation = $comments->geolocation;
             $lat = $geolocation->getLat();
             $lng = $geolocation->getLng();
-            $created_at = DATE($comments->created_at);
+            $created_at = $comments->created_at->format('Y-m-d H:i:s');
             $result = array('comment_id' => $comment_id, 'user_id' => $user_id, 'content' => $content, 'geolocation' => array('latitude' => $lat, 'longitude' => $lng), 'created_at' => $created_at);
             return $this->response->array($result);
         }
@@ -92,7 +92,7 @@ class CommentController extends Controller implements PinInterface {
         $info = array();
         foreach ($comments as $comment)
         {
-            $info[] = array('comment_id' => $comment->comment_id, 'user_id' => $comment->user_id, 'content' => $comment->content, 'geolocation' => array('latitude' => $comment->geolocation->getLat(), 'longitude' => $comment->geolocation->getLng()), 'created_at' => $comment->created_at);    
+            $info[] = array('comment_id' => $comment->comment_id, 'user_id' => $comment->user_id, 'content' => $comment->content, 'geolocation' => array('latitude' => $comment->geolocation->getLat(), 'longitude' => $comment->geolocation->getLng()), 'created_at' => $comment->created_at->format('Y-m-d H:i:s'));    
         }
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
     }

@@ -91,7 +91,7 @@ class FileController extends Controller implements RefInterface {
         
         $content = array('file_id' => $file_id,
                         'file_name' => $file_data->file_name,
-                        'created_at' => $file_data->created_at->format('d-m-Y H:i:s'),
+                        'created_at' => $file_data->created_at->format('Y-m-d H:i:s'),
                         'type' => $file_data->type,
                         'mine_type' => $file_data->mine_type,
                         'description' => $file_data->description,

@@ -215,7 +215,7 @@ class FriendController extends Controller {
                              'request_user_id' => $value->user_id, 
                              'request_user_name' => $request_user->user_name,
                              'request_email' => $request_user->email,
-                             'created_at' => $value->created_at->format('d-m-Y H:i:s'));
+                             'created_at' => $value->created_at->format('Y-m-d H:i:s'));
             array_push($result, $content);
         }
         
