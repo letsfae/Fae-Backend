@@ -82,7 +82,7 @@ class MapController extends Controller
                         'longitude'=>$locations[0]->getLng()],['latitude'=>$locations[2]->getLat(),
                         'longitude'=>$locations[0]->getLng()],['latitude'=>$locations[3]->getLat(),
                         'longitude'=>$locations[0]->getLng()],['latitude'=>$locations[4]->getLat(),
-                        'longitude'=>$locations[0]->getLng()]],'created_at'=>$session->created_at->format('Y-m-d H:i:s')];
+                        'longitude'=>$locations[0]->getLng()]],'created_at'=>$session->created_at];
                         $max_count--;
                     }
                     continue;
@@ -91,7 +91,7 @@ class MapController extends Controller
                     foreach($comments as $comment)
                     {
                         $location = Geometry::fromWKB($comment->geolocation);
-                        $info[] = ['type'=>'comment','comment_id' => $comment->id,'user_id' => $comment->user_id,'content' => $comment->content ,'geolocation'=>['latitude'=>$location->getLat(), 'longitude'=>$location->getLng()],'created_at'=>$comment->created_at->format('Y-m-d H:i:s')];
+                        $info[] = ['type'=>'comment','comment_id' => $comment->id,'user_id' => $comment->user_id,'content' => $comment->content ,'geolocation'=>['latitude'=>$location->getLat(), 'longitude'=>$location->getLng()],'created_at'=>$comment->created_at];
                         $max_count--;
                     }
                     continue;
