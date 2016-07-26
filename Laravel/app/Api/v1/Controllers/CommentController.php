@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Dingo\Api\Routing\Helpers;
 use App\Comments;
+use App\Users;
 use Auth;
 use App\Api\v1\Interfaces\PinInterface;
 
@@ -78,7 +79,7 @@ class CommentController extends Controller implements PinInterface {
     }
 
     public function getFromUser($user_id) {
-        if (is_null(Users::find($user_id))
+        if (is_null(Users::find($user_id)))
         {
             throw new AccessDeniedHttpException('Bad request, no such user exists!');
         }
@@ -92,7 +93,7 @@ class CommentController extends Controller implements PinInterface {
         $info = array();
         foreach ($comments as $comment)
         {
-            $info[] = array('comment_id' => $comment->comment_id, 'user_id' => $comment->user_id, 'content' => $comment->content, 'geolocation' => array('latitude' => $comment->geolocation->getLat(), 'longitude' => $comment->geolocation->getLng()), 'created_at' => $comment->created_at->format('Y-m-d H:i:s'));    
+            $info[] = array('comment_id' => $comment->id, 'user_id' => $comment->user_id, 'content' => $comment->content, 'geolocation' => array('latitude' => $comment->geolocation->getLat(), 'longitude' => $comment->geolocation->getLng()), 'created_at' => $comment->created_at->format('Y-m-d H:i:s'));    
         }
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
     }
