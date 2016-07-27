@@ -4,7 +4,9 @@
 
 # 文件类通用接口
 
-## 上传文件
+利用通用接口上传文件后，如若一段时间未得到引用（指某种pin引用该文件），则该文件会被永久删除。
+
+## 上传文件 :white_check_mark:
 
 `POST /files`
 
@@ -31,7 +33,7 @@ Status: 201
 		"file_id": @number
 	}
 
-## 获取文件内容
+## 获取文件内容 :white_check_mark:
 
 `GET /files/:file_id/data`
 
@@ -45,7 +47,7 @@ Status: 200
 
 body为文件内容。
 
-## 获取文件属性
+## 获取文件属性 :white_check_mark:
 
 `GET /files/:file_id/attribute`
 

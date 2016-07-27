@@ -84,7 +84,7 @@ Status: 200
 		]
 	}
 
-## 创建新tag
+## 创建新tag :white_check_mark:
 
 `POST /tags`
 
@@ -109,7 +109,7 @@ Status: 201
 
 如果tag已经创建，则会直接返回`tag_id`。
 
-## 获取tag
+## 获取tag :white_check_mark:
 
 `GET /tags`
 
@@ -144,7 +144,7 @@ Status: 200
 		{...}
 	]
 
-## 获取指定tag
+## 获取指定tag :white_check_mark:
 
 `GET /tags/:tag_id`
 
@@ -309,7 +309,7 @@ yes
 
 同发布media，但所有参数均为可选。
 
-如果需要删除file_ids或tag_ids，将字段内容置位`null`。
+必须存在至少一个file和一个tag，因此不允许file_ids及tag_ids置`null`。
 
 ### response
 
@@ -437,7 +437,7 @@ yes
 
 同发布faevor，但所有参数均为可选。
 
-如果需要删除file_ids或tag_ids，将字段内容置位`null`。
+如果需要删除file_ids，将字段内容置位`null`。
 
 ### response
 
