@@ -120,26 +120,24 @@ class FileController extends Controller implements RefInterface {
      */
     public static function ref($file_id) {
         $file_data = Files::find($file_id);
-        if(is_null($file_data)){
-            return $this->response->errorNotFound();
+        if(is_null($file_data))
+        {
+            return false;
         }
-        
         $file_data->reference_count++;
         $file_data->save();
+        return true;
     }
 
     public static function deref($file_id) {
         $file_data = Files::find($file_id);
         if(is_null($file_data)){
-            return $this->response->errorNotFound();
+            return false;
         }
-        
-        $file_data->reference_count--;
-        if( $file_data->reference_count == 0 ){
-            Storage::delete('files/'.$file_data->directory.$file_data->file_name_storage);
-            $file_data->delete();
-        }else{
-           $file_data->save();
+        if( $file_data->reference_count > 0 ){
+            $file_data->reference_count--;
         }
+        $file_data->save();
+        return true;
     }
 }

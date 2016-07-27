@@ -33,7 +33,7 @@ class UserNameCardController extends Controller
         {
             foreach (explode(';', $nameCard->tag_ids) as $tag)
             {
-                $tag = Name_card_tags::find($tag)->toArray();
+                $tag = Name_card_tags::find($tag);
                 $tags[] = array('tag_id' => $tag->id, 'title' => $tag->title, 'color' => $tag->color);
             }
         }
@@ -52,7 +52,7 @@ class UserNameCardController extends Controller
         $info = array();
         foreach ($tags as $tag)
         {
-            $info[] = $tag->toArray();
+            $info[] = array('tag_id' => $tag->id, 'title' => $tag->title, 'color' => $tag->color);
         }
         return $this->response->array($info);
     }

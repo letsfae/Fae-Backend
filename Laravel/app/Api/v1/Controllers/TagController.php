@@ -69,11 +69,11 @@ class TagController extends Controller implements RefInterface {
         $tag = Tags::find($tag_id);
         if(is_null($tag))
         {
-            return $this->response->errorNotFound();
+            return false;
         }
         $tag->reference_count++;
         $tag->save();
-        return $this->response->created();
+        return true;
     }
 
     public static function deref($tag_id)
@@ -81,14 +81,14 @@ class TagController extends Controller implements RefInterface {
         $tag = Tags::find($tag_id);
         if(is_null($tag))
         {
-            return $this->response->errorNotFound();
+            return false;
         }
         if($tag->reference_count > 0)
         {
             $tag->reference_count--;
         }
         $tag->save();
-        return $this->response->created();
+        return true;
     }
 
     private function createValidation(Request $request)
