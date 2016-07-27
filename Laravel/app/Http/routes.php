@@ -64,10 +64,23 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->get('/map', 'App\Api\v1\Controllers\MapController@getMap');
     $api->post('/map/user', 'App\Api\v1\Controllers\MapController@updateUserLocation');
     // comment
-    $api->post('/comments', 'App\Api\v1\Controllers\CommentController@createComment');
-    $api->get('/comments/{comment_id}', 'App\Api\v1\Controllers\CommentController@getComment');
-    $api->delete('/comments/{comment_id}', 'App\Api\v1\Controllers\CommentController@deleteComment');
-    $api->get('/comments/users/{user_id}', 'App\Api\v1\Controllers\CommentController@getUserComments');
+    $api->post('/comments', 'App\Api\v1\Controllers\CommentController@create');
+    $api->post('/comments/{comment_id}', 'App\Api\v1\Controllers\CommentController@update');
+    $api->get('/comments/{comment_id}', 'App\Api\v1\Controllers\CommentController@getOne');
+    $api->delete('/comments/{comment_id}', 'App\Api\v1\Controllers\CommentController@delete');
+    $api->get('/comments/users/{user_id}', 'App\Api\v1\Controllers\CommentController@getFromUser');
+    // media
+    $api->post('/medias', 'App\Api\v1\Controllers\MediaController@create');
+    $api->post('/medias/{media_id}', 'App\Api\v1\Controllers\MediaController@update');
+    $api->get('/medias/{media_id}', 'App\Api\v1\Controllers\MediaController@getOne');
+    $api->delete('/medias/{media_id}', 'App\Api\v1\Controllers\MediaController@delete');
+    $api->get('/medias/users/{user_id}', 'App\Api\v1\Controllers\MediaController@getFromUser');
+    // faevor
+    $api->post('/faevors', 'App\Api\v1\Controllers\FaevorController@create');
+    $api->post('/faevors/{faevor_id}', 'App\Api\v1\Controllers\FaevorController@update');
+    $api->get('/faevors/{faevor_id}', 'App\Api\v1\Controllers\FaevorController@getOne');
+    $api->delete('/faevors/{faevor_id}', 'App\Api\v1\Controllers\FaevorController@delete');
+    $api->get('/faevors/users/{user_id}', 'App\Api\v1\Controllers\FaevorController@getFromUser');
     // friends
     $api->post('/friends/request', 'App\Api\v1\Controllers\FriendController@requestFriend');
     $api->get('/friends/request', 'App\Api\v1\Controllers\FriendController@getAllRequests');

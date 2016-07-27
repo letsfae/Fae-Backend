@@ -40,7 +40,7 @@ yes
 | geo_latitude | number | 中心点纬度 |
 | geo_longitude | number | 中心点经度 |
 | radius (optional) | number | 半径，默认值为200m |
-| type (optional) | string("user","comment") | 筛选类型，默认为所有，类型之间用逗号隔开 |
+| type (optional) | string(user,comment,media,faevor) | 筛选类型，默认为所有，类型之间用逗号隔开 |
 | max_count (optional) | number | 返回节点最大数量，默认为30，最大为100 |
 
 对于一直在更新的user点，可以每隔一段时间获取一次。
@@ -96,9 +96,8 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| title | string | tag名字 |
+| title | string | tag名字，只能包含大小写字母数字和下划线 |
 | color (optional) | string(#xxxxxx) | 颜色，默认无颜色 |
-| type | string(comment,media,faevor,event,now,join_me,sell) | 应用类型 |
 
 ### response
 
@@ -122,10 +121,9 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| type (optional) | string(comment,media,faevor,event,now,join_me,sell) | 应用类型 |
 | page (optional) | number | 页数，默认为第1页（头30条） |
 
-如不设定type，则按照tag热度（该热度为粗略热度，非精确值）返回。
+如不设定type，则按照tag热度（即引用次数）降序返回。
 
 ### response
 
@@ -188,6 +186,21 @@ Status: 201
 		"comment_id": @number
 	}
 
+## 更新comment
+
+`POST /comments/:comment_id`
+
+### auth
+
+yes
+
+### parameters
+
+同发布comment，但所有参数均为可选。
+
+### response
+
+Status: 201
 
 ## 获取comment :white_check_mark:
 
@@ -234,14 +247,15 @@ yes
 
 Status: 200
 
-	{
-		page: @number,
-		total_pages: @number,
-		comments: [
-			{...},
-			{...}
-		]
-	}
+	page: @number
+	total_pages: @number
+
+	-----
+
+	[
+		{...},
+		{...}
+	]
 
 具体数组内对象同“获取comment”所得到的对象。
 
@@ -257,3 +271,258 @@ yes
 
 Status: 204
 
+## 发布media
+
+`POST /medias`
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| file_ids | file_id | 最多5个，通过;区分 |
+| tag_ids | tag_id | 最多50个，通过;区分 |
+| description | string | 描述 |
+| geo_latitude | number | 纬度 |
+| geo_longitude | number | 经度 |
+
+### response
+
+Status: 201
+
+	{
+		"media_id": @number
+	}
+
+## 更新media
+
+`POST /medias/:media_id`
+
+### auth
+
+yes
+
+### parameters
+
+同发布media，但所有参数均为可选。
+
+如果需要删除file_ids或tag_ids，将字段内容置位`null`。
+
+### response
+
+Status: 201
+
+## 获取media
+
+`GET /medias/:media_id`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	{
+		"media_id": @number,
+		"user_id": @number
+		"file_ids": [
+			@number, 
+			..., 
+			@number
+		],
+		"tags_ids": [
+			@number, 
+			..., 
+			@number
+		],
+		"description": @string,
+		"geolocation": {
+			"latitude": @number,
+			"longitude": @number
+		},
+		"created_at": @string
+	}
+
+## 获取某个用户的所有media
+
+`GET /medias/users/:user_id`
+
+### auth
+
+yes
+
+### filters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| start_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为1970-01-01 00:00:00 |
+| end_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为当前日期和时间 |
+| page | number | 页数，默认为第1页（头30条） |
+
+过滤参数均为可选。
+
+### response
+
+Status: 200
+
+	page: @number
+	total_pages: @number
+
+	-----
+
+	[
+		{...},
+		{...}
+	]
+
+具体数组内对象同“获取media”所得到的对象。
+
+## 删除media
+
+`DELETE /medias/:media_id`
+
+### auth
+
+yes
+
+### response
+
+Status: 204
+
+## 发布faevor
+
+`POST /faevors`
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| file_ids (optional) | file_id | 最多5个，通过;区分 |
+| tag_ids | tag_id | 最多50个，通过;区分 |
+| budget | integer | 费用，单位为美元 |
+| bouns (optional) | string | 奖励的文字描述 |
+| name | string | 名字 |
+| description | string | 描述 |
+| due_time | string(YYYY-MM-DD hh:mm:ss) | 终止时间 |
+| expire_time | string(YYYY-MM-DD hh:mm:ss) | 过期时间 |
+| geo_latitude | number | 纬度 |
+| geo_longitude | number | 经度 |
+
+### response
+
+Status: 201
+
+	{
+		"faevor_id": @number
+	}
+
+## 更新faevor
+
+`POST /faevors/:faevor_id`
+
+### auth
+
+yes
+
+### parameters
+
+同发布faevor，但所有参数均为可选。
+
+如果需要删除file_ids或tag_ids，将字段内容置位`null`。
+
+### response
+
+Status: 201
+
+## 获取faevor
+
+`GET /faevors/:faevor_id`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	{
+		"faevor_id": @number,
+		"user_id": @number
+		"file_ids": [
+			@number, 
+			..., 
+			@number
+		],
+		"tags_ids": [
+			@number, 
+			..., 
+			@number
+		],
+		"description": @string,
+		"name": @string,
+		"budget": @number,
+		"bouns": @string,
+		"due_time": @string,
+		"expire_time": @string,
+		"geolocation": {
+			"latitude": @number,
+			"longitude": @number
+		},
+		"created_at": @string
+	}
+
+## 获取某个用户的所有faevor
+
+`GET /faevors/users/:user_id`
+
+### auth
+
+yes
+
+### filters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| start_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为1970-01-01 00:00:00 |
+| end_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为当前日期和时间 |
+| page | number | 页数，默认为第1页（头30条） |
+
+过滤参数均为可选。
+
+### response
+
+Status: 200
+
+	page: @number
+	total_pages: @number
+
+	-----
+
+	[
+		{...},
+		{...}
+	]
+
+具体数组内对象同“获取media”所得到的对象。
+
+## 删除faevor
+
+`DELETE /faevors/:faevor_id`
+
+### auth
+
+yes
+
+### response
+
+Status: 204

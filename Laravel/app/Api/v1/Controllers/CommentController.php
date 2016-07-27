@@ -11,9 +11,11 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Dingo\Api\Routing\Helpers;
 use App\Comments;
+use App\Users;
 use Auth;
+use App\Api\v1\Interfaces\PinInterface;
 
-class CommentController extends Controller {
+class CommentController extends Controller implements PinInterface {
     use Helpers;
     use PostgisTrait;
     
@@ -21,7 +23,7 @@ class CommentController extends Controller {
         $this->request = $request;
     }
 
-    public function createComment() {
+    public function create() {
         CommentController::createValidation($this->request);
         $lat = $this->request->geo_latitude;
         $lng = $this->request->geo_longitude;
@@ -37,7 +39,11 @@ class CommentController extends Controller {
         return $this->response->created(null, $comment);
     }
 
-    public function getComment($comment_id) {
+    public function update($comment_id) {
+        
+    }
+
+    public function getOne($comment_id) {
         if (!is_numeric($comment_id)) {
             throw new AccessDeniedHttpException('Bad request, Please type the correct comment_id format!');
         }
@@ -52,13 +58,13 @@ class CommentController extends Controller {
             $geolocation = $comments->geolocation;
             $lat = $geolocation->getLat();
             $lng = $geolocation->getLng();
-            $created_at = DATE($comments->created_at);
+            $created_at = $comments->created_at->format('Y-m-d H:i:s');
             $result = array('comment_id' => $comment_id, 'user_id' => $user_id, 'content' => $content, 'geolocation' => array('latitude' => $lat, 'longitude' => $lng), 'created_at' => $created_at);
             return $this->response->array($result);
         }
     }
 
-    public function deleteComment($comment_id) {
+    public function delete($comment_id) {
         if (!is_numeric($comment_id)) {
             throw new AccessDeniedHttpException('Bad request, Please type the correct comment_id format!');
         }
@@ -72,67 +78,30 @@ class CommentController extends Controller {
         return $this->response->noContent();
     }
 
-    public function getUserComments($user_id) {
+    public function getFromUser($user_id) {
         if (!is_numeric($user_id)) {
             throw new AccessDeniedHttpException('Bad request, Please type the correct user_id format!');
         }
-        CommentController::getUserValidation($this->request);
-        $start_time = $this->request->start_time;
-        $end_time = $this->request->end_time;
-        $page = $this->request->page;
-        if ($start_time == null) {
-            $start_time = '1970-01-01 00:00:00';
+
+        if (is_null(Users::find($user_id)))
+        {
+            throw new AccessDeniedHttpException('Bad request, no such user exists!');
         }
-        date_default_timezone_set("UTC");
-        if ($end_time == null) {
-            $end_time = date("Y-m-d H:i:s");
+        $this->getUserValidation($this->request);
+        date_default_timezone_set("UTC"); 
+        $start_time = $this->request->has('start_time') ? $this->request->start_time:'1970-01-01 00:00:00';
+        $end_time = $this->request->has('end_time') ? $this->request->end_time:date("Y-m-d H:i:s");
+        $page =  $this->request->has('page') ? $this->request->page:1;
+        $comments = Comments::where('user_id', $user_id)->where('created_at','>=', $start_time)->where('created_at','<=', $end_time)->orderBy('created_at', 'desc')->skip(30 * ($page - 1))->take(30)->get();
+        $total_pages = intval($comments->count() / 30) + 1;
+        $info = array();
+        foreach ($comments as $comment)
+        {
+            $info[] = array('comment_id' => $comment->id, 'user_id' => $comment->user_id, 'content' => $comment->content, 'geolocation' => array('latitude' => $comment->geolocation->getLat(), 'longitude' => $comment->geolocation->getLng()), 'created_at' => $comment->created_at->format('Y-m-d H:i:s'));    
         }
-        if ($page == null) {
-            $page = '1';
-        }
-        $page = intval($page);
-        $comments = Comments::where('user_id', '=', $user_id)->where('created_at', '>=', $start_time)->where('created_at', '<=', $end_time)->orderBy('created_at', 'desc')->get();
-        if ($comments->first() == null) {
-            throw new AccessDeniedHttpException('Bad request, No such comment exists!');
-        }
-        else {
-            $total = $comments->count();
-            $pages = intval($total / 30) + 1;
-            if ($pages < $page) {
-                throw new AccessDeniedHttpException('Bad request, Please select the correct page!');
-            }
-            $totalComments = array();
-            $comment_id = array();
-            $user_id = array();
-            $created_at = array();
-            $geolocation = array();
-            $lat = array();
-            $lng = array();
-            $result = array();
-            foreach ($comments as $comm) {
-                $totalComments[] = $comm->content;
-                $comment_id[] = $comm->id;
-                $user_id[] = $comm->user_id;
-                $created_at[] = date($comm->created_at);
-                $geolocation[] = $comm->geolocation; 
-            }
-            foreach ($geolocation as $geo) {
-                $lat[] = $geo->getLat();
-                $lng[] = $geo->getLng();
-            }
-            if ($page * 30 > $total) {
-                for ($i = ($page - 1) * 30; $i < $total; $i++) {
-                    $result[] = array('page' => $page, 'total_pages' => $pages, 'comments' => array('comment_id' => $comment_id[$i], 'user_id' => $user_id[$i], 'content' => $totalComments[$i], 'geolocation' => array('latitude' => $lat[$i], 'longitude' => $lng[$i]), 'created_at' => $created_at[$i]));
-                }
-            }
-            else {
-                for ($i = ($page - 1) * 30; $i < ($page - 1) * 30 + 30; $i++) {
-                    $result[] = array('page' => $page, 'total_pages' => $pages, 'comments' => array('comment_id' => $comment_id[$i], 'user_id' => $user_id[$i], 'content' => $totalComments[$i], 'geolocation' => array('latitude' => $lat[$i], 'longitude' => $lng[$i]), 'created_at' => $created_at[$i]));
-                }
-            }
-            return $this->response->array($result);
-        }
+        return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
     }
+
     private function createValidation(Request $request) {
         $input = $request->all();
         $validator = Validator::make($input, [
@@ -144,11 +113,12 @@ class CommentController extends Controller {
             throw new AccessDeniedHttpException('Bad request, Please verify your input!');
         }
     }
+
     private function getUserValidation(Request $request) {
-        $input = $request->all();
-        $validator = Validator::make($input, [
+        $validator = Validator::make($request->all(), [
             'start_time' => 'regex:/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/',
             'end_time' => 'regex:/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/',
+            'page' => 'integer|min:0'
         ]);
         if($validator->fails()) {
             throw new AccessDeniedHttpException('Bad request, Please verify your input!');

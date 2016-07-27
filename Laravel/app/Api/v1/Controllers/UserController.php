@@ -238,7 +238,6 @@ class UserController extends Controller
         if($validator->fails())
         {
             throw new StoreResourceFailedException('Could not create new user.',$validator->errors());
-            // throw new UnprocessableEntityHttpException('Could not create new user.');
         }
     }
 

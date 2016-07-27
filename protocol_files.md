@@ -16,8 +16,8 @@ yes
 
 | Name | Description |
 | --- | --- |
-| data | 文件内容（采用mine形式，因此带有文件名及扩展名） |
-| type | string('image','video') |
+| file | 文件内容（采用mine形式，因此带有文件名及扩展名） |
+| type | string(image,video) |
 | description (optional) | 语义化的文件描述 |
 | custom_tag (optional) | 标签化的文件描述 |
 

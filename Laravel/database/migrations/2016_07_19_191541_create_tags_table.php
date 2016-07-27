@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateNameCardsTable extends Migration
+class CreateTagsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,13 +12,13 @@ class CreateNameCardsTable extends Migration
      */
     public function up()
     {
-        Schema::create('name_cards', function (Blueprint $table) {
-            $table->integer('user_id');
-            $table->string('nick_name',50)->nullable();
-            $table->text('short_intro')->nullable();
-            $table->text('tag_ids')->nullable();
-            $table->primary('user_id');
+        Schema::create('tags', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('title',20)->unique();
+            $table->string('color',10)->default('#000000');
+            $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
+            $table->integer('reference_count')->default(0);
             $table->timestamps();
         });
     }
@@ -30,6 +30,6 @@ class CreateNameCardsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('name_cards');
+        Schema::drop('tags');
     }
 }

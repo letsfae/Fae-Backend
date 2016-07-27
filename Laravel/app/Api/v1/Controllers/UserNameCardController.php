@@ -27,14 +27,14 @@ class UserNameCardController extends Controller
         {
             return $this->response->errorNotFound();
         }
-
         $gender = Name_cards::find($user_id)->hasOneUser()->first()->gender;
         $tags = array();
         if($nameCard->tag_ids != null)
         {
             foreach (explode(';', $nameCard->tag_ids) as $tag)
-            {
-                $tags[] = Name_card_tags::find($tag)->toArray();
+            { 
+                $tag = Name_card_tags::find($tag);
+                $tags[] = array('tag_id' => $tag->id, 'title' => $tag->title, 'color' => $tag->color); 
             }
         }
         $info = array('nick_name' => $nameCard->nick_name, 'short_intro' => $nameCard->short_intro, 'tags' => $tags, 'gender' => $gender);

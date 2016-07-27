@@ -127,3 +127,15 @@ Status: 200
 		"requested_user_id": @number 被请求用户,
 		"result": @string("accept","ignore")
 	}
+
+## 新消息
+
+	{
+		"type": "chat_new_message",
+		"chat_id": @number,
+		"last_message": @string,
+		"last_message_sender_id": @number,
+		"last_message_timestamp": @string,
+		"last_message_type": @string,
+		"unread_count": @number
+	}
