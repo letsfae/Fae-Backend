@@ -42,10 +42,16 @@ class MapController extends Controller
                 {
                     case 'user':
                         $type[] = 'user';
-                        continue;
+                        break;
                     case 'comment':
                         $type[] = 'comment';
-                        continue;
+                        break;
+                    case 'media':
+                        $type[] = 'media';
+                        break;
+                    case 'faevor':
+                        $type[] = 'farvor';
+                        break;
                     default:
                         return $this->response->errorNotFound();
                 }
@@ -82,19 +88,37 @@ class MapController extends Controller
                         'longitude'=>$locations[0]->getLng()],['latitude'=>$locations[2]->getLat(),
                         'longitude'=>$locations[0]->getLng()],['latitude'=>$locations[3]->getLat(),
                         'longitude'=>$locations[0]->getLng()],['latitude'=>$locations[4]->getLat(),
-                        'longitude'=>$locations[0]->getLng()]],'created_at'=>$session->created_at->format('Y-m-d H:i:s')];
+                        'longitude'=>$locations[0]->getLng()]],'created_at'=>$session->created_at];
                         $max_count--;
                     }
-                    continue;
+                    break;
                 case 'comment':
                     $comments = DB::select("SELECT id,user_id,content,geolocation,created_at FROM comments c WHERE st_dwithin(c.geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true) LIMIT :max_count", array('longitude' => $longitude, 'latitude'=> $latitude, 'radius' => $radius, 'max_count' => $max_count));
                     foreach($comments as $comment)
                     {
                         $location = Geometry::fromWKB($comment->geolocation);
-                        $info[] = ['type'=>'comment','comment_id' => $comment->id,'user_id' => $comment->user_id,'content' => $comment->content ,'geolocation'=>['latitude'=>$location->getLat(), 'longitude'=>$location->getLng()],'created_at'=>$comment->created_at->format('Y-m-d H:i:s')];
+                        $info[] = ['type'=>'comment','comment_id' => $comment->id,'user_id' => $comment->user_id,'content' => $comment->content ,'geolocation'=>['latitude'=>$location->getLat(), 'longitude'=>$location->getLng()],'created_at'=>$comment->created_at];
                         $max_count--;
                     }
                     continue;
+                case 'media':
+                    $medias = DB::select("SELECT * FROM medias m WHERE st_dwithin(m.geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true) LIMIT :max_count", array('longitude' => $longitude, 'latitude'=> $latitude, 'radius' => $radius, 'max_count' => $max_count));
+                    foreach ($medias as $media)
+                    {
+                        $location = Geometry::fromWKB($media->geolocation);
+                        $info[] = ['type'=>'media', 'media_id' => $media->id, 'user_id' => $media->user_id, 'file_ids' => explode(';', $media->file_ids), 'tag_ids' => explode(';', $media->tag_ids), 'description' => $media->description, 'geolocation'=>['latitude'=>$location->getLat(), 'longitude'=>$location->getLng()], 'created_at' => $media->created_at->format('Y-m-d H:i:s')];
+                        $max_count--;
+                    }
+                    break;
+                case 'faevor':
+                    $faevor = DB::select("SELECT * FROM faevors f WHERE st_dwithin(f.geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true) LIMIT :max_count", array('longitude' => $longitude, 'latitude'=> $latitude, 'radius' => $radius, 'max_count' => $max_count));
+                    foreach ($faevors as $faevor )
+                    {
+                        $location = Geometry::fromWKB($faevor->geolocation);
+                        $info[] = ['type'=>'comment', 'faevor_id' => $faevor->id, 'user_id' => $faevor->user_id, 'file_ids' => $file_ids, 'tag_ids' => $tag_ids, 'description' => $faevor->description, 'name' => $faevor->name, 'budget' => $faevor->budget, 'bonus' => $faevor->bonus, 'due_time' => $faevor->due_time, 'expire_time' => $faevor->expire_time, 'geolocation' => ['latitude' => $location->getLat(), 'longitude' => $location->getLng()], 'created_at' => $faevor->created_at->format('Y-m-d H:i:s')];
+                        $max_count--;
+                    }
+                    break;
                 default:
                     return $this->response->errorNotFound();
             }
