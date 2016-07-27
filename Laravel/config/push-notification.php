@@ -4,7 +4,7 @@ return array(
 
     'appNameIOS'     => array(
         'environment' =>'development',
-        'certificate' =>'/usr/share/nginx/html/sonnytest/Fae-Backend/certificate.pem',
+        'certificate' =>'/usr/share/nginx/html/Fae-Backend/certificate.pem',
         'passPhrase'  =>'',
         'service'     =>'apns'
     ),
