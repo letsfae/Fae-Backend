@@ -63,7 +63,9 @@ class FriendController extends Controller {
             foreach($sessions as $key=>$value) {
                 if ($value->is_mobile && !empty($value->device_id)){
                     $message = PushNotification::Message('Other user requesting friend',array(
-                        'requested_user_id' => $requested_user_id
+                        'custom' => array('custom data' => array(
+                            'requested_user_id' => $requested_user_id
+                        ))
                     ));
 
                     $collection = PushNotification::app('appNameIOS')
@@ -116,7 +118,9 @@ class FriendController extends Controller {
             foreach($sessions as $key=>$value) {
                 if ($value->is_mobile && !empty($value->device_id)){
                     $message = PushNotification::Message('Friend request acceptted',array(
-                        'requested_user_id' => $curr_request->requested_user_id
+                        'custom' => array('custom data' => array(
+                            'requested_user_id' => $curr_request->requested_user_id
+                        ))
                     ));
 
                     $collection = PushNotification::app('appNameIOS')
@@ -161,7 +165,9 @@ class FriendController extends Controller {
             foreach($sessions as $key=>$value) {
                 if ($value->is_mobile && !empty($value->device_id)){
                     $message = PushNotification::Message('Friend request acceptted',array(
-                        'requested_user_id' => $curr_request->requested_user_id
+                        'custom' => array('custom data' => array(
+                            'requested_user_id' => $curr_request->requested_user_id
+                        ))
                     ));
 
                     $collection = PushNotification::app('appNameIOS')
