@@ -10,6 +10,6 @@ interface RefInterface
 
     public static function refByString($str);
     public static function derefByString($str);
-    public static function updateRefByString($str);
+    public static function updateRefByString($old_str, $new_str);
     public static function existsByString($str);
 }
