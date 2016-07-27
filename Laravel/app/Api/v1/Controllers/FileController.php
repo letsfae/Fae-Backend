@@ -120,30 +120,73 @@ class FileController extends Controller implements RefInterface {
      */
     public static function ref($file_id) {
         $file_data = Files::find($file_id);
-        if(is_null($file_data)){
-            return $this->response->errorNotFound();
+        if(is_null($file_data))
+        {
+            return false;
         }
-        
         $file_data->reference_count++;
         $file_data->save();
+        return true;
     }
 
     public static function deref($file_id) {
         $file_data = Files::find($file_id);
         if(is_null($file_data)){
-            return $this->response->errorNotFound();
+            return false;
         }
-        
-        $file_data->reference_count--;
-        if( $file_data->reference_count == 0 ){
-            Storage::delete('files/'.$file_data->directory.$file_data->file_name_storage);
-            $file_data->delete();
-        }else{
-           $file_data->save();
+        if( $file_data->reference_count > 0 ){
+            $file_data->reference_count--;
         }
+        $file_data->save();
+        return true;
     }
 
     public static function exists($file_id) {
-        
+        return Files::where('id', $file_id)->exists();
+    }
+
+    public static function refByString($file_string) {
+        $file_ids = explode(';', $file_string);
+        foreach ($file_ids as $file_id)
+        {
+            FileController::ref($file_id);
+        }
+    }
+
+    public static function derefByString($file_string) {
+        $file_ids = explode(';', $file_string);
+        foreach ($file_ids as $file_id)
+        {
+            FileController::deref($file_id);
+        }
+    }
+
+    public static function updateRefByString($old_file_string, $new_file_string) {
+        if($old_file_string != null)
+        {
+            $old_file_ids = explode(';', $old_file_string);
+            foreach ($old_file_ids as $file_id)
+            {
+                FileController::deref($file_id);
+            }
+        }
+        if($new_file_string != 'null')
+        {
+            $new_file_ids = explode(';', $new_file_string);
+            foreach ($new_file_ids as $file_id)
+            {
+                FileController::ref($file_id);
+            }
+        }
+    }
+
+    public static function existsByString($file_string) {
+        $file_ids = explode(';', $file_string);
+        foreach($file_ids as $file_id) {
+            if(!FileController::exists($file_id)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
