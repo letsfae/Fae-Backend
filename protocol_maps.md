@@ -437,7 +437,7 @@ yes
 
 同发布faevor，但所有参数均为可选。
 
-如果需要删除file_ids，将字段内容置位`null`。
+如果需要删除file_ids或bouns，将字段内容置位`null`。
 
 ### response
 

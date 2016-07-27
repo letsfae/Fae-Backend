@@ -142,4 +142,8 @@ class FileController extends Controller implements RefInterface {
            $file_data->save();
         }
     }
+
+    public static function exists($file_id) {
+        
+    }
 }

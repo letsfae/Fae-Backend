@@ -91,6 +91,10 @@ class TagController extends Controller implements RefInterface {
         return $this->response->created();
     }
 
+    public static function exists($tag_id) {
+        
+    }
+
     private function createValidation(Request $request)
     {
         $validator = Validator::make($request->all(), [
