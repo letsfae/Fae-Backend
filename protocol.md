@@ -104,7 +104,7 @@ Status: 200
 
 所有反推消息格式均为json，会使用type字段标识具体的反推类型。
 
-## 用户从其他设备登陆 authentication other device
+## 用户从其他设备登陆 authentication other device :white_check_mark:
 
 	{
 		"type": "authentication_other_device",
@@ -128,7 +128,7 @@ Status: 200
 		"result": @string("accept","ignore")
 	}
 
-## 新消息
+## 新消息 :white_check_mark:
 
 	{
 		"type": "chat_new_message",
