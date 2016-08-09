@@ -14,12 +14,12 @@ class CommentTest extends TestCase {
      *
      * @return void
      */
-    // use DatabaseMigrations;
+    use DatabaseMigrations;
     /** @test */
     public function setUp() {
         parent::setUp();
         $this->domain = Config::get('api.domain'); 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
     } 
 
     public function tearDown() {
@@ -438,7 +438,7 @@ class CommentTest extends TestCase {
         $response = $this->call('get', 'http://'.$this->domain.'/comments/users/letfae', [], [], [], $this->transformHeadersToServerVars($server2)); 
         $array2 = json_decode($response->getContent()); 
         $result = false;
-        if ($response->status() == '403' && $array2->message == 'Bad request, Please type the correct user_id format!') {
+        if ($response->status() == '400' && $array2->message == 'Bad Request') {
             $result = true;
         }
         $this->assertEquals(true, $result);

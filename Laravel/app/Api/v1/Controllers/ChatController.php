@@ -7,8 +7,11 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Dingo\Api\Exception\StoreResourceFailedException;
 use Dingo\Api\Exception\DeleteResourceFailedException;
+use Davibennun\LaravelPushNotification\Facades\PushNotification;
 use Validator;
+use Config;
 use App\Users;
+use App\Sessions;
 use App\Chats;
 
 class ChatController extends Controller 
@@ -55,6 +58,31 @@ class ChatController extends Controller
             $chat->user_b_unread_count++;
         }
         $chat->save();
+
+        if(Config::get('app.pushback')==true) {
+            $sessions = Sessions::where('user_id', $receiver_id)->get();
+            foreach($sessions as $key=>$value) {
+                if ($value->is_mobile && !empty($value->device_id)){
+                $message = PushNotification::Message('New message',array(
+                    'custom' => array('custom data' => array(
+                        'type' => 'chat_new_message',
+                        'chat_id' => $chat->id,
+                        'last_message' => $chat->last_message,
+                        'last_message_sender_id' => $chat->last_message_sender_id,
+                        'last_message_timestamp' => $chat->last_message_timestamp,
+                        'last_message_type' => $chat->last_message_type,
+                        //the unread count of the sender should be 0, so the add could reduce the if statment of determine who is the receiver
+                        'unread_count' => $chat->user_a_unread_count + $chat->user_b_unread_count
+                    ))
+                ));
+
+                $collection = PushNotification::app('appNameIOS')
+                    ->to($value->device_id)
+                    ->send($message);
+            }
+        }
+        
+        
         return $this->response->created(null, ['chat_id' => $chat->id]);
     }
 

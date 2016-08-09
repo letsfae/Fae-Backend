@@ -69,11 +69,11 @@ class TagController extends Controller implements RefInterface {
         $tag = Tags::find($tag_id);
         if(is_null($tag))
         {
-            return $this->response->errorNotFound();
+            return false;
         }
         $tag->reference_count++;
         $tag->save();
-        return $this->response->created();
+        return true;
     }
 
     public static function deref($tag_id)
@@ -81,21 +81,64 @@ class TagController extends Controller implements RefInterface {
         $tag = Tags::find($tag_id);
         if(is_null($tag))
         {
-            return $this->response->errorNotFound();
+            return false;
         }
         if($tag->reference_count > 0)
         {
             $tag->reference_count--;
         }
         $tag->save();
-        return $this->response->created();
+        return true;
+    }
+
+    public static function exists($tag_id) {
+        return Tags::where('id', $tag_id)->exists();
+    }
+
+    public static function refByString($tag_string) {
+        $tag_ids = explode(';', $tag_string);
+        foreach ($tag_ids as $tag_id)
+        {
+            TagController::ref($tag_id);
+        }
+    }
+
+    public static function derefByString($tag_string) {
+        $tag_ids = explode(';', $tag_string);
+        foreach ($tag_ids as $tag_id)
+        {
+            TagController::deref($tag_id);
+        }
+    }
+
+    public static function updateRefByString($old_tag_string, $new_tag_string) {
+        $old_tag_ids = explode(';', $old_tag_string);
+        $new_tag_ids = explode(';', $new_tag_string);
+        foreach ($old_tag_ids as $tag_id)
+        {
+            TagController::deref($tag_id);
+        }
+        foreach ($new_tag_ids as $tag_id)
+        {
+            TagController::ref($tag_id);
+        }
+    }
+
+    public static function existsByString($tag_string) {
+        $tag_ids = explode(';', $tag_string);
+        foreach($tag_ids as $tag_id) {
+            if(!TagController::exists($tag_id)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private function createValidation(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'title' => 'required|alpha_dash:20',
-            'color' => 'filled|string|regex:/^(#)?([0-9a-fA-F]{3})([0-9a-fA-F]{3})?$/'
+            'title' => 'required|alpha_dash:20', 
+            'color' => 'filled|string|regex:/^#[0-9A-Fa-f]{6}$/' 
         ]);
         if($validator->fails())
         {

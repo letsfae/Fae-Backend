@@ -78,17 +78,18 @@ class CommentController extends Controller implements PinInterface {
         return $this->response->noContent();
     }
 
-    public function getFromUser($user_id) {
-        if (!is_numeric($user_id)) {
-            throw new AccessDeniedHttpException('Bad request, Please type the correct user_id format!');
-        }
-
+    public function getFromUser($user_id)
+    {
+        if(!is_numeric($user_id))
+        {
+            return $this->response->errorBadRequest();
+        } 
         if (is_null(Users::find($user_id)))
         {
-            throw new AccessDeniedHttpException('Bad request, no such user exists!');
+            return $this->response->errorNotFound();
         }
-        $this->getUserValidation($this->request);
-        date_default_timezone_set("UTC"); 
+        $this->getUserValidation($this->request); 
+        //date_default_timezone_set("UTC"); 
         $start_time = $this->request->has('start_time') ? $this->request->start_time:'1970-01-01 00:00:00';
         $end_time = $this->request->has('end_time') ? $this->request->end_time:date("Y-m-d H:i:s");
         $page =  $this->request->has('page') ? $this->request->page:1;
@@ -116,12 +117,12 @@ class CommentController extends Controller implements PinInterface {
 
     private function getUserValidation(Request $request) {
         $validator = Validator::make($request->all(), [
-            'start_time' => 'regex:/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/',
-            'end_time' => 'regex:/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/',
-            'page' => 'integer|min:0'
+            'start_time' => 'filled|date_format:Y-m-d H:i:s|before:tomorrow',
+            'end_time' => 'filled|date_format:Y-m-d H:i:s|before:tomorrow',
+            'page' => 'filled|integer|min:1'
         ]);
         if($validator->fails()) {
-            throw new AccessDeniedHttpException('Bad request, Please verify your input!');
+            throw new UpdateResourceFailedException('Could not get user comments.',$validator->errors());
         }
     }
 }

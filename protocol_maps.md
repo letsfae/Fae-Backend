@@ -84,7 +84,7 @@ Status: 200
 		]
 	}
 
-## 创建新tag
+## 创建新tag :white_check_mark:
 
 `POST /tags`
 
@@ -109,7 +109,7 @@ Status: 201
 
 如果tag已经创建，则会直接返回`tag_id`。
 
-## 获取tag
+## 获取tag :white_check_mark:
 
 `GET /tags`
 
@@ -144,7 +144,7 @@ Status: 200
 		{...}
 	]
 
-## 获取指定tag
+## 获取指定tag :white_check_mark:
 
 `GET /tags/:tag_id`
 
@@ -271,7 +271,7 @@ yes
 
 Status: 204
 
-## 发布media
+## 发布media :white_check_mark:
 
 `POST /medias`
 
@@ -297,7 +297,7 @@ Status: 201
 		"media_id": @number
 	}
 
-## 更新media
+## 更新media :white_check_mark:
 
 `POST /medias/:media_id`
 
@@ -309,13 +309,13 @@ yes
 
 同发布media，但所有参数均为可选。
 
-如果需要删除file_ids或tag_ids，将字段内容置位`null`。
+必须存在至少一个file和一个tag，因此不允许file_ids及tag_ids置`null`。
 
 ### response
 
 Status: 201
 
-## 获取media
+## 获取media :white_check_mark:
 
 `GET /medias/:media_id`
 
@@ -348,7 +348,7 @@ Status: 200
 		"created_at": @string
 	}
 
-## 获取某个用户的所有media
+## 获取某个用户的所有media :white_check_mark:
 
 `GET /medias/users/:user_id`
 
@@ -382,7 +382,7 @@ Status: 200
 
 具体数组内对象同“获取media”所得到的对象。
 
-## 删除media
+## 删除media :white_check_mark:
 
 `DELETE /medias/:media_id`
 
@@ -394,7 +394,7 @@ yes
 
 Status: 204
 
-## 发布faevor
+## 发布faevor :white_check_mark:
 
 `POST /faevors`
 
@@ -425,7 +425,7 @@ Status: 201
 		"faevor_id": @number
 	}
 
-## 更新faevor
+## 更新faevor :white_check_mark:
 
 `POST /faevors/:faevor_id`
 
@@ -437,13 +437,13 @@ yes
 
 同发布faevor，但所有参数均为可选。
 
-如果需要删除file_ids或tag_ids，将字段内容置位`null`。
+如果需要删除file_ids或bouns，将字段内容置位`null`。
 
 ### response
 
 Status: 201
 
-## 获取faevor
+## 获取faevor :white_check_mark:
 
 `GET /faevors/:faevor_id`
 
@@ -481,7 +481,7 @@ Status: 200
 		"created_at": @string
 	}
 
-## 获取某个用户的所有faevor
+## 获取某个用户的所有faevor :white_check_mark:
 
 `GET /faevors/users/:user_id`
 
@@ -515,7 +515,7 @@ Status: 200
 
 具体数组内对象同“获取media”所得到的对象。
 
-## 删除faevor
+## 删除faevor :white_check_mark:
 
 `DELETE /faevors/:faevor_id`
 

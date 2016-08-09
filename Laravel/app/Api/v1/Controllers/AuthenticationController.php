@@ -109,8 +109,10 @@ class AuthenticationController extends Controller {
                 $previous_mobile_index = $key;
             }
             if( $value->is_mobile && $is_mobile){
-                if(Config::get('app.pushback')==true && !empty($value->device_id)) {
-                    AuthenticationController::pushNotificationCurrentUser($value->device_id, $device_id, $client_version, true);
+                if(!empty($value->device_id) && $value->device_id != $device_id ){
+                    if(Config::get('app.pushback')==true && !empty($value->device_id)) {
+                        AuthenticationController::pushNotificationCurrentUser($value->device_id, $device_id, $client_version, true);
+                    }
                 }
             }
             if( ($value->is_mobile && $is_mobile) || ($device_id != null && !empty($value->device_id) && $value->device_id == $device_id   ) ){
@@ -181,11 +183,13 @@ class AuthenticationController extends Controller {
     }
     
    private function pushNotificationCurrentUser($previous_device_id, $device_id, $fae_client_version, $both_are_mobile){
-        $message = PushNotification::Message('Other device is loging in',array(
-            'type' => 'authentication_other_device',
-            'device_id' => $device_id,
-            'fae_client_version' => $fae_client_version,
-            'auth' => $both_are_mobile
+        $message = PushNotification::Message('Other device is loging in', array(
+             'custom' => array('custom data' => array(
+                'type' => 'authentication_other_device',
+                'device_id' => $device_id,
+                'fae_client_version' => $fae_client_version,
+                'auth' => !$both_are_mobile
+             ))
         ));
         $collection = PushNotification::app('appNameIOS')
             ->to($previous_device_id)
