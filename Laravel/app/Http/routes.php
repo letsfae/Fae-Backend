@@ -97,6 +97,8 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->post('/tags', 'App\Api\v1\Controllers\TagController@create');
     $api->get('/tags', 'App\Api\v1\Controllers\TagController@getArray');
     $api->get('/tags/{tag_id}', 'App\Api\v1\Controllers\TagController@getOne');
+    // test
+    $api->post('/test/push_notification', 'App\Api\v1\Controllers\TestController@sendPushNotification');
 });
 
 /**
