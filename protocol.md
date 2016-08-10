@@ -98,13 +98,35 @@ Status: 200
 		"chat": @number 未读消息数量
 	}
 
+## 反推测试
+
+`POST /test/push_notification`
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| content | string | 内容 |
+
+该接口仅对is_mobile为true设备有效（且含有正确的device_id）。
+
+服务器将不作处理的完整的推送content的内容，请自行处理可能存在的编码问题。
+
+### response
+
+Status: 201
+
 # 反推接口
 
 当有相关事件产生后，服务器会主动反推消息（仅对`is_mobile`为true的设备推送）。如果客户端没有注册device_id，则无法收到反推消息，此时可通过sync接口主动查看是否存在未处理消息（或直接通过其他接口调用返回的错误判断当前状态）。
 
 所有反推消息格式均为json，会使用type字段标识具体的反推类型。
 
-## 用户从其他设备登陆 authentication other device
+## 用户从其他设备登陆 authentication other device :white_check_mark:
 
 	{
 		"type": "authentication_other_device",
@@ -128,7 +150,7 @@ Status: 200
 		"result": @string("accept","ignore")
 	}
 
-## 新消息
+## 新消息 :white_check_mark:
 
 	{
 		"type": "chat_new_message",

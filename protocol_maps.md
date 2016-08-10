@@ -186,7 +186,7 @@ Status: 201
 		"comment_id": @number
 	}
 
-## 更新comment
+## 更新comment :white_check_mark:
 
 `POST /comments/:comment_id`
 
