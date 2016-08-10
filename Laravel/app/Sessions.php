@@ -20,4 +20,5 @@ class Sessions extends Model
     {
     	return $this->belongsTo('App\Users','user_id','id');
     } 
+    protected $fillable = array('user_id', 'token', 'device_id', 'client_version', 'location', 'is_mobile');
 }

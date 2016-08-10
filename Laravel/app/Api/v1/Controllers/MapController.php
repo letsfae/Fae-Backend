@@ -6,9 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Dingo\Api\Routing\Helpers;
 use Dingo\Api\Exception\UpdateResourceFailedException;
-use App\Sessions;
+ 
 use Validator;
 use DB;
+use App\Sessions;
 use Phaza\LaravelPostgis\Eloquent\PostgisTrait;
 use Phaza\LaravelPostgis\Geometries\Point;
 use Phaza\LaravelPostgis\Geometries\Geometry;
