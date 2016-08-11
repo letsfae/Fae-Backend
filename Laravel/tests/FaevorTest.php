@@ -14,12 +14,12 @@ class FaevorTest extends TestCase
      *
      * @return void
      */
-    // use DatabaseMigrations;
+    use DatabaseMigrations;
     /** @test */
     public function setUp() {
         parent::setUp();
         $this->domain = Config::get('api.domain');  
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
     } 
 
     public function tearDown() {
@@ -1299,7 +1299,7 @@ class FaevorTest extends TestCase
          //get the faevors of the user with the user_id.
         //get the faevors of the page 1.
         $response_page1 = $this->call('get', 'http://'.$this->domain.'/faevors/users/1', $content, [], [], $this->transformHeadersToServerVars($server2));
-        $array2 = json_decode($response_page1->getContent());  
+        $array2 = json_decode($response_page1->getContent()); 
         for ($i = 0; $i < 30; $i++) {
             $this->seeJson([ 
                     'faevor_id' => 30 - $i,
@@ -1325,7 +1325,7 @@ class FaevorTest extends TestCase
             'end_time' => date("Y-m-d H:i:s"),
             'page' => 2,
         );
-        // //get the faevors of the page 2.
+        // get the faevors of the page 2.
         $response_page2 = $this->call('get', 'http://'.$this->domain.'/faevors/users/1', $content2, [], [], $this->transformHeadersToServerVars($server2)); 
         $array3 = json_decode($response_page2->getContent()); 
         $this->seeJson([ 

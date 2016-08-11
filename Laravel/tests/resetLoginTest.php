@@ -12,13 +12,13 @@ class resetLoginTest extends TestCase {
      *
      * @return void
      */
-    // use DatabaseMigrations; 
+    use DatabaseMigrations; 
     /** @test */
     public function setUp() {
         parent::setUp();
         $this->domain = Config::get('api.domain'); 
         $this->testEmail = getenv('Test_Email'); 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
     } 
 
     public function tearDown() {

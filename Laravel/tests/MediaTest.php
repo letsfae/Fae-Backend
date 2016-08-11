@@ -13,12 +13,12 @@ class MediaTest extends TestCase {
      *
      * @return void
      */
-    // use DatabaseMigrations;
+    use DatabaseMigrations;
     /** @test */
     public function setUp() {
         parent::setUp();
         $this->domain = Config::get('api.domain');  
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
     } 
 
     public function tearDown() {
@@ -1905,7 +1905,7 @@ class MediaTest extends TestCase {
         ); 
         //get the faevors of the page 1.
         $response_page1 = $this->call('get', 'http://'.$this->domain.'/medias/users/1', $content, [], [], $this->transformHeadersToServerVars($server2));
-        $array2 = json_decode($response_page1->getContent()); 
+        $array2 = json_decode($response_page1->getContent());  
         $result = false;
         if ($response_page1->status() == '422' && $array2->message == 'Could not get user medias.' && $array2->errors->start_time[0] == 'The start time does not match the format Y-m-d H:i:s.') {
             $result = true;

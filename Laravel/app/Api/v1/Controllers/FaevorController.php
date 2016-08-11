@@ -205,7 +205,7 @@ class FaevorController extends Controller implements PinInterface {
         $start_time = $this->request->has('start_time') ? $this->request->start_time : '1970-01-01 00:00:00';
         $end_time = $this->request->has('end_time') ? $this->request->end_time : date("Y-m-d H:i:s");
         $page =  $this->request->has('page') ? $this->request->page : 1;
-        $faevors = Faevors::where('user_id', $user_id)->where('created3_at','>=', $start_time)->where('created_at','<=', $end_time)->orderBy('created_at', 'desc')->skip(30 * ($page - 1))->take(30)->get();
+        $faevors = Faevors::where('user_id', $user_id)->where('created_at','>=', $start_time)->where('created_at','<=', $end_time)->orderBy('created_at', 'desc')->skip(30 * ($page - 1))->take(30)->get();
         $total_pages = intval($faevors->count() / 30) + 1;
         $info = array();
         foreach ($faevors as $faevor)

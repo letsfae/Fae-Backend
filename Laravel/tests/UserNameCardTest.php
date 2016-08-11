@@ -12,12 +12,12 @@ class UserNameCardTest extends TestCase {
      *
      * @return void
      */
-    // use DatabaseMigrations;
+    use DatabaseMigrations;
     /** @test */
     public function setUp() {
         parent::setUp();
         $this->domain = Config::get('api.domain');  
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
     } 
 
     public function tearDown() {
@@ -29,7 +29,7 @@ class UserNameCardTest extends TestCase {
 
     //test correct response of the method of getNameCard.
     public function testGetNameCard() { 
-        $this->markTestSkipped();   
+        // $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -99,7 +99,7 @@ class UserNameCardTest extends TestCase {
 
     //test the response when the tag_ids is null.
     public function testGetNameCard2() { 
-        $this->markTestSkipped();   
+        // $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -149,7 +149,7 @@ class UserNameCardTest extends TestCase {
 
     //test the response when the namecard does not exist.
     public function testGetNameCard3() { 
-        $this->markTestSkipped();   
+        // $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -194,7 +194,7 @@ class UserNameCardTest extends TestCase {
 
     //test the correct response of the method of getSelfNameCard.
     public function testGetSelfNameCard() { 
-        $this->markTestSkipped();   
+        // $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -244,7 +244,7 @@ class UserNameCardTest extends TestCase {
 
     //test the correct response of the method of getAllTags.
     public function testGetAllTags() { 
-        $this->markTestSkipped();   
+        // $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -304,7 +304,7 @@ class UserNameCardTest extends TestCase {
 
     //test the response when the database of Name_card_tags is null.
     public function testGetAllTags2() { 
-        $this->markTestSkipped();   
+        // $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -349,7 +349,7 @@ class UserNameCardTest extends TestCase {
 
     //test the correct response of the method of updateNameCard.
     public function testUpdateNameCard() { 
-        $this->markTestSkipped();   
+        // $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -408,7 +408,7 @@ class UserNameCardTest extends TestCase {
 
     //test the response when the input parameter are all null.
     public function testUpdateNameCard2() { 
-        $this->markTestSkipped();   
+        // $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -461,7 +461,7 @@ class UserNameCardTest extends TestCase {
 
     //test the response when the input of short_intro is empty and the other two parameters are null.
     public function testUpdateNameCard3() { 
-        $this->markTestSkipped();   
+        // $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -517,7 +517,7 @@ class UserNameCardTest extends TestCase {
 
     //test the response when the input of short_intro is empty and the format of nick_name is wrong.
     public function testUpdateNameCard4() { 
-        $this->markTestSkipped();   
+        // $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -575,7 +575,7 @@ class UserNameCardTest extends TestCase {
 
     //test the response when the tag with the tag_id is null in the database of Name_card_tags.
     public function testUpdateNameCard5() { 
-        $this->markTestSkipped();   
+        // $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',

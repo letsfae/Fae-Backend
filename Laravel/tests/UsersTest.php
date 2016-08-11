@@ -13,14 +13,14 @@ class UsersTest extends TestCase {
      *
      * @return void
      */
-    // use DatabaseMigrations;
+    use DatabaseMigrations;
     /** @test */
     public function setUp() {
         parent::setUp();
         $this->domain = Config::get('api.domain'); 
         $this->testEmail = getenv('Test_Email');
         $this->testPhone = getenv('Test_Phone');
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
     } 
 
     public function tearDown() {
@@ -32,7 +32,6 @@ class UsersTest extends TestCase {
 
     //test correct response of the method of updating account.
     public function testUpdateAccount() { 
-        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -77,8 +76,7 @@ class UsersTest extends TestCase {
     }
 
     //test whether the input format is right.
-    public function testUpdateAccount1() { 
-        // $this->markTestSkipped(); 
+    public function testUpdateAccount1() {  
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -124,8 +122,7 @@ class UsersTest extends TestCase {
     }
 
     //test whether input parameters exist.
-    public function testUpdateAccount2() { 
-        // $this->markTestSkipped(); 
+    public function testUpdateAccount2() {  
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -166,8 +163,7 @@ class UsersTest extends TestCase {
     }
 
     //test correct response of the method of getting account.
-    public function testGetAccount() { 
-        // $this->markTestSkipped(); 
+    public function testGetAccount() {  
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -214,8 +210,7 @@ class UsersTest extends TestCase {
     }   
 
     //test correct response of the method of Updating password.
-    public function testUpdatePassword() { 
-        // $this->markTestSkipped(); 
+    public function testUpdatePassword() {  
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -258,7 +253,6 @@ class UsersTest extends TestCase {
 
     //test whether the input format is right.
     public function testUpdatePassword1() { 
-        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -301,7 +295,6 @@ class UsersTest extends TestCase {
 
     //test whether the login_count is over 3 with the methid of updating password.
     public function testUpdatePassword2() { 
-        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -348,8 +341,7 @@ class UsersTest extends TestCase {
     } 
 
     //test whether the old_password is right.
-    public function testUpdatePassword3() { 
-        // $this->markTestSkipped(); 
+    public function testUpdatePassword3() {   
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -398,8 +390,7 @@ class UsersTest extends TestCase {
     } 
 
     //test correct response of the method of verifying password.
-    public function testVerifyPassword() { 
-        // $this->markTestSkipped(); 
+    public function testVerifyPassword() {  
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -440,8 +431,7 @@ class UsersTest extends TestCase {
     } 
 
     //test whether the input parameters exist.
-    public function testVerifyPassword1() { 
-        // $this->markTestSkipped(); 
+    public function testVerifyPassword1() {  
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -480,8 +470,7 @@ class UsersTest extends TestCase {
     } 
 
     //test whether the password is right.
-    public function testVerifyPassword2() { 
-        // $this->markTestSkipped(); 
+    public function testVerifyPassword2() {  
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -529,8 +518,7 @@ class UsersTest extends TestCase {
     }
 
     //test whether the login_count is over 3 with the methid of verifying password.
-    public function testVerifyPassword3() { 
-        // $this->markTestSkipped(); 
+    public function testVerifyPassword3() {  
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -577,7 +565,6 @@ class UsersTest extends TestCase {
 
     //test correct response of the method of updating self status.
     public function testUpdateSelfStatus() { 
-        // $this->markTestSkipped(); 
         //register of the user.
         $parameter = array(
             'email' => 'letsfae@126.com',
@@ -626,7 +613,6 @@ class UsersTest extends TestCase {
 
     //test whether the format of the inout is right.
     public function testUpdateSelfStatus1() { 
-        // $this->markTestSkipped(); 
         //register of the user.
         $parameter = array(
             'email' => 'letsfae@126.com',
@@ -674,8 +660,7 @@ class UsersTest extends TestCase {
     }
 
     //test the response is correct with the inout of message is empty.
-    public function testUpdateSelfStatus2() { 
-        // $this->markTestSkipped(); 
+    public function testUpdateSelfStatus2() {  
         //register of the user.
         $parameter = array(
             'email' => 'letsfae@126.com',
@@ -723,8 +708,7 @@ class UsersTest extends TestCase {
     }
 
     //test correct response of the method of getting status.
-    public function testGetStatus() { 
-        // $this->markTestSkipped(); 
+    public function testGetStatus() {  
         //register of the user.
         $parameter = array(
             'email' => 'letsfae@126.com',
@@ -772,8 +756,7 @@ class UsersTest extends TestCase {
     }
 
     //test whether the user_id exists.
-    public function testGetStatus1() { 
-        // $this->markTestSkipped(); 
+    public function testGetStatus1() {   
         //register of the user.
         $parameter = array(
             'email' => 'letsfae@126.com',
@@ -818,8 +801,7 @@ class UsersTest extends TestCase {
     }
 
     //test the response of other users with status 5.
-    public function testGetStatus2() {
-        // $this->markTestSkipped();  
+    public function testGetStatus2() {  
         //register of the user.
         $parameter = array(
             'email' => 'letsfae@126.com',
@@ -880,8 +862,7 @@ class UsersTest extends TestCase {
     }
 
     //test correct response of the method of getting self status.
-    public function testGetSelfStatus() { 
-        // $this->markTestSkipped();  
+    public function testGetSelfStatus() {    
         //register of the user.
         $parameter = array(
             'email' => 'letsfae@126.com',
@@ -929,8 +910,7 @@ class UsersTest extends TestCase {
     }
 
     //test correct response of the method of updating email.
-    public function testUpdateEmail() {
-        // $this->markTestSkipped(); 
+    public function testUpdateEmail() { 
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -980,8 +960,7 @@ class UsersTest extends TestCase {
     }
 
     //test whether the input format is right.
-    public function testUpdateEmail2() {
-        // $this->markTestSkipped(); 
+    public function testUpdateEmail2() { 
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -1028,8 +1007,7 @@ class UsersTest extends TestCase {
     }
 
     //test whether the new email exists in the database.
-    public function testUpdateEmail3() {
-        // $this->markTestSkipped(); 
+    public function testUpdateEmail3() { 
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -1089,8 +1067,7 @@ class UsersTest extends TestCase {
     }
 
     //test how the database of verifications changed after the code existing more than 30 minitues.
-    public function testUpdateEmail4() {
-        // $this->markTestSkipped(); 
+    public function testUpdateEmail4() {  
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -1143,8 +1120,7 @@ class UsersTest extends TestCase {
     }
 
     //test correct response of the method of verifying email.
-    public function testVerifyEmail() {
-        // $this->markTestSkipped(); 
+    public function testVerifyEmail() { 
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -1198,8 +1174,7 @@ class UsersTest extends TestCase {
     }
 
     //test whether the input format is right.
-    public function testVerifyEmail2() {
-        // $this->markTestSkipped(); 
+    public function testVerifyEmail2() {  
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -1252,8 +1227,7 @@ class UsersTest extends TestCase {
     }
 
     //test the response when there is no data of this email in the verifications table.
-    public function testVerifyEmail3() {
-        // $this->markTestSkipped(); 
+    public function testVerifyEmail3() { 
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -1300,8 +1274,7 @@ class UsersTest extends TestCase {
     }
 
     //test what is the response when the data has created more than 30 minitues in the verifications table.
-    public function testVerifyEmail4() {
-        // $this->markTestSkipped(); 
+    public function testVerifyEmail4() { 
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -1355,8 +1328,7 @@ class UsersTest extends TestCase {
     }
 
     //test the response when the input code is not the same as the code in verifications table.
-    public function testVerifyEmail5() {
-        // $this->markTestSkipped(); 
+    public function testVerifyEmail5() { 
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -1410,8 +1382,7 @@ class UsersTest extends TestCase {
     }
 
     //test correct response of the method of updating phone.
-    public function testUpdatePhone() {
-        // $this->markTestSkipped(); 
+    public function testUpdatePhone() { 
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -1461,8 +1432,7 @@ class UsersTest extends TestCase {
     }
 
     //test whether the input format is right.
-    public function testUpdatePhone2() {
-        // $this->markTestSkipped(); 
+    public function testUpdatePhone2() { 
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -1509,8 +1479,7 @@ class UsersTest extends TestCase {
     }
 
     //test whether the new phone exists in the database.
-    public function testUpdatePhone3() {
-        // $this->markTestSkipped(); 
+    public function testUpdatePhone3() {  
         $user1 = Users::create([
             'email' => 'letsfae@126.com',
             'password' => bcrypt('letsfaego'),
@@ -1561,8 +1530,7 @@ class UsersTest extends TestCase {
     }
 
     //test how the database of verifications changed after the code existing more than 30 minitues.
-    public function testUpdatePhone4() {
-        // $this->markTestSkipped(); 
+    public function testUpdatePhone4() { 
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -1615,8 +1583,7 @@ class UsersTest extends TestCase {
     }
 
     //test correct response of the method of verifying phone.
-    public function testVerifyPhone() {
-        // $this->markTestSkipped(); 
+    public function testVerifyPhone() {  
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -1670,8 +1637,7 @@ class UsersTest extends TestCase {
     }
 
     //test whether the input format is right.
-    public function testVerifyPhone2() {
-        // $this->markTestSkipped(); 
+    public function testVerifyPhone2() { 
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -1724,8 +1690,7 @@ class UsersTest extends TestCase {
     }
 
     //test the response when there is no data of this phone in the verifications table.
-    public function testVerifyPhone3() {
-        // $this->markTestSkipped(); 
+    public function testVerifyPhone3() { 
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -1772,8 +1737,7 @@ class UsersTest extends TestCase {
     }
 
     //test what is the response when the data has created more than 30 minitues in the verifications table.
-    public function testVerifyPhone4() {
-        // $this->markTestSkipped(); 
+    public function testVerifyPhone4() {  
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -1827,8 +1791,7 @@ class UsersTest extends TestCase {
     }
 
     //test the response when the input code is not the same as the code in verifications table.
-    public function testVerifyPhone5() {
-        // $this->markTestSkipped(); 
+    public function testVerifyPhone5() { 
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
