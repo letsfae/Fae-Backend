@@ -184,6 +184,7 @@ class AuthenticationController extends Controller {
     
    private function pushNotificationCurrentUser($previous_device_id, $device_id, $fae_client_version, $both_are_mobile){
         $message = PushNotification::Message('Other device is loging in', array(
+             'badge' => 1,
              'custom' => array('custom data' => array(
                 'type' => 'authentication_other_device',
                 'device_id' => $device_id,

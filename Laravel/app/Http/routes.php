@@ -29,6 +29,9 @@ $api->version('v1', function ($api) {
     // existence
     $api->get('/existence/email/{email}', 'App\Api\v1\Controllers\ExistenceController@email');
     $api->get('/existence/user_name/{user_name}', 'App\Api\v1\Controllers\ExistenceController@userName');
+    
+    // test
+    $api->post('/test/push_notification', 'App\Api\v1\Controllers\TestController@sendPushNotification');
 });
 
 $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], function ($api) {
@@ -97,8 +100,7 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->post('/tags', 'App\Api\v1\Controllers\TagController@create');
     $api->get('/tags', 'App\Api\v1\Controllers\TagController@getArray');
     $api->get('/tags/{tag_id}', 'App\Api\v1\Controllers\TagController@getOne');
-    // test
-    $api->post('/test/push_notification', 'App\Api\v1\Controllers\TestController@sendPushNotification');
+    
 });
 
 /**
