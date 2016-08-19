@@ -154,6 +154,10 @@ class FileController extends Controller implements RefInterface {
     }
 
     public static function derefByString($file_string) {
+        if(is_null($file_string))
+        {
+            return false;
+        }
         $file_ids = explode(';', $file_string);
         foreach ($file_ids as $file_id)
         {

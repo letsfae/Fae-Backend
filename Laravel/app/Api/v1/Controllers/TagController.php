@@ -104,6 +104,10 @@ class TagController extends Controller implements RefInterface {
     }
 
     public static function derefByString($tag_string) {
+        if(is_null($tag_string))
+        {
+            return false;
+        }
         $tag_ids = explode(';', $tag_string);
         foreach ($tag_ids as $tag_id)
         {

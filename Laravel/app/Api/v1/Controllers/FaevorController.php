@@ -7,6 +7,7 @@ use Dingo\Api\Routing\Helpers;
 use App\Api\v1\Interfaces\PinInterface;
 use Dingo\Api\Exception\StoreResourceFailedException;
 use Dingo\Api\Exception\UpdateResourceFailedException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Validator;
 use App\Faevors;
 use App\Files;
