@@ -185,7 +185,7 @@ class FaevorController extends Controller implements PinInterface {
         {
             throw new AccessDeniedHttpException('You can not delete this faevor');
         }
-        // FileController::derefByString($faevor->file_ids);
+        FileController::derefByString($faevor->file_ids);
         TagController::derefByString($faevor->tag_ids);
         $faevor->delete();
         return $this->response->noContent();
