@@ -44,15 +44,17 @@ class FaevorController extends Controller implements PinInterface {
                 return $this->errorNotFound();
             }
         }
-        if(TagController::existsByString($this->request->tag_ids))
+        if($this->request->has('tag_ids'))
         {
-            $faevor->tag_ids = $this->request->tag_ids;
-            TagController::refByString($this->request->tag_ids);
-        }
-        else
-        {
-
-            return $this->errorNotFound();
+            if(TagController::existsByString($this->request->tag_ids))
+            {
+                $faevor->tag_ids = $this->request->tag_ids;
+                TagController::refByString($this->request->tag_ids);
+            }
+            else
+            {
+                return $this->errorNotFound();
+            }
         }
         $faevor->budget = $this->request->budget;
         if($this->request->has('bonus'))
@@ -100,7 +102,11 @@ class FaevorController extends Controller implements PinInterface {
         }
         if($this->request->has('tag_ids'))
         {
-            if(TagController::existsByString($this->request->tag_ids))
+            if($this->request->tag_ids == 'null')
+            {
+                TagController::updateRefByString($faevor->tag_ids, $this->request->tag_ids);
+            }
+            else if(TagController::existsByString($this->request->tag_ids))
             {
                 TagController::updateRefByString($faevor->tag_ids, $this->request->tag_ids);
                 $faevor->tag_ids = $this->request->tag_ids;
@@ -222,7 +228,7 @@ class FaevorController extends Controller implements PinInterface {
     {
         $validator = Validator::make($request->all(), [
             'file_ids' => 'filled|regex:/^(\d+\;){0,4}\d+$/',
-            'tag_ids' => 'required|regex:/^(\d+\;){0,49}\d+$/',
+            'tag_ids' => 'filled|regex:/^(\d+\;){0,49}\d+$/',
             'budget' => 'required|integer',
             'bonus' => 'filled|string',
             'name' => 'required|string|max:100',
@@ -243,8 +249,10 @@ class FaevorController extends Controller implements PinInterface {
         $validator = Validator::make($request->all(), [
             'file_ids' => array('filled', 
                 'required_without_all:tag_ids,budget,bonus,name,description,due_time,expire_time,geo_longitude,geo_latitude', 
-                'regex:/^((((\d+\;){0,4}\d+))|(null))$/'),
-            'tag_ids' => 'filled|required_without_all:file_ids,budget,bonus,name,description,due_time,expire_time,geo_longitude,geo_latitude|regex:/^(\d+\;){0,49}\d+$/',
+                'regex:/^(((\d+\;){0,4}\d+)|(null))$/'),
+            'tag_ids' => array('filled', 
+                'required_without_all:file_ids,budget,bonus,name,description,due_time,expire_time,geo_longitude,geo_latitude', 
+                'regex:/^(\d+\;){0,49}\d+$/'),
             'budget' => 'filled|required_without_all:file_ids,tag_ids,bonus,name,description,due_time,expire_time,geo_longitude,geo_latitude|integer|min:0',
             'bonus' => array('filled', 
                 'required_without_all:file_ids,tag_ids,budget,name,description,due_time,expire_time,geo_longitude,geo_latitude', 'regex:/^((\w{1,50})|(null))$/'),
