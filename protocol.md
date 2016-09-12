@@ -94,8 +94,9 @@ yes
 Status: 200
 
 	{
-		"friend_request": @number 好友请求数量,
-		"chat": @number 未读消息数量
+		"friend_request": @number, 好友请求数量
+		"chat": @number, 未读消息数量
+		"chat_room": @number 未读聊天室消息数量
 	}
 
 # 反推接口
