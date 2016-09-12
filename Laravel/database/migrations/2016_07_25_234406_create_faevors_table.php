@@ -24,7 +24,7 @@ class CreateFaevorsTable extends Migration
             $table->string('bonus',50)->nullable();
             $table->dateTime('expire_time');
             $table->dateTime('due_time');
-            $table->text('tag_ids');
+            $table->text('tag_ids')->nullable();
             $table->text('file_ids')->nullable();
             $table->timestamps();
         });

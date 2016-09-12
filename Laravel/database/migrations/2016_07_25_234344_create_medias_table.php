@@ -20,7 +20,7 @@ class CreateMediasTable extends Migration
             $table->text('description')->nullable();
             $table->point('geolocation');
             $table->text('tag_ids')->nullable();
-            $table->text('file_ids')->nullable();
+            $table->text('file_ids');
             $table->timestamps();
         });
     }
