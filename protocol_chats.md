@@ -233,6 +233,8 @@ Status: 204
 
 `POST /chat_rooms/:chat_room_id/message`
 
+一旦用户发送消息，该用户即成为该ChatRoom参与者。
+
 ### auth
 
 yes
@@ -248,7 +250,7 @@ yes
 
 Status: 201
 
-## 获取未读ChatRoom
+## 获取所有含有未读消息的ChatRoom
 
 `GET /chat_rooms/unread`
 
@@ -295,7 +297,7 @@ yes
 
 Status: 201
 
-## 获取用户参与的所有ChatRoom（注意区分“创建”与“参与”）
+## 获取用户参与（不是“创建”）的所有ChatRoom
 
 `GET /chat_rooms`
 
@@ -323,6 +325,28 @@ Status: 200
 			"last_message_type": @string,
 			"last_message_timestamp": @string,
 			"unread_count": @number
+			"created_at": @string
+		},
+		{...},
+		{...}
+	]
+
+## 获取ChatRoom中所有用户
+
+`GET /chat_rooms/:chat_room_id/users`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	[
+		{
+			"chat_room_id": @number,
+			"user_id": @number,
 			"created_at": @string
 		},
 		{...},

@@ -22,6 +22,7 @@ class ChatRoomController extends Controller implements PinInterface {
     }
 
     public function delete($chat_room_id) {
+        // non use
     }
 
     public function getFromUser($user_id) {
@@ -37,5 +38,8 @@ class ChatRoomController extends Controller implements PinInterface {
     }
 
     public function getHistory() {
+    }
+
+    public function getUserList($chat_room_id) {
     }
 }

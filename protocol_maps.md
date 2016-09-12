@@ -639,12 +639,4 @@ Status: 200
 
 ## 删除ChatRoom
 
-`DELETE /chat_rooms/:chat_room_id`
-
-### auth
-
-yes
-
-### response
-
-Status: 204
+禁止删除ChatRoom。
