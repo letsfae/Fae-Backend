@@ -11,11 +11,31 @@ class PinOperationController extends Controller {
         $this->request = $request;
     }
 
-    public function getMyPin() {
+    public function getUserPinList($user_id) {
 
     }
 
-    public function getSavedPin() {
+    public function getSelfPinList() {
+    	return $this->getUserPinList($this->request->self_user_id);
+    }
+
+    public function getSavedPinList() {
         
+    }
+
+    public function savePin($pin_id) {
+
+    }
+
+    public function unsavePin($pin_id) {
+
+    }
+
+    public function likePin($pin_id) {
+
+    }
+
+    public function dislikePin($pin_id) {
+
     }
 }
