@@ -599,6 +599,7 @@ Status: 200
 		"last_message_sender_id": @number,
 		"last_message_type": @string,
 		"last_message_timestamp": @string,
+		"unread_count": @number
 		"created_at": @string
 	}
 

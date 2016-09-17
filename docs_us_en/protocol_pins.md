@@ -96,7 +96,7 @@ Status: 204
 
 ## 获取saved pin
 
-`GET /pins/saved`
+`POST /pins/saved`
 
 其中type可为`media`、`comment`。
 
@@ -133,7 +133,7 @@ Status: 200
 
 ## 获取my pin
 
-`GET /pins/users`
+`POST /pins/users`
 
 ### auth
 
@@ -168,13 +168,13 @@ Status: 200
 
 ## 获取user pin
 
-`GET /pins/users/:user_id`
+`POST /pins/users/:user_id`
 
 其余同获取my pin。
 
 ## 获取pin属性
 
-`GET /pins/:type/:pin_id/attribute`
+`POST /pins/:type/:pin_id/attribute`
 
 ### auth
 
@@ -194,7 +194,7 @@ Status: 200
 
 ## 获取pin的评论
 
-`GET /pins/:type/:pin_id/comments`
+`POST /pins/:type/:pin_id/comments`
 
 ### auth
 

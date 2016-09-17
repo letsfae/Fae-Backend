@@ -115,6 +115,9 @@
 - tag_ids ;分割
 - file_ids ;分割
 - created_at
+- like_count
+- saved_count
+- comment_count
 
 ## faevors
 - id PK
@@ -148,16 +151,15 @@
 - unread_count integer default 0
 - created_at
 
-## pin_likes
+## pin_opts
 - id PK
+- type enum(media)
 - pin_id FK
 - user_id FK
-- created_at
-
-## pin_saves
-- id PK
-- pin_id FK
-- user_id FK
+- like boolean
+- like_timestamp
+- save boolean
+- save_timestamp
 - created_at
 
 ## pin_comments
