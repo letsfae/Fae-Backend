@@ -104,6 +104,10 @@ class TagController extends Controller implements RefInterface {
     }
 
     public static function derefByString($tag_string) {
+        if(is_null($tag_string))
+        {
+            return false;
+        }
         $tag_ids = explode(';', $tag_string);
         foreach ($tag_ids as $tag_id)
         {
@@ -112,16 +116,23 @@ class TagController extends Controller implements RefInterface {
     }
 
     public static function updateRefByString($old_tag_string, $new_tag_string) {
-        $old_tag_ids = explode(';', $old_tag_string);
-        $new_tag_ids = explode(';', $new_tag_string);
-        foreach ($old_tag_ids as $tag_id)
+        if($old_tag_string  != null)
         {
-            TagController::deref($tag_id);
+            $old_tag_ids = explode(';', $old_tag_string);
+            foreach ($old_tag_ids as $tag_id)
+            {
+                TagController::deref($tag_id);
+            }
         }
-        foreach ($new_tag_ids as $tag_id)
+        if($new_tag_string != 'null')
         {
-            TagController::ref($tag_id);
+            $new_tag_ids = explode(';', $new_tag_string);
+            foreach ($new_tag_ids as $tag_id)
+            {
+                TagController::ref($tag_id);
+            }
         }
+        
     }
 
     public static function existsByString($tag_string) {

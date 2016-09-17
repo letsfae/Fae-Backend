@@ -111,46 +111,6 @@ Body图片数据，其中`Content-Type`为`image/jpeg`。
 
 其余同get self avatar。
 
-## 设置NameCard背景图片 :white_check_mark:
-
-`POST /files/users/name_card_cover`
-
-### auth
-
-yes
-
-### parameters
-
-| Name | Description |
-| --- | --- |
-| name_card_cover | 图片内容 |
-
-图片格式必须为jpeg。
-
-### response
-
-Status: 201
-
-## 获取NameCard背景图片 :white_check_mark:
-
-`GET /files/users/name_card_cover`
-
-### auth
-
-yes
-
-### response
-
-Status: 200
-
-Body图片数据，其中`Content-Type`为`image/jpeg`。
-
-## 获取其他用户NameCard背景图片 :white_check_mark:
-
-`GET /files/users/:user_id/name_card_cover`
-
-其余同或者NameCard背景图片。
-
 ## 设置NameCard图片 :white_check_mark:
 
 `POST /files/users/name_card_photo`

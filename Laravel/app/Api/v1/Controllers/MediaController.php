@@ -33,14 +33,24 @@ class MediaController extends Controller implements PinInterface
     {
         $this->createValidation($this->request);
         $media = new Medias();
-        if(!FileController::existsByString($this->request->file_ids) || !TagController::existsByString($this->request->tag_ids))
+        if($this->request->has('tag_ids'))
+        {
+            if(TagController::existsByString($this->request->tag_ids))
+            {
+                $media->tag_ids = $this->request->tag_ids;
+                TagController::refByString($this->request->tag_ids);
+            }
+            else
+            {
+                return $this->errorNotFound();
+            }
+        }
+        if(!FileController::existsByString($this->request->file_ids))
         {
             return $this->errorNotFound();
         }
         FileController::refByString($this->request->file_ids);
-        TagController::refByString($this->request->tag_ids);
         $media->file_ids = $this->request->file_ids;
-        $media->tag_ids = $this->request->tag_ids;
         $media->description = $this->request->description;
         $media->geolocation = new Point($this->request->geo_latitude,$this->request->geo_longitude);
         $media->user_id = $this->request->self_user_id;
@@ -74,7 +84,12 @@ class MediaController extends Controller implements PinInterface
         }
         if($this->request->has('tag_ids'))
         {
-            if(TagController::existsByString($this->request->tag_ids))
+            if($this->request->tag_ids == 'null')
+            {
+                TagController::updateRefByString($media->tag_ids, $this->request->tag_ids);
+                $media->tag_ids = null;
+            }
+            else if(TagController::existsByString($this->request->tag_ids))
             {
                 TagController::updateRefByString($media->tag_ids, $this->request->tag_ids);
                 $media->tag_ids = $this->request->tag_ids;
@@ -165,7 +180,7 @@ class MediaController extends Controller implements PinInterface
             'geo_longitude' => 'required|numeric|between:-180,180',
             'geo_latitude' => 'required|numeric|between:-90,90',
             'file_ids' => 'required|regex:/^(\d+\;){0,4}\d+$/',
-            'tag_ids' => 'required|regex:/^(\d+\;){0,49}\d+$/',
+            'tag_ids' => 'filled|regex:/^(\d+\;){0,49}\d+$/',
             'description' => 'required|string',
         ]);
         if($validator->fails())
@@ -180,7 +195,7 @@ class MediaController extends Controller implements PinInterface
             'geo_longitude' => 'filled|required_with:geo_latitude|required_without_all:file_ids,tag_ids,description|numeric|between:-180,180',
             'geo_latitude' => 'filled|required_with:geo_longitude|required_without_all:file_ids,tag_ids,description|numeric|between:-90,90',
             'file_ids' => 'filled|required_without_all:tag_ids,description,geo_longitude,geo_latitude|regex:/^(\d+\;){0,4}\d+$/',
-            'tag_ids' => 'filled|required_without_all:file_ids,description,geo_longitude,geo_latitude|regex:/^(\d+\;){0,49}\d+$/',
+            'tag_ids' => array('filled', 'required_without_all:file_ids,description,geo_longitude,geo_latitude', 'regex:/^(((\d+\;){0,49}\d+)|(null))$/'),
             'description' => 'filled|required_without_all:tag_ids,file_ids,geo_longitude,geo_latitude|string',
         ]);
         if($validator->fails())

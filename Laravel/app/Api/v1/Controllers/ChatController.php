@@ -63,7 +63,8 @@ class ChatController extends Controller
             $sessions = Sessions::where('user_id', $receiver_id)->get();
             foreach($sessions as $key=>$value) {
                 if ($value->is_mobile && !empty($value->device_id)){
-                    $message = PushNotification::Message('New message',array(
+                    $message = PushNotification::Message('New message',array( 
+                        'badge' => 1, 
                         'custom' => array('custom data' => array(
                             'type' => 'chat_new_message',
                             'chat_id' => $chat->id,
@@ -74,12 +75,12 @@ class ChatController extends Controller
                             //the unread count of the sender should be 0, so the add could reduce the if statment of determine who is the receiver
                             'unread_count' => $chat->user_a_unread_count + $chat->user_b_unread_count
                         ))
-                    ));
-                }
+                    ));  
 
-                $collection = PushNotification::app('appNameIOS')
-                    ->to($value->device_id)
-                    ->send($message);
+                    $collection = PushNotification::app('appNameIOS')
+                        ->to($value->device_id)
+                        ->send($message);
+                }
             }
         }
         

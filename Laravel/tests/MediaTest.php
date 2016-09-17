@@ -117,6 +117,10 @@ class MediaTest extends TestCase {
         }
         $this->assertEquals(true, $result);
         $this->seeInDatabase('medias', ['user_id' => 1, 'description' => 'this is a test', 'tag_ids' => '1;2', 'file_ids' => '1;2']);
+        $this->seeInDatabase('tags', ['user_id' => 1, 'title' => 'fae', 'color' => '#fff000', 'reference_count' => 1]);
+        $this->seeInDatabase('tags', ['user_id' => 1, 'title' => 'fae1', 'color' => '#fff000', 'reference_count' => 1]);
+        $this->seeInDatabase('files', ['user_id' => 1, 'type' => 'video', 'mine_type' => 'video', 'size' => 256, 'reference_count' => 1]);
+        $this->seeInDatabase('files', ['user_id' => 1, 'type' => 'image', 'mine_type' => 'image', 'size' => 256, 'reference_count' => 1]);
     }
 
     //test the response when the tag information does not exist with the tag_ids.
@@ -280,6 +284,149 @@ class MediaTest extends TestCase {
             $result = true;
         }
         $this->assertEquals(true, $result);
+    }
+
+    //test the response when the file information does not exist with the file_ids.
+    public function testCreate4() {
+        // $this->markTestSkipped();
+        $parameter1 = array(
+            'email' => 'letsfae@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'kevin',
+        );
+        $server1 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server1));
+        $array = json_decode($login_response->getContent()); 
+        $tags = new Tags;
+        $tags->title = 'fae';
+        $tags->color = '#fff000';
+        $tags->user_id = 1;  
+        $tags->reference_count = 0;
+        $tags->save();
+
+        $tags = new Tags;
+        $tags->title = 'fae1';
+        $tags->color = '#fff000';
+        $tags->user_id = 1;  
+        $tags->reference_count = 0;
+        $tags->save();
+
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );   
+        $parameters = array(
+            'file_ids' => '1;2',
+            'tag_ids' => '1;2',
+            'description' => 'this is a test',
+            'geo_latitude' => '-89.99',
+            'geo_longitude' => '-118.2799',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
+        $array2 = json_decode($response->getContent());  
+        $result = false;
+        if ($response->status() == '404' && $array2->message == 'Not Found') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result); 
+    }
+
+    //test the response when the request has no tag_ids.
+    public function testCreate5() {
+        // $this->markTestSkipped();
+        $parameter1 = array(
+            'email' => 'letsfae@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'kevin',
+        );
+        $server1 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server1));
+        $array = json_decode($login_response->getContent()); 
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'video';
+        $files->mine_type = 'video';
+        $files->size = 256;
+        $files->hash = 'test';
+        $files->directory = 'test';
+        $files->file_name_storage = 'test';
+        $files->file_name = 'test';
+        $files->reference_count = 0;
+        $files->save();
+
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'image';
+        $files->mine_type = 'image';
+        $files->size = 256;
+        $files->hash = 'test1';
+        $files->directory = 'test1';
+        $files->file_name_storage = 'test1';
+        $files->file_name = 'test1';
+        $files->reference_count = 0;
+        $files->save(); 
+
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );   
+        $parameters = array(
+            'file_ids' => '1;2', 
+            'description' => 'this is a test',
+            'geo_latitude' => '-89.99',
+            'geo_longitude' => '-118.2799',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
+        $array2 = json_decode($response->getContent()); 
+        $this->seeJson([
+                'media_id' => 1,
+        ]);
+        $result = false;
+        if ($response->status() == '201') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);
+        $this->seeInDatabase('medias', ['user_id' => 1, 'description' => 'this is a test', 'file_ids' => '1;2']); 
+        $this->seeInDatabase('files', ['user_id' => 1, 'type' => 'video', 'mine_type' => 'video', 'size' => 256, 'reference_count' => 1]);
+        $this->seeInDatabase('files', ['user_id' => 1, 'type' => 'image', 'mine_type' => 'image', 'size' => 256, 'reference_count' => 1]);
     }
 
     //test correct response of the method of updateMedia.
@@ -744,6 +891,214 @@ class MediaTest extends TestCase {
             $result = true;
         }
         $this->assertEquals(true, $result); 
+    }
+
+    //test the response when the request of tag_ids is null.
+    public function testUpdat6() {
+        // $this->markTestSkipped();
+        $parameter1 = array(
+            'email' => 'letsfae@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'kevin',
+        );
+        $server1 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server1));
+        $array = json_decode($login_response->getContent()); 
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'video';
+        $files->mine_type = 'video';
+        $files->size = 256;
+        $files->hash = 'test';
+        $files->directory = 'test';
+        $files->file_name_storage = 'test';
+        $files->file_name = 'test';
+        $files->reference_count = 0;
+        $files->save();
+
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'image';
+        $files->mine_type = 'image';
+        $files->size = 256;
+        $files->hash = 'test1';
+        $files->directory = 'test1';
+        $files->file_name_storage = 'test1';
+        $files->file_name = 'test1';
+        $files->reference_count = 0;
+        $files->save();
+
+        $tags = new Tags;
+        $tags->title = 'fae';
+        $tags->color = '#fff000';
+        $tags->user_id = 1;  
+        $tags->reference_count = 0;
+        $tags->save();
+
+        $tags = new Tags;
+        $tags->title = 'fae1';
+        $tags->color = '#fff000';
+        $tags->user_id = 1;  
+        $tags->reference_count = 0;
+        $tags->save();
+
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );   
+        $parameters = array(
+            'file_ids' => '1;2',
+            'tag_ids' => '1;2',
+            'description' => 'this is a test',
+            'geo_latitude' => '-89.99',
+            'geo_longitude' => '-118.2799',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
+        $array2 = json_decode($response->getContent()); 
+        $this->refreshApplication();
+        $parameters1 = array( 
+            'description' => 'this is a test2', 
+             'tag_ids' => 'null',
+        );
+        $response2 = $this->call('post', 'http://'.$this->domain.'/medias/1', $parameters1, [], [], $this->transformHeadersToServerVars($server2));  
+        $array3 = json_decode($response2->getContent()); 
+        $result = false;
+        if ($response2->status() == '201') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);
+        $this->seeInDatabase('medias', ['user_id' => 1, 'description' => 'this is a test2', 'tag_ids' => null, 'file_ids' => '1;2']);
+    }
+
+    //test the response when the request of tag_ids exists in the tag table. 
+    public function testUpdat7() {
+        // $this->markTestSkipped();
+        $parameter1 = array(
+            'email' => 'letsfae@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'kevin',
+        );
+        $server1 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server1));
+        $array = json_decode($login_response->getContent()); 
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'video';
+        $files->mine_type = 'video';
+        $files->size = 256;
+        $files->hash = 'test';
+        $files->directory = 'test';
+        $files->file_name_storage = 'test';
+        $files->file_name = 'test';
+        $files->reference_count = 0;
+        $files->save();
+
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'image';
+        $files->mine_type = 'image';
+        $files->size = 256;
+        $files->hash = 'test1';
+        $files->directory = 'test1';
+        $files->file_name_storage = 'test1';
+        $files->file_name = 'test1';
+        $files->reference_count = 0;
+        $files->save();
+
+        $tags = new Tags;
+        $tags->title = 'fae';
+        $tags->color = '#fff000';
+        $tags->user_id = 1;  
+        $tags->reference_count = 0;
+        $tags->save();
+
+        $tags = new Tags;
+        $tags->title = 'fae1';
+        $tags->color = '#fff000';
+        $tags->user_id = 1;  
+        $tags->reference_count = 0;
+
+        $tags->save();
+        $tags = new Tags;
+        $tags->title = 'fae2';
+        $tags->color = '#fff000';
+        $tags->user_id = 1;  
+        $tags->reference_count = 0;
+        $tags->save();
+
+        $tags = new Tags;
+        $tags->title = 'fae3';
+        $tags->color = '#fff000';
+        $tags->user_id = 1;  
+        $tags->reference_count = 0;
+        $tags->save();
+
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );   
+        $parameters = array(
+            'file_ids' => '1;2',
+            'tag_ids' => '1;2',
+            'description' => 'this is a test',
+            'geo_latitude' => '-89.99',
+            'geo_longitude' => '-118.2799',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
+        $array2 = json_decode($response->getContent()); 
+        $this->refreshApplication();
+        $parameters1 = array( 
+            'description' => 'this is a test2', 
+             'tag_ids' => '3;4',
+        );
+        $response2 = $this->call('post', 'http://'.$this->domain.'/medias/1', $parameters1, [], [], $this->transformHeadersToServerVars($server2));  
+        $array3 = json_decode($response2->getContent()); 
+        $result = false;
+        if ($response2->status() == '201') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);
+        $this->seeInDatabase('medias', ['user_id' => 1, 'description' => 'this is a test2', 'tag_ids' => '3;4', 'file_ids' => '1;2']);
+        $this->seeInDatabase('tags', ['user_id' => 1, 'title' => 'fae2', 'color' => '#fff000', 'reference_count' => 1]);
+        $this->seeInDatabase('tags', ['user_id' => 1, 'title' => 'fae3', 'color' => '#fff000', 'reference_count' => 1]);
     }
 
     //test correct response of the method of getOneMedia.

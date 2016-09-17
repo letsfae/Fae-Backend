@@ -51,6 +51,33 @@ class UserFileController extends Controller
 		return response($file, 200)->header('Content-Type', 'image/jpeg');
     }
 
+    public function setSelfNameCardCover() {
+        // validation
+        $input = $this->request->all();
+        if(!$this->request->hasFile('name_card_cover') || !$this->request->file('name_card_cover')->isValid()) {
+            return $this->response->errorBadRequest();
+        }
+
+        // store file
+        $self_user_id = $this->request->self_user_id;
+        $file = $this->request->avatar;
+        // $extension = $file->getClientOriginalExtension();
+        Storage::disk('local')->put('name_card_cover/'.$self_user_id.'.jpg', File::get($file));
+        return $this->response->created();
+    }
+
+    public function getSelfNameCardCover() {
+        return $this->getNameCardCover($this->request->self_user_id);
+    }
+
+    public function getNameCardCover($user_id) {
+        try {
+            $file = Storage::disk('local')->get('name_card_cover/'.$user_id.'.jpg');
+        } catch(\Exception $e) {
+            return $this->response->errorNotFound();
+        }
+        return response($file, 200)->header('Content-Type', 'image/jpeg');
+    }
 
     public function updateNameCardPhoto() {
         // validation

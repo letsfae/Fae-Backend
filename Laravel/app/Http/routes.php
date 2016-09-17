@@ -29,6 +29,9 @@ $api->version('v1', function ($api) {
     // existence
     $api->get('/existence/email/{email}', 'App\Api\v1\Controllers\ExistenceController@email');
     $api->get('/existence/user_name/{user_name}', 'App\Api\v1\Controllers\ExistenceController@userName');
+    
+    // test
+    $api->post('/test/push_notification', 'App\Api\v1\Controllers\TestController@sendPushNotification');
 });
 
 $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], function ($api) {
@@ -97,8 +100,7 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->post('/tags', 'App\Api\v1\Controllers\TagController@create');
     $api->get('/tags', 'App\Api\v1\Controllers\TagController@getArray');
     $api->get('/tags/{tag_id}', 'App\Api\v1\Controllers\TagController@getOne');
-    // test
-    $api->post('/test/push_notification', 'App\Api\v1\Controllers\TestController@sendPushNotification');
+    
 });
 
 /**
@@ -108,6 +110,7 @@ $api->version('v1', function ($api) {
     // * no auth due to the request of front-end
     $api->get('/files/{file_id}/data', 'App\Api\v1\Controllers\FileController@getData');
     $api->get('/files/users/{user_id}/avatar', 'App\Api\v1\Controllers\UserFileController@getAvatar');
+    $api->get('/files/users/{user_id}/name_card_cover', 'App\Api\v1\Controllers\UserFileController@getNameCardCover');
     $api->get('/files/users/{user_id}/name_card_photo/{position}', 'App\Api\v1\Controllers\UserFileController@getNameCardPhoto');
 });
 
@@ -118,6 +121,9 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     // avatar
     $api->post('/files/users/avatar', 'App\Api\v1\Controllers\UserFileController@setSelfAvatar');
     $api->get('/files/users/avatar', 'App\Api\v1\Controllers\UserFileController@getSelfAvatar');
+    // name card cover
+    $api->post('/files/users/name_card_cover', 'App\Api\v1\Controllers\UserFileController@setSelfNameCardCover');
+    $api->get('/files/users/name_card_cover', 'App\Api\v1\Controllers\UserFileController@getSelfNameCardCover');
     // name card photo
     $api->post('/files/users/name_card_photo', 'App\Api\v1\Controllers\UserFileController@updateNameCardPhoto');
     $api->delete('/files/users/name_card_photo/{position}', 'App\Api\v1\Controllers\UserFileController@deleteNameCardPhoto');
