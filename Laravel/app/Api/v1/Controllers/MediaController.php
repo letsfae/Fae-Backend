@@ -8,6 +8,7 @@ use App\Api\v1\Interfaces\PinInterface;
 use Dingo\Api\Exception\StoreResourceFailedException;
 use Dingo\Api\Exception\UpdateResourceFailedException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 use Validator;
 use App\Medias;
 use App\Files;
@@ -69,6 +70,10 @@ class MediaController extends Controller implements PinInterface
         if(is_null($media))
         {
             return $this->response->errorNotFound();
+        }
+        if($media->user_id != $this->request->self_user_id)
+        {
+            throw new AccessDeniedHttpException('You can not update this media');
         }
         if($this->request->has('file_ids'))
         { 
@@ -213,7 +218,7 @@ class MediaController extends Controller implements PinInterface
         ]);
         if($validator->fails())
         {
-            throw new UpdateResourceFailedException('Could not get user medias.',$validator->errors());
+            throw new NotAcceptableHttpException('Could not get user medias.',$validator->errors());
         }
     }
 }
