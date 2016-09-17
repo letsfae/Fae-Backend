@@ -147,3 +147,21 @@
 - user_id FK
 - unread_count integer default 0
 - created_at
+
+## pin_likes
+- id PK
+- pin_id FK
+- user_id FK
+- created_at
+
+## pin_saves
+- id PK
+- pin_id FK
+- user_id FK
+- created_at
+
+## pin_comments
+- id PK
+- pin_id FK
+- user_id FK
+- content text
