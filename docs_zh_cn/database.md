@@ -151,15 +151,15 @@
 - unread_count integer default 0
 - created_at
 
-## pin_opts
+## pin_operations
 - id PK
 - type enum(media)
 - pin_id FK
 - user_id FK
 - like boolean
 - like_timestamp
-- save boolean
-- save_timestamp
+- saved boolean
+- saved_timestamp
 - created_at
 
 ## pin_comments

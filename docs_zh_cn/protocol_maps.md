@@ -547,7 +547,7 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| title | string(50) | 聊天室名 |
+| title | string(100) | 聊天室名 |
 | geo_latitude | number | 纬度 |
 | geo_longitude | number | 经度 |
 
