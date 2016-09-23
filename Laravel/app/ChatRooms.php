@@ -13,4 +13,13 @@ class ChatRooms extends Model
     protected $postgisFields = [
         'geolocation' => Point::class,
     ];
+    public function updateTimestamp()
+    {
+        $this->last_message_timestamp = $this->freshTimestamp();
+        return $this->save();
+    }
+    public function hasManyChatRoomUsers() 
+    {
+        return $this->hasMany('App\ChatRoomUsers','chat_room_id','id');
+    }
 }
