@@ -547,7 +547,7 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| title | string(50) | chatroom title |
+| title | string(100) | chatroom title |
 | geo_latitude | number | latitude |
 | geo_longitude | number | longitude |
 
