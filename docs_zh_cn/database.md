@@ -154,7 +154,7 @@
 ## pin_operations
 - id PK
 - type enum(media)
-- pin_id FK
+- pin_id 必须是enum所列举的pin的id
 - user_id FK
 - like boolean
 - like_timestamp

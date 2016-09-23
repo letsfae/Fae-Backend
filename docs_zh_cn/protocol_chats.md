@@ -252,7 +252,7 @@ Status: 201
 
 ## 获取所有含有未读消息的ChatRoom
 
-`GET /chat_rooms/unread`
+`GET /chat_rooms/message/unread`
 
 ### auth
 
@@ -285,7 +285,7 @@ Status: 200
 
 ## 标记已读ChatRoom
 
-`POST /chat_rooms/:chat_room_id/read`
+`POST /chat_rooms/:chat_room_id/message/read`
 
 此接口用于标记消息已读，调用后则将置0该用户在该ChatRoom中的未读消息数量。
 
