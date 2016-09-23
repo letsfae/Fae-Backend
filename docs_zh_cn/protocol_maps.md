@@ -40,7 +40,7 @@ yes
 | geo_latitude | number | 中心点纬度 |
 | geo_longitude | number | 中心点经度 |
 | radius (optional) | number | 半径，默认值为200m |
-| type (optional) | string(user,comment,media,faevor) | 筛选类型，默认为所有，类型之间用逗号隔开 |
+| type (optional) | string(user,comment,media,faevor,chat_room) | 筛选类型，默认为所有，类型之间用逗号隔开 |
 | max_count (optional) | number | 返回节点最大数量，默认为30，最大为100 |
 
 对于一直在更新的user点，可以每隔一段时间获取一次。
@@ -528,3 +528,114 @@ yes
 ### response
 
 Status: 204
+
+----------
+
+部分ChatRoom接口在chats相关协议文件中。
+
+----------
+
+## 创建ChatRoom
+
+`POST /chat_rooms`
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| title | string(100) | 聊天室名 |
+| geo_latitude | number | 纬度 |
+| geo_longitude | number | 经度 |
+
+### response
+
+Status: 201
+
+	{
+		"chat_room_id": @number
+	}
+
+## 更新ChatRoom
+
+`POST /chat_rooms/:chat_room_id`
+
+### auth
+
+yes
+
+### parameters
+
+同创建ChatRoom，但所有参数均为可选。
+
+### response
+
+Status: 201
+
+## 获取ChatRoom
+
+`GET /chat_rooms/:chat_room_id`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	{
+		"chat_room_id": @number,
+		"title": @string,
+		"user_id": @number 创建者id
+		"geolocation": {
+			"latitude": @number,
+			"longitude": @number
+		},
+		"last_message": @string,
+		"last_message_sender_id": @number,
+		"last_message_type": @string,
+		"last_message_timestamp": @string,
+		"created_at": @string
+	}
+
+## 获取某个用户创建的所有ChatRoom
+
+`GET /chat_rooms/users/:user_id`
+
+### auth
+
+yes
+
+### filters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| start_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为1970-01-01 00:00:00 |
+| end_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为当前日期和时间 |
+| page | number | 页数，默认为第1页（头30条） |
+
+过滤参数均为可选。
+
+### response
+
+Status: 200
+
+	page: @number
+	total_pages: @number
+
+	-----
+
+	[
+		{...},
+		{...}
+	]
+
+具体数组内对象同“创建ChatRoom”所得到的对象。
+
+## 删除ChatRoom
+
+禁止删除ChatRoom。

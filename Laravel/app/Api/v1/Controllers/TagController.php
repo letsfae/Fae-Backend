@@ -22,7 +22,7 @@ class TagController extends Controller implements RefInterface {
     public function create()
     {
         $this->createValidation($this->request);
-        $tag = Tags:: where('title', $this->request->title)->first();
+        $tag = Tags::where('title', $this->request->title)->first();
         if(is_null($tag))
         {
             $tag = new Tags();

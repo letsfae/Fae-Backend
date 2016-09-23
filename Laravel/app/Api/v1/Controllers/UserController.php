@@ -34,6 +34,7 @@ class UserController extends Controller
         UserController::signUpValidation($this->request);
         $user = new Users;
         $user->email = strtolower($this->request->email);
+        $user->user_name = $this->request->user_name;
         $user->password = bcrypt($this->request->password);
         $user->first_name = $this->request->first_name;
         $user->last_name = $this->request->last_name;
@@ -229,6 +230,7 @@ class UserController extends Controller
         }
         $validator = Validator::make($input, [
             'email' => 'required|unique:users,email|max:50|email',
+            'user_name' => 'required|unique:users,user_name|regex:/^[a-zA-Z][a-zA-Z0-9_]{5,29}$/',
             'password' => 'required|between:8,16',
             'first_name' => 'required|string|max:50',
             'last_name' => 'required|string|max:50',

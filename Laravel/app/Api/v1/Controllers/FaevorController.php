@@ -8,6 +8,7 @@ use App\Api\v1\Interfaces\PinInterface;
 use Dingo\Api\Exception\StoreResourceFailedException;
 use Dingo\Api\Exception\UpdateResourceFailedException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 use Validator;
 use App\Faevors;
 use App\Files;
@@ -82,6 +83,10 @@ class FaevorController extends Controller implements PinInterface {
         if(is_null($faevor))
         {
             return $this->response->errorNotFound();
+        }
+        if($faevor->user_id != $this->request->self_user_id)
+        {
+            throw new AccessDeniedHttpException('You can not update this faevor');
         }
         if($this->request->has('file_ids'))
         { 
@@ -240,7 +245,7 @@ class FaevorController extends Controller implements PinInterface {
         ]);
         if($validator->fails())
         {
-            throw new StoreResourceFailedException('Could not create faevor.',$validator->errors());
+            throw new StoreResourceFailedException('Could not create faevor.', $validator->errors());
         }
     }
 
@@ -265,7 +270,7 @@ class FaevorController extends Controller implements PinInterface {
         ]);
         if($validator->fails())
         {
-            throw new UpdateResourceFailedException('Could not update faevor.',$validator->errors());
+            throw new UpdateResourceFailedException('Could not update faevor.', $validator->errors());
         }
     }
 
@@ -278,7 +283,7 @@ class FaevorController extends Controller implements PinInterface {
         ]);
         if($validator->fails())
         {
-            throw new UpdateResourceFailedException('Could not get user faevors.',$validator->errors());
+            throw new NotAcceptableHttpException('Could not get user faevors.', $validator->errors());
         }
     }
 }

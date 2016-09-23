@@ -96,11 +96,34 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->post('/chats/read', 'App\Api\v1\Controllers\ChatController@markRead');
     $api->get('/chats', 'App\Api\v1\Controllers\ChatController@getHistory');
     $api->delete('/chats/{chat_id}', 'App\Api\v1\Controllers\ChatController@delete');
+    // chat rooms
+    $api->post('/chat_rooms', 'App\Api\v1\Controllers\ChatRoomController@create');
+    $api->post('/chat_rooms/{chat_room_id}', 'App\Api\v1\Controllers\ChatRoomController@update');
+    $api->get('/chat_rooms/{chat_room_id}', 'App\Api\v1\Controllers\ChatRoomController@getOne');
+    // $api->delete('/chat_rooms/{chat_room_id}', 'App\Api\v1\Controllers\ChatRoomController@delete');
+    $api->get('/chat_rooms/users/{user_id}', 'App\Api\v1\Controllers\ChatRoomController@getFromUser');
+    $api->post('/chat_rooms/{chat_room_id}', 'App\Api\v1\Controllers\ChatRoomController@send');
+    $api->get('/chat_rooms/unread', 'App\Api\v1\Controllers\ChatRoomController@getUnread');
+    $api->post('/chat_rooms/{chat_room_id}/read', 'App\Api\v1\Controllers\ChatRoomController@markRead');
+    $api->get('/chat_rooms', 'App\Api\v1\Controllers\ChatRoomController@getHistory');
+    $api->get('/chat_rooms/{chat_room_id}/users', 'App\Api\v1\Controllers\ChatRoomController@getUserList');
     // tags
     $api->post('/tags', 'App\Api\v1\Controllers\TagController@create');
     $api->get('/tags', 'App\Api\v1\Controllers\TagController@getArray');
     $api->get('/tags/{tag_id}', 'App\Api\v1\Controllers\TagController@getOne');
-    
+    // pin operations
+    $api->post('/pins/{type}/{pin_id}/like', 'App\Api\v1\Controllers\PinOperationController@like');
+    $api->delete('/pins/{type}/{pin_id}/like', 'App\Api\v1\Controllers\PinOperationController@unlike');
+    $api->post('/pins/{type}/{pin_id}/comments', 'App\Api\v1\Controllers\PinOperationController@comment');
+    $api->delete('/pins/{type}/{pin_id}/comments/{pin_comment_id}', 'App\Api\v1\Controllers\PinOperationController@uncomment');
+    $api->post('/pins/{type}/{pin_id}/save', 'App\Api\v1\Controllers\PinOperationController@save');
+    $api->delete('/pins/{type}/{pin_id}/save', 'App\Api\v1\Controllers\PinOperationController@unsave');
+    $api->get('/pins/{type}/{pin_id}/attribute', 'App\Api\v1\Controllers\PinOperationController@getPinAttribute');
+    $api->get('/pins/{type}/{pin_id}/comments', 'App\Api\v1\Controllers\PinOperationController@getPinCommentList');
+    $api->get('/pins/saved', 'App\Api\v1\Controllers\PinOperationController@getSavedPinList');
+    $api->get('/pins/users', 'App\Api\v1\Controllers\PinOperationController@getSelfPinList');
+    $api->get('/pins/users/{user_id}', 'App\Api\v1\Controllers\PinOperationController@getUserPinList');
+
 });
 
 /**

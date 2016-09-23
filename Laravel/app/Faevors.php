@@ -19,6 +19,6 @@ class Faevors extends Model
     public function users() 
     {
     	return $this->belongsTo('App\Users','user_id','id');
-    }
+    } 
     protected $fillable = array('user_id', 'description', 'geolocation', 'name', 'budget', 'bonus', 'expire_time', 'due_time', 'tag_ids', 'file_ids');
-}
+} 

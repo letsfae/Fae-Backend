@@ -221,3 +221,134 @@ yes
 ### response
 
 Status: 204
+
+
+----------
+
+在ChatRoom中聊天只能在已经创建的ChatRoom中进行。
+
+----------
+
+## 发送ChatRoom聊天消息
+
+`POST /chat_rooms/:chat_room_id/message`
+
+一旦用户发送消息，该用户即成为该ChatRoom参与者。
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| message | string | 具体内容 |
+| type | string('text','image') | 区分内容的类型 |
+
+### response
+
+Status: 201
+
+## 获取所有含有未读消息的ChatRoom
+
+`GET /chat_rooms/unread`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	[
+		{
+			"chat_room_id": @number,
+			"title": @string,
+			"user_id": @number 创建者id
+			"geolocation": {
+				"latitude": @number,
+				"longitude": @number
+			},
+			"last_message": @string,
+			"last_message_sender_id": @number,
+			"last_message_type": @string,
+			"last_message_timestamp": @string,
+			"unread_count": @number
+			"created_at": @string
+		},
+		{...},
+		{...}
+	]
+
+
+## 标记已读ChatRoom
+
+`POST /chat_rooms/:chat_room_id/read`
+
+此接口用于标记消息已读，调用后则将置0该用户在该ChatRoom中的未读消息数量。
+
+### auth
+
+yes
+
+### response
+
+Status: 201
+
+## 获取用户参与（不是“创建”）的所有ChatRoom
+
+`GET /chat_rooms`
+
+一般在初始化聊天列表时调用。
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	[
+		{
+			"chat_room_id": @number,
+			"title": @string,
+			"user_id": @number 创建者id
+			"geolocation": {
+				"latitude": @number,
+				"longitude": @number
+			},
+			"last_message": @string,
+			"last_message_sender_id": @number,
+			"last_message_type": @string,
+			"last_message_timestamp": @string,
+			"unread_count": @number
+			"created_at": @string
+		},
+		{...},
+		{...}
+	]
+
+## 获取ChatRoom中所有用户
+
+`GET /chat_rooms/:chat_room_id/users`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	[
+		{
+			"chat_room_id": @number,
+			"user_id": @number,
+			"created_at": @string
+		},
+		{...},
+		{...}
+	]

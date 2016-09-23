@@ -60,7 +60,7 @@ class UserFileController extends Controller
 
         // store file
         $self_user_id = $this->request->self_user_id;
-        $file = $this->request->avatar;
+        $file = $this->request->name_card_cover;
         // $extension = $file->getClientOriginalExtension();
         Storage::disk('local')->put('name_card_cover/'.$self_user_id.'.jpg', File::get($file));
         return $this->response->created();

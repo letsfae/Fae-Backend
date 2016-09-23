@@ -60,7 +60,7 @@ class MapController extends Controller
         }
         else
         {
-            array_push($type, 'user','comment','media','faevor');
+            array_push($type, 'user', 'comment', 'media', 'faevor', 'chat_room');
         }
         $info = array();
         foreach($type as $t)
@@ -119,6 +119,21 @@ class MapController extends Controller
                         $file_ids = is_null($faevor->file_ids) ? null : explode(';', $faevor->file_ids);
                         $tag_ids = is_null($faevor->tag_ids) ? null : explode(';', $faevor->tag_ids);
                         $info[] = ['type'=>'faevor', 'faevor_id' => $faevor->id, 'user_id' => $faevor->user_id, 'file_ids' => $file_ids, 'tag_ids' => $tag_ids, 'description' => $faevor->description, 'name' => $faevor->name, 'budget' => $faevor->budget, 'bonus' => $faevor->bonus, 'due_time' => $faevor->due_time, 'expire_time' => $faevor->expire_time, 'geolocation' => ['latitude' => $location->getLat(), 'longitude' => $location->getLng()], 'created_at' => $faevor->created_at];
+                        $max_count--;
+                    }
+                    break;
+                case 'chat_room':
+                    $chat_rooms = DB::select("SELECT * FROM chat_rooms c WHERE st_dwithin(c.geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true) LIMIT :max_count", array('longitude' => $longitude, 'latitude'=> $latitude, 'radius' => $radius, 'max_count' => $max_count));
+                    foreach ($chat_rooms as $chat_room)
+                    {
+                        $location = Geometry::fromWKB($faevor->geolocation);
+                        $info[] = ['type' => 'chat_room', 'chat_room_id' => $chat_room->id, 'title' => $chat_room->title, 
+                            'user_id' => $chat_room->user_id, 'geolocation' => ['latitude' => $faevor->geolocation->getLat(), 
+                            'longitude' => $faevor->geolocation->getLng()], 'last_message' => $chat_room->last_message, 
+                            'last_message_sender_id' => $chat_room->last_message_sender_id,
+                            'last_message_type' => $chat_room->last_message_type, 
+                            'last_message_timestamp' => $chat_room->last_message_timestamp,
+                            'created_at' => $chat_room->created_at];
                         $max_count--;
                     }
                     break;
