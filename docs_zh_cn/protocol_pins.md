@@ -82,7 +82,7 @@ Status: 201
 
 ## Uncomment
 
-`DELETE /pins/:type/:pin_id/comments/:pin_comment_id`
+`DELETE /pins/comments/:pin_comment_id`
 
 其中type可为`media`、`comment`。
 
@@ -219,6 +219,7 @@ Status: 200
 
 	[
 		{
+			"pin_comment_id": @number,
 			"user_id": @number,
 			"content": @string,
 			"created_at": @string

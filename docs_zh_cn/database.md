@@ -153,7 +153,7 @@
 
 ## pin_operations
 - id PK
-- type enum(media)
+- type enum(media,comment)
 - pin_id 必须是enum所列举的pin的id
 - user_id FK
 - like boolean
@@ -164,6 +164,14 @@
 
 ## pin_comments
 - id PK
-- pin_id FK
+- type enum(media,comment)
+- pin_id 必须是enum所列举的pin的id
 - user_id FK
 - content text
+
+# pin_helper
+- id PK
+- type enum(media,comment)
+- pin_id
+- geolocation
+- created_at

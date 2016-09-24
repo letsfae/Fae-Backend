@@ -17,8 +17,8 @@ use App\Users;
 use Phaza\LaravelPostgis\Eloquent\PostgisTrait;
 use Phaza\LaravelPostgis\Geometries\Point;
 use Phaza\LaravelPostgis\Geometries\Geometry;
-use App\Api\V1\Controllers\TagController;
-use App\Api\V1\Controllers\FileController;
+use App\Api\v1\Controllers\TagController;
+use App\Api\v1\Controllers\FileController;
 
 class FaevorController extends Controller implements PinInterface {
     use Helpers;
