@@ -169,7 +169,7 @@
 - user_id FK
 - content text
 
-# pin_helper
+## pin_helper
 - id PK
 - type enum(media,comment)
 - pin_id

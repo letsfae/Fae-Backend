@@ -159,7 +159,6 @@ class FaevorController extends Controller implements PinInterface {
         }
         $faevor->save();
         return $this->response->created();
-
     }
 
     public function getOne($faevor_id)

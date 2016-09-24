@@ -535,7 +535,7 @@ Status: 204
 
 ----------
 
-## 创建ChatRoom
+## 创建ChatRoom :white_check_mark:
 
 `POST /chat_rooms`
 
@@ -559,7 +559,7 @@ Status: 201
 		"chat_room_id": @number
 	}
 
-## 更新ChatRoom
+## 更新ChatRoom :white_check_mark:
 
 `POST /chat_rooms/:chat_room_id`
 
@@ -575,7 +575,7 @@ yes
 
 Status: 201
 
-## 获取ChatRoom
+## 获取ChatRoom :white_check_mark:
 
 `GET /chat_rooms/:chat_room_id`
 
@@ -602,7 +602,7 @@ Status: 200
 		"created_at": @string
 	}
 
-## 获取某个用户创建的所有ChatRoom
+## 获取某个用户创建的所有ChatRoom :white_check_mark:
 
 `GET /chat_rooms/users/:user_id`
 

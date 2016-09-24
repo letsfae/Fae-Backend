@@ -83,8 +83,6 @@ class ChatController extends Controller
                 }
             }
         }
-        
-        
         return $this->response->created(null, ['chat_id' => $chat->id]);
     }
 

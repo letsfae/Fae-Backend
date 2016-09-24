@@ -1,6 +1,6 @@
 # 用户对于pin的操作
 
-## Like 点赞
+## Like 点赞 :white_check_mark:
 
 `POST /pins/:type/:pin_id/like`
 
@@ -14,7 +14,7 @@ yes
 
 Status: 201
 
-## Unlike （注意不是dislike）
+## Unlike （注意不是dislike） :white_check_mark:
 
 `DELETE /pins/:type/:pin_id/like`
 
@@ -28,7 +28,7 @@ yes
 
 Status: 204
 
-## Save 保存
+## Save 保存 :white_check_mark:
 
 `POST /pins/:type/:pin_id/save`
 
@@ -42,7 +42,7 @@ yes
 
 Status: 201
 
-## Unsave
+## Unsave :white_check_mark:
 
 `DELETE /pins/:type/:pin_id/save`
 
@@ -56,7 +56,7 @@ yes
 
 Status: 204
 
-## comment 评论
+## comment 评论 :white_check_mark:
 
 `POST /pins/:type/:pin_id/comments`
 
@@ -80,7 +80,7 @@ Status: 201
 		"pin_comment_id": @number
 	}
 
-## Uncomment
+## Uncomment :white_check_mark:
 
 `DELETE /pins/comments/:pin_comment_id`
 
@@ -94,7 +94,7 @@ yes
 
 Status: 204
 
-## 获取saved pin
+## 获取saved pin :white_check_mark:
 
 `GET /pins/saved`
 
@@ -172,7 +172,7 @@ Status: 200
 
 其余同获取my pin。
 
-## 获取pin属性
+## 获取pin属性 :white_check_mark:
 
 `GET /pins/:type/:pin_id/attribute`
 
@@ -192,7 +192,7 @@ Status: 200
 		"comments": @number
 	}
 
-## 获取pin的评论
+## 获取pin的评论 :white_check_mark:
 
 `GET /pins/:type/:pin_id/comments`
 
