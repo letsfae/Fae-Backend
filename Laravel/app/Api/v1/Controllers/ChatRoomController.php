@@ -108,6 +108,13 @@ class ChatRoomController extends Controller implements PinInterface
         $page =  $this->request->has('page') ? $this->request->page : 1;
         $chat_rooms = ChatRooms::where('user_id', $user_id)->where('created_at','>=', $start_time)->where('created_at','<=', $end_time)->orderBy('created_at', 'desc')->skip(30 * ($page - 1))->take(30)->get();
         $total_pages = intval($chat_rooms->count() / 30) + 1;
+        $total = ChatRooms::where('user_id', $user_id)->where('created_at','>=', $start_time)
+                    ->where('created_at','<=', $end_time)->count();
+        $total_pages = 0;
+        if($total > 0)
+        {
+            $total_pages = intval(($total-1)/30)+1;
+        }
         $info = array();
         foreach($chat_rooms as $chat_room)
         {
