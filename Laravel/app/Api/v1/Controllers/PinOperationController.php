@@ -168,7 +168,11 @@ class PinOperationController extends Controller {
         $num_commented_pins = Pin_comments::where('pin_id', $pin_id)->where('type', $type)->count();
         //$num_commented_pins = count($commented_pins);
         
-        $content = array('likes' => $num_liked_pins, 'saves' => $num_saved_pins, 'comments' => $num_commented_pins);
+        $content = array(   'type' => $type,
+                            'pin_id'=> $pin_id,          
+                            'likes' => $num_liked_pins, 
+                            'saves' => $num_saved_pins, 
+                            'comments' => $num_commented_pins);
         return $this->response->created(null, $content);
     }
 
@@ -199,7 +203,8 @@ class PinOperationController extends Controller {
         {
             $info[] = array('pin_comment_id' => $commented_pin->id,
                             'user_id' => $commented_pin->user_id, 
-                            'content' => $commented_pin->content);
+                            'content' => $commented_pin->content.
+                            'created_at'=>$commented_pin->created_at);
         }
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
     }
@@ -227,8 +232,7 @@ class PinOperationController extends Controller {
         $info = array();
         foreach($commented_pin_list as $commented_pin)
         {
-            $info[] = array('pin_comment_id' => $commented_pin->id,
-                            'pin_id' => $commented_pin->pin_id,
+            $info[] = array('pin_id' => $commented_pin->pin_id,
                             'type' => $commented_pin->type,
                             'content' => $commented_pin->content);
         }
@@ -264,7 +268,8 @@ class PinOperationController extends Controller {
         foreach($saved_pin_list as $saved_pin)
         {
             $info[] = array('pin_id' => $saved_pin->pin_id,
-                            'type' => $saved_pin->type);
+                            'type' => $saved_pin->type,
+                            'created_at' => $saved_pin->saved_timestamp);
         }
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
     }
