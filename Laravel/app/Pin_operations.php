@@ -1,0 +1,20 @@
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Pin_operations extends Model
+{
+    protected $table = 'pin_operations';
+    public function updateSavedTimestamp()
+    {
+        $this->saved_timestamp = $this->freshTimestamp();
+        return $this->save();
+    }
+    public function updateLikeTimestamp()
+    {
+        $this->like_timestamp = $this->freshTimestamp();
+        return $this->save();
+    }
+}
