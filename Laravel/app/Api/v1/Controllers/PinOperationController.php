@@ -46,6 +46,7 @@ class PinOperationController extends Controller {
             $obj_pin_operation->updateSavedTimestamp();
             $obj_pin_operation->save(); 
         }
+        return $this->response->created();
     }
 
     public function unsave($type, $pin_id) {
@@ -61,6 +62,7 @@ class PinOperationController extends Controller {
                 $obj_pin_operation->delete();
             }
         }
+        return $this->response->noContent();
     }
 
     public function like($type, $pin_id) {
@@ -90,6 +92,7 @@ class PinOperationController extends Controller {
             $obj_pin_operation->updateLikeTimestamp();
             $obj_pin_operation->save(); 
         }
+        return $this->response->created();
     }
 
     public function unlike($type, $pin_id) {
@@ -105,6 +108,7 @@ class PinOperationController extends Controller {
                 $obj_pin_operation->delete();
             }
         }
+        return $this->response->noContent();
     }
 
     public function comment($type, $pin_id) {
@@ -139,13 +143,14 @@ class PinOperationController extends Controller {
         return $this->response->created(null, $content);
     }
 
-    public function uncomment($type, $pin_id, $pin_comment_id) {
+    public function uncomment($pin_comment_id) {
         $obj_pin_comment = Pin_comments::where('id', $pin_comment_id)->first();
         if ($obj_pin_comment == null) {
             throw new StoreResourceFailedException('Bad request, never commented such pin!');
         }else{
             $obj_pin_comment->delete();
         }
+        return $this->response->noContent();
     }
 
     public function getPinAttribute($type, $pin_id) {
@@ -203,7 +208,7 @@ class PinOperationController extends Controller {
         {
             $info[] = array('pin_comment_id' => $commented_pin->id,
                             'user_id' => $commented_pin->user_id, 
-                            'content' => $commented_pin->content.
+                            'content' => $commented_pin->content,
                             'created_at'=>$commented_pin->created_at);
         }
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
