@@ -33,6 +33,7 @@ class ExistenceTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         ]);
@@ -59,6 +60,7 @@ class ExistenceTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         ]);
@@ -83,6 +85,7 @@ class ExistenceTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
             'user_name' => 'kevin',
@@ -110,6 +113,7 @@ class ExistenceTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
             'user_name' => 'kevin',

@@ -34,6 +34,7 @@ class signUpTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -56,6 +57,7 @@ class signUpTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -67,6 +69,29 @@ class signUpTest extends TestCase {
         $array = json_decode($response->getContent());
         $result = false;
         if ($response->status() == '422' && $array->message == 'Could not create new user.' && $array->errors->email[0] == 'The email must be a valid email address.') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);
+    }
+
+    //test the response when the user_name is null.
+    public function testSignUp3() { 
+        $parameters = array(
+            'email' => 'letsfae@126.com',  
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang', 
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($response->getContent());
+        $result = false; 
+        if ($response->status() == '422' && $array->message == 'Could not create new user.' && $array->errors->user_name[0] == 'The user name field is required.') {
             $result = true;
         }
         $this->assertEquals(true, $result);

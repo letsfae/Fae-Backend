@@ -1,4 +1,4 @@
-<?php
+ <?php
 
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
@@ -41,6 +41,7 @@ class CommentTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
             'login_count' => 0, 
@@ -48,7 +49,7 @@ class CommentTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -88,6 +89,7 @@ class CommentTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
             'login_count' => 0, 
@@ -95,7 +97,7 @@ class CommentTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -133,6 +135,7 @@ class CommentTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
             'login_count' => 0, 
@@ -140,7 +143,7 @@ class CommentTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -191,6 +194,7 @@ class CommentTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
             'login_count' => 0, 
@@ -198,7 +202,7 @@ class CommentTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -232,6 +236,7 @@ class CommentTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
             'login_count' => 0, 
@@ -239,7 +244,7 @@ class CommentTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -281,6 +286,7 @@ class CommentTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
             'login_count' => 0, 
@@ -288,7 +294,7 @@ class CommentTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -374,6 +380,7 @@ class CommentTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
             'login_count' => 0, 
@@ -381,7 +388,7 @@ class CommentTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -415,6 +422,7 @@ class CommentTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
             'login_count' => 0, 
@@ -422,7 +430,7 @@ class CommentTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -456,6 +464,7 @@ class CommentTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
             'login_count' => 0, 
@@ -463,7 +472,7 @@ class CommentTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -502,6 +511,7 @@ class CommentTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
             'login_count' => 0, 
@@ -509,7 +519,7 @@ class CommentTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -557,6 +567,7 @@ class CommentTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
             'login_count' => 0, 
@@ -564,7 +575,7 @@ class CommentTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -601,6 +612,7 @@ class CommentTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
             'login_count' => 0, 
@@ -608,7 +620,7 @@ class CommentTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -650,6 +662,7 @@ class CommentTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
             'login_count' => 0, 
@@ -657,7 +670,7 @@ class CommentTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -699,6 +712,7 @@ class CommentTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
             'login_count' => 0, 
@@ -706,8 +720,9 @@ class CommentTest extends TestCase {
         $user2 = Users::create([
             'email' => 'letsfae2@126.com',
             'password' => bcrypt('letsfaego'),
-            'first_name' => 'kevin',
+            'first_name' => 'kevin2',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
             'login_count' => 0, 
@@ -715,7 +730,7 @@ class CommentTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -761,6 +776,7 @@ class CommentTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
             'login_count' => 0, 
@@ -768,7 +784,7 @@ class CommentTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -813,6 +829,7 @@ class CommentTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
             'login_count' => 0, 
@@ -820,7 +837,7 @@ class CommentTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -865,6 +882,7 @@ class CommentTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
             'login_count' => 0, 
@@ -872,7 +890,7 @@ class CommentTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -919,6 +937,7 @@ class CommentTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
             'login_count' => 0, 
@@ -926,7 +945,7 @@ class CommentTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 

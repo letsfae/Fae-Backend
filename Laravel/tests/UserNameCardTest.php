@@ -35,6 +35,7 @@ class UserNameCardTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -47,7 +48,7 @@ class UserNameCardTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -105,6 +106,7 @@ class UserNameCardTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -117,7 +119,7 @@ class UserNameCardTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -155,6 +157,7 @@ class UserNameCardTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -167,7 +170,7 @@ class UserNameCardTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -200,6 +203,7 @@ class UserNameCardTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -212,7 +216,7 @@ class UserNameCardTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -250,6 +254,7 @@ class UserNameCardTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -262,7 +267,7 @@ class UserNameCardTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -310,6 +315,7 @@ class UserNameCardTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -322,7 +328,7 @@ class UserNameCardTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -355,6 +361,7 @@ class UserNameCardTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -367,7 +374,7 @@ class UserNameCardTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -414,6 +421,7 @@ class UserNameCardTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -426,7 +434,7 @@ class UserNameCardTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -467,6 +475,7 @@ class UserNameCardTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -479,7 +488,7 @@ class UserNameCardTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -523,6 +532,7 @@ class UserNameCardTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -535,7 +545,7 @@ class UserNameCardTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -581,6 +591,7 @@ class UserNameCardTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -593,7 +604,7 @@ class UserNameCardTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 

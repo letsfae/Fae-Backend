@@ -75,6 +75,7 @@ Base URL：`https://api.letsfae.com/`
 
 - [用户及认证类](protocol_users.md)
 - [地图及各类Pin](protocol_maps.md)
+- [用户对于pin的操作](protocol_pins.md)
 - [好友及聊天类](protocol_chats.md)
 - [文件类](protocol_files.md)
 - 其他（如下）
@@ -94,8 +95,9 @@ yes
 Status: 200
 
 	{
-		"friend_request": @number 好友请求数量,
-		"chat": @number 未读消息数量
+		"friend_request": @number, 好友请求数量
+		"chat": @number, 未读消息数量
+		"chat_room": @number 未读聊天室消息数量
 	}
 
 # 反推接口

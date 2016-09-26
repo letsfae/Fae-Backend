@@ -35,6 +35,7 @@ class MediaTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -47,7 +48,7 @@ class MediaTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -132,6 +133,7 @@ class MediaTest extends TestCase {
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'gender' => 'male',
+            'user_name' => 'faeapp',
             'birthday' => '1992-02-02',
         );
         $server = array(
@@ -143,7 +145,7 @@ class MediaTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -205,6 +207,7 @@ class MediaTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -217,7 +220,7 @@ class MediaTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -294,6 +297,7 @@ class MediaTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -306,7 +310,7 @@ class MediaTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -358,6 +362,7 @@ class MediaTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -370,7 +375,7 @@ class MediaTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -437,6 +442,7 @@ class MediaTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -449,7 +455,7 @@ class MediaTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -532,6 +538,7 @@ class MediaTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -544,7 +551,7 @@ class MediaTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -627,6 +634,7 @@ class MediaTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -639,7 +647,7 @@ class MediaTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -725,6 +733,7 @@ class MediaTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -737,7 +746,7 @@ class MediaTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -820,6 +829,7 @@ class MediaTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -832,7 +842,7 @@ class MediaTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -901,6 +911,7 @@ class MediaTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -913,7 +924,7 @@ class MediaTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -990,13 +1001,14 @@ class MediaTest extends TestCase {
     }
 
     //test the response when the request of tag_ids exists in the tag table. 
-    public function testUpdat7() {
+    public function testUpdate7() {
         // $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -1009,7 +1021,7 @@ class MediaTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -1109,6 +1121,7 @@ class MediaTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -1121,7 +1134,7 @@ class MediaTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -1212,6 +1225,7 @@ class MediaTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -1224,7 +1238,7 @@ class MediaTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -1304,6 +1318,7 @@ class MediaTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -1316,7 +1331,7 @@ class MediaTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -1396,6 +1411,7 @@ class MediaTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -1408,7 +1424,7 @@ class MediaTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -1483,6 +1499,7 @@ class MediaTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -1495,7 +1512,7 @@ class MediaTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -1575,6 +1592,7 @@ class MediaTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -1587,7 +1605,7 @@ class MediaTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -1667,6 +1685,7 @@ class MediaTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -1681,6 +1700,7 @@ class MediaTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -1693,7 +1713,7 @@ class MediaTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -1816,6 +1836,7 @@ class MediaTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -1828,7 +1849,7 @@ class MediaTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -1958,6 +1979,7 @@ class MediaTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -1970,7 +1992,7 @@ class MediaTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -2064,6 +2086,7 @@ class MediaTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -2076,7 +2099,7 @@ class MediaTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -2170,6 +2193,7 @@ class MediaTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -2182,7 +2206,7 @@ class MediaTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -2260,7 +2284,7 @@ class MediaTest extends TestCase {
         ); 
         //get the faevors of the page 1.
         $response_page1 = $this->call('get', 'http://'.$this->domain.'/medias/users/1', $content, [], [], $this->transformHeadersToServerVars($server2));
-        $array2 = json_decode($response_page1->getContent());  
+        $array2 = json_decode($response_page1->getContent());   
         $result = false;
         if ($response_page1->status() == '422' && $array2->message == 'Could not get user medias.' && $array2->errors->start_time[0] == 'The start time does not match the format Y-m-d H:i:s.') {
             $result = true;

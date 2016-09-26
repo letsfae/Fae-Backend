@@ -34,6 +34,7 @@ class ChatTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -48,6 +49,7 @@ class ChatTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin2',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -60,7 +62,7 @@ class ChatTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -101,6 +103,7 @@ class ChatTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -115,6 +118,7 @@ class ChatTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin2',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -127,7 +131,7 @@ class ChatTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -165,6 +169,7 @@ class ChatTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -179,6 +184,7 @@ class ChatTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin2',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -191,7 +197,7 @@ class ChatTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -238,6 +244,7 @@ class ChatTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -252,6 +259,7 @@ class ChatTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin2',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -264,7 +272,7 @@ class ChatTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -311,6 +319,7 @@ class ChatTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -325,6 +334,7 @@ class ChatTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin2',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -337,7 +347,7 @@ class ChatTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -399,6 +409,7 @@ class ChatTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -413,6 +424,7 @@ class ChatTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin2',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -425,7 +437,7 @@ class ChatTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -471,6 +483,7 @@ class ChatTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -485,6 +498,7 @@ class ChatTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin2',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -497,7 +511,7 @@ class ChatTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -543,6 +557,7 @@ class ChatTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -557,6 +572,7 @@ class ChatTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin2',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -569,7 +585,7 @@ class ChatTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -632,6 +648,7 @@ class ChatTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -646,6 +663,7 @@ class ChatTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin2',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -658,7 +676,7 @@ class ChatTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -697,6 +715,7 @@ class ChatTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -711,6 +730,7 @@ class ChatTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin2',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -723,7 +743,7 @@ class ChatTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -766,6 +786,7 @@ class ChatTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -780,6 +801,7 @@ class ChatTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin2',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -794,6 +816,7 @@ class ChatTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin3',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp3',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -806,7 +829,7 @@ class ChatTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 

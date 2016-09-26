@@ -37,6 +37,7 @@ class AuthenticationTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
             'login_count' => 0, 
@@ -44,7 +45,7 @@ class AuthenticationTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -73,7 +74,7 @@ class AuthenticationTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae126.com', // no @ in the email;
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -96,6 +97,7 @@ class AuthenticationTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
             'login_count' => 0, 
@@ -104,7 +106,7 @@ class AuthenticationTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@yahoo.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -127,6 +129,7 @@ class AuthenticationTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02', 
             'login_count' => 3,
@@ -135,7 +138,7 @@ class AuthenticationTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaefalse',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -158,6 +161,7 @@ class AuthenticationTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02', 
              'login_count' => 0,
@@ -166,7 +170,7 @@ class AuthenticationTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaefalse',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -189,6 +193,7 @@ class AuthenticationTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02', 
             'login_count' => 0,
@@ -196,7 +201,7 @@ class AuthenticationTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -220,6 +225,7 @@ class AuthenticationTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02', 
             'login_count' => 0,
@@ -227,7 +233,7 @@ class AuthenticationTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
             //wrong format of device_id.
             'device_id' => 'gu3v0KaU7jLS7SGdS2Rbgu3v0KaU7jLS7SGdS2Rbgu3v0KaU7jLS7SGdS2Rbgu3v0KaU7jLS7SGdS2Rbgu3v0KaU7jLS7SGdS2Rbgu3v0KaU7jLS7SGdS2Rbgu3v0KaU7jLS7SGdS2Rbgu3v0KaU7jLS7SGdS2Rb',
         );
@@ -252,6 +258,7 @@ class AuthenticationTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02', 
             'login_count' => 0,
@@ -259,7 +266,7 @@ class AuthenticationTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
             //wrong format of is_mobile.
             'is_mobile' => 'false1', 
         );
@@ -284,6 +291,7 @@ class AuthenticationTest extends TestCase {
             'password' => bcrypt('letsfaego'),
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02', 
             'login_count' => 0,
@@ -291,7 +299,7 @@ class AuthenticationTest extends TestCase {
         $parameters1 = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',  
+            'user_name' => 'faeapp',  
             'is_mobile' => 'true',
         );
         $server = array(
@@ -303,7 +311,7 @@ class AuthenticationTest extends TestCase {
         $parameters2 = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin', 
+            'user_name' => 'faeapp', 
             'is_mobile' => 'true', 
             'device_id' => 'gu3v0KaU7jLS7SGdS2Rb'
         );
@@ -324,6 +332,7 @@ class AuthenticationTest extends TestCase {
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -336,7 +345,7 @@ class AuthenticationTest extends TestCase {
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'kevin',
+            'user_name' => 'faeapp',
         );
         $server1 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
