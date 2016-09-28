@@ -17,8 +17,8 @@ use App\Users;
 use Phaza\LaravelPostgis\Eloquent\PostgisTrait;
 use Phaza\LaravelPostgis\Geometries\Point;
 use Phaza\LaravelPostgis\Geometries\Geometry;
-use App\Api\V1\Controllers\TagController;
-use App\Api\V1\Controllers\FileController;
+use App\Api\v1\Controllers\TagController;
+use App\Api\v1\Controllers\FileController;
 
 class MediaController extends Controller implements PinInterface
 {
@@ -170,7 +170,15 @@ class MediaController extends Controller implements PinInterface
         $end_time = $this->request->has('end_time') ? $this->request->end_time : date("Y-m-d H:i:s");
         $page =  $this->request->has('page') ? $this->request->page : 1;
         $medias = Medias::where('user_id', $user_id)->where('created_at','>=', $start_time)->where('created_at','<=', $end_time)->orderBy('created_at', 'desc')->skip(30 * ($page - 1))->take(30)->get();
-        $total_pages = intval($medias->count() / 30) + 1;
+        $total = Medias::where('user_id', $user_id)
+                    ->where('created_at','>=', $start_time)
+                    ->where('created_at','<=', $end_time)
+                    ->count();
+        $total_pages = 0;
+        if($total > 0)
+        {
+            $total_pages = intval(($total-1)/30)+1;
+        }
         $info = array();
         foreach ($medias as $media)
         {

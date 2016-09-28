@@ -153,17 +153,25 @@
 
 ## pin_operations
 - id PK
-- type enum(media)
-- pin_id FK
+- type enum(media,comment)
+- pin_id 必须是enum所列举的pin的id
 - user_id FK
-- like boolean
-- like_timestamp
+- liked boolean
+- liked_timestamp
 - saved boolean
 - saved_timestamp
 - created_at
 
 ## pin_comments
 - id PK
-- pin_id FK
+- type enum(media,comment)
+- pin_id 必须是enum所列举的pin的id
 - user_id FK
 - content text
+
+## pin_helper
+- id PK
+- type enum(media,comment)
+- pin_id
+- geolocation
+- created_at

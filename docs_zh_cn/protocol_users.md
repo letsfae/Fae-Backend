@@ -342,7 +342,13 @@ yes
 
 Status: 201
 
-## 获取用户自己的资料 get self profile (待定)
+----------
+
+注意profile级接口和account级接口的区别：account接口只能用户自身set/get，主要负责基础用户信息及密码的维护；profile接口可以由用户自身set/get并被其他用户get，profile接口中不光可以设置除了account接口之外的字段，同时也作为account接口权限包装。
+
+----------
+
+## 获取用户自己的资料 get self profile
 
 `GET /users/profile`
 
@@ -355,10 +361,11 @@ yes
 Status: 200
 
 	{
-		"xxx": @xxx
+		"user_name": @string,
+		"mini_avatar": @number
 	}
 
-## 获取其他用户资料 get profile (待定)
+## 获取其他用户资料 get profile
 
 `GET /users/:user_id/profile`
 
@@ -497,7 +504,10 @@ Status: 200
 			{...},
 			{...}
 		],
-		"gender": @string 同account中的设置
+		"show_gender": @boolean,
+		"show_age": @boolean,
+		"gender": @string 同account中的设置，当且仅当show_gender为true时才具有该字段
+		"age": @string 同account中的设置(通过birthday计算得来)，当且仅当show_age为true时才具有该字段
 	}
 
 ## 获取自己的NameCard :white_check_mark:
@@ -545,6 +555,8 @@ yes
 | nick_name | string(50) | 昵称 |
 | short_intro | string(200) | 短介绍（可为空） |
 | tag_ids | number | 所有tag的id，使用;分割，最多3个tag |
+| show_age | boolean | 是否显示年龄 |
+| show_gender | boolean | 是否显示性别 |
 
 必须出现以上至少一个字段。
 

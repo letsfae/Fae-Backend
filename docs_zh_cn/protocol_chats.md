@@ -229,7 +229,7 @@ Status: 204
 
 ----------
 
-## 发送ChatRoom聊天消息
+## 发送ChatRoom聊天消息 :white_check_mark:
 
 `POST /chat_rooms/:chat_room_id/message`
 
@@ -250,9 +250,9 @@ yes
 
 Status: 201
 
-## 获取所有含有未读消息的ChatRoom
+## 获取所有含有未读消息的ChatRoom :white_check_mark:
 
-`GET /chat_rooms/unread`
+`GET /chat_rooms/message/unread`
 
 ### auth
 
@@ -283,9 +283,9 @@ Status: 200
 	]
 
 
-## 标记已读ChatRoom
+## 标记已读ChatRoom :white_check_mark:
 
-`POST /chat_rooms/:chat_room_id/read`
+`POST /chat_rooms/:chat_room_id/message/read`
 
 此接口用于标记消息已读，调用后则将置0该用户在该ChatRoom中的未读消息数量。
 
@@ -297,7 +297,7 @@ yes
 
 Status: 201
 
-## 获取用户参与（不是“创建”）的所有ChatRoom
+## 获取用户参与（不是“创建”）的所有ChatRoom :white_check_mark:
 
 `GET /chat_rooms`
 
@@ -331,7 +331,7 @@ Status: 200
 		{...}
 	]
 
-## 获取ChatRoom中所有用户
+## 获取ChatRoom中所有用户 :white_check_mark:
 
 `GET /chat_rooms/:chat_room_id/users`
 

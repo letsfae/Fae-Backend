@@ -71,7 +71,7 @@ class CommentTest extends TestCase {
         //create the comment.
         $response = $this->call('post', 'http://'.$this->domain.'/comments', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
         $this->seeJson([
-                 'comment_id' => json_decode($response->getContent())->comment_id,
+                 'comment_id' => 1,
         ]);
         $result = false;
         if ($response->status() == '201') {
@@ -364,9 +364,9 @@ class CommentTest extends TestCase {
                     'created_at' => $array3[0]->created_at, 
         ]);
         $result = false;
-        if ($response_page1->status() == '200') {
+        if ($response_page1->headers->get('page') == '1' && $response_page1->headers->get('total-pages') == '2' && $response_page1->status() == '200') {
             $result = true;
-        }
+        } 
         $this->assertEquals(true, $result);
 
     }
@@ -967,8 +967,7 @@ class CommentTest extends TestCase {
         );
         $response2 = $this->call('post', 'http://'.$this->domain.'/comments', $parameters, [], [], $this->transformHeadersToServerVars($server2)); 
         $array2 = json_decode($response2->getContent());
-        $this->refreshApplication(); 
-        //wrong format of geo_longitude.
+        $this->refreshApplication();  
         $parameters2 = array(
             'content' => 'This is the test2.', 
         );  

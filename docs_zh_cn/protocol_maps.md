@@ -222,7 +222,13 @@ Status: 200
 			"latitude": @number,
 			"longitude": @number
 		},
-		"created_at": @string
+		"created_at": @string,,
+		"user_pin_operations": {
+			"is_liked": @boolean, 对当前用户是否点赞
+			"liked_timestamp" @string,
+			"is_saved": @boolean 对当前用户是否收藏
+			"saved_timestamp" @string,
+		}
 	}
 
 ## 获取某个用户的所有comment :white_check_mark:
@@ -347,7 +353,13 @@ Status: 200
 			"latitude": @number,
 			"longitude": @number
 		},
-		"created_at": @string
+		"created_at": @string,
+		"user_pin_operations": {
+			"is_liked": @boolean, 对当前用户是否点赞
+			"liked_timestamp" @string,
+			"is_saved": @boolean 对当前用户是否收藏
+			"saved_timestamp" @string,
+		}
 	}
 
 ## 获取某个用户的所有media :white_check_mark:
@@ -396,7 +408,7 @@ yes
 
 Status: 204
 
-## 发布faevor :white_check_mark:
+## 发布faevor (待定)
 
 `POST /faevors`
 
@@ -427,7 +439,7 @@ Status: 201
 		"faevor_id": @number
 	}
 
-## 更新faevor :white_check_mark:
+## 更新faevor (待定)
 
 `POST /faevors/:faevor_id`
 
@@ -445,7 +457,7 @@ yes
 
 Status: 201
 
-## 获取faevor :white_check_mark:
+## 获取faevor (待定)
 
 `GET /faevors/:faevor_id`
 
@@ -483,7 +495,7 @@ Status: 200
 		"created_at": @string
 	}
 
-## 获取某个用户的所有faevor :white_check_mark:
+## 获取某个用户的所有faevor (待定)
 
 `GET /faevors/users/:user_id`
 
@@ -517,7 +529,7 @@ Status: 200
 
 具体数组内对象同“获取media”所得到的对象。
 
-## 删除faevor :white_check_mark:
+## 删除faevor (待定)
 
 `DELETE /faevors/:faevor_id`
 
@@ -531,11 +543,11 @@ Status: 204
 
 ----------
 
-部分ChatRoom接口在chats相关协议文件中。
+部分ChatRoom接口（与聊天相关）在chats相关协议文件中。
 
 ----------
 
-## 创建ChatRoom
+## 创建ChatRoom :white_check_mark:
 
 `POST /chat_rooms`
 
@@ -559,7 +571,7 @@ Status: 201
 		"chat_room_id": @number
 	}
 
-## 更新ChatRoom
+## 更新ChatRoom :white_check_mark:
 
 `POST /chat_rooms/:chat_room_id`
 
@@ -575,7 +587,7 @@ yes
 
 Status: 201
 
-## 获取ChatRoom
+## 获取ChatRoom :white_check_mark:
 
 `GET /chat_rooms/:chat_room_id`
 
@@ -602,7 +614,7 @@ Status: 200
 		"created_at": @string
 	}
 
-## 获取某个用户创建的所有ChatRoom
+## 获取某个用户创建的所有ChatRoom :white_check_mark:
 
 `GET /chat_rooms/users/:user_id`
 
