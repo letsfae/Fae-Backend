@@ -52,6 +52,9 @@ class MapController extends Controller
                     case 'faevor':
                         $type[] = 'faevor';
                         break;
+                    case 'chat_room':
+                        $type[] = 'chat_room';
+                        break;
                     default:
                         return $this->response->errorNotFound();
                 }
@@ -78,7 +81,7 @@ class MapController extends Controller
                         $locations = array();
                         for($i = 0; $i < 5; $i++)
                         {
-                            $distance = mt_rand(1,100);
+                            $distance = mt_rand(1,200);
                             $degree = mt_rand(0,360);
                             $locations_original = DB::select("select ST_AsText(ST_Project(ST_SetSRID(ST_Point(:longitude, :latitude),4326),:distance, radians(:degree)))", array('longitude' => $location->getLng(),'latitude'=>$location->getLat(),'distance'=>$distance,'degree'=>$degree));
                             $locations[] = Point::fromWKT($locations_original[0]->st_astext);
@@ -127,8 +130,8 @@ class MapController extends Controller
                     {
                         $location = Geometry::fromWKB($faevor->geolocation);
                         $info[] = ['type' => 'chat_room', 'chat_room_id' => $chat_room->id, 'title' => $chat_room->title, 
-                            'user_id' => $chat_room->user_id, 'geolocation' => ['latitude' => $faevor->geolocation->getLat(), 
-                            'longitude' => $faevor->geolocation->getLng()], 'last_message' => $chat_room->last_message, 
+                            'user_id' => $chat_room->user_id, 'geolocation' => ['latitude' => $location->getLat(), 
+                            'longitude' => $location->getLng()], 'last_message' => $chat_room->last_message, 
                             'last_message_sender_id' => $chat_room->last_message_sender_id,
                             'last_message_type' => $chat_room->last_message_type, 
                             'last_message_timestamp' => $chat_room->last_message_timestamp,

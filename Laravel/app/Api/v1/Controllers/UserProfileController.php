@@ -31,9 +31,7 @@ class UserProfileController extends Controller
         $user = Users::find($user_id);
         if(! is_null($user))
         {
-            $profile = array('user_id' => $user->id, 'email' => $user->email, 'user_name' => $user->user_name, 
-                'first_name' => $user->first_name, 'last_name' => $user->last_name, 'gender' => $user->gender,
-                'birthday' => $user->birthday, 'role' => $user->role, 'address' => $user->address, 'mini_avatar' => $user->mini_avatar);
+            $profile = array('user_name' => $user->user_name, 'mini_avatar' => $user->mini_avatar);
             return $this->response->array($profile);
         }
         return $this->response->errorNotFound();
@@ -41,7 +39,13 @@ class UserProfileController extends Controller
 
     public function getSelfProfile() 
     {
-        return $this->getProfile($this->request->self_user_id);
+        $user = Users::find($user_id);
+        if(! is_null($user))
+        {
+            $profile = array('user_name' => $user->user_name, 'mini_avatar' => $user->mini_avatar);
+            return $this->response->array($profile);
+        }
+        return $this->response->errorNotFound();
     }
 
     public function updateSelfProfile() 
@@ -94,5 +98,4 @@ class UserProfileController extends Controller
             throw new UpdateResourceFailedException('Could not update user profile.',$validator->errors());
         }
     }
-
 }
