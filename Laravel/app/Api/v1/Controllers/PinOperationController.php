@@ -65,6 +65,18 @@ class PinOperationController extends Controller {
         return $this->response->noContent();
     }
 
+    public static function isSavedisLiked($type, $pin_id, $user_id)
+    {
+        $pin_operation = Pin_operations::where('pin_id', $pin_id)->where('user_id', $user_id)->
+                         where('type', $type)->first();
+        if(is_null($pin_opetation))
+        {
+            return array('is_liked' => false, 'liked_timestamp' => null, 'is_saved' => false, 'saved_timestamp' => null);
+        }
+        return array('is_liked' => $pin_opetation->like, 'liked_timestamp' => $pin_opetation->liked_timestamp, 
+            'is_saved' => $pin_opetation->saved, 'saved_timestamp' => $pin_opetation->saved_timestamp);
+    }
+
     public function like($type, $pin_id) {
         $obj_pin_operation = Pin_operations::where('pin_id', $pin_id)->where('user_id', $this->request->self_user_id)->where('type', $type)->first();
         if ($obj_pin_operation == null) {

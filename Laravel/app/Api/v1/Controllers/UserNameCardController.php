@@ -27,7 +27,7 @@ class UserNameCardController extends Controller
         {
             return $this->response->errorNotFound();
         }
-        $gender = Name_cards::find($user_id)->hasOneUser()->first()->gender;
+        $user = $nameCard->hasOneUser()->first()
         $tags = array();
         if($nameCard->tag_ids != null)
         {
@@ -37,7 +37,23 @@ class UserNameCardController extends Controller
                 $tags[] = array('tag_id' => $tag->id, 'title' => $tag->title, 'color' => $tag->color);
             }
         }
-        $info = array('nick_name' => $nameCard->nick_name, 'short_intro' => $nameCard->short_intro, 'tags' => $tags, 'gender' => $gender);
+        $info = array('nick_name' => $nameCard->nick_name, 'short_intro' => $nameCard->short_intro,
+                'tags' => $tags, 'show_gender' => $nameCard->show_gender, 'show_age' => $nameCard->show_age);
+        if($nameCard->show_gender)
+        {
+            $info['gender'] = $user->gender;
+        }
+        if($nameCard->show_age)
+        {
+            $birthDate = $user->birthday;
+            // $birthDate = explode("/", $birthDate);
+            // $age = (date("md", date("U", mktime(0, 0, 0, $birthDate[0], $birthDate[1], $birthDate[2]))) > date("md")
+            //         ? ((date("Y") - $birthDate[2]) - 1)
+            //         : (date("Y") - $birthDate[2]));
+            $today   = new DateTime('today');
+            $age = $birthDate->diff($today)->y;
+            $info['age'] = $age;
+        }
         return $this->response->array($info);
     }
 

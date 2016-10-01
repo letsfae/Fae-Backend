@@ -270,7 +270,7 @@ class ChatRoomController extends Controller implements PinInterface
         ]);
         if($validator->fails())
         {
-            throw new NotAcceptableHttpException('Could not get chat rooms.', $validator->errors());
+            throw new UpdateResourceFailedException('Could not get user chatrooms.',$validator->errors());
         }
     }
 

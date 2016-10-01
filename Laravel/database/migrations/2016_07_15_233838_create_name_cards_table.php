@@ -17,6 +17,8 @@ class CreateNameCardsTable extends Migration
             $table->string('nick_name',50)->nullable();
             $table->text('short_intro')->nullable();
             $table->text('tag_ids')->nullable();
+            $table->boolean('show_gender')->default(false);
+            $table->boolean('show_age')->default(false);
             $table->primary('user_id');
             $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
