@@ -282,7 +282,7 @@ class FaevorController extends Controller implements PinInterface {
         ]);
         if($validator->fails())
         {
-            throw new NotAcceptableHttpException('Could not get user faevors.', $validator->errors());
+            throw new UpdateResourceFailedException('Could not get user faevors.', $validator->errors());
         }
     }
 }
