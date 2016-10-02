@@ -78,6 +78,8 @@
 - short_intro text
 - tag_ids text (最多3个tag_id，;分隔)
 - created_at
+- show_gender boolean(false)
+- show_age boolean(false)
 
 ## name_card_tags
 - id PK

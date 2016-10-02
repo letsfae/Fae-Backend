@@ -801,7 +801,7 @@ class ChatRoomTest extends TestCase {
         $response = $this->call('get', 'http://'.$this->domain.'/chat_rooms/users/'.$array->user_id, $content, [], [], $this->transformHeadersToServerVars($server2)); 
         $array2 = json_decode($response->getContent());  
         $result = false;
-        if ($response->status() == '422' && $array2->message == 'Could not get chat rooms.' && $array2->errors->start_time[0] == 'The start time does not match the format Y-m-d H:i:s.') {
+        if ($response->status() == '422' && $array2->message == 'Could not get user chatrooms.' && $array2->errors->start_time[0] == 'The start time does not match the format Y-m-d H:i:s.') {
             $result = true;
         }
         $this->assertEquals(true, $result);

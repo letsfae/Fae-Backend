@@ -14,6 +14,7 @@ use Illuminate\Routing\Controller;
 use Dingo\Api\Routing\Helpers;
 use App\Comments;
 use App\Users;
+use App\Api\v1\Controllers\PinOperationController;
 use Auth;
 use App\Api\v1\Interfaces\PinInterface;
 
@@ -73,9 +74,11 @@ class CommentController extends Controller implements PinInterface
         {
             return $this->response->errorNotFound();
         }
+        $user_pin_operations = PinOperationController::isSavedisLiked('comment', $comment_id, $this->request->self_user_id);
         return $this->response->array(array('comment_id' => $comment->id, 'user_id' => $comment->user_id, 
                 'content' => $comment->content, 'geolocation' => array('latitude' => $comment->geolocation->getLat(), 
-                'longitude' => $comment->geolocation->getLng()), 'created_at' => $comment->created_at->format('Y-m-d H:i:s')));
+                'longitude' => $comment->geolocation->getLng()), 'created_at' => $comment->created_at->format('Y-m-d H:i:s'),
+                'user_pin_operations' => $user_pin_operations));
     }
 
     public function delete($comment_id)
@@ -125,9 +128,10 @@ class CommentController extends Controller implements PinInterface
         $info = array();
         foreach ($comments as $comment)
         {
+            $user_pin_operations = PinOperationController::isSavedisLiked('comment', $comment->id, $this->request->self_user_id);
             $info[] = array('comment_id' => $comment->id, 'user_id' => $comment->user_id, 'content' => $comment->content, 
                     'geolocation' => array('latitude' => $comment->geolocation->getLat(), 'longitude' => $comment->geolocation->getLng()), 
-                    'created_at' => $comment->created_at->format('Y-m-d H:i:s'));    
+                    'created_at' => $comment->created_at->format('Y-m-d H:i:s'), 'user_pin_operations' => $user_pin_operations);    
         }
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
     }

@@ -54,7 +54,7 @@ class PinOperationController extends Controller {
         if ($obj_pin_operation == null) {
             throw new StoreResourceFailedException('Bad request, never saved such pin!');
         }else{
-            if($obj_pin_operation->like == 'TRUE'){
+            if($obj_pin_operation->liked == 'TRUE'){
                 $obj_pin_operation->saved = false;
                 $obj_pin_operation->updateSavedTimestamp();
                 $obj_pin_operation->save(); 
@@ -63,6 +63,18 @@ class PinOperationController extends Controller {
             }
         }
         return $this->response->noContent();
+    }
+
+    public static function isSavedisLiked($type, $pin_id, $user_id)
+    {
+        $pin_operation = Pin_operations::where('pin_id', $pin_id)->where('user_id', $user_id)->
+                         where('type', $type)->first();
+        if(is_null($pin_opetation))
+        {
+            return array('is_liked' => false, 'liked_timestamp' => null, 'is_saved' => false, 'saved_timestamp' => null);
+        }
+        return array('is_liked' => $pin_opetation->liked, 'liked_timestamp' => $pin_opetation->liked_timestamp, 
+            'is_saved' => $pin_opetation->saved, 'saved_timestamp' => $pin_opetation->saved_timestamp);
     }
 
     public function like($type, $pin_id) {
@@ -84,11 +96,11 @@ class PinOperationController extends Controller {
             $newobj_pin_operation->user_id = $this->request->self_user_id;
             $newobj_pin_operation->pin_id = $pin_id;
             $newobj_pin_operation->type = $type;
-            $newobj_pin_operation->like = true;
+            $newobj_pin_operation->liked = true;
             $newobj_pin_operation->updateLikeTimestamp();
             $newobj_pin_operation->save();
         }else{
-            $obj_pin_operation->like = true;
+            $obj_pin_operation->liked = true;
             $obj_pin_operation->updateLikeTimestamp();
             $obj_pin_operation->save(); 
         }
@@ -101,7 +113,7 @@ class PinOperationController extends Controller {
             throw new StoreResourceFailedException('Bad request, never liked such pin!');
         }else{
             if($obj_pin_operation->saved == 'TRUE'){
-                $obj_pin_operation->like = false;
+                $obj_pin_operation->liked = false;
                 $obj_pin_operation->updateLikeTimestamp();
                 $obj_pin_operation->save(); 
             }else{
@@ -166,7 +178,7 @@ class PinOperationController extends Controller {
             }
         }
         
-        $num_liked_pins = Pin_operations::where('pin_id', $pin_id)->where('type', $type)->where('like', 'TRUE')->count();
+        $num_liked_pins = Pin_operations::where('pin_id', $pin_id)->where('type', $type)->where('liked', 'TRUE')->count();
         //$num_liked_pins = count($liked_pins);
         $num_saved_pins = Pin_operations::where('pin_id', $pin_id)->where('type', $type)->where('saved', 'TRUE')->count();
         //$num_saved_pins = count($saved_pins);
