@@ -14,7 +14,7 @@ class Pin_operations extends Model
     }
     public function updateLikeTimestamp()
     {
-        $this->like_timestamp = $this->freshTimestamp();
+        $this->liked_timestamp = $this->freshTimestamp();
         return $this->save();
     }
 }
