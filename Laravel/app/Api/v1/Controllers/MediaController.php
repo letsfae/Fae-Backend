@@ -14,6 +14,7 @@ use App\Medias;
 use App\Files;
 use App\Tags;
 use App\Users;
+use App\PinHelper;
 use App\Api\v1\Controllers\PinOperationController;
 use Phaza\LaravelPostgis\Eloquent\PostgisTrait;
 use Phaza\LaravelPostgis\Geometries\Point;
@@ -57,6 +58,11 @@ class MediaController extends Controller implements PinInterface
         $media->geolocation = new Point($this->request->geo_latitude,$this->request->geo_longitude);
         $media->user_id = $this->request->self_user_id;
         $media->save();
+        $pin_helper = new PinHelper();
+        $pin_helper->type = 'media';
+        $pin_helper->geolocation =  new Point($this->request->geo_latitude, $this->request->geo_longitude);
+        $pin_helper->pin_id = $media->id;
+        $pin_helper->save();
         return $this->response->created(null, array('media_id' => $media->id));
     }
 
@@ -112,6 +118,9 @@ class MediaController extends Controller implements PinInterface
         if($this->request->has('geo_latitude') && $this->request->has('geo_longitude'))
         {
             $media->geolocation = new Point($this->request->geo_latitude,$this->request->geo_longitude);
+            $pin_helper = PinHelper::where('pin_id', $media_id)->where('type', 'media')->first();
+            $pin_helper->geolocation = new Point($this->request->geo_latitude, $this->request->geo_longitude);
+            $pin_helper->save();
         }
         $media->save();
         return $this->response->created();
@@ -154,6 +163,8 @@ class MediaController extends Controller implements PinInterface
         }
         FileController::derefByString($media->file_ids);
         TagController::derefByString($media->tag_ids);
+        $pin_helper = PinHelper::where('pin_id', $media_id)->where('type', 'media')->first();
+        $pin_helper->delete();
         $media->delete();
         return $this->response->noContent();
     }

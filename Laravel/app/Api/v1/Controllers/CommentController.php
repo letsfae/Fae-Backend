@@ -14,6 +14,7 @@ use Illuminate\Routing\Controller;
 use Dingo\Api\Routing\Helpers;
 use App\Comments;
 use App\Users;
+use App\PinHelper;
 use App\Api\v1\Controllers\PinOperationController;
 use Auth;
 use App\Api\v1\Interfaces\PinInterface;
@@ -36,6 +37,11 @@ class CommentController extends Controller implements PinInterface
         $comment->content = $this->request->content;
         $comment->geolocation = new Point($this->request->geo_latitude, $this->request->geo_longitude);
         $comment->save();
+        $pin_helper = new PinHelper();
+        $pin_helper->type = 'comment';
+        $pin_helper->geolocation =  new Point($this->request->geo_latitude, $this->request->geo_longitude);
+        $pin_helper->pin_id = $comment->id;
+        $pin_helper->save();
         return $this->response->created(null, array('comment_id' => $comment->id));
     }
 
@@ -51,6 +57,10 @@ class CommentController extends Controller implements PinInterface
         {
             return $this->response->errorNotFound();
         }
+        if($comment->user_id != $this->request->self_user_id)
+        {
+            throw new AccessDeniedHttpException('You can not update this comment');
+        }
         if($this->request->has('content'))
         {
             $comment->content = $this->request->content;
@@ -58,6 +68,9 @@ class CommentController extends Controller implements PinInterface
         if($this->request->has('geo_longitude') && $this->request->has('geo_latitude'))
         {
             $comment->geolocation = new Point($this->request->geo_latitude, $this->request->geo_longitude);
+            $pin_helper = PinHelper::where('pin_id', $comment_id)->where('type', 'comment')->first();
+            $pin_helper->geolocation = new Point($this->request->geo_latitude, $this->request->geo_longitude);
+            $pin_helper->save();
         }
         $comment->save();
         return $this->response->created();
@@ -96,6 +109,8 @@ class CommentController extends Controller implements PinInterface
         {
             throw new AccessDeniedHttpException('You can not delete this comment');
         }
+        $pin_helper = PinHelper::where('pin_id', $comment_id)->where('type', 'comment')->first();
+        $pin_helper->delete();
         $comment->delete();
         return $this->response->noContent();
     }
