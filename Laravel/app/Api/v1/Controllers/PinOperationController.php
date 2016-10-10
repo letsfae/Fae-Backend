@@ -38,11 +38,11 @@ class PinOperationController extends Controller {
             $newobj_pin_operation->user_id = $this->request->self_user_id;
             $newobj_pin_operation->pin_id = $pin_id;
             $newobj_pin_operation->type = $type;
-            $newobj_pin_operation->saved = true;
+            $newobj_pin_operation->saved = true; 
             $newobj_pin_operation->updateSavedTimestamp();
             $newobj_pin_operation->save();
         }else{
-            $obj_pin_operation->saved = true;
+            $obj_pin_operation->saved = true; 
             $obj_pin_operation->updateSavedTimestamp();
             $obj_pin_operation->save(); 
         }
@@ -221,7 +221,7 @@ class PinOperationController extends Controller {
             $info[] = array('pin_comment_id' => $commented_pin->id,
                             'user_id' => $commented_pin->user_id, 
                             'content' => $commented_pin->content,
-                            'created_at'=>$commented_pin->created_at);
+                            'created_at'=>$commented_pin->created_at->format('Y-m-d H:i:s'));
         }
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
     }
@@ -251,7 +251,7 @@ class PinOperationController extends Controller {
         {
             $info[] = array('pin_id' => $commented_pin->pin_id,
                             'type' => $commented_pin->type,
-                            'content' => $commented_pin->content);
+                            'created_at'=>$commented_pin->created_at->format('Y-m-d H:i:s'));
         }
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
     }
