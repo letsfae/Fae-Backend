@@ -86,6 +86,11 @@
 - title string(20)
 - color string(10) #fff000
 
+## name_cards_saved
+- id PK
+- user_id FK 保存name_card的用户
+- name_card_user_id FK name所属用户
+
 ## files 通用文件类上传接口
 - id PK
 - user_id FK

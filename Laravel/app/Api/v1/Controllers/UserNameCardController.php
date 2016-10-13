@@ -104,6 +104,18 @@ class UserNameCardController extends Controller
         return $this->response->created();
     }
 
+    public function saveNameCard($user_id) {
+
+    }
+
+    public function unsaveNameCard($user_id) {
+        
+    }
+
+    public function getSavedNameCardList() {
+        
+    }
+
     private function updateNameCardValidation(Request $request)
     {
         $validator = Validator::make($request->all(), [

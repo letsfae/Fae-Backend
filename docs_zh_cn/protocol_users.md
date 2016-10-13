@@ -361,6 +361,7 @@ yes
 Status: 200
 
 	{
+		"user_id": @number,
 		"user_name": @string,
 		"mini_avatar": @number
 	}
@@ -476,6 +477,8 @@ yes
 
 所有字段均为可选，但必须至少包含一个字段。
 
+用户状态为offline/invisible时，map中也不会显示该用户的user pin。
+
 ### response
 
 Status: 201
@@ -563,3 +566,49 @@ yes
 ### response
 
 Status: 201
+
+# 保存NameCard
+
+`POST /users/:user_id/name_card/save`
+
+### auth
+
+yes
+
+### response
+
+Status: 201
+
+# 取消保存NameCard
+
+`DELETE /users/:user_id/name_card/save`
+
+### auth
+
+yes
+
+### response
+
+Status: 204
+
+# 获取所有保存的namecard
+
+`GET /users/name_card/saved`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	[
+		{
+			"name_card_user_id": @number,
+			"created_at": @string
+		},
+		{...},
+		{...}
+	]
+

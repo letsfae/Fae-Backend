@@ -57,6 +57,9 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->get('/users/name_card', 'App\Api\v1\Controllers\UserNameCardController@getSelfNameCard');
     $api->get('/users/name_card/tags', 'App\Api\v1\Controllers\UserNameCardController@getAllTags');
     $api->post('/users/name_card', 'App\Api\v1\Controllers\UserNameCardController@updateNameCard');
+    $api->post('/users/{user_id}/name_card/save', 'App\Api\v1\Controllers\UserNameCardController@saveNameCard');
+    $api->delete('/users/{user_id}/name_card/save', 'App\Api\v1\Controllers\UserNameCardController@unsaveNameCard');
+    $api->get('/users/name_card/saved', 'App\Api\v1\Controllers\UserNameCardController@getSavedNameCardList');
     // status
     $api->post('/users/status', 'App\Api\v1\Controllers\UserController@updateSelfStatus');
     $api->get('/users/status', 'App\Api\v1\Controllers\UserController@getSelfStatus');
