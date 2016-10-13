@@ -65,13 +65,6 @@
 
 注意user_a_id < user_b_id
 
-## comments
-- id PK
-- user_id FK
-- content_text string
-- created_at 
-- geolocation point
-
 ## name_cards
 - user_id FK 同user_ext表 外主键
 - nick_name string(50)
@@ -113,6 +106,15 @@
 - user_id FK 创建该tag的用户
 - reference_count integer 引用计数
 - created_at
+
+## comments
+- id PK
+- user_id FK
+- content_text string
+- created_at 
+- geolocation point
+- duration integer (unit in min) default 3*60（待定）
+- interation_radius default 1000m（待定）
 
 ## medias
 - id PK

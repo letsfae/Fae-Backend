@@ -150,7 +150,7 @@ Status: 200
 			"chat_id": @number,
 			"last_message": @string,
 			"last_message_sender_id": @number,
-			"last_message_sender_name": @number,
+			"last_message_sender_name": @string,
 			"last_message_timestamp": @string,
 			"last_message_type": @string,
 			"unread_count": @number,
