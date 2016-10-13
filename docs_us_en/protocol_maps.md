@@ -1,12 +1,12 @@
-# 地图及各类Pin接口
+# Map And Other Pins Interface
 
-分页数据返回在response header中。
+Paging data should be returned to the response header. 
 
-## 更新用户自身的当前坐标 :white_check_mark:
+## update the current coordination of the user itself :white_check_mark:
 
 `POST /map/user`
 
-每隔一段固定时间跟新一次。只有移动设备有权限更新坐标，其余设备无权限。
+Updating once every specified time interval. Only the mobile equipment has the access to update the coordination and other equipment is not permitted. 
 
 ### auth
 
@@ -16,16 +16,16 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| geo_latitude | number | 纬度 |
-| geo_longitude | number | 经度 |
+| geo_latitude | number | latitude |
+| geo_longitude | number | longitude |
 
 ### response
 
 Status: 201
 
-如果返回422，可能原因是当前并非移动设备。
+If 422 is returned, the possible reason is that the current equipment is not the mobile equipment. 
 
-## 获取地图数据 :white_check_mark:
+## get the map data :white_check_mark:
 
 `GET /map`
 
@@ -37,15 +37,15 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| geo_latitude | number | 中心点纬度 |
-| geo_longitude | number | 中心点经度 |
-| radius (optional) | number | 半径，默认值为200m |
-| type (optional) | string(user,comment,media,faevor,chat_room) | 筛选类型，默认为所有，类型之间用逗号隔开 |
-| max_count (optional) | number | 返回节点最大数量，默认为30，最大为100 |
+| geo_latitude | number | the latitude of the center point |
+| geo_longitude | number | the longitude of the center point |
+| radius (optional) | number | radius, the default value is 200m |
+| type (optional) | string(user,comment,media,faevor,chat_room) | the filter type, the default state is all the filter type are involved and each type is seperated with comma |
+| max_count (optional) | number | the maximum amount of the points, the default is 30 and the maximum is 100 |
 
-对于一直在更新的user点，可以每隔一段时间获取一次。
+To the users point that need to be updating all the time, they can be required every period of time. 
 
-当获取多种类型节点时，节点返回数量和节点类型顺序及max_count有关（如：第一种节点数量为N，则第二种节点数量最多返回`max_count - N`，如果`N >= max_count`，则没有第二种节点返回）。
+When obtained serveral types of ponits, the amount of ponits returned is concerned with the order of the point type and the max_count (If the amount of the points of the first type is N, then the maximum amount of the second type returned is `max_count - N`. If `N >= max_count`, then no points returned of the second type.). 
 
 ### response
 
@@ -65,9 +65,9 @@ Status: 200
 		{...}
 	]
 
-返回一个array, 每个object一定包含type，geolocation和created_at，其他内容依据type决定（可参见具体类型的相关接口）。
+Return an array, every object includes the type, geolocaton and created_at, and other contents are decided by the type (Please refer to related interfaces). 
 
-对于user类型的点，考虑到用户隐私问题，服务器会返回5个一定范围内的随机点, 格式如下：
+To the type of user point, the server will return five random points in a specified area because of the user privacy, the format is as follows: 
 
 	{
 		"type": "user",
@@ -84,7 +84,7 @@ Status: 200
 		]
 	}
 
-## 创建新tag :white_check_mark:
+## create new tag :white_check_mark:
 
 `POST /tags`
 
@@ -96,8 +96,8 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| title | string | tag名字，只能包含大小写字母数字和下划线 |
-| color (optional) | string(#xxxxxx) | 颜色，默认无颜色 |
+| title | string | tag name, only the uppercase and lowercase letters and underscores are permitted |
+| color (optional) | string(#xxxxxx) | color，the default is no color |
 
 ### response
 
@@ -107,9 +107,9 @@ Status: 201
 		"tag_id": @number
 	}
 
-如果tag已经创建，则会直接返回`tag_id`。
+If the tag has been created, then the `tag_id` will be returned directly. 
 
-## 获取tag :white_check_mark:
+## get tag :white_check_mark:
 
 `GET /tags`
 
@@ -121,9 +121,9 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| page (optional) | number | 页数，默认为第1页（头30条） |
+| page (optional) | number | page，the default value is the first page (30 pieces from the start) |
 
-如不设定type，则按照tag热度（即引用次数）降序返回。
+If the type is not given, then it returns in descending order according to the popularity of the tag (that is the the number of citations). 
 
 ### response
 
@@ -144,7 +144,7 @@ Status: 200
 		{...}
 	]
 
-## 获取指定tag :white_check_mark:
+## get specified tag :white_check_mark:
 
 `GET /tags/:tag_id`
 
@@ -162,7 +162,7 @@ Status: 200
 		"color": @string
 	}
 
-## 发布comment :white_check_mark:
+## post comment :white_check_mark:
 
 `POST /comments`
 
@@ -174,9 +174,9 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| content | text | 内容 |
-| geo_latitude | number | 纬度 |
-| geo_longitude | number | 经度 |
+| content | text | content |
+| geo_latitude | number | coordination |
+| geo_longitude | number | latitude |
 
 ### response
 
@@ -186,7 +186,7 @@ Status: 201
 		"comment_id": @number
 	}
 
-## 更新comment :white_check_mark:
+## update comment :white_check_mark:
 
 `POST /comments/:comment_id`
 
@@ -196,13 +196,13 @@ yes
 
 ### parameters
 
-同发布comment，但所有参数均为可选。
+Same as the post comment, but all the parameters are optional. 
 
 ### response
 
 Status: 201
 
-## 获取comment :white_check_mark:
+## get comment :white_check_mark:
 
 `GET /comments/:comment_id`
 
@@ -225,7 +225,7 @@ Status: 200
 		"created_at": @string
 	}
 
-## 获取某个用户的所有comment :white_check_mark:
+## get all comments of a specified user :white_check_mark:
 
 `GET /comments/users/:user_id`
 
@@ -237,11 +237,11 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| start_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为1970-01-01 00:00:00 |
-| end_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为当前日期和时间 |
-| page | number | 页数，默认为第1页（头30条） |
+| start_time | string(YYYY-MM-DD hh:mm:ss) | time range，the default value is 1970-01-01 00:00:00 |
+| end_time | string(YYYY-MM-DD hh:mm:ss) | time range, the default value is current date and time |
+| page | number | page, the default value is the first page (30 pieces from the start) |
 
-过滤参数均为可选。
+The filter parameters are all the optional. 
 
 ### response
 
@@ -257,9 +257,9 @@ Status: 200
 		{...}
 	]
 
-具体数组内对象同“获取comment”所得到的对象。
+The object in the specific array is the same as the object got from the "get comment". 
 
-## 删除comment :white_check_mark:
+## delete comment :white_check_mark:
 
 `DELETE /comments/:comment_id`
 
@@ -271,7 +271,7 @@ yes
 
 Status: 204
 
-## 发布media :white_check_mark:
+## post media :white_check_mark:
 
 `POST /medias`
 
@@ -283,11 +283,11 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| file_ids | file_id | 最多5个，通过;区分 |
-| tag_ids(optional) | tag_id | 最多50个，通过;区分 |
-| description | string | 描述 |
-| geo_latitude | number | 纬度 |
-| geo_longitude | number | 经度 |
+| file_ids | file_id | the maximum is 5, distinguish with semicolon |
+| tag_ids(optional) | tag_id | the maximum is 50, distinguish with semicolon |
+| description | string | description |
+| geo_latitude | number | latitude |
+| geo_longitude | number | longitude |
 
 ### response
 
@@ -297,7 +297,7 @@ Status: 201
 		"media_id": @number
 	}
 
-## 更新media :white_check_mark:
+## update media :white_check_mark:
 
 `POST /medias/:media_id`
 
@@ -307,17 +307,17 @@ yes
 
 ### parameters
 
-同发布media，但所有参数均为可选。
+Same as the post media, but all the parameters are optional. 
 
-必须存在至少一个file，因此不允许file_ids置`null`。
+At least one file exist, so file_ids which is set to `null` is not allowed. 
 
-如需删除tag_ids，将其置`null`。
+If tag_ids needs to be deleted, it should be set to `null`. 
 
 ### response
 
 Status: 201
 
-## 获取media :white_check_mark:
+## get media :white_check_mark:
 
 `GET /medias/:media_id`
 
@@ -350,7 +350,7 @@ Status: 200
 		"created_at": @string
 	}
 
-## 获取某个用户的所有media :white_check_mark:
+## get all media of a specific user :white_check_mark:
 
 `GET /medias/users/:user_id`
 
@@ -362,11 +362,11 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| start_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为1970-01-01 00:00:00 |
-| end_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为当前日期和时间 |
-| page | number | 页数，默认为第1页（头30条） |
+| start_time | string(YYYY-MM-DD hh:mm:ss) | time range，the default value is 1970-01-01 00:00:00 |
+| end_time | string(YYYY-MM-DD hh:mm:ss) | time range, the default value is current date and time |
+| page | number | page, the default value is the first page (30 pieces from the start) |
 
-过滤参数均为可选。
+The filter parameters are all optional. 
 
 ### response
 
@@ -382,9 +382,9 @@ Status: 200
 		{...}
 	]
 
-具体数组内对象同“获取media”所得到的对象。
+The object of a specific array is the same as the object got from the "get media". 
 
-## 删除media :white_check_mark:
+## delete media :white_check_mark:
 
 `DELETE /medias/:media_id`
 
@@ -396,7 +396,7 @@ yes
 
 Status: 204
 
-## 发布faevor :white_check_mark:
+## post faevor :white_check_mark:
 
 `POST /faevors`
 
@@ -408,16 +408,16 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| file_ids(optional) | file_id | 最多5个，通过;区分 |
-| tag_ids(optional) | tag_id | 最多50个，通过;区分 |
-| budget | integer | 费用，单位为美元 |
-| bouns (optional) | string | 奖励的文字描述 |
-| name | string | 名字 |
-| description | string | 描述 |
-| due_time | string(YYYY-MM-DD hh:mm:ss) | 终止时间 |
-| expire_time | string(YYYY-MM-DD hh:mm:ss) | 过期时间 |
-| geo_latitude | number | 纬度 |
-| geo_longitude | number | 经度 |
+| file_ids(optional) | file_id | the maximum is 5, distinguish with semicolon |
+| tag_ids(optional) | tag_id | the maximum is 50, distinguish with semicolon |
+| budget | integer | budget，unit is dollar |
+| bouns (optional) | string | the description of the bonus |
+| name | string | name |
+| description | string | description |
+| due_time | string(YYYY-MM-DD hh:mm:ss) | due_time |
+| expire_time | string(YYYY-MM-DD hh:mm:ss) | expire_time |
+| geo_latitude | number | latitude |
+| geo_longitude | number | longitude |
 
 ### response
 
@@ -427,7 +427,7 @@ Status: 201
 		"faevor_id": @number
 	}
 
-## 更新faevor :white_check_mark:
+## update faevor :white_check_mark:
 
 `POST /faevors/:faevor_id`
 
@@ -437,15 +437,15 @@ yes
 
 ### parameters
 
-同发布faevor，但所有参数均为可选。
+The same as the post faevor, but all the parameters are the optional. 
 
-如果需要删除file_ids、tags_id、bouns，将字段内容置位`null`。
+If the file_ids, tags_id and bouns need to be deleted, the filed content should be set to `null`. 
 
 ### response
 
 Status: 201
 
-## 获取faevor :white_check_mark:
+## get faevor :white_check_mark:
 
 `GET /faevors/:faevor_id`
 
@@ -483,7 +483,7 @@ Status: 200
 		"created_at": @string
 	}
 
-## 获取某个用户的所有faevor :white_check_mark:
+## get all the faevors of a specific users :white_check_mark:
 
 `GET /faevors/users/:user_id`
 
@@ -495,11 +495,11 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| start_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为1970-01-01 00:00:00 |
-| end_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为当前日期和时间 |
-| page | number | 页数，默认为第1页（头30条） |
+| start_time | string(YYYY-MM-DD hh:mm:ss) | time range，the default value is 1970-01-01 00:00:00 |
+| end_time | string(YYYY-MM-DD hh:mm:ss) | time range, the default value is current date and time |
+| page | number | page, the default value is the first page (30 pieces from the start) |
 
-过滤参数均为可选。
+The filter parameters are all optional. 
 
 ### response
 
@@ -515,9 +515,9 @@ Status: 200
 		{...}
 	]
 
-具体数组内对象同“获取media”所得到的对象。
+The objece of a specific array is the same as the object got from "get media". 
 
-## 删除faevor :white_check_mark:
+## delete faevor :white_check_mark:
 
 `DELETE /faevors/:faevor_id`
 
@@ -531,11 +531,11 @@ Status: 204
 
 ----------
 
-部分ChatRoom接口在chats相关协议文件中。
+Some part of the ChatRoom interface is in the related protocol of the chats files. 
 
 ----------
 
-## 创建ChatRoom
+## create ChatRoom
 
 `POST /chat_rooms`
 
@@ -547,9 +547,9 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| title | string(50) | 聊天室名 |
-| geo_latitude | number | 纬度 |
-| geo_longitude | number | 经度 |
+| title | string(100) | chatroom title |
+| geo_latitude | number | latitude |
+| geo_longitude | number | longitude |
 
 ### response
 
@@ -559,7 +559,7 @@ Status: 201
 		"chat_room_id": @number
 	}
 
-## 更新ChatRoom
+## update ChatRoom
 
 `POST /chat_rooms/:chat_room_id`
 
@@ -569,13 +569,13 @@ yes
 
 ### parameters
 
-同创建ChatRoom，但所有参数均为可选。
+The same as the create ChatRoomm, but are the parameters are optional. 
 
 ### response
 
 Status: 201
 
-## 获取ChatRoom
+## get ChatRoom
 
 `GET /chat_rooms/:chat_room_id`
 
@@ -590,7 +590,7 @@ Status: 200
 	{
 		"chat_room_id": @number,
 		"title": @string,
-		"user_id": @number 创建者id
+		"user_id": @number creator id
 		"geolocation": {
 			"latitude": @number,
 			"longitude": @number
@@ -603,7 +603,7 @@ Status: 200
 		"created_at": @string
 	}
 
-## 获取某个用户创建的所有ChatRoom
+## get all the ChatRooms that was created by a specific user 
 
 `GET /chat_rooms/users/:user_id`
 
@@ -615,11 +615,11 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| start_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为1970-01-01 00:00:00 |
-| end_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为当前日期和时间 |
-| page | number | 页数，默认为第1页（头30条） |
+| start_time | string(YYYY-MM-DD hh:mm:ss) | time range，the default value is 1970-01-01 00:00:00 |
+| end_time | string(YYYY-MM-DD hh:mm:ss) | time range, the default value is current date and time |
+| page | number | page, the default value is the first page (30 pieces from the start) |
 
-过滤参数均为可选。
+The filter parameters are all the optional. 
 
 ### response
 
@@ -635,8 +635,8 @@ Status: 200
 		{...}
 	]
 
-具体数组内对象同“创建ChatRoom”所得到的对象。
+The objece of a specific array is the same as the object got from "create ChatRoom".  
 
-## 删除ChatRoom
+## delete ChatRoom
 
-禁止删除ChatRoom。
+The delete of ChatRoom is not allowed.

@@ -1,7 +1,7 @@
-# 好友及聊天类接口
+# Friends and Chats Interface 
 
 
-## 发起好友请求
+## post friends request 
 
 `POST /friends/request`
 
@@ -13,13 +13,13 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| requested_user_id | number | 被请求用户id |
+| requested_user_id | number | requested user id |
 
 ### response
 
 Status: 201
 
-## 确认好友请求
+## accept friend request
 
 `POST /friends/accept`
 
@@ -31,13 +31,13 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| friend_request_id | number | 好友请求id |
+| friend_request_id | number | friend reqeust id |
 
 ### response
 
 Status: 201
 
-## 忽略好友请求
+## ignore friend request 
 
 `POST /friends/ignore`
 
@@ -49,13 +49,13 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| friend_request_id | number | 好友请求id |
+| friend_request_id | number | friend request id |
 
 ### response
 
 Status: 201
 
-## 删除好友
+## delete friend 
 
 `DELETE /friends/:user_id`
 
@@ -67,11 +67,11 @@ yes
 
 Status: 204
 
-## 获取所有好友请求
+## get all the friend requests
 
 `GET /friends/request`
 
-当sync接口中得到friend_request数量不为0的时候，可请求该接口获取所有朋友请求。
+If the amount of friend_request that we get from the sync interface is not 0, we can call this interface to get all the friend requests.  
 
 ### auth
 
@@ -92,24 +92,24 @@ Status: 200
 		...		
 	]
 
-此处冗余了user_name及email，方便显示。
+the user_name and email are superfluous in order to show easily. 
 
-## 获取好友列表
+## get the friend list
 
 ...
 
 
 ----------
 
-聊天类接口调用流程：sync->get unread获取到unread array->[get one from firebase]->mark read（仅对从firebase读取到的那条）->send / 继续回unread array处理剩余消息，get history仅用于构筑初始化列表
+The process of calling the chats interface: sync->get unread(get unread array)->[get one from firebase]->mark read (only to that message that was got from the firebase)->send/go back to unread array (deal with the left messages), get history is used to create the initial list. 
 
 ----------
 
-## 发送新聊天消息 send chat message :white_check_mark:
+## send chat message :white_check_mark:
 
 `POST /chats`
 
-在发给firebase聊天信息的同时，也需要发给服务器一份聊天消息。
+While sending the chat messages to the firebase, a piece of message should be also sent to the server. 
 
 ### auth
 
@@ -119,9 +119,9 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| receiver_id | number | 目标用户id |
-| message | string | 具体内容 |
-| type | string('text','image') | 区分内容的类型 |
+| receiver_id | number | receiver user id |
+| message | string | message content |
+| type | string('text','image') | distinct the content type  |
 
 ### response
 
@@ -131,9 +131,9 @@ Status: 201
 		"chat_id": @number
 	}
 
-chat_id为聊天双方的聊天室id，对服务器来说，A和B聊天及B和A聊天被视为在同一个聊天室中进行。
+The chat_id is the chat room id for the two chat objects. To the server, A chatting with B and B chatting with A is in the same chat room. 
 
-## 获取未读消息 get unread message :white_check_mark:
+## get unread message :white_check_mark:
 
 `GET /chats/unread`
 
@@ -158,13 +158,13 @@ Status: 200
 		{...}
 	]
 
-可通过unread_count来获取有几条消息未读，从而实现“阅后即焚”（即通过unread_count来实现只获取最近的n条消息）。
+The amount of unread messages can be got from the unread_count, and then self-destruct can be implemented (get the latest n messages according to the unread_count). 
 
-## 标记已读消息 mark read :white_check_mark:
+## mark read :white_check_mark:
 
 `POST /chats/read`
 
-此接口用于标记消息已读，调用后则将置0该用户在该会话中的未读消息数量。
+This interface is used to mark that the message has been read, then the amount of the unread messages will be set to 0 in the user's chat after calling the interface.  
 
 ### auth
 
@@ -174,17 +174,17 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| chat_id | number | 聊天id |
+| chat_id | number | chat id |
 
 ### response
 
 Status: 201
 
-## 获取该用户所有聊天消息 get chat history :white_check_mark:
+## get chat history :white_check_mark:
 
 `GET /chats`
 
-一般在初始化聊天列表时调用。
+The interface is usually called when initializing the chat list. 
 
 ### auth
 
@@ -197,7 +197,7 @@ Status: 200
 	[
 		{
 			"chat_id": @number,
-			"with_user_id": @number 与该id用户聊天,
+			"with_user_id": @number chat with the user of the user id,
 			"last_message": @string,
 			"last_message_sender_id": @number,
 			"last_message_type": @string,
@@ -208,11 +208,11 @@ Status: 200
 		{...}
 	]
 
-## 删除聊天（室） delete chat :white_check_mark:
+## delete chat :white_check_mark:
 
 `DELETE /chats/:chat_id`
 
-此接口用于删除聊天室。聊天双方中任意一方执行删除操作后，双方的聊天信息都将被永久删除，未读消息也将不被保留。
+This interface is used to delete the chat. After any side of the chatting objects doing the delete operation, the chat messages will be deleted forever and the unread messages will also not be saved any more. 
 
 ### auth
 
@@ -225,15 +225,15 @@ Status: 204
 
 ----------
 
-在ChatRoom中聊天只能在已经创建的ChatRoom中进行。
+The chat could only be done in the created ChatRoom. 
 
 ----------
 
-## 发送ChatRoom聊天消息
+## send message in the ChatRoom 
 
 `POST /chat_rooms/:chat_room_id/message`
 
-一旦用户发送消息，该用户即成为该ChatRoom参与者。
+As long as the message is sent by the user, this user will be the participant of the ChatRoom. 
 
 ### auth
 
@@ -243,14 +243,14 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| message | string | 具体内容 |
-| type | string('text','image') | 区分内容的类型 |
+| message | string | specific content |
+| type | string('text','image') | distinguish the type of the content |
 
 ### response
 
 Status: 201
 
-## 获取所有含有未读消息的ChatRoom
+## get all the ChatRooms including the unread messages
 
 `GET /chat_rooms/unread`
 
@@ -266,7 +266,7 @@ Status: 200
 		{
 			"chat_room_id": @number,
 			"title": @string,
-			"user_id": @number 创建者id
+			"user_id": @number creator id
 			"geolocation": {
 				"latitude": @number,
 				"longitude": @number
@@ -283,11 +283,11 @@ Status: 200
 	]
 
 
-## 标记已读ChatRoom
+## mark ChatRooms with all the read messages
 
 `POST /chat_rooms/:chat_room_id/read`
 
-此接口用于标记消息已读，调用后则将置0该用户在该ChatRoom中的未读消息数量。
+This interface is used to mark the message is read, the unread message of the user in the ChatRoom will be set to 0 after calling. 
 
 ### auth
 
@@ -297,11 +297,11 @@ yes
 
 Status: 201
 
-## 获取用户参与（不是“创建”）的所有ChatRoom
+## get all the ChatRooms that the user participated in (not "create") 
 
 `GET /chat_rooms`
 
-一般在初始化聊天列表时调用。
+Usually called when initializing the list of the chat. 
 
 ### auth
 
@@ -331,7 +331,7 @@ Status: 200
 		{...}
 	]
 
-## 获取ChatRoom中所有用户
+## get all the users in the ChatRoom. 
 
 `GET /chat_rooms/:chat_room_id/users`
 
