@@ -93,13 +93,14 @@ class ChatController extends Controller
                     })->orWhere(function ($query) {
                         $query->where('user_b_id', $this->request->self_user_id)->where('user_b_unread_count', '>', 0);
                     })
+                    ->orderBy('last_message_timestamp', 'desc')
                     ->get();
-
         $messages = array();
         foreach($unreads as $unread)
         {
             $unread_count = ($this->request->self_user_id == $unread->user_a_id) ? $unread->user_a_unread_count:$unread->user_b_unread_count;
-            $messages[] = ['chat_id' => $unread->id, 'last_message' => $unread->last_message, 'last_message_sender_id' => $unread->last_message_sender_id, 'last_message_timestamp' => $unread->last_message_timestamp, 'last_message_type' => $unread->last_message_type, 'unread_count' => $unread_count];
+            $time = date("Y-m-d H:i:s");
+            $messages[] = ['chat_id' => $unread->id, 'last_message' => $unread->last_message, 'last_message_sender_id' => $unread->last_message_sender_id, 'last_message_timestamp' => $unread->last_message_timestamp, 'last_message_type' => $unread->last_message_type, 'unread_count' => $unread_count, 'server_sent_timestamp' => $time];
         }
         return $this->response->array($messages);
     }
@@ -138,13 +139,21 @@ class ChatController extends Controller
 
     public function getHistory()
     {
-        $chats = Chats::where('user_a_id', $this->request->self_user_id)->orWhere('user_b_id', $this->request->self_user_id)->get();
+        $chats = Chats::where('user_a_id', $this->request->self_user_id)->orWhere('user_b_id', $this->request->self_user_id)
+                        ->orderBy('last_message_timestamp', 'desc')
+                        ->get();
         $info = array();
         foreach($chats as $chat)
         {
             $with_user_id = ($this->request->self_user_id == $chat->user_a_id) ? $chat->user_b_id:$chat->user_a_id;
             $unread_count = ($this->request->self_user_id == $chat->user_a_id) ? $chat->user_a_unread_count:$chat->user_b_unread_count;
-            $info[] = ['chat_id' => $chat->id, 'with_user_id' => $with_user_id, 'last_message' => $chat->last_message, 'last_message_sender_id' => $chat->last_message_sender_id, 'last_message_type' => $chat->last_message_type, 'last_message_timestamp' => $chat->last_message_timestamp, 'unread_count' => $unread_count];
+            $user = Users::find($with_user_id);
+            if(is_null($user))
+            {
+                return $this->response->errorNotFound();
+            }
+            $time = date("Y-m-d H:i:s");
+            $info[] = ['chat_id' => $chat->id, 'with_user_id' => $with_user_id, 'with_user_name' => $user->user_name, 'last_message' => $chat->last_message, 'last_message_sender_id' => $chat->last_message_sender_id, 'last_message_type' => $chat->last_message_type, 'last_message_timestamp' => $chat->last_message_timestamp, 'unread_count' => $unread_count, 'server_sent_timestamp' => $time];
         }
         return $this->response->array($info);
     }

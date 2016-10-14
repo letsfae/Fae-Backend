@@ -28,10 +28,14 @@ class UserProfileController extends Controller
 
     public function getProfile($user_id) 
     {
+        f(!is_numeric($user_id))
+        {
+            return $this->response->errorBadRequest();
+        }
         $user = Users::find($user_id);
         if(! is_null($user))
         {
-            $profile = array('user_name' => $user->user_name, 'mini_avatar' => $user->mini_avatar);
+            $profile = array('user_id' => $user->id, 'user_name' => $user->user_name, 'mini_avatar' => $user->mini_avatar);
             return $this->response->array($profile);
         }
         return $this->response->errorNotFound();
@@ -42,7 +46,7 @@ class UserProfileController extends Controller
         $user = Users::find($this->request->self_user_id);
         if(! is_null($user))
         {
-            $profile = array('user_name' => $user->user_name, 'mini_avatar' => $user->mini_avatar);
+            $profile = array('user_id' => $user->id, 'user_name' => $user->user_name, 'mini_avatar' => $user->mini_avatar);
             return $this->response->array($profile);
         }
         return $this->response->errorNotFound();
