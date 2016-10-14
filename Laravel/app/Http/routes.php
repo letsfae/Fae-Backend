@@ -99,6 +99,7 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->post('/chats/read', 'App\Api\v1\Controllers\ChatController@markRead');
     $api->get('/chats', 'App\Api\v1\Controllers\ChatController@getHistory');
     $api->delete('/chats/{chat_id}', 'App\Api\v1\Controllers\ChatController@delete');
+    $api->get('/chats/users/{$user_a_id}/{$user_b_id}', 'App\Api\v1\Controllers\ChatController@getChatIdFromUserId');
     // chat rooms
     $api->post('/chat_rooms', 'App\Api\v1\Controllers\ChatRoomController@create');
     $api->post('/chat_rooms/{chat_room_id}', 'App\Api\v1\Controllers\ChatRoomController@update');

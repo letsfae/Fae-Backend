@@ -230,6 +230,24 @@ yes
 
 Status: 204
 
+## 根据聊天双方user_id获取chat_id
+
+`GET /chats/users/:user_a_id/:user_b_id`
+
+a与b的顺序不敏感。
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	{
+		"chat_id": @number
+	}
+
 
 ----------
 

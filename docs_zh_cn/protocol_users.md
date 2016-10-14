@@ -52,7 +52,7 @@ is_mobile如果为true，则会踢掉用当前账号登陆的另一台移动设�
 
 如果相同device_id账号登陆不同用户，前一个用户会被挤下线。
 
-login出现3次错误后用户账户将被永久禁止登陆（即第4次无法登陆），解禁需调用reset_login接口。
+login出现6次错误后用户账户将被永久禁止登陆（即第7次无法登陆），解禁需调用reset_login接口。
 
 ### response
 
@@ -235,7 +235,7 @@ yes
 | --- | --- | --- |
 | password | string(8-16) |密码 |
 
-密码验证如果3次错误，则自动锁定并退出（Auth失效）。解锁需使用reset login的接口。
+密码验证如果6次错误，则自动锁定并退出（Auth失效）。解锁需使用reset login的接口。
 
 ### response
 
