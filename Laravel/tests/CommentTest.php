@@ -5,6 +5,10 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing;
 use App\Comments;
+use App\Medias;
+use App\Tags;
+use App\Files;
+use App\Pin_operations;
 use Phaza\LaravelPostgis\Eloquent\PostgisTrait;
 use Phaza\LaravelPostgis\Geometries\Point;
 use Phaza\LaravelPostgis\Geometries\Geometry;
@@ -34,7 +38,7 @@ class CommentTest extends TestCase {
 
     // the correct response of the create comment.
     public function testCreated() { 
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -82,7 +86,7 @@ class CommentTest extends TestCase {
 
     // to test whether the input format is right.
     public function testCreated2() {
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -128,7 +132,7 @@ class CommentTest extends TestCase {
 
     // the correct response of the get comment with the comment_id.
     public function testGetOne() {
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -157,26 +161,40 @@ class CommentTest extends TestCase {
             'Fae-Client-Version' => 'ios-0.0.1', 
             'Authorization' => 'FAE '.$array->debug_base64ed,
         );
+        //post like pin_operations
+        $comment = Comments::create([ 
+            'user_id' => 1,
+            'content' => 'this is the test.', 
+            'geolocation' => new Point(34.031958,-118.288125),  
+        ]);
+        $response_like = $this->call('post', 'http://'.$this->domain.'/pins/comment/1/like', [], [], [], $this->transformHeadersToServerVars($server2));
+        $this->refreshApplication();
+        //post save pin_operations
+        $response_save = $this->call('post', 'http://'.$this->domain.'/pins/comment/1/save', [], [], [], $this->transformHeadersToServerVars($server2));
+        $this->refreshApplication();
         $parameters2 = array(
             'content' => 'This is the test.',
             'geo_longitude' => -118.2799,
             'geo_latitude' => 34.2799, 
-        ); 
-        //create the comment.
-        $response2 = $this->call('post', 'http://'.$this->domain.'/comments', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
-        $array2 = json_decode($response2->getContent());
+        );  
         //get the comment
-        $response = $this->call('get', 'http://'.$this->domain.'/comments/'.$array2->comment_id, [], [], [], $this->transformHeadersToServerVars($server2)); 
-        $array3 = json_decode($response->getContent()); 
+        $response = $this->call('get', 'http://'.$this->domain.'/comments/1', [], [], [], $this->transformHeadersToServerVars($server2)); 
+        $array2 = json_decode($response->getContent());  
         $this->seeJson([
-                'comment_id' => $array3->comment_id,
-                'user_id' => $array3->user_id,
-                'content' => $array3->content,
+                'comment_id' => 1,
+                'user_id' => 1,
+                'content' => 'this is the test.',
                 'geolocation' => array(
-                    'latitude' => $array3->geolocation->latitude,
-                    'longitude' => $array3->geolocation->longitude,
+                    'latitude' => 34.031958,
+                    'longitude' => -118.288125,
                 ),
-                'created_at' => $array3->created_at,
+                'created_at' => $array2->created_at,
+                'user_pin_operations' => array(
+                    'is_liked' => true,
+                    'liked_timestamp' => $array2->user_pin_operations->liked_timestamp,
+                    'is_saved' => true,
+                    'saved_timestamp' => $array2->user_pin_operations->saved_timestamp,
+                ),
         ]);
         $result = false;
         if ($response->status() == '200') {
@@ -187,7 +205,7 @@ class CommentTest extends TestCase {
 
     //test whether the format of the comment_id is valid.
     public function testGetOne2() {
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -229,7 +247,7 @@ class CommentTest extends TestCase {
 
     // the comment with the given comment_id does not exist.
     public function testGetOne3() { 
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -279,7 +297,7 @@ class CommentTest extends TestCase {
 
     // the correct response of the method of getting all comments of the given user.
     public function testGetFromUser() { 
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -317,12 +335,17 @@ class CommentTest extends TestCase {
                 'geo_latitude' => 34.2799, 
             );
         }
-        //create the comments.
         for ($i = 0; $i < 31; $i++) {
+            //create the comments. 
             $response[$i] = $this->call('post', 'http://'.$this->domain.'/comments', $parameters[$i], [], [], $this->transformHeadersToServerVars($server2)); 
             // sleep(1);
             $this->refreshApplication();
-        } 
+            $response_like = $this->call('post', 'http://'.$this->domain.'/pins/comment/'.($i + 1).'/like', [], [], [], $this->transformHeadersToServerVars($server2));
+            $this->refreshApplication();
+            //post save pin_operations
+            $response_save = $this->call('post', 'http://'.$this->domain.'/pins/comment/'.($i + 1).'/save', [], [], [], $this->transformHeadersToServerVars($server2));
+            $this->refreshApplication();
+        }
         $content = array(
             'start_time' => '2016-06-08 21:22:39',
             'end_time' => date("Y-m-d H:i:s"),
@@ -342,6 +365,12 @@ class CommentTest extends TestCase {
                             'longitude' => $array2[$i]->geolocation->longitude,
                         ),
                         'created_at' => $array2[$i]->created_at, 
+                        'user_pin_operations' => array(
+                            'is_liked' => true,
+                            'liked_timestamp' => $array2[$i]->user_pin_operations->liked_timestamp,
+                            'is_saved' => true,
+                            'saved_timestamp' => $array2[$i]->user_pin_operations->saved_timestamp,
+                        ),
             ]);
         }
         $this->refreshApplication();
@@ -362,6 +391,12 @@ class CommentTest extends TestCase {
                         'longitude' => $array3[0]->geolocation->longitude,
                     ),
                     'created_at' => $array3[0]->created_at, 
+                    'user_pin_operations' => array(
+                            'is_liked' => true,
+                            'liked_timestamp' => $array3[0]->user_pin_operations->liked_timestamp,
+                            'is_saved' => true,
+                            'saved_timestamp' => $array3[0]->user_pin_operations->saved_timestamp,
+                        ),
         ]);
         $result = false;
         if ($response_page1->headers->get('page') == '1' && $response_page1->headers->get('total-pages') == '2' && $response_page1->status() == '200') {
@@ -373,7 +408,7 @@ class CommentTest extends TestCase {
 
     //test whether the user with user_id exists.
     public function testGetFromUser2() { 
-        // $this->markTestSkipped();  
+        $this->markTestSkipped();  
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -415,7 +450,7 @@ class CommentTest extends TestCase {
 
     //test whether the format of the user_id is right.
     public function testGetFromUser3() { 
-        // $this->markTestSkipped();  
+        $this->markTestSkipped();  
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -457,7 +492,7 @@ class CommentTest extends TestCase {
 
     //test whether the format of the input is valid.
     public function testGetFromUser4() { 
-        // $this->markTestSkipped();  
+        $this->markTestSkipped();  
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -504,7 +539,7 @@ class CommentTest extends TestCase {
 
     // test the select page is larger than the total page.
     public function testGetFromUser5() {  
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -560,7 +595,7 @@ class CommentTest extends TestCase {
 
     //test the correct response of deleting of the comment with the given comment_id.
     public function testDelete() { 
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -605,7 +640,7 @@ class CommentTest extends TestCase {
 
     //test whether the format of the given comment_id is valid.
     public function testDelete2() { 
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -655,7 +690,7 @@ class CommentTest extends TestCase {
 
     //test the comment with the given comment_id does not exist.
     public function testDelete3() {  
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -705,7 +740,7 @@ class CommentTest extends TestCase {
 
     //the user_id in comments is not the same as the self_user_id. 
     public function testDelete4() {  
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -769,7 +804,7 @@ class CommentTest extends TestCase {
 
     //test the correct response of method of updateComment.
     public function testUpdate() { 
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -822,7 +857,7 @@ class CommentTest extends TestCase {
 
     //test whether the format of the given comment_id is valid.
     public function testUpdate2() { 
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -875,7 +910,7 @@ class CommentTest extends TestCase {
 
     //test whether the format of the input is valid. 
     public function testUpdate3() { 
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -930,7 +965,7 @@ class CommentTest extends TestCase {
 
     //test the comment with the given comment_id does not exist.
     public function testUpdate4() { 
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',

@@ -69,12 +69,12 @@ class PinOperationController extends Controller {
     {
         $pin_operation = Pin_operations::where('pin_id', $pin_id)->where('user_id', $user_id)->
                          where('type', $type)->first();
-        if(is_null($pin_opetation))
+        if(is_null($pin_operation))
         {
             return array('is_liked' => false, 'liked_timestamp' => null, 'is_saved' => false, 'saved_timestamp' => null);
         }
-        return array('is_liked' => $pin_opetation->liked, 'liked_timestamp' => $pin_opetation->liked_timestamp, 
-            'is_saved' => $pin_opetation->saved, 'saved_timestamp' => $pin_opetation->saved_timestamp);
+        return array('is_liked' => $pin_operation->liked, 'liked_timestamp' => $pin_operation->liked_timestamp, 
+            'is_saved' => $pin_operation->saved, 'saved_timestamp' => $pin_operation->saved_timestamp);
     }
 
     public function like($type, $pin_id) {
