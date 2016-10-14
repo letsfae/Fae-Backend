@@ -25,66 +25,7 @@ Status: 201
 
 如果返回422，可能原因是当前并非移动设备。
 
-## 获取地图数据 :white_check_mark:
-
-`GET /map`
-
-### auth
-
-yes
-
-### filters
-
-| Name | Type | Description |
-| --- | --- | --- |
-| geo_latitude | number | 中心点纬度 |
-| geo_longitude | number | 中心点经度 |
-| radius (optional) | number | 半径，默认值为200m |
-| type (optional) | string(user,comment,media,faevor,chat_room) | 筛选类型，默认为所有，类型之间用逗号隔开 |
-| max_count (optional) | number | 返回节点最大数量，默认为30，最大为100 |
-
-对于一直在更新的user点，可以每隔一段时间获取一次。
-
-当获取多种类型节点时，节点返回数量和节点类型顺序及max_count有关（如：第一种节点数量为N，则第二种节点数量最多返回`max_count - N`，如果`N >= max_count`，则没有第二种节点返回）。
-
-### response
-
-Status: 200
-
-	[
-		{
-			"type": @string,
-			"geolocation": {
-				"latitude": @number,
-				"longitude": @number
-			},
-			"created_at": @string
-			...
-		},
-		{...},
-		{...}
-	]
-
-返回一个array, 每个object一定包含type，geolocation和created_at，其他内容依据type决定（可参见具体类型的相关接口）。
-
-对于user类型的点，考虑到用户隐私问题，服务器会返回5个一定范围内的随机点, 格式如下：
-
-	{
-		"type": "user",
-		"user_id": @number,
-		"geolocation": [
-			{
-				"latitude": @number,
-				"longitude": @number
-			},
-			{...},
-			{...},
-			{...},
-			{...}
-		]
-	}
-
-取地图数据（新）
+取地图数据 :white_check_mark:
 
 `GET /map`
 

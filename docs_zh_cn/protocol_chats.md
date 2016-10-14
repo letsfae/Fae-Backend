@@ -150,13 +150,17 @@ Status: 200
 			"chat_id": @number,
 			"last_message": @string,
 			"last_message_sender_id": @number,
+			"last_message_sender_name": @string,
 			"last_message_timestamp": @string,
 			"last_message_type": @string,
-			"unread_count": @number
+			"unread_count": @number,
+			"server_sent_timestamp":@string
 		},
 		{...},
 		{...}
 	]
+
+结果按照last_message_timestamp降序排序。
 
 可通过unread_count来获取有几条消息未读，从而实现“阅后即焚”（即通过unread_count来实现只获取最近的n条消息）。
 
@@ -198,15 +202,19 @@ Status: 200
 		{
 			"chat_id": @number,
 			"with_user_id": @number 与该id用户聊天,
+			"with_user_name" @string,
 			"last_message": @string,
 			"last_message_sender_id": @number,
 			"last_message_type": @string,
 			"last_message_timestamp": @string,
-			"unread_count": @number
+			"unread_count": @number,
+			"server_sent_timestamp":@string
 		},
 		{...},
 		{...}
 	]
+
+结果按照last_message_timestamp降序排序。
 
 ## 删除聊天（室） delete chat :white_check_mark:
 
@@ -221,6 +229,24 @@ yes
 ### response
 
 Status: 204
+
+## 根据聊天双方user_id获取chat_id
+
+`GET /chats/users/:user_a_id/:user_b_id`
+
+a与b的顺序不敏感。
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	{
+		"chat_id": @number
+	}
 
 
 ----------
@@ -276,12 +302,14 @@ Status: 200
 			"last_message_type": @string,
 			"last_message_timestamp": @string,
 			"unread_count": @number
-			"created_at": @string
+			"created_at": @string,
+			"server_sent_timestamp":@string
 		},
 		{...},
 		{...}
 	]
 
+结果按照last_message_timestamp降序排序。
 
 ## 标记已读ChatRoom :white_check_mark:
 
@@ -325,11 +353,14 @@ Status: 200
 			"last_message_type": @string,
 			"last_message_timestamp": @string,
 			"unread_count": @number
-			"created_at": @string
+			"created_at": @string,
+			"server_sent_timestamp":@string
 		},
 		{...},
 		{...}
 	]
+
+结果按照last_message_timestamp降序排序。
 
 ## 获取ChatRoom中所有用户 :white_check_mark:
 

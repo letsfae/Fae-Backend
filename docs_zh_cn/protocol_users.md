@@ -52,7 +52,7 @@ is_mobile如果为true，则会踢掉用当前账号登陆的另一台移动设�
 
 如果相同device_id账号登陆不同用户，前一个用户会被挤下线。
 
-login出现3次错误后用户账户将被永久禁止登陆（即第4次无法登陆），解禁需调用reset_login接口。
+login出现6次错误后用户账户将被永久禁止登陆（即第7次无法登陆），解禁需调用reset_login接口。
 
 ### response
 
@@ -235,7 +235,7 @@ yes
 | --- | --- | --- |
 | password | string(8-16) |密码 |
 
-密码验证如果3次错误，则自动锁定并退出（Auth失效）。解锁需使用reset login的接口。
+密码验证如果6次错误，则自动锁定并退出（Auth失效）。解锁需使用reset login的接口。
 
 ### response
 
@@ -361,6 +361,7 @@ yes
 Status: 200
 
 	{
+		"user_id": @number,
 		"user_name": @string,
 		"mini_avatar": @number
 	}
@@ -476,6 +477,8 @@ yes
 
 所有字段均为可选，但必须至少包含一个字段。
 
+用户状态为offline/invisible时，map中也不会显示该用户的user pin。
+
 ### response
 
 Status: 201
@@ -563,3 +566,49 @@ yes
 ### response
 
 Status: 201
+
+# 保存NameCard
+
+`POST /users/:user_id/name_card/save`
+
+### auth
+
+yes
+
+### response
+
+Status: 201
+
+# 取消保存NameCard
+
+`DELETE /users/:user_id/name_card/save`
+
+### auth
+
+yes
+
+### response
+
+Status: 204
+
+# 获取所有保存的namecard
+
+`GET /users/name_card/saved`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	[
+		{
+			"name_card_user_id": @number,
+			"created_at": @string
+		},
+		{...},
+		{...}
+	]
+
