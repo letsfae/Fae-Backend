@@ -40,12 +40,12 @@ yes
 | geo_latitude | number | 中心点纬度 |
 | geo_longitude | number | 中心点经度 |
 | radius (optional) | number | 半径，默认值为200m |
-| type | string(user or comment,media,chat_room) | 筛选类型，默认为所有，类型之间用逗号隔开 |
+| type | string(user or comment,media,chat_room) | 筛选类型，类型之间用逗号隔开 |
 | max_count (optional) | number | 返回节点最大数量，默认为30，最大为100 |
 
 对于一直在更新的user点，可以每隔一段时间获取一次。
 
-user类型节点只能单独获取。其他类型节点可同时获取（根据距离由近到远降序排序）。
+user类型节点只能单独获取。其他类型节点可同时获取（根据Pin创建时间降序排序）。
 
 ### response
 
