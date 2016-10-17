@@ -204,14 +204,14 @@ class ChatController extends Controller
 
     public function getChatIdFromUserId($user_a_id, $user_b_id)
     {
-        $fisrt = min($user_a_id,$user_b_id);
+        $first = min($user_a_id,$user_b_id);
         $second = max($user_a_id,$user_b_id);
         $chat = Chats::where('user_a_id', $first)->where('user_b_id', $second)->first();
         if(is_null($chat))
         {
             return $this->request->errorNotFound();
         }
-        return $this->response->array(array("chat_id") => $chat->id);
+        return $this->response->array(array("chat_id" => $chat->id));
     }
 
     private function sendValidation(Request $request)
