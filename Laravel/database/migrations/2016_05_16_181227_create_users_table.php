@@ -18,7 +18,7 @@ class CreateUsersTable extends Migration
             $table->boolean('email_verified')->default(false);
             $table->string('password',70);
             $table->integer('login_count')->default(0);
-            $table->string('user_name',30)->nullable();
+            $table->string('user_name',30);
             $table->string('first_name',20)->nullable();
             $table->string('last_name',20)->nullable();
             $table->string('phone',20)->nullable();

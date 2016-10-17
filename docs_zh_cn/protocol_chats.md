@@ -205,6 +205,7 @@ Status: 200
 			"with_user_name" @string,
 			"last_message": @string,
 			"last_message_sender_id": @number,
+			"last_message_sender_name": @string,
 			"last_message_type": @string,
 			"last_message_timestamp": @string,
 			"unread_count": @number,
@@ -299,6 +300,7 @@ Status: 200
 			},
 			"last_message": @string,
 			"last_message_sender_id": @number,
+			"last_message_sender_name": @string,
 			"last_message_type": @string,
 			"last_message_timestamp": @string,
 			"unread_count": @number
@@ -350,6 +352,7 @@ Status: 200
 			},
 			"last_message": @string,
 			"last_message_sender_id": @number,
+			"last_message_sender_name": @string,
 			"last_message_type": @string,
 			"last_message_timestamp": @string,
 			"unread_count": @number

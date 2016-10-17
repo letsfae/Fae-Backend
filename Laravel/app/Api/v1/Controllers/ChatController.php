@@ -100,7 +100,17 @@ class ChatController extends Controller
         {
             $unread_count = ($this->request->self_user_id == $unread->user_a_id) ? $unread->user_a_unread_count:$unread->user_b_unread_count;
             $time = date("Y-m-d H:i:s");
-            $messages[] = ['chat_id' => $unread->id, 'last_message' => $unread->last_message, 'last_message_sender_id' => $unread->last_message_sender_id, 'last_message_timestamp' => $unread->last_message_timestamp, 'last_message_type' => $unread->last_message_type, 'unread_count' => $unread_count, 'server_sent_timestamp' => $time];
+            $last_message_sender = Users::find($unread->last_message_sender_id);
+            if(is_null($last_message_sender))
+            {
+                return $this->errorNotFound();
+            }
+            $messages[] = ['chat_id' => $unread->id, 'last_message' => $unread->last_message, 
+                           'last_message_sender_id' => $unread->last_message_sender_id, 
+                           'last_message_sender_name' => $last_message_sender->user_name, 
+                           'last_message_timestamp' => $unread->last_message_timestamp, 
+                           'last_message_type' => $unread->last_message_type, 'unread_count' => $unread_count, 
+                           'server_sent_timestamp' => $time];
         }
         return $this->response->array($messages);
     }
@@ -153,7 +163,17 @@ class ChatController extends Controller
                 return $this->response->errorNotFound();
             }
             $time = date("Y-m-d H:i:s");
-            $info[] = ['chat_id' => $chat->id, 'with_user_id' => $with_user_id, 'with_user_name' => $user->user_name, 'last_message' => $chat->last_message, 'last_message_sender_id' => $chat->last_message_sender_id, 'last_message_type' => $chat->last_message_type, 'last_message_timestamp' => $chat->last_message_timestamp, 'unread_count' => $unread_count, 'server_sent_timestamp' => $time];
+            $last_message_sender = Users::find($chat->last_message_sender_id);
+            if(is_null($last_message_sender))
+            {
+                return $this->errorNotFound();
+            }
+
+            $info[] = ['chat_id' => $chat->id, 'with_user_id' => $with_user_id, 'with_user_name' => $user->user_name, 
+                       'last_message' => $chat->last_message, 'last_message_sender_id' => $chat->last_message_sender_id, 
+                       'last_message_sender_name' => $last_message_sender->user_name, 
+                       'last_message_type' => $chat->last_message_type, 'last_message_timestamp' => $chat->last_message_timestamp, 
+                       'unread_count' => $unread_count, 'server_sent_timestamp' => $time];
         }
         return $this->response->array($info);
     }
@@ -182,8 +202,16 @@ class ChatController extends Controller
         return $this->response->noContent();
     }
 
-    public function getChatIdFromUserId($user_a_id, $user_b_id) {
-        
+    public function getChatIdFromUserId($user_a_id, $user_b_id)
+    {
+        $fisrt = min($user_a_id,$user_b_id);
+        $second = max($user_a_id,$user_b_id);
+        $chat = Chats::where('user_a_id', $first)->where('user_b_id', $second)->first();
+        if(is_null($chat))
+        {
+            return $this->request->errorNotFound();
+        }
+        return $this->response->array(array("chat_id") => $chat->id);
     }
 
     private function sendValidation(Request $request)

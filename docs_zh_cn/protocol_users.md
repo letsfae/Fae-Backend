@@ -348,7 +348,7 @@ Status: 201
 
 ----------
 
-## 获取用户自己的资料 get self profile
+## 获取用户自己的资料 get self profile :white_check_mark:
 
 `GET /users/profile`
 
@@ -366,7 +366,7 @@ Status: 200
 		"mini_avatar": @number
 	}
 
-## 获取其他用户资料 get profile
+## 获取其他用户资料 get profile :white_check_mark:
 
 `GET /users/:user_id/profile`
 
@@ -567,7 +567,7 @@ yes
 
 Status: 201
 
-# 保存NameCard
+## 保存NameCard
 
 `POST /users/:user_id/name_card/save`
 
@@ -579,7 +579,7 @@ yes
 
 Status: 201
 
-# 取消保存NameCard
+## 取消保存NameCard
 
 `DELETE /users/:user_id/name_card/save`
 
@@ -591,7 +591,7 @@ yes
 
 Status: 204
 
-# 获取所有保存的namecard
+## 获取所有保存的namecard
 
 `GET /users/name_card/saved`
 
