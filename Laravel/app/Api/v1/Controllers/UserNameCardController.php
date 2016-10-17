@@ -27,7 +27,7 @@ class UserNameCardController extends Controller
         {
             return $this->response->errorNotFound();
         }
-        $user = $nameCard->hasOneUser()->first()
+        $user = $nameCard->hasOneUser()->first();
         $tags = array();
         if($nameCard->tag_ids != null)
         {
@@ -46,12 +46,10 @@ class UserNameCardController extends Controller
         if($nameCard->show_age)
         {
             $birthDate = $user->birthday;
-            // $birthDate = explode("/", $birthDate);
-            // $age = (date("md", date("U", mktime(0, 0, 0, $birthDate[0], $birthDate[1], $birthDate[2]))) > date("md")
-            //         ? ((date("Y") - $birthDate[2]) - 1)
-            //         : (date("Y") - $birthDate[2]));
-            $today   = new DateTime('today');
-            $age = $birthDate->diff($today)->y;
+            $birthDate = explode("-", $birthDate);
+            $age = (date("md", date("U", mktime(0, 0, 0, $birthDate[1], $birthDate[2], $birthDate[0]))) > date("md")
+                    ? ((date("Y") - $birthDate[0]) - 1)
+                    : (date("Y") - $birthDate[0]));
             $info['age'] = $age;
         }
         return $this->response->array($info);
@@ -100,6 +98,28 @@ class UserNameCardController extends Controller
             }   
             $nameCard->tag_ids = $this->request->tag_ids;
         }
+        if($this->request->has('show_age'))
+        {
+            if(strtolower($this->request->show_age) == 'true')
+            {
+                $nameCard->show_age = true;
+            }
+            else
+            {
+                $nameCard->show_age = false;
+            }
+        }
+        if($this->request->has('show_gender'))
+        {
+            if(strtolower($this->request->show_gender) == 'true')
+            {
+                $nameCard->show_gender = true;
+            }
+            else
+            {
+                $nameCard->show_gender = false;
+            }
+        }
         $nameCard->save();
         return $this->response->created();
     }
@@ -119,9 +139,11 @@ class UserNameCardController extends Controller
     private function updateNameCardValidation(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nick_name' => 'filled|required_without_all:short_intro,tag_ids|alpha_num:50',
-            'short_intro' => 'filled|required_without_all:nick_name,tag_ids|string|max:200',
-            'tag_ids' => 'filled|required_without_all:nick_name,short_intro|regex:/^(\d+\;){0,2}\d+$/'
+            'nick_name' => 'filled|required_without_all:short_intro,tag_ids,show_age,show_gender|alpha_num:50',
+            'short_intro' => 'filled|required_without_all:nick_name,tag_ids,show_age,show_gender|string|max:200',
+            'tag_ids' => 'filled|required_without_all:nick_name,short_intro,show_age,show_gender|regex:/^(\d+\;){0,2}\d+$/',
+            'show_age' => 'filled|required_without_all:nick_name,short_intro,tag_ids,show_gender|in:TRUE,True,true,FALSE,False,false',
+            'show_gender' => 'filled|required_without_all:nick_name,short_intro,tag_ids,show_age|in:TRUE,True,true,FALSE,False,false'
         ]);
         if($validator->fails())
         {

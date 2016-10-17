@@ -28,7 +28,7 @@ class UserProfileController extends Controller
 
     public function getProfile($user_id) 
     {
-        f(!is_numeric($user_id))
+        if(!is_numeric($user_id))
         {
             return $this->response->errorBadRequest();
         }
