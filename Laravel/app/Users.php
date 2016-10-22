@@ -33,4 +33,8 @@ class Users extends Model implements AuthenticatableContract
     {
         return $this->hasMany('App\ChatRoomUsers','user_id','id');
     }
+    public function hasOneExts() 
+    {
+        return $this->hasOne('App\User_exts','user_id','id');
+    }
 }

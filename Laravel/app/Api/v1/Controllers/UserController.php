@@ -124,7 +124,7 @@ class UserController extends Controller
         {
             $user->login_count++;
             $user->save();
-            if($user->login_count >= 3)
+            if($user->login_count >= 6)
             {
                 $session = Sessions::find($this->request->self_session_id);
                 $session->delete();
@@ -155,7 +155,7 @@ class UserController extends Controller
             {
                 $user->login_count++;
                 $user->save();
-                if($user->login_count >= 3)
+                if($user->login_count >= 6)
                 {
                     $session = Sessions::find($this->request->self_session_id);
                     $session->delete();

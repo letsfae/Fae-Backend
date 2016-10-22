@@ -121,7 +121,7 @@ yes
 | --- | --- | --- |
 | receiver_id | number | 目标用户id |
 | message | string | 具体内容 |
-| type | string('text','image') | 区分内容的类型 |
+| type | string('text','image','sticker','location','audio') | 区分内容的类型 |
 
 ### response
 
@@ -271,7 +271,7 @@ yes
 | Name | Type | Description |
 | --- | --- | --- |
 | message | string | 具体内容 |
-| type | string('text','image') | 区分内容的类型 |
+| type | string('text','image','sticker','location','audio') | 区分内容的类型 |
 
 ### response
 
