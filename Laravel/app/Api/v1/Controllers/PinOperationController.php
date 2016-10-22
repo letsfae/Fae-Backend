@@ -186,7 +186,7 @@ class PinOperationController extends Controller {
         //$num_commented_pins = count($commented_pins);
         
         $content = array(   'type' => $type,
-                            'pin_id'=> intval($pin_id),          
+                            'pin_id'=> intval($pin_id),
                             'likes' => $num_liked_pins, 
                             'saves' => $num_saved_pins, 
                             'comments' => $num_commented_pins);
@@ -219,7 +219,7 @@ class PinOperationController extends Controller {
         foreach($commented_pin_list as $commented_pin)
         {
             $info[] = array('pin_comment_id' => $commented_pin->id,
-                            'user_id' => $commented_pin->user_id, 
+                            'user_id' => $commented_pin->user_id,
                             'content' => $commented_pin->content,
                             'created_at'=>$commented_pin->created_at->format('Y-m-d H:i:s'));
         }

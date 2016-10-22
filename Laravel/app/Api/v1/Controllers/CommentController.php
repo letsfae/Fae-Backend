@@ -18,6 +18,7 @@ use App\PinHelper;
 use App\Api\v1\Controllers\PinOperationController;
 use Auth;
 use App\Api\v1\Interfaces\PinInterface;
+use App\Api\v1\Controllers\RichTextController;
 
 class CommentController extends Controller implements PinInterface
 {
@@ -37,11 +38,21 @@ class CommentController extends Controller implements PinInterface
         $comment->content = $this->request->content;
         $comment->geolocation = new Point($this->request->geo_latitude, $this->request->geo_longitude);
         $comment->save();
+
+        // pin helper
         $pin_helper = new PinHelper();
         $pin_helper->type = 'comment';
         $pin_helper->geolocation =  new Point($this->request->geo_latitude, $this->request->geo_longitude);
         $pin_helper->pin_id = $comment->id;
         $pin_helper->save();
+        
+        //---------------- for hashtag ----------------
+        $comment->processRichtext();
+        //$comment->updateRichtext($comment->content);
+        //RichTextController::updateHashtagFromRichtext($comment->id, $comment->content, $comment->content, 'Comments');
+        //var_dump(RichTextController::getRichtextWithHashtagID(1, 'Comments'));
+        //var_dump(RichTextController::getRichtextWithHashtagContext('#asdasdaas', 'Comments'));
+        //---------------------------------------------
         return $this->response->created(null, array('comment_id' => $comment->id));
     }
 
@@ -64,6 +75,8 @@ class CommentController extends Controller implements PinInterface
         if($this->request->has('content'))
         {
             $comment->content = $this->request->content;
+            $comment->save();
+            $comment->updateRichtext($this->request->content);
         }
         if($this->request->has('geo_longitude') && $this->request->has('geo_latitude'))
         {
@@ -109,8 +122,13 @@ class CommentController extends Controller implements PinInterface
         {
             throw new AccessDeniedHttpException('You can not delete this comment');
         }
+
+        // pin helper
         $pin_helper = PinHelper::where('pin_id', $comment_id)->where('type', 'comment')->first();
         $pin_helper->delete();
+
+        // richtext        
+        $comment->deleteRichtext($comment->content);
         $comment->delete();
         return $this->response->noContent();
     }

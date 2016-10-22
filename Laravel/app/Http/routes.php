@@ -127,6 +127,8 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->get('/pins/saved', 'App\Api\v1\Controllers\PinOperationController@getSavedPinList');
     $api->get('/pins/users', 'App\Api\v1\Controllers\PinOperationController@getSelfPinList');
     $api->get('/pins/users/{user_id}', 'App\Api\v1\Controllers\PinOperationController@getUserPinList');
+    // richtext (hashtags and at)
+    $api->get('/richtext/hashtag/{hashtag}', 'App\Api\v1\Controllers\RichTextController@searchHashtag');
 
 });
 
