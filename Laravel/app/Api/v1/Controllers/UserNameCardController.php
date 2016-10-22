@@ -8,6 +8,7 @@ use Dingo\Api\Routing\Helpers;
 use App\Users;
 use App\Name_cards;
 use App\Name_card_tags;
+use App\NameCardsSaved;
 use Validator;
 use Dingo\Api\Exception\UpdateResourceFailedException;
 
@@ -124,16 +125,53 @@ class UserNameCardController extends Controller
         return $this->response->created();
     }
 
-    public function saveNameCard($user_id) {
-
+    public function saveNameCard($user_id)
+    {
+        if(!is_numeric($user_id))
+        {
+            return $this->response->errorBadRequest("user_id is not integer");
+        }
+        if(!Name_cards::where('user_id',$user_id)->exists())
+        {
+            return $this->response->errorNotFound();
+        }
+        if(NameCardsSaved::where('user_id', $this->request->self_user_id)->where('name_card_user_id', $user_id)->exists())
+        {
+            return $this->response->errorBadRequest("You have already saved this name card!");
+        }
+        $name_card_saved = new NameCardsSaved();
+        $name_card_saved->user_id = $this->request->self_user_id;
+        $name_card_saved->name_card_user_id = $user_id;
+        $name_card_saved->save();
+        return $this->response->created();
     }
 
-    public function unsaveNameCard($user_id) {
-        
+    public function unsaveNameCard($user_id)
+    {
+        if(!is_numeric($user_id))
+        {
+            return $this->response->errorBadRequest("user_id is not integer");
+        }
+        $name_card_saved = NameCardsSaved::where('user_id', $this->request->self_user_id)
+                                         ->where('name_card_user_id', $user_id)->first();
+        if(is_null($name_card_saved))
+        {
+            return $this->response->errorNotFound();
+        }
+        $name_card_saved->delete();
+        return $this->response->noContent();
     }
 
-    public function getSavedNameCardList() {
-        
+    public function getSavedNameCardList()
+    {
+        $name_cards_saved = NameCardsSaved::where('user_id', $this->request->self_user_id)->get();
+        $info = array();
+        foreach ($name_cards_saved as $name_card_saved) 
+        {
+            $info[] = array('name_card_user_id' => $name_card_saved->name_card_user_id, 
+                            'created_at' => $name_card_saved->created_at->format('Y-m-d H:i:s'));
+        }
+        return $this->response->array($info);
     }
 
     private function updateNameCardValidation(Request $request)
@@ -149,11 +187,13 @@ class UserNameCardController extends Controller
         {
             if(!is_null($request->short_intro) && empty($request->short_intro))
             {
-                if($request->has('nick_name') || $request->has('tag_ids'))
+                if($request->has('nick_name') || $request->has('tag_ids') || $request->has('show_age') || $request->has('show_gender'))
                 {
                     $validator = Validator::make($request->all(), [
                         'nick_name' => 'filled|alpha_num:50',
-                        'tag_ids' => 'filled|regex:/^(\d+\;){0,2}\d+$/'
+                        'tag_ids' => 'filled|regex:/^(\d+\;){0,2}\d+$/',
+                        'show_age' => 'filled|in:TRUE,True,true,FALSE,False,false',
+                        'show_gender' => 'filled|in:TRUE,True,true,FALSE,False,false'
                     ]);
                     if($validator->fails())
                     {

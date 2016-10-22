@@ -42,7 +42,7 @@ class AuthenticationController extends Controller {
             throw new AccessDeniedHttpException('Bad request, No such users exist!');
         }
         //forbid user when login time over 3;
-        if ($users->login_count >= 3){
+        if ($users->login_count >= 6){
             throw new AccessDeniedHttpException('You have tried to login '.($users->login_count).' times, please change your password!');
         }
         
