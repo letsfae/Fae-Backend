@@ -2,6 +2,12 @@
 
 分页数据返回在response header中。
 
+对于具有duration及interaction_radius的pin:
+
+duration为pin的活跃时间，过活跃时间之后不会被检索到。
+
+interaction_radius为可交互范围，该范围内用户才可以参与pin的操作。
+
 ## 更新用户自身的当前坐标 :white_check_mark:
 
 `POST /map/user`
@@ -42,6 +48,7 @@ yes
 | radius (optional) | number | 半径，默认值为200m |
 | type | string(user or comment,media,chat_room) | 筛选类型，类型之间用逗号隔开 |
 | max_count (optional) | number | 返回节点最大数量，默认为30，最大为100 |
+| in_duration (optional) | boolean | 只显示在活跃时间内的pin，默认为false |
 
 对于一直在更新的user点，可以每隔一段时间获取一次。
 
@@ -177,6 +184,8 @@ yes
 | content | text | 内容 |
 | geo_latitude | number | 纬度 |
 | geo_longitude | number | 经度 |
+| duration | number | 持续显示时间，前端需默认为180,单位为min |
+| interaction_radius | number | 交互范围，前端需默认为1，单位km |
 
 ### response
 
@@ -224,6 +233,8 @@ Status: 200
 		},
 		"created_at": @string,,
 		"user_pin_operations": {
+			"is_read": @boolean, 对当前用户是否已读
+			"read_timestamp" @string,
 			"is_liked": @boolean, 对当前用户是否点赞
 			"liked_timestamp" @string,
 			"is_saved": @boolean 对当前用户是否收藏
@@ -290,10 +301,12 @@ yes
 | Name | Type | Description |
 | --- | --- | --- |
 | file_ids | file_id | 最多5个，通过;区分 |
-| tag_ids(optional) | tag_id | 最多50个，通过;区分 |
+| tag_ids (optional) | tag_id | 最多50个，通过;区分 |
 | description | string | 描述 |
 | geo_latitude | number | 纬度 |
 | geo_longitude | number | 经度 |
+| duration | number | 持续显示时间，前端需默认为180,单位为min |
+| interaction_radius | number | 交互范围，前端需默认为1，单位km |
 
 ### response
 
@@ -355,6 +368,8 @@ Status: 200
 		},
 		"created_at": @string,
 		"user_pin_operations": {
+			"is_read": @boolean, 对当前用户是否已读
+			"read_timestamp" @string,
 			"is_liked": @boolean, 对当前用户是否点赞
 			"liked_timestamp" @string,
 			"is_saved": @boolean 对当前用户是否收藏
@@ -562,6 +577,8 @@ yes
 | title | string(100) | 聊天室名 |
 | geo_latitude | number | 纬度 |
 | geo_longitude | number | 经度 |
+| duration | number | 持续显示时间，前端需默认为1440,单位为min |
+| interaction_radius | number | 交互范围，前端需默认为1，单位km |
 
 ### response
 

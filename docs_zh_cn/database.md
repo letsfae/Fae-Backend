@@ -113,8 +113,9 @@
 - content_text string
 - created_at 
 - geolocation point
-- duration integer (unit in min) default 3*60（待定）
-- interation_radius default 1000m（待定）
+- duration integer (unit in min)
+- interation_radius (unit in km)
+- created_at
 
 ## medias
 - id PK
@@ -127,6 +128,9 @@
 - like_count
 - saved_count
 - comment_count
+- duration integer (unit in min)
+- interation_radius (unit in km)
+- created_at
 
 ## faevors
 - id PK
@@ -151,7 +155,10 @@
 - last_message_timestamp
 - last_message_sender_id FK
 - last_message_type enum(text,image)
+- user_count
 - created_at
+- duration integer (unit in min)
+- interation_radius (unit in km)
 
 ## chat_room_users
 - id PK
@@ -165,6 +172,8 @@
 - type enum(media,comment)
 - pin_id 必须是enum所列举的pin的id
 - user_id FK
+- read boolean
+- read_timestamp
 - liked boolean
 - liked_timestamp
 - saved boolean

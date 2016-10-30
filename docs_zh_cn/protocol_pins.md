@@ -1,5 +1,19 @@
 # 用户对于pin的操作
 
+## 标记已读
+
+`POST /pins/:type/:pin_id/read`
+
+其中type可为`media`、`comment`。
+
+### auth
+
+yes
+
+### response
+
+Status: 201
+
 ## Like 点赞 :white_check_mark:
 
 `POST /pins/:type/:pin_id/like`

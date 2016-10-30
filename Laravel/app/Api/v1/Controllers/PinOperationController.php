@@ -77,6 +77,9 @@ class PinOperationController extends Controller {
             'is_saved' => $pin_operation->saved, 'saved_timestamp' => $pin_operation->saved_timestamp);
     }
 
+    public function read($type, $pin_id) {
+    }
+
     public function like($type, $pin_id) {
         $obj_pin_operation = Pin_operations::where('pin_id', $pin_id)->where('user_id', $this->request->self_user_id)->where('type', $type)->first();
         if ($obj_pin_operation == null) {
