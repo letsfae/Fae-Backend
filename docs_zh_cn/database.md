@@ -114,7 +114,7 @@
 - created_at 
 - geolocation point
 - duration integer (unit in min)
-- interation_radius (unit in km)
+- interation_radius (unit in km) default 0
 - created_at
 
 ## medias
@@ -129,7 +129,7 @@
 - saved_count
 - comment_count
 - duration integer (unit in min)
-- interation_radius (unit in km)
+- interation_radius (unit in km) default 0
 - created_at
 
 ## faevors
@@ -158,7 +158,7 @@
 - user_count
 - created_at
 - duration integer (unit in min)
-- interation_radius (unit in km)
+- interation_radius (unit in km) default 0
 
 ## chat_room_users
 - id PK
@@ -179,6 +179,7 @@
 - saved boolean
 - saved_timestamp
 - created_at
+- interated boolean default false
 
 ## pin_comments
 - id PK
