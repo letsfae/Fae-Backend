@@ -249,7 +249,7 @@ class UserController extends Controller
             'gender' => 'in:male,female',
             'birthday' => 'filled|date_format:Y-m-d|before:tomorrow|after:1900-00-00',
             'user_name' => 'filled|unique:users,user_name|regex:/^[a-zA-Z][a-zA-Z0-9_]{5,29}$/',
-            'mini_avatar' => 'filled|integer|between:0,32',
+            'mini_avatar' => 'filled|integer|between:0,36',
         ]);
         if($validator->fails())
         {

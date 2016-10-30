@@ -204,6 +204,10 @@ class ChatController extends Controller
 
     public function getChatIdFromUserId($user_a_id, $user_b_id)
     {
+        if(!is_numeric($user_a_id) || !is_numeric($user_b_id) )
+        {
+            return $this->response->errorBadRequest("user_id is not integer");
+        }
         $first = min($user_a_id,$user_b_id);
         $second = max($user_a_id,$user_b_id);
         $chat = Chats::where('user_a_id', $first)->where('user_b_id', $second)->first();
@@ -219,7 +223,7 @@ class ChatController extends Controller
         $validator = Validator::make($request->all(), [
             'receiver_id' => 'required|exists:users,id',
             'message' => 'required|string',
-            'type' => 'required|in:text,image',
+            'type' => 'required|in:text,image,sticker,location,audio',
         ]);
         if($validator->fails())
         {
