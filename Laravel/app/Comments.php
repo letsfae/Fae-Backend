@@ -38,14 +38,15 @@ class Comments extends Model
     
     public function updateRichtext($old_content) {
         RichTextController::deleteHashtagFromRichtext($this->id, $old_content, 'Comments');
-        RichTextController::deleteAtUsersFromRichtext($this->id, $old_conten, 'Comments');
+        RichTextController::deleteAtUsersFromRichtext($this->id, $old_content, 'Comments');
         RichTextController::addHashtagFromRichtext($this->id, $this->content, 'Comments');
         RichTextController::atUsersFromRichtext($this->id, $this->content, 'Comments');
+        
     }
     
      public function deleteRichtext($old_content) {
         RichTextController::deleteHashtagFromRichtext($this->id, $old_content, 'Comments');
-        RichTextController::deleteAtUsersFromRichtext($this->id, $old_conten, 'Comments');
+        RichTextController::deleteAtUsersFromRichtext($this->id, $old_content, 'Comments');
     }
     
 }
