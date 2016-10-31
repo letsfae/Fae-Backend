@@ -197,6 +197,18 @@ class PinOperationController extends Controller {
     }
 
     public function getPinCommentList($type, $pin_id) {
+        if($type == 'media'){
+            $obj_media = Medias::where('id', $pin_id)->first();
+            if ($obj_media == null) {
+                throw new StoreResourceFailedException('Bad request, No such pin exist!');
+            } 
+        }else if ($type == 'comment'){
+            $obj_comment = Comments::where('id', $pin_id)->first();
+            if ($obj_comment == null) {
+                throw new StoreResourceFailedException('Bad request, No such pin exist!');
+            }
+        }
+        
         $start_time = $this->request->has('start_time') ? $this->request->start_time : '1970-01-01 00:00:00';
         $end_time = $this->request->has('end_time') ? $this->request->end_time : date("Y-m-d H:i:s");
         $page =  $this->request->has('page') ? $this->request->page : 1;

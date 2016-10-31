@@ -31,13 +31,25 @@ class RichTextController extends Controller {
         }
         
         $content = array();
-        
         $org_hashtag = '#'.$hashtag;
+    
         $existing_hashtag = Hashtags::where('context', $org_hashtag)->first();
         if(is_null($existing_hashtag))
-            $content[] = array('hashtag_id' => null, 'context' => null, 'reference_count' => null);
+            $content = array('hashtag_id' => null, 'context' => null, 'reference_count' => null);
         else
-            $content[] = array('hashtag_id' => $existing_hashtag->id, 'context' => $hashtag, 'reference_count' => $existing_hashtag->reference_count);
+            $content = array('hashtag_id' => $existing_hashtag->id, 'context' => $org_hashtag, 'reference_count' => $existing_hashtag->reference_count);
+        
+        return $this->response->array($content);
+    }
+    
+    public function searchHashtagWithText($hashtag){
+        preg_match_all('/(\w+)/u', $hashtag, $matches);
+        
+        if ( !$matches || !($matches[0][0]===$hashtag)){
+            throw new StoreResourceFailedException('Hashtag formate wrong.');
+        }
+        
+        $org_hashtag = '#'.$hashtag;
         
         $hashtag_list = Hashtags::where( 'context', '~', $hashtag)
                                     ->where( 'context', '!=', $org_hashtag)
@@ -53,9 +65,7 @@ class RichTextController extends Controller {
                             'reference_count' => $obj_hashtag->reference_count);
         }
         
-        $content[] = $info;
-        
-        return $this->response->array($content);
+        return $this->response->array($info);
     }
 
     public static function addHashtagFromRichtext($obj_id, $richtext, $className){
