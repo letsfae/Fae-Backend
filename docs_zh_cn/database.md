@@ -125,7 +125,7 @@
 - tag_ids ;分割
 - file_ids ;分割
 - created_at
-- like_count
+- liked_count
 - saved_count
 - comment_count
 - duration integer (unit in min)
@@ -178,7 +178,6 @@
 - liked_timestamp
 - saved boolean
 - saved_timestamp
-- created_at
 - interated boolean default false
 
 ## pin_comments
@@ -187,6 +186,16 @@
 - pin_id 必须是enum所列举的pin的id
 - user_id FK
 - content text
+- created_at
+- vote_up_count
+- vote_down_count
+
+## pin_comment_operations
+- id PK
+- pin_comment_id FK
+- user_id FK
+- vote (1 for up, -1 for down)
+- vote_timestamp
 
 ## pin_helper
 - id PK
