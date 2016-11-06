@@ -11,7 +11,7 @@ use App\PinHelper;
 use App\Comments;
 use App\ChatRooms;
 use App\Medias;
-use APP\user_exts;
+use App\User_exts;
 use Validator;
 use DB;
 use Phaza\LaravelPostgis\Eloquent\PostgisTrait;

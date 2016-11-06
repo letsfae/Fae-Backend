@@ -112,10 +112,14 @@
 - user_id FK
 - content_text string
 - created_at 
+- liked_count
+- saved_count
+- comment_count
 - geolocation point
 - duration integer (unit in min)
-- interation_radius (unit in km) default 0
-- created_at
+- interaction_
+-  (unit in km) default 0
+- anonymous default false
 
 ## medias
 - id PK
@@ -129,8 +133,8 @@
 - saved_count
 - comment_count
 - duration integer (unit in min)
-- interation_radius (unit in km) default 0
-- created_at
+- interaction_radius (unit in km) default 0
+- anonymous default false
 
 ## faevors
 - id PK
@@ -158,7 +162,7 @@
 - user_count
 - created_at
 - duration integer (unit in min)
-- interation_radius (unit in km) default 0
+- interaction_radius (unit in km) default 0
 
 ## chat_room_users
 - id PK
@@ -178,7 +182,7 @@
 - liked_timestamp
 - saved boolean
 - saved_timestamp
-- interated boolean default false
+- interacted boolean default false
 
 ## pin_comments
 - id PK
