@@ -306,4 +306,12 @@ class PinOperationController extends Controller {
         }
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
     }
+
+    public function vote() {
+
+    }
+
+    public function cancelVote() {
+        
+    }
 }
