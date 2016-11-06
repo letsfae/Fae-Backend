@@ -1,12 +1,12 @@
-# 文件类接口
+# Files Interface
 
-除非特别说明，否则上传时parameters的类型为form-data，特别注意此时Content-Type不要设置。
+Unless otherwise specified, the type of the parameters is the form-data when uploading. Please pay attention that the Content-Type can not be setted. 
 
-# 文件类通用接口
+# Files Universal Interface 
 
-利用通用接口上传文件后，如若一段时间未得到引用（指某种pin引用该文件），则该文件会被永久删除。
+After uploading the file using the universal interface, the file will be deleted forever, if it is not called for a period of time (maybe some kind of pin using the file). 
 
-## 上传文件 :white_check_mark:
+## uploading file :white_check_mark:
 
 `POST /files`
 
@@ -18,12 +18,12 @@ yes
 
 | Name | Description |
 | --- | --- |
-| file | 文件内容（采用mine形式，因此带有文件名及扩展名） |
+| file | file content（it uses the type of mine, so the file name and the filename extension are needed. |
 | type | string(image,video) |
-| description (optional) | 语义化的文件描述 |
-| custom_tag (optional) | 标签化的文件描述 |
+| description (optional) | semantic file description |
+| custom_tag (optional) | labelled file description |
 
-文件大小需小于10MB。
+The file size should less than 10MB. 
 
 ### response
 
@@ -33,7 +33,7 @@ Status: 201
 		"file_id": @number
 	}
 
-## 获取文件内容 :white_check_mark:
+## get the file content :white_check_mark:
 
 `GET /files/:file_id/data`
 
@@ -45,9 +45,9 @@ no
 
 Status: 200
 
-body为文件内容。
+Body is the file content.
 
-## 获取文件属性 :white_check_mark:
+## get the file attribute :white_check_mark:
 
 `GET /files/:file_id/attribute`
 
@@ -69,9 +69,9 @@ Status: 200
 		"custom_tag": @string
 	}
 
-# 文件类专项接口
+# file specified interface
 
-## 设置头像 set self avatar :white_check_mark:
+## set self avatar :white_check_mark:
 
 `POST /files/users/avatar`
 
@@ -83,15 +83,15 @@ yes
 
 | Name | Description |
 | --- | --- |
-| avatar | 图片内容 |
+| avatar | picture content |
 
-图片格式必须为jpeg，大小为500x500px。
+The type of the picture must be jpeg and size should be 500x500px. 
 
 ### response
 
 Status: 201
 
-## 获取头像 get self avatar :white_check_mark:
+## get self avatar :white_check_mark:
 
 `GET /files/users/avatar`
 
@@ -103,15 +103,15 @@ yes
 
 Status: 200
 
-Body图片数据，其中`Content-Type`为`image/jpeg`。
+Picture data of the body, and the `Content-Type` is `image/jpeg`.
 
-## 获取其他用户头像 get avatar :white_check_mark:
+## get avatar of other users :white_check_mark:
 
 `GET /files/users/:user_id/avatar`
 
-其余同get self avatar。
+Others are the same as get self avatar.
 
-## 设置NameCard背景图片 :white_check_mark:
+## set the background picture of the NameCard :white_check_mark:
 
 `POST /files/users/name_card_cover`
 
@@ -123,15 +123,15 @@ yes
 
 | Name | Description |
 | --- | --- |
-| name_card_cover | 图片内容 |
+| name_card_cover | picture content |
 
-图片格式必须为jpeg。
+The type of the picture must be jpeg. 
 
 ### response
 
 Status: 201
 
-## 获取NameCard背景图片 :white_check_mark:
+## get the background picture of the NameCard :white_check_mark:
 
 `GET /files/users/name_card_cover`
 
@@ -143,15 +143,15 @@ yes
 
 Status: 200
 
-Body图片数据，其中`Content-Type`为`image/jpeg`。
+Picture data of the body, and the `Content-Type` is `image/jpeg`. 
 
-## 获取其他用户NameCard背景图片 :white_check_mark:
+## get the background picture of the other users. :white_check_mark:
 
 `GET /files/users/:user_id/name_card_cover`
 
-其余同或者NameCard背景图片。
+Others are the same as the backgoround picture of NameCard. 
 
-## 设置NameCard图片 :white_check_mark:
+## set the picture of the NameCard :white_check_mark:
 
 `POST /files/users/name_card_photo`
 
@@ -163,18 +163,18 @@ yes
 
 | Name | Description |
 | --- | --- |
-| position | 图片位置（1-8） |
-| photo | 图片内容 |
+| position | picture position (1-8) |
+| photo | picture content |
 
-图片位置决定了更新哪个位置的图片得到更新，后端不会对图片进行向前填充（即位置1不存在时位置2图片向前填充）。
+The updating of the picture is decided by the position of the picture and the back end will not do forward filling of the picture (that is the position two will fill forware when the position one does not exist). 
 
-图片大小需小于4MB。
+The size of the picture should less than 4MB. 
 
 ### response
 
 Status: 201
 
-## 删除NameCard图片 :white_check_mark:
+## delete the picture of the NameCard :white_check_mark:
 
 `DELETE /files/users/name_card_photo/:position`
 
@@ -186,7 +186,7 @@ yes
 
 Status: 204
 
-## 获取NameCard指定位置图片 :white_check_mark:
+## get the picture of the NameCard in specified position :white_check_mark:
 
 `GET /files/users/:user_id/name_card_photo/:position`
 
@@ -198,9 +198,9 @@ no
 
 Status: 200
 
-Body图片数据。
+The picture data of the body. 
 
-## 获取自身的NameCard指定位置图片 :white_check_mark:
+## get the picture of the self NameCard in specified position :white_check_mark:
 
 `GET /files/users/name_card_photo/:position`
 
@@ -208,4 +208,4 @@ Body图片数据。
 
 yes
 
-其余同通用获取NameCard指定位置图片的接口。
+Others are the same as the get the picture of the NameCard in specified position. 

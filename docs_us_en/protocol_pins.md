@@ -1,10 +1,10 @@
-# 用户对于pin的操作
+# User Operation to the Pin 
 
-## Like 点赞
+## Like 
 
 `POST /pins/:type/:pin_id/like`
 
-其中type可为`media`、`comment`。
+The type could be `media` or `comment`.
 
 ### auth
 
@@ -14,11 +14,11 @@ yes
 
 Status: 201
 
-## Unlike （注意不是dislike）
+## Unlike （not dislike）
 
 `DELETE /pins/:type/:pin_id/like`
 
-其中type可为`media`、`comment`。
+The type could be `media` or `comment`.
 
 ### auth
 
@@ -28,11 +28,11 @@ yes
 
 Status: 204
 
-## Save 保存
+## Save 
 
 `POST /pins/:type/:pin_id/save`
 
-其中type可为`media`、`comment`。
+The type could be `media` or `comment`.
 
 ### auth
 
@@ -46,7 +46,7 @@ Status: 201
 
 `DELETE /pins/:type/:pin_id/save`
 
-其中type可为`media`、`comment`。
+The type could be `media` or `comment`.
 
 ### auth
 
@@ -56,11 +56,11 @@ yes
 
 Status: 204
 
-## comment 评论
+## comment 
 
 `POST /pins/:type/:pin_id/comments`
 
-其中type可为`media`、`comment`。
+The type could be `media` or `comment`.
 
 ### auth
 
@@ -70,7 +70,7 @@ yes
 
 | Name | Description |
 | --- | --- |
-| content | 评论内容 |
+| content | comment content |
 
 ### response
 
@@ -84,7 +84,7 @@ Status: 201
 
 `DELETE /pins/:type/:pin_id/comments/:pin_comment_id`
 
-其中type可为`media`、`comment`。
+The type could be `media` or `comment`.
 
 ### auth
 
@@ -94,11 +94,11 @@ yes
 
 Status: 204
 
-## 获取saved pin
+## get saved pin
 
 `POST /pins/saved`
 
-其中type可为`media`、`comment`。
+The type could be `media` or `comment`.
 
 ### auth
 
@@ -108,9 +108,9 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| start_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为1970-01-01 00:00:00 |
-| end_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为当前日期和时间 |
-| page | number | 页数，默认为第1页（头30条） |
+| start_time | string(YYYY-MM-DD hh:mm:ss) | time range，the default value is 1970-01-01 00:00:00 |
+| end_time | string(YYYY-MM-DD hh:mm:ss) | time range, the default value is current date and time |
+| page | number | page, the default value is the first page (30 pieces from the start) |
 
 ### response
 
@@ -131,7 +131,7 @@ Status: 200
 		{...}
 	]
 
-## 获取my pin
+## get my pin
 
 `POST /pins/users`
 
@@ -143,9 +143,9 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| start_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为1970-01-01 00:00:00 |
-| end_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为当前日期和时间 |
-| page | number | 页数，默认为第1页（头30条） |
+| start_time | string(YYYY-MM-DD hh:mm:ss) | time range，the default value is 1970-01-01 00:00:00 |
+| end_time | string(YYYY-MM-DD hh:mm:ss) | time range, the default value is current date and time |
+| page | number | page, the default value is the first page (30 pieces from the start) |
 
 ### response
 
@@ -166,13 +166,13 @@ Status: 200
 		{...}
 	]
 
-## 获取user pin
+## get user pin
 
 `POST /pins/users/:user_id`
 
-其余同获取my pin。
+All others are the same as my pin.
 
-## 获取pin属性
+## get pin attribute
 
 `POST /pins/:type/:pin_id/attribute`
 
@@ -192,7 +192,7 @@ Status: 200
 		"comments": @number
 	}
 
-## 获取pin的评论
+## get pin comment
 
 `POST /pins/:type/:pin_id/comments`
 
@@ -204,9 +204,9 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| start_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为1970-01-01 00:00:00 |
-| end_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为当前日期和时间 |
-| page | number | 页数，默认为第1页（头30条） |
+| start_time | string(YYYY-MM-DD hh:mm:ss) | time range，the default value is 1970-01-01 00:00:00 |
+| end_time | string(YYYY-MM-DD hh:mm:ss) | time range, the default value is current date and time |
+| page | number | page, the default value is the first page (30 pieces from the start) |
 
 ### response
 

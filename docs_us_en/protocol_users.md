@@ -1,6 +1,6 @@
-# 用户及认证类接口
+# User and Authentication 
 
-## 注册 Sign up :white_check_mark:
+## Sign up :white_check_mark:
 
 `POST /users`
 
@@ -12,21 +12,21 @@ no
 
 | Name | Type | Description |
 | --- | --- | --- |
-| password | string(8-16) | 密码 |
-| email | string(50) | 电邮 |
-| user_name | string(30) | 用户名 |
-| first_name | string(50) | 名字 |
-| last_name | string(50) | 姓氏 |
-| birthday | string(YYYY-MM-DD) | 生日 |
-| gender | string("male", "female") | 性别 |
+| password | string(8-16) | password |
+| email | string(50) | email |
+| user_name | string(30) | user name |
+| first_name | string(50) | first name |
+| last_name | string(50) | last name |
+| birthday | string(YYYY-MM-DD) | birthday |
+| gender | string("male", "female") | gender |
 
-user_name格式要求为：字母开头，仅可包含大小写字母、数字及下划线，长度6-30。
+The format of user_name is: start with character and only the uppercase and lowercase letters, numbers and underscores are permitted, and the length should be 6-30.
 
 ### response
 
 Status: 201
 
-## 登陆 :white_check_mark:
+## log in :white_check_mark:
 
 `POST /authentication`
 
@@ -38,21 +38,21 @@ no
 
 | Name | Type | Description |
 | --- | --- | --- |
-| user_name | string(30) | 用户名 |
-| email | string(50) | 电邮 |
-| password | string(8-16) | 密码 |
-| device_id(optional) | string(1~150) | 设备id，默认为空 |
-| is_mobile(optional) | boolean | 是否为移动端，默认为false |
+| user_name | string(30) | user name |
+| email | string(50) | email |
+| password | string(8-16) | password |
+| device_id(optional) | string(1~150) | device id，the default value is null |
+| is_mobile(optional) | boolean | whether it is mobile, the default value is false |
 
-此处用户名和电邮选一个即可（OR关系，另一个字段不用），如果同时存在，以email为准。
+Only one of user_name or email need to be chosen (or relationship , the other filed is not needed). If both exist, take the email as the standard. 
 
-device_id用于服务器向客户端做pushback notification，如果不存在则不推送。
+The device_id is used to do the pushback notification to the server. If does not exist, it will not push notification. 
 
-is_mobile如果为true，则会踢掉用当前账号登陆的另一台移动设备（非mobile设备不受影响）。
+If is_mobile is true, the other acoount that has been used to log in another mobile equipment (non mobile equipment will not be influenced). 
 
-如果相同device_id账号登陆不同用户，前一个用户会被挤下线。
+If differnt user accounts are used to log in with the same device_id, the previous users will be forced to log out. 
 
-login出现3次错误后用户账户将被永久禁止登陆（即第4次无法登陆），解禁需调用reset_login接口。
+When the errors are caused three times after login, the users account will be forbidden to login forever and in order to relieve the prohibition, reset_login interface need to be called.  
 
 ### response
 
@@ -64,9 +64,9 @@ Status: 201
 		"session_id": @number
 	}
 
-错误后会返回login_count。
+return login_count when error caused.
 
-## 登出 logout :white_check_mark:
+## logout :white_check_mark:
 
 `DELETE /authentication`
 
@@ -78,7 +78,7 @@ yes
 
 Status: 204
 
-## 获取重置登陆的Email :white_check_mark:
+## get reset_login email :white_check_mark:
 
 `POST /reset_login/code`
 
@@ -90,15 +90,15 @@ no
 
 | Name | Type | Description |
 | --- | --- | --- |
-| email | string(50) | 电邮 |
+| email | string(50) | email |
 
-code有效时长为发送出来后的30分钟，30分钟内再次获取code为原code。
+The valid time for the code is 30 minuters after it is sent, and the code will not change if it is obtained again in 30 minutes.
 
 ### response
 
 Status: 201
 
-## 验证重置登陆code :white_check_mark:
+## verify reset_login code :white_check_mark:
 
 `POST /reset_login/code/verify`
 
@@ -110,14 +110,14 @@ no
 
 | Name | Type | Description |
 | --- | --- | --- |
-| email | string(50) | 电邮 |
-| code | string(6) | 邮件中的6位验证数字（用字符串形式传递） |
+| email | string(50) | email |
+| code | string(6) | six digits code in the email (passing by the type of string) |
 
 ### response
 
 Status: 201
 
-## 验证code后重置密码 :white_check_mark:
+## reset_login password after verifying :white_check_mark:
 
 `POST /reset_login/password`
 
@@ -129,15 +129,15 @@ no
 
 | Name | Type | Description |
 | --- | --- | --- |
-| email | string(50) | 电邮 |
-| code | string(6) | 邮件中的6位验证数字（用字符串形式传递） |
-| password | string(8-16) | 密码 |
+| email | string(50) | email |
+| code | string(6) | six digits code in the email (passing by the type of string) |
+| password | string(8-16) | password |
 
 ### response
 
 Status: 201
 
-## 验证email是否存在 :white_check_mark:
+## verify whether the email exists :white_check_mark:
 
 `GET /existence/email/:email`
 
@@ -153,7 +153,7 @@ Status: 200
 		"existence": @boolean
 	}
 
-## 验证user name是否存在 :white_check_mark:
+## verify whether the user_name exists :white_check_mark:
 
 `GET /existence/user_name/:user_name`
 
@@ -169,7 +169,7 @@ Status: 200
 		"existence": @boolean
 	}
 
-## 获取用户账户信息 get account :white_check_mark:
+## get account :white_check_mark:
 
 `GET /users/account`
 
@@ -191,10 +191,10 @@ Status: 200
 		"birthday": @string,
 		"phone": @string(xxx-xxx-xxxx),
 		"phone_verified": @boolean,
-		"mini_avatar": @number 地图上显示的用户小头像，未设置则默认为0
+		"mini_avatar": @number the mini_avatar showed in the map. the default value is 0 if it is not set
 	}
 
-## 更新账户信息 update account :white_check_mark:
+## update account :white_check_mark:
 
 `POST /users/account`
 
@@ -206,22 +206,22 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| first_name | string(50) | 名字 |
-| last_name | string(50) | 姓氏 |
-| birthday | string(YYYY-MM-DD) | 生日 |
-| gender | string("male", "female") | 性别 |
-| user_name | string(30) | 用户名（该接口可能会被单独提取并设置） |
-| mini_avatar | integer | 地图上显示的用户小头像 |
+| first_name | string(50) | first_name |
+| last_name | string(50) | last_name |
+| birthday | string(YYYY-MM-DD) | birthday |
+| gender | string("male", "female") | gender |
+| user_name | string(30) | user_name（the interface might be called individually and set) |
+| mini_avatar | integer | the mini_avatar showed in the map |
 
-所有字段均为可选，但必须至少包含一个字段。这些接口没有特殊操作（有特殊操作的请使用特定接口，如更新password）。
+All the fileds are optional, but at least one field is included. All these interfaces have no special operation (If it has special operation, specific interface is needed, such as updating password). 
 
-需要注意的是，user_name格式要求为：字母开头，仅可包含大小写字母、数字及下划线，长度6-30。
+Please pay attention that the format of the user_name is: start with character and only the uppercase and lowercase letters, numbers and underscores are permitted, and the length should be 6-30.
 
 ### response
 
 Status: 201
 
-## 测试自身密码是否正确 verify password :white_check_mark:
+## verify password :white_check_mark:
 
 `POST /users/account/password/verify`
 
@@ -233,17 +233,17 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| password | string(8-16) |密码 |
-
-密码验证如果3次错误，则自动锁定并退出（Auth失效）。解锁需使用reset login的接口。
+| password | string(8-16) | password|
+ 
+When the errors are caused three times after login, the users account will be locked and will log out (Auth void automatically). The reset_login interface need to be called when try to unlock.  
 
 ### response
 
 Status: 201
 
-错误后会返回login_count。
+return login_count when error caused.
 
-## 更新自己的密码 update password :white_check_mark:
+## update password :white_check_mark:
 
 `POST /users/account/password`
 
@@ -255,20 +255,20 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| old_password | string(8-16) | 老密码 |
-| new_password | string(8-16) | 新密码 |
+| old_password | string(8-16) | old password |
+| new_password | string(8-16) | new password |
 
 ### response
 
 Status: 201
 
-错误后会返回login_count。
+return login_count when error caused.
 
-## 更新自己的邮箱 update email :white_check_mark:
+## update email :white_check_mark:
 
 `POST /users/account/email`
-
-更新email后新邮箱会收到验证码，需调用verify email接口完成email验证。code有效时长为发送出来后的30分钟。
+ 
+The verification code will be received in the new email after updating the email, and verfy email interface needed to be called in order to finish the email verification。 The valid time for the code is 30 minuters after it is sent.
 
 ### auth
 
@@ -278,13 +278,13 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| email | string(50) | 新email地址 |
+| email | string(50) | new email |
 
 ### response
 
 Status: 201
 
-## 验证邮箱 verify email :white_check_mark:
+## verify email :white_check_mark:
 
 `POST /users/account/email/verify`
 
@@ -296,18 +296,18 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| email | string(50) | 新email地址 |
-| code | string(6) | 6位验证数字，以字符串形式传递 |
+| email | string(50) | new email |
+| code | string(6) | six digits code (passing by the type of string) |
 
 ### response
 
 Status: 201
 
-## 更新自己的电话 update phone :white_check_mark:
+## update phone :white_check_mark:
 
 `POST /users/account/phone`
-
-更新phone number后该号码手机会收到验证码，需调用verify phone接口完成phone验证。code有效时长为发送出来后的30分钟。
+ 
+The verification code will be received in the new phone after updating the phone number, and verfy phone interface needed to be called in order to finish the phone verification。 The valid time for the code is 30 minuters after it is sent.
 
 ### auth
 
@@ -317,13 +317,13 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| phone | string(xxx-xxx-xxxx) | 新电话 |
+| phone | string(xxx-xxx-xxxx) | new phone number |
 
 ### response
 
 Status: 201
 
-## 验证电话 verify phone :white_check_mark:
+## verify phone :white_check_mark:
 
 `POST /users/account/phone/verify`
 
@@ -335,14 +335,14 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| phone | string(xxx-xxx-xxxx) | 新电话 |
-| code | string(6) | 6位验证数字，以字符串形式传递 |
+| phone | string(xxx-xxx-xxxx) | new phone number |
+| code | string(6) | six digits code (passing by the type of string) |
 
 ### response
 
 Status: 201
 
-## 获取用户自己的资料 get self profile (待定)
+## get self profile (pending)
 
 `GET /users/profile`
 
@@ -358,15 +358,15 @@ Status: 200
 		"xxx": @xxx
 	}
 
-## 获取其他用户资料 get profile (待定)
+## get profile of other users (pending)
 
 `GET /users/:user_id/profile`
 
-其余同get self profile。
+Others are the same as get self profile。
 
-需要注意的是，获取到的字段仅包含用户设定为公开的字段。
+Please pay attention: only the public field that the user set is obtained. 
 
-## 更新自己的资料 update self profile (待定)
+## update self profile (pending)
 
 `POST /users/profile`
 
@@ -380,13 +380,13 @@ yes
 | --- | --- | --- |
 | xxx | number | xxx |
 
-所有字段均为可选，但必须至少包含一个字段。
+All the field are optional, but at least one field is included. 
 
 ### response
 
 Status: 201
 
-## 获取用户自己的资料隐私设定 get self profile privacy (待定)
+## get self profile privacy (pending)
 
 `GET /users/profile/privacy`
 
@@ -402,7 +402,7 @@ Status: 200
 		"xxx": @xxx
 	}
 
-## 更新自己的资料隐私设定 update self profile privacy (待定)
+## update self profile privacy (pending)
 
 `POST /users/profile/privacy`
 
@@ -416,13 +416,13 @@ yes
 | --- | --- | --- |
 | xxx | boolean | xxx |
 
-所有字段均为可选，但必须至少包含一个字段。
+All the field are optional, but at least one field is included. 
 
 ### response
 
 Status: 201
 
-## 获取用户自己的状态 get self status :white_check_mark:
+## get self status :white_check_mark:
 
 `GET /users/status`
 
@@ -435,24 +435,24 @@ yes
 Status: 200
 
 	{
-		"status": @number 0~5分别表示offline/online/no distrub/busy/away/invisible,
+		"status": @number 0 to 5 represent offline/online/no distrub/busy/away/invisible,
 		"message": @string
 	}
 
 
-一个用户的状态在不同设备之间共享。
+The user status is shared in different equipments. 
 
-用户的状态不被服务器保留：即当用户的第一台设备登陆时，状态置位为online，最后一台设备退出时，状态置位为offline。
+The user status is not reserved by the server: that is when the user logged in using the first equipment, its status is set to online. When the last equipment logged out, its status is set to offline.  
 
-## 获取其他用户状态 get status :white_check_mark:
+## get status of other users :white_check_mark:
 
 `GET /users/:user_id/status`
 
-基本同get self status。
+Almost the same as get self status。
 
-需要注意的是，获取其他用户的状态时（自身user_id除外），该用户的invisible状态将无法获取到（即使该用户状态为invisible，返回状态仍为offline）。
+Please pay attention: when obtaining the status of other users (except for self user_id), the invisible status can not be obtained (even if the status of the user is invisible, the return status is also offline). 
 
-## 更新自己的状态 update self status :white_check_mark:
+## update self status :white_check_mark:
 
 `POST /users/status`
 
@@ -465,15 +465,15 @@ yes
 | Name | Type | Description |
 | --- | --- | --- |
 | status | number | 0:offline, 1:online, 2:no distrub, 3:busy, 4:away, 5:invisible |
-| message | string(100) | 短状态（可以为空） |
+| message | string(100) | short status (can be empty) |
 
-所有字段均为可选，但必须至少包含一个字段。
+All the field are optional, but at least one field is included. 
 
 ### response
 
 Status: 201
 
-## 获取某个用户NameCard :white_check_mark:
+## get the NameCard of a specific user :white_check_mark:
 
 `GET /users/:user_id/name_card`
 
@@ -497,20 +497,20 @@ Status: 200
 			{...},
 			{...}
 		],
-		"gender": @string 同account中的设置
+		"gender": @string same as the set in account 
 	}
 
-## 获取自己的NameCard :white_check_mark:
+## get self NameCard :white_check_mark:
 
 `GET /users/name_card`
 
-其余同获取某个用户NameCard。
+Others are the same as getting the NameCard of a specific user. 
 
-## 获取所有NameCard所属的tag :white_check_mark:
+## get the tags that all the NameCard belonged to :white_check_mark:
 
 `GET /users/name_card/tags`
 
-此接口用于获得所有系统内置的namecard的tag。
+This interface is used to get the tag of all the system built-in namecards. 
 
 ### auth
 
@@ -530,7 +530,7 @@ Status: 200
 		{...}
 	]
 
-## 更新NameCard :white_check_mark:
+## update NameCard :white_check_mark:
 
 `POST /users/name_card`
 
@@ -542,11 +542,11 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| nick_name | string(50) | 昵称 |
-| short_intro | string(200) | 短介绍（可为空） |
-| tag_ids | number | 所有tag的id，使用;分割，最多3个tag |
+| nick_name | string(50) | nick name |
+| short_intro | string(200) | short introduction (can be empty) |
+| tag_ids | number | all the ids of the tag, seperated by semicolon, and at most three tags |
 
-必须出现以上至少一个字段。
+At least one field above need to be included. 
 
 ### response
 

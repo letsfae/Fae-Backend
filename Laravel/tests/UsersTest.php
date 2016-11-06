@@ -624,7 +624,7 @@ class UsersTest extends TestCase {
         $this->seeInDatabase('user_exts', ['status' => 1, 'message' => 'This is the test.']);
     }
 
-    //test whether the format of the inout is right.
+    //test whether the format of the input is right.
     public function testUpdateSelfStatus1() { 
         //register of the user.
         $parameter = array(
@@ -673,7 +673,7 @@ class UsersTest extends TestCase {
         $this->assertEquals(true, $result);
     }
 
-    //test the response is correct with the inout of message is empty.
+    //test the response is correct with the input of message is empty.
     public function testUpdateSelfStatus2() {  
         //register of the user.
         $parameter = array(

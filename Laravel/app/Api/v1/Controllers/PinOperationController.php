@@ -54,7 +54,7 @@ class PinOperationController extends Controller {
         if ($obj_pin_operation == null) {
             throw new StoreResourceFailedException('Bad request, never saved such pin!');
         }else{
-            if($obj_pin_operation->liked == 'TRUE'){
+            if($obj_pin_operation->liked == true){
                 $obj_pin_operation->saved = false;
                 $obj_pin_operation->updateSavedTimestamp();
                 $obj_pin_operation->save(); 
@@ -68,8 +68,8 @@ class PinOperationController extends Controller {
     public static function isSavedisLiked($type, $pin_id, $user_id)
     {
         $pin_operation = Pin_operations::where('pin_id', $pin_id)->where('user_id', $user_id)->
-                         where('type', $type)->first();
-        if(is_null($pin_operation))
+                         where('type', $type)->first(); 
+        if($pin_operation == null) 
         {
             return array('is_liked' => false, 'liked_timestamp' => null, 'is_saved' => false, 'saved_timestamp' => null);
         }
@@ -112,7 +112,7 @@ class PinOperationController extends Controller {
         if ($obj_pin_operation == null) {
             throw new StoreResourceFailedException('Bad request, never liked such pin!');
         }else{
-            if($obj_pin_operation->saved == 'TRUE'){
+            if($obj_pin_operation->saved == true){
                 $obj_pin_operation->liked = false;
                 $obj_pin_operation->updateLikeTimestamp();
                 $obj_pin_operation->save(); 
@@ -186,7 +186,7 @@ class PinOperationController extends Controller {
         //$num_commented_pins = count($commented_pins);
         
         $content = array(   'type' => $type,
-                            'pin_id'=> $pin_id,          
+                            'pin_id'=> intval($pin_id),          
                             'likes' => $num_liked_pins, 
                             'saves' => $num_saved_pins, 
                             'comments' => $num_commented_pins);
@@ -267,6 +267,7 @@ class PinOperationController extends Controller {
         $page =  $this->request->has('page') ? $this->request->page : 1;
         
         $total = Pin_operations::where('user_id', $user_id)
+                                ->where('saved', 'TRUE')
                                 ->where('saved_timestamp','>=', $start_time)
                                 ->where('saved_timestamp','<=', $end_time)
                                 ->count();

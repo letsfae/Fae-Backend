@@ -17,6 +17,7 @@ use App\ChatRooms;
 use App\ChatRoomUsers; 
 use Config; 
 use App\Users;
+use App\PinHelper;
 
 
 
@@ -42,6 +43,11 @@ class ChatRoomController extends Controller implements PinInterface
         $chat_room_user->user_id = $this->request->self_user_id;
         $chat_room_user->chat_room_id = $chat_room->id;
         $chat_room_user->save();
+        $pin_helper = new PinHelper();
+        $pin_helper->type = 'chat_room';
+        $pin_helper->geolocation =  new Point($this->request->geo_latitude, $this->request->geo_longitude);
+        $pin_helper->pin_id = $chat_room->id;
+        $pin_helper->save();
         return $this->response->created(null, array('chat_room_id' => $chat_room->id));
     }
 
@@ -68,6 +74,9 @@ class ChatRoomController extends Controller implements PinInterface
         if($this->request->has('geo_latitude') && $this->request->has('geo_longitude'))
         {
             $chat_room->geolocation = new Point($this->request->geo_latitude, $this->request->geo_longitude);
+            $pin_helper = PinHelper::where('pin_id', $chat_room_id)->where('type', 'chat_room')->first();
+            $pin_helper->geolocation = new Point($this->request->geo_latitude, $this->request->geo_longitude);
+            $pin_helper->save();
         }
         $chat_room->save();
         return $this->response->created();

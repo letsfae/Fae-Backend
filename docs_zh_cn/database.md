@@ -173,7 +173,7 @@
 
 ## pin_helper
 - id PK
-- type enum(media,comment)
+- type enum(media,comment,chat_room)
 - pin_id
 - geolocation
 - created_at

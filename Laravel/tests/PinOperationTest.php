@@ -2053,8 +2053,7 @@ class PinOperationTest extends TestCase
         } 
         $this->assertEquals(true, $result);
     }
-
-    //(pending)
+ 
     // test the correct response of the getSavedPinList.
     public function testGetSavedPinList() { 
         // $this->markTestSkipped(); 

@@ -39,7 +39,7 @@ class UserProfileController extends Controller
 
     public function getSelfProfile() 
     {
-        $user = Users::find($user_id);
+        $user = Users::find($this->request->self_user_id);
         if(! is_null($user))
         {
             $profile = array('user_name' => $user->user_name, 'mini_avatar' => $user->mini_avatar);

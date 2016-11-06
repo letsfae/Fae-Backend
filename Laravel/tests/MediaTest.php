@@ -105,8 +105,8 @@ class MediaTest extends TestCase {
             'file_ids' => '1;2',
             'tag_ids' => '1;2',
             'description' => 'this is a test',
-            'geo_latitude' => '-89.99',
-            'geo_longitude' => '-118.2799',
+            'geo_latitude' => 34.2799,
+            'geo_longitude' => -118.2799,
         );
         $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent()); 
@@ -118,11 +118,12 @@ class MediaTest extends TestCase {
             $result = true;
         }
         $this->assertEquals(true, $result);
-        $this->seeInDatabase('medias', ['user_id' => 1, 'description' => 'this is a test', 'tag_ids' => '1;2', 'file_ids' => '1;2']);
+        $this->seeInDatabase('medias', ['user_id' => 1, 'description' => 'this is a test', 'tag_ids' => '1;2', 'file_ids' => '1;2', 'geolocation' => '0101000020E6100000A089B0E1E9915DC0401361C3D3234140']);
         $this->seeInDatabase('tags', ['user_id' => 1, 'title' => 'fae', 'color' => '#fff000', 'reference_count' => 1]);
         $this->seeInDatabase('tags', ['user_id' => 1, 'title' => 'fae1', 'color' => '#fff000', 'reference_count' => 1]);
         $this->seeInDatabase('files', ['user_id' => 1, 'type' => 'video', 'mine_type' => 'video', 'size' => 256, 'reference_count' => 1]);
         $this->seeInDatabase('files', ['user_id' => 1, 'type' => 'image', 'mine_type' => 'image', 'size' => 256, 'reference_count' => 1]);
+        $this->seeInDatabase('pin_helper', ['type' => 'media', 'pin_id' => 1, 'geolocation' => '0101000020E6100000A089B0E1E9915DC0401361C3D3234140']);
     }
 
     //test the response when the tag information does not exist with the tag_ids.
@@ -512,14 +513,16 @@ class MediaTest extends TestCase {
             'file_ids' => '1;2',
             'tag_ids' => '1;2',
             'description' => 'this is a test',
-            'geo_latitude' => '-89.99',
-            'geo_longitude' => '-118.2799',
+            'geo_latitude' => 34.2799,
+            'geo_longitude' => -118.2799,
         );
         $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent()); 
         $this->refreshApplication();
         $parameters1 = array( 
             'description' => 'this is a test2', 
+            'geo_latitude' => 35.5799,
+            'geo_longitude' => -120.2799,
         );
         $response2 = $this->call('post', 'http://'.$this->domain.'/medias/1', $parameters1, [], [], $this->transformHeadersToServerVars($server2));  
         $array3 = json_decode($response2->getContent()); 
@@ -528,7 +531,8 @@ class MediaTest extends TestCase {
             $result = true;
         }
         $this->assertEquals(true, $result);
-        $this->seeInDatabase('medias', ['user_id' => 1, 'description' => 'this is a test2', 'tag_ids' => '1;2', 'file_ids' => '1;2']);
+        $this->seeInDatabase('medias', ['user_id' => 1, 'description' => 'this is a test2', 'tag_ids' => '1;2', 'file_ids' => '1;2', 'geolocation' => '0101000020E6100000A089B0E1E9115EC0A779C7293ACA4140']);
+        $this->seeInDatabase('pin_helper', ['geolocation' => '0101000020E6100000A089B0E1E9115EC0A779C7293ACA4140']);
     }
 
     //test whether the input format of the media_id is right.

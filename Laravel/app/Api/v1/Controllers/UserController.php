@@ -129,14 +129,14 @@ class UserController extends Controller
                 $session = Sessions::find($this->request->self_session_id);
                 $session->delete();
                 throw new UnauthorizedHttpException(null, 'Incorrect password, automatically lougout');
-            } 
+            }
             
             return response()->json([
                 'message' => 'Incorrect password, you still have '.(3-$user->login_count).' chances',
                 'status_code' => 401,
                 'login_count' => $user->login_count,
             ], 401);
-
+            
             //throw new UnauthorizedHttpException('Incorrect password, you still have '.(3-$user->login_count).' chances');
         }
         $user->password = bcrypt($this->request->new_password);
@@ -160,7 +160,7 @@ class UserController extends Controller
                     $session = Sessions::find($this->request->self_session_id);
                     $session->delete();
                     throw new UnauthorizedHttpException(null, 'Incorrect password, automatically lougout');
-                } 
+                }
                 
                 return response()->json([
                     'message' => 'Bad request, Password incorrect!',
@@ -180,23 +180,20 @@ class UserController extends Controller
     {
         $this->updateSelfStatusValidation($this->request);
         $user_exts = User_exts::find($this->request->self_user_id);
-        if(! is_null($user_exts)) {
-            if($this->request->has('status'))
-            {
-                $user_exts->status = $this->request->status;
-            }
-            if($this->request->has('message'))
-            {
-                $user_exts->message = $this->request->message;
-            }
-            if(!is_null($this->request->message) && empty($this->request->message))
-            {
-                $user_exts->message = null;
-            }
-            $user_exts->save();
-            return $this->response->created();
+        if($this->request->has('status'))
+        {
+            $user_exts->status = $this->request->status;
         }
-        return $this->response->errorNotFound();
+        if($this->request->has('message'))
+        {
+            $user_exts->message = $this->request->message;
+        }
+        if(!is_null($this->request->message) && empty($this->request->message))
+        {
+            $user_exts->message = null;
+        }
+        $user_exts->save();
+        return $this->response->created();
     }    
 
     public function getSelfStatus() 
@@ -207,18 +204,19 @@ class UserController extends Controller
     public function getStatus($user_id) 
     {
         $user_exts = User_exts::find($user_id);
-        if(! is_null($user_exts)) {
-            if($user_id != $this->request->self_user_id && $user_exts->status == 5)
-            {
-                $info[] = ['status' => 0, 'message' => $user_exts->message];
-            }
-            else
-            {
-                $info[] = ['status' => $user_exts->status, 'message' => $user_exts->message];
-            }
-            return $this->response->array($info);
+        if(is_null($user_exts))
+        {
+            return $this->response->errorNotFound();
         }
-        return $this->response->errorNotFound();
+        if($user_id != $this->request->self_user_id && $user_exts->status == 5)
+        {
+            $info[] = ['status' => 0, 'message' => $user_exts->message];
+        }
+        else
+        {
+            $info[] = ['status' => $user_exts->status, 'message' => $user_exts->message];
+        }
+        return $this->response->array($info);
     }
 
     private function signUpValidation(Request $request)
@@ -277,6 +275,8 @@ class UserController extends Controller
             'status' => 'filled|required_without:message|integer|between:0,5',
             'message' => 'required_without:status|string|max:100',
         ]);
+
+
         if($validator->fails())
         {
             if(!is_null($request->message) && empty($request->message))

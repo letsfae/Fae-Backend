@@ -82,6 +82,8 @@ class CommentTest extends TestCase {
             $result = true;
         }
         $this->assertEquals(true, $result);  
+        $this->seeInDatabase('comments', ['user_id' => 1, 'content' => 'This is the test.', 'geolocation' => '0101000020E6100000A089B0E1E9915DC0401361C3D3234140']); 
+        $this->seeInDatabase('pin_helper', ['type' => 'comment', 'pin_id' => 1, 'geolocation' => '0101000020E6100000A089B0E1E9915DC0401361C3D3234140']);
     }
 
     // to test whether the input format is right.
@@ -844,6 +846,8 @@ class CommentTest extends TestCase {
         $this->refreshApplication(); 
         $parameters2 = array(
             'content' => 'This is the test2.', 
+            'geo_latitude' => 35.5799,
+            'geo_longitude' => -120.2799,
         ); 
         $response = $this->call('post', 'http://'.$this->domain.'/comments/1', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
         $array3 = json_decode($response->getContent());
@@ -852,7 +856,8 @@ class CommentTest extends TestCase {
             $result = true;
         }
         $this->assertEquals(true, $result);  
-        $this->seeInDatabase('comments', ['content' => 'This is the test2.']);
+        $this->seeInDatabase('comments', ['content' => 'This is the test2.', 'geolocation' => '0101000020E6100000A089B0E1E9115EC0A779C7293ACA4140']);
+        $this->seeInDatabase('pin_helper', ['geolocation' => '0101000020E6100000A089B0E1E9115EC0A779C7293ACA4140']);
     }
 
     //test whether the format of the given comment_id is valid.
@@ -1010,6 +1015,73 @@ class CommentTest extends TestCase {
         $array3 = json_decode($response->getContent()); 
         $result = false; 
         if ($response->status() == '404' && $array3->message == 'Not Found') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result); 
+    }
+
+    //test whether the user_id of the comment is the same as the user_id that the user logged in.
+    public function testUpdate5() { 
+        $this->markTestSkipped(); 
+        //register of the user.
+        $user = Users::create([
+            'email' => 'letsfae@126.com',
+            'password' => bcrypt('letsfaego'),
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+            'login_count' => 0, 
+        ]);
+        $user2 = Users::create([
+            'email' => 'letsfae2@126.com',
+            'password' => bcrypt('letsfaego'),
+            'first_name' => 'kevin2',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp2',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+            'login_count' => 0, 
+        ]);
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent());
+        //create the comment.
+        $parameters = array(
+            'content' => 'This is the test.',
+            'geo_longitude' => -118.2799,
+            'geo_latitude' => 34.2799, 
+        ); 
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );
+        $response2 = $this->call('post', 'http://'.$this->domain.'/comments', $parameters, [], [], $this->transformHeadersToServerVars($server2)); 
+        $array2 = json_decode($response2->getContent());
+        $comments = Comments::where('id', 1)->first();
+        $comments->user_id = 2;
+        $comments->save();
+        $this->refreshApplication(); 
+        $parameters2 = array(
+            'content' => 'This is the test2.', 
+            'geo_latitude' => 35.5799,
+            'geo_longitude' => -120.2799,
+        ); 
+        $response = $this->call('post', 'http://'.$this->domain.'/comments/1', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
+        $array3 = json_decode($response->getContent()); 
+        $result = false; 
+        if ($response->status() == '403' && $array3->message == 'You can not update this comment') {
             $result = true;
         }
         $this->assertEquals(true, $result); 
