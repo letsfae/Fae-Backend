@@ -232,7 +232,10 @@ Status: 200
 			"latitude": @number,
 			"longitude": @number
 		},
-		"created_at": @string,,
+		"created_at": @string,
+		"liked_count": @number,
+		"saved_count": @number,
+		"comment_count": @number,
 		"user_pin_operations": {
 			"is_read": @boolean, 对当前用户是否已读
 			"read_timestamp" @string,
@@ -370,6 +373,9 @@ Status: 200
 			"longitude": @number
 		},
 		"created_at": @string,
+		"liked_count": @number,
+		"saved_count": @number,
+		"comment_count": @number,
 		"user_pin_operations": {
 			"is_read": @boolean, 对当前用户是否已读
 			"read_timestamp" @string,
