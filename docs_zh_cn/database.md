@@ -65,13 +65,6 @@
 
 注意user_a_id < user_b_id
 
-## comments
-- id PK
-- user_id FK
-- content_text string
-- created_at 
-- geolocation point
-
 ## name_cards
 - user_id FK 同user_ext表 外主键
 - nick_name string(50)
@@ -85,6 +78,11 @@
 - id PK
 - title string(20)
 - color string(10) #fff000
+
+## name_cards_saved
+- id PK
+- user_id FK 保存name_card的用户
+- name_card_user_id FK name所属用户
 
 ## files 通用文件类上传接口
 - id PK
@@ -109,6 +107,16 @@
 - reference_count integer 引用计数
 - created_at
 
+## comments
+- id PK
+- user_id FK
+- content_text string
+- created_at 
+- geolocation point
+- duration integer (unit in min)
+- interation_radius (unit in km) default 0
+- created_at
+
 ## medias
 - id PK
 - user_id FK
@@ -117,9 +125,12 @@
 - tag_ids ;分割
 - file_ids ;分割
 - created_at
-- like_count
+- liked_count
 - saved_count
 - comment_count
+- duration integer (unit in min)
+- interation_radius (unit in km) default 0
+- created_at
 
 ## faevors
 - id PK
@@ -144,7 +155,10 @@
 - last_message_timestamp
 - last_message_sender_id FK
 - last_message_type enum(text,image)
+- user_count
 - created_at
+- duration integer (unit in min)
+- interation_radius (unit in km) default 0
 
 ## chat_room_users
 - id PK
@@ -158,11 +172,13 @@
 - type enum(media,comment)
 - pin_id 必须是enum所列举的pin的id
 - user_id FK
+- read boolean
+- read_timestamp
 - liked boolean
 - liked_timestamp
 - saved boolean
 - saved_timestamp
-- created_at
+- interated boolean default false
 
 ## pin_comments
 - id PK
@@ -170,6 +186,16 @@
 - pin_id 必须是enum所列举的pin的id
 - user_id FK
 - content text
+- created_at
+- vote_up_count
+- vote_down_count
+
+## pin_comment_operations
+- id PK
+- pin_comment_id FK
+- user_id FK
+- vote (1 for up, -1 for down)
+- vote_timestamp
 
 ## pin_helper
 - id PK

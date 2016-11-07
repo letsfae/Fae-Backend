@@ -11,6 +11,7 @@ use App\PinHelper;
 use App\Comments;
 use App\ChatRooms;
 use App\Medias;
+use APP\user_exts;
 use Validator;
 use DB;
 use Phaza\LaravelPostgis\Eloquent\PostgisTrait;
@@ -48,6 +49,11 @@ class MapController extends Controller
                                           'radius' => $radius, 'max_count' => $max_count));                    
             foreach($sessions as $session)
             {
+                $user_exts = User_exts::find($session->user_id);
+                if(is_null($user_exts) || $user_exts->status == 5)
+                {
+                    continue;
+                }
                 $location = Geometry::fromWKB($session->location);
                 $locations = array();
                 for($i = 0; $i < 5; $i++)

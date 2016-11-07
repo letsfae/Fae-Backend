@@ -299,7 +299,7 @@ class UsersTest extends TestCase {
         $this->assertEquals(true, $result);
     } 
 
-    //test whether the login_count is over 3 with the methid of updating password.
+    //test whether the login_count is over 6 with the methid of updating password.
     public function testUpdatePassword2() { 
         //register of the user.
         $user = Users::create([
@@ -336,7 +336,7 @@ class UsersTest extends TestCase {
         ); 
         //login time over 3.
         $users = Users::where('email', '=', 'letsfae@126.com')->first();
-        $users->login_count = 3; 
+        $users->login_count = 6; 
         $users->save();
         $response = $this->call('post', 'http://'.$this->domain.'/users/account/password', $parameters2, [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent());
@@ -528,7 +528,7 @@ class UsersTest extends TestCase {
         $this->assertEquals(true, $result);
     }
 
-    //test whether the login_count is over 3 with the methid of verifying password.
+    //test whether the login_count is over 6 with the methid of verifying password.
     public function testVerifyPassword3() {  
         //register of the user.
         $user = Users::create([
@@ -564,7 +564,7 @@ class UsersTest extends TestCase {
         ); 
         //login time over 3.
         $users = Users::where('email', '=', 'letsfae@126.com')->first();
-        $users->login_count = 3; 
+        $users->login_count = 6; 
         $users->save();
         $response = $this->call('post', 'http://'.$this->domain.'/users/account/password/verify', $parameters2, [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent());

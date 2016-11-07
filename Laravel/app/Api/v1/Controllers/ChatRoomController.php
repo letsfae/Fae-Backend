@@ -185,12 +185,26 @@ class ChatRoomController extends Controller implements PinInterface
         foreach($chat_room_users as $chat_room_user)
         {
             $chat_room = $chat_room_user->belongsToChatRoom()->first();
+            $time = date("Y-m-d H:i:s");
+            $last_message_sender  = Users::find($chat_room->last_message_sender_id);
+            if(is_null($last_message_sender))
+            {
+                return $this->errorNotFound();
+            }
             $info[] = array('chat_room_id' => $chat_room->id, 'title' => $chat_room->title, 'user_id' => $chat_room->user_id,
             'geolocation' => ['latitude' => $chat_room->geolocation->getLat(), 'longitude' => $chat_room->geolocation->getLng()], 
             'last_message' => $chat_room->last_message, 'last_message_sender_id' => $chat_room->last_message_sender_id, 
+            'last_message_sender_name' => $last_message_sender->user_name,
             'last_message_type' => $chat_room->last_message_type, 'last_message_timestamp' => $chat_room->last_message_timestamp, 
-            'unread_count' => $chat_room_user->unread_count, 'created_at' => $chat_room->created_at->format('Y-m-d H:i:s'));
+            'unread_count' => $chat_room_user->unread_count, 'created_at' => $chat_room->created_at->format('Y-m-d H:i:s'), 
+            'server_sent_timestamp' => $time);
         }
+        $filed = array();
+        foreach ($info as $key => $value)
+        {
+            $filed[$key] = $value['last_message_timestamp'];
+        }
+        array_multisort($filed, SORT_DESC, $info);
         return $this->response->array($info);
     }
 
@@ -215,15 +229,29 @@ class ChatRoomController extends Controller implements PinInterface
         $user = Users::find($this->request->self_user_id);
         $chat_room_users = $user->hasManyChatRoomUsers()->get();
         $info = array();
+        $time = date("Y-m-d H:i:s");
         foreach ($chat_room_users as $chat_room_user)
         {
             $chat_room = $chat_room_user->belongsToChatRoom()->first();
+            $last_message_sender = Users::find($chat_room->last_message_sender_id);
+            if(is_null($last_message_sender))
+            {
+                return $this->errorNotFound();
+            }
             $info[] = array('chat_room_id' => $chat_room->id, 'title' => $chat_room->title, 'user_id' => $chat_room->user_id,
             'geolocation' => ['latitude' => $chat_room->geolocation->getLat(), 'longitude' => $chat_room->geolocation->getLng()], 
             'last_message' => $chat_room->last_message, 'last_message_sender_id' => $chat_room->last_message_sender_id, 
+            'last_message_sender_name' => $last_message_sender->user_name,
             'last_message_type' => $chat_room->last_message_type, 'last_message_timestamp' => $chat_room->last_message_timestamp, 
-            'unread_count' => $chat_room_user->unread_count, 'created_at' => $chat_room->created_at->format('Y-m-d H:i:s'));
+            'unread_count' => $chat_room_user->unread_count, 'created_at' => $chat_room->created_at->format('Y-m-d H:i:s'), 
+            'server_sent_timestamp' => $time);
         }
+        $filed = array();
+        foreach ($info as $key => $value)
+        {
+            $filed[$key] = $value['last_message_timestamp'];
+        }
+        array_multisort($filed, SORT_DESC, $info);
         return $this->response->array($info);
     }
 
@@ -291,7 +319,7 @@ class ChatRoomController extends Controller implements PinInterface
     {
         $validator = Validator::make($request->all(), [
             'message' => 'required|string',
-            'type' => 'required|in:text,image',
+            'type' => 'required|in:text,image,sticker,location,audio',
         ]);
         if($validator->fails())
         {

@@ -1293,9 +1293,12 @@ class ChatRoomTest extends TestCase {
                     ),
                     'last_message' => $array2[0]->last_message,
                     'last_message_sender_id' => $array2[0]->last_message_sender_id,
+                    'last_message_sender_name' => $array2[0]->last_message_sender_name,
                     'last_message_type' => $array2[0]->last_message_type,
-                    'last_message_timestamp' => $array2[0]->last_message_timestamp,  
+                    'last_message_timestamp' => $array2[0]->last_message_timestamp, 
+                    'unread_count' => $array2[0]->unread_count,
                     'created_at' => $array2[0]->created_at,
+                    'server_sent_timestamp' => $array2[0]->server_sent_timestamp
         ]);    
         $result = false; 
         if ($response2->status() == '200') {
@@ -1661,9 +1664,12 @@ class ChatRoomTest extends TestCase {
                         ),
                         'last_message' => $array2[$i]->last_message,
                         'last_message_sender_id' => $array2[$i]->last_message_sender_id,
+                        'last_message_sender_name' => $array2[$i]->last_message_sender_name,
                         'last_message_type' => $array2[$i]->last_message_type,
                         'last_message_timestamp' => $array2[$i]->last_message_timestamp,  
+                        'unread_count' => $array2[$i]->unread_count,
                         'created_at' => $array2[$i]->created_at,
+                        'server_sent_timestamp' => $array2[$i]->server_sent_timestamp
             ]);    
         }   
         $result = false;

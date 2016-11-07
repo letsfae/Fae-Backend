@@ -34,8 +34,21 @@ class Users extends Model implements AuthenticatableContract
     {
         return $this->hasMany('App\Faevors','user_id','id'); 
     }
+    
     public function hasManyChatRoomUsers() 
     {
         return $this->hasMany('App\ChatRoomUsers','user_id','id');
+    }
+    public function hasOneExts() 
+    {
+        return $this->hasOne('App\User_exts','user_id','id');
+    }
+    
+    /**
+     * Get all of the tagets that has at this user.
+     */
+    public function target_obj($className)
+    {
+        return $this->morphedByMany('App\\'.$className, 'useratable');
     }
 }

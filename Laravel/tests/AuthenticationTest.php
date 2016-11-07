@@ -121,7 +121,7 @@ class AuthenticationTest extends TestCase {
         $this->assertEquals(true, $result);
     }
 
-    //to test whether the togin time is more than 3! 
+    //to test whether the togin time is more than 6! 
     public function testLogin3() { 
         // $this->markTestSkipped();  
         $user = Users::create([
@@ -132,7 +132,7 @@ class AuthenticationTest extends TestCase {
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02', 
-            'login_count' => 3,
+            'login_count' => 6,
         ]);
         //login_count is more than 3 times.
         $parameters = array(
@@ -147,7 +147,7 @@ class AuthenticationTest extends TestCase {
         $response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
         $array = json_decode($response->getContent());
         $result = false;
-        if ($response->status() == '403' && $array->message == 'You have tried to login 3 times, please change your password!') {
+        if ($response->status() == '403' && $array->message == 'You have tried to login 6 times, please change your password!') {
             $result = true;
         }
         $this->assertEquals(true, $result);

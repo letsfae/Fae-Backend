@@ -1,5 +1,19 @@
 # 用户对于pin的操作
 
+## 标记已读
+
+`POST /pins/:type/:pin_id/read`
+
+其中type可为`media`、`comment`。
+
+### auth
+
+yes
+
+### response
+
+Status: 201
+
 ## Like 点赞 :white_check_mark:
 
 `POST /pins/:type/:pin_id/like`
@@ -222,8 +236,44 @@ Status: 200
 			"pin_comment_id": @number,
 			"user_id": @number,
 			"content": @string,
-			"created_at": @string
+			"created_at": @string,
+			"pin_comment_operations": {
+				"vote": @string(up/down),
+				"vote_timestamp": @string
+			}
 		},
 		{...},
 		{...}
 	]
+
+## 对于comment的vote
+
+`POST /pins/comments/:pin_comment_id/vote`
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| vote | string(up,down) | 投票状态 |
+
+如果已经up vote过再up vote则无效，down与之相同。
+
+### response
+
+Status: 201
+
+## cancel对于comment的vote
+
+`DELETE /pins/comments/:pin_comment_id/vote`
+
+### auth
+
+yes
+
+### response
+
+Status: 204

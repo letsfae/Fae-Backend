@@ -57,6 +57,9 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->get('/users/name_card', 'App\Api\v1\Controllers\UserNameCardController@getSelfNameCard');
     $api->get('/users/name_card/tags', 'App\Api\v1\Controllers\UserNameCardController@getAllTags');
     $api->post('/users/name_card', 'App\Api\v1\Controllers\UserNameCardController@updateNameCard');
+    $api->post('/users/{user_id}/name_card/save', 'App\Api\v1\Controllers\UserNameCardController@saveNameCard');
+    $api->delete('/users/{user_id}/name_card/save', 'App\Api\v1\Controllers\UserNameCardController@unsaveNameCard');
+    $api->get('/users/name_card/saved', 'App\Api\v1\Controllers\UserNameCardController@getSavedNameCardList');
     // status
     $api->post('/users/status', 'App\Api\v1\Controllers\UserController@updateSelfStatus');
     $api->get('/users/status', 'App\Api\v1\Controllers\UserController@getSelfStatus');
@@ -96,6 +99,7 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->post('/chats/read', 'App\Api\v1\Controllers\ChatController@markRead');
     $api->get('/chats', 'App\Api\v1\Controllers\ChatController@getHistory');
     $api->delete('/chats/{chat_id}', 'App\Api\v1\Controllers\ChatController@delete');
+    $api->get('/chats/users/{user_a_id}/{user_b_id}', 'App\Api\v1\Controllers\ChatController@getChatIdFromUserId');
     // chat rooms
     $api->post('/chat_rooms', 'App\Api\v1\Controllers\ChatRoomController@create');
     $api->post('/chat_rooms/{chat_room_id}', 'App\Api\v1\Controllers\ChatRoomController@update');
@@ -112,6 +116,7 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->get('/tags', 'App\Api\v1\Controllers\TagController@getArray');
     $api->get('/tags/{tag_id}', 'App\Api\v1\Controllers\TagController@getOne');
     // pin operations
+    $api->post('/pins/{type}/{pin_id}/read', 'App\Api\v1\Controllers\PinOperationController@read');
     $api->post('/pins/{type}/{pin_id}/like', 'App\Api\v1\Controllers\PinOperationController@like');
     $api->delete('/pins/{type}/{pin_id}/like', 'App\Api\v1\Controllers\PinOperationController@unlike');
     $api->post('/pins/{type}/{pin_id}/comments', 'App\Api\v1\Controllers\PinOperationController@comment');
@@ -123,6 +128,11 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->get('/pins/saved', 'App\Api\v1\Controllers\PinOperationController@getSavedPinList');
     $api->get('/pins/users', 'App\Api\v1\Controllers\PinOperationController@getSelfPinList');
     $api->get('/pins/users/{user_id}', 'App\Api\v1\Controllers\PinOperationController@getUserPinList');
+    $api->post('/pins/comments/{pin_comment_id}/vote', 'App\Api\v1\Controllers\PinOperationController@vote');
+    $api->delete('/pins/comments/{pin_comment_id}/vote', 'App\Api\v1\Controllers\PinOperationController@cancelVote');
+    // richtext (hashtags and at)
+    $api->get('/richtext/hashtag/{hashtag}', 'App\Api\v1\Controllers\RichTextController@searchHashtag');
+    $api->get('/richtext/hashtag/{hashtag}/contains', 'App\Api\v1\Controllers\RichTextController@searchHashtagWithText');
 
 });
 

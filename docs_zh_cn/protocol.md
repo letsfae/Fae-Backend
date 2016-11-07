@@ -78,7 +78,8 @@ Base URL：`https://api.letsfae.com/`
 - [用户对于pin的操作](protocol_pins.md)
 - [好友及聊天类](protocol_chats.md)
 - [文件类](protocol_files.md)
-- 其他（如下）
+- [富文本](protocol_richtext.md)
+- 其他（如下
 
 ## 同步消息 :white_check_mark:
 
