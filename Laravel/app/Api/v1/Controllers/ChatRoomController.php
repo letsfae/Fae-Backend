@@ -16,6 +16,8 @@ use Validator;
 use App\ChatRooms;
 use App\ChatRoomUsers;
 use App\Users;
+use APP\Sessions;
+use DB;
 use App\PinHelper;
 
 class ChatRoomController extends Controller implements PinInterface
@@ -34,6 +36,11 @@ class ChatRoomController extends Controller implements PinInterface
         $chat_room->title = $this->request->title;
         $chat_room->geolocation = new Point($this->request->geo_latitude, $this->request->geo_longitude);
         $chat_room->user_id = $this->request->self_user_id;
+        $chat_room->duration = $this->request->duration;
+        if($this->request->has('interaction_radius'))
+        {
+            $chat_room->interaction_radius = $this->request->interaction_radius;
+        }
         $chat_room->save();
         $chat_room_user = new ChatRoomUsers();
         $chat_room_user->user_id = $this->request->self_user_id;
@@ -43,6 +50,7 @@ class ChatRoomController extends Controller implements PinInterface
         $pin_helper->type = 'chat_room';
         $pin_helper->geolocation =  new Point($this->request->geo_latitude, $this->request->geo_longitude);
         $pin_helper->pin_id = $chat_room->id;
+        $pin_helper->duration = $chat_room->duration;
         $pin_helper->save();
         return $this->response->created(null, array('chat_room_id' => $chat_room->id));
     }
@@ -73,6 +81,17 @@ class ChatRoomController extends Controller implements PinInterface
             $pin_helper = PinHelper::where('pin_id', $chat_room_id)->where('type', 'chat_room')->first();
             $pin_helper->geolocation = new Point($this->request->geo_latitude, $this->request->geo_longitude);
             $pin_helper->save();
+        }
+        if($this->request->has('duration'))
+        {
+            $hat_room->duration = $this->request->duration;
+            $pin_helper = PinHelper::where('pin_id', $hat_room_id)->where('type', 'chat_room')->first();
+            $pin_helper->duration = $hat_room->duration;
+            $pin_helper->save();
+        }
+        if($this->request->has('interaction_radius'))
+        {
+            $hat_room->interaction_radius = $this->request->interaction_radius;
         }
         $chat_room->save();
         return $this->response->created();
@@ -149,22 +168,37 @@ class ChatRoomController extends Controller implements PinInterface
             return $this->response->errorNotFound();
         }
         $chat_room_user = ChatRoomUsers::where('chat_room_id', $chat_room_id)->where('user_id', $this->request->self_user_id)->first();
-        if(!is_null($chat_room_user) && $chat_room_user->unread_count > 0)
-        {
-            return $this->response->errorBadRequest('Please mark unread messages before sending new messages!');
-        }
-        $chat_room->last_message_sender_id = $this->request->self_user_id;
-        $chat_room->last_message = $this->request->message;
-        $chat_room->last_message_type = $this->request->type;
-        $chat_room->updateTimestamp();
-        $chat_room->save();
         if(is_null($chat_room_user))
         {
+            $session = Sessions::find($this->request->self_session_id);
+            if(is_null($session) || !$session->is_mobile)
+            {
+                return $this->response->errorNotFound();
+            }
+            $distance = DB::select("SELECT ST_Distance_Spheroid(ST_SetSRID(ST_Point(:longitude1, :latitude1),4326), 
+                ST_SetSRID(ST_Point(:longitude2, :latitude2),4326), 'SPHEROID[\"WGS 84\",6378137,298.257223563]')",
+                array('longitude1' => $session->location->getLng(), 'latitude1' => $session->location->getLat(),
+                      'longitude2' => $chat_room->geolocation->getLng(), 'latitude2' => $chat_room->geolocation->getLat()));
+            if($distance[0]->st_distance_spheroid > ($chat_room->interaction_radius))
+            {
+                return $this->response->errorBadRequest('too far away');
+            }
             $new_chat_room_user = new ChatRoomUsers();
             $new_chat_room_user->chat_room_id = $chat_room_id;
             $new_chat_room_user->user_id = $this->request->self_user_id;
             $new_chat_room_user->save();
         }
+        if(!is_null($chat_room_user) && $chat_room_user->unread_count > 0)
+        {
+            return $this->response->errorBadRequest('Please mark unread messages before sending new messages!');
+        }
+
+        $chat_room->last_message_sender_id = $this->request->self_user_id;
+        $chat_room->last_message = $this->request->message;
+        $chat_room->last_message_type = $this->request->type;
+        $chat_room->updateTimestamp();
+        $chat_room->save();
+        
         $chat_room_users = ChatRoomUsers::where('chat_room_id', $chat_room_id)->where('user_id', '!=', $this->request->self_user_id)->get();
         foreach ($chat_room_users as $chat_room_user)
         {
@@ -278,6 +312,8 @@ class ChatRoomController extends Controller implements PinInterface
             'title' => 'required|string|max:100',
             'geo_longitude' => 'required|numeric|between:-180,180',
             'geo_latitude' => 'required|numeric|between:-90,90',
+            'duration' => 'required|int|min:0',
+            'interaction_radius' => 'filled|int|min:0'
         ]);
         if($validator->fails())
         {
@@ -288,9 +324,13 @@ class ChatRoomController extends Controller implements PinInterface
     private function updateValidation(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'title' => 'filled|required_without_all:geo_longitude,geo_latitude|string|max:100',
-            'geo_longitude' => 'filled|required_with:geo_latitude|required_without_all:title|numeric|between:-180,180',
-            'geo_latitude' => 'filled|required_with:geo_longitude|required_without_all:title|numeric|between:-90,90',
+            'title' => 'filled|required_without_all:geo_longitude,geo_latitude,duration,interaction_radius|string|max:100',
+            'geo_longitude' => 'filled|required_with:geo_latitude|required_without_all:title,duration,interaction_radius
+                                |numeric|between:-180,180',
+            'geo_latitude' => 'filled|required_with:geo_longitude|required_without_all:title,duration,interaction_radius
+                                |numeric|between:-90,90',
+            'duration' => 'filled|required_without_all:geo_longitude,geo_latitude,title,interaction_radius|int|min:0',
+            'interaction_radius' => 'filled|required_without_all:geo_longitude,geo_latitude,duration,title|int|min:0'
         ]);
         if($validator->fails())
         {
