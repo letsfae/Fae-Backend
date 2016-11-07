@@ -184,7 +184,7 @@ yes
 | geo_latitude | number | 纬度 |
 | geo_longitude | number | 经度 |
 | duration | number | 持续显示时间，前端需默认为180,单位为min |
-| interaction_radius (optional) | number | 交互范围，默认不存在，单位km |
+| interaction_radius (optional) | number | 交互范围，默认不存在，单位m |
 | anonymous (optinal) | boolean | 匿名，默认为false |
 
 ### response
@@ -232,7 +232,10 @@ Status: 200
 			"latitude": @number,
 			"longitude": @number
 		},
-		"created_at": @string,,
+		"created_at": @string,
+		"liked_count": @number,
+		"saved_count": @number,
+		"comment_count": @number,
 		"user_pin_operations": {
 			"is_read": @boolean, 对当前用户是否已读
 			"read_timestamp" @string,
@@ -307,7 +310,7 @@ yes
 | geo_latitude | number | 纬度 |
 | geo_longitude | number | 经度 |
 | duration | number | 持续显示时间，前端需默认为180,单位为min |
-| interaction_radius (optional) | number | 交互范围，默认不存在，单位km |
+| interaction_radius (optional) | number | 交互范围，默认不存在，单位m |
 | anonymous (optinal) | boolean | 匿名，默认为false |
 
 ### response
@@ -370,6 +373,9 @@ Status: 200
 			"longitude": @number
 		},
 		"created_at": @string,
+		"liked_count": @number,
+		"saved_count": @number,
+		"comment_count": @number,
 		"user_pin_operations": {
 			"is_read": @boolean, 对当前用户是否已读
 			"read_timestamp" @string,
@@ -581,7 +587,7 @@ yes
 | geo_latitude | number | 纬度 |
 | geo_longitude | number | 经度 |
 | duration | number | 持续显示时间，前端需默认为1440,单位为min |
-| interaction_radius (optional) | number | 交互范围，默认不存在，单位km |
+| interaction_radius (optional) | number | 交互范围，默认不存在，单位m |
 
 ### response
 
