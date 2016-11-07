@@ -205,7 +205,7 @@ class PinOperationController extends Controller {
         if($obj_pin_operation->interacted == false)
         {
             $inDistance = $this->checkDistance($this->request->self_user_id, $this->request->self_session_id, $type, $pin_id);
-            if($inDistance == false)
+            if($inDistance === false)
             {
                 return $this->response->errorBadRequest('too far away');
             }
