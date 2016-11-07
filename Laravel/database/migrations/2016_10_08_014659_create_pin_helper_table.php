@@ -17,6 +17,7 @@ class CreatePinHelperTable extends Migration
             $table->enum('type',['media','comment','chat_room']);
             $table->integer('pin_id')->unsigned();
             $table->point('geolocation')->nullable();
+            $table->integer('duration')->unsigned();
             $table->timestamps();
         });
     }

@@ -57,11 +57,17 @@ class MediaController extends Controller implements PinInterface
         $media->description = $this->request->description;
         $media->geolocation = new Point($this->request->geo_latitude,$this->request->geo_longitude);
         $media->user_id = $this->request->self_user_id;
+        $media->duration = $this->request->duration;
+        if($this->request->has('interaction_radius'))
+        {
+            $media->interaction_radius = $this->request->interaction_radius;
+        }
         $media->save();
         $pin_helper = new PinHelper();
         $pin_helper->type = 'media';
         $pin_helper->geolocation =  new Point($this->request->geo_latitude, $this->request->geo_longitude);
         $pin_helper->pin_id = $media->id;
+        $pin_helper->duration = $media->duration;
         $pin_helper->save();
         return $this->response->created(null, array('media_id' => $media->id));
     }
@@ -122,6 +128,17 @@ class MediaController extends Controller implements PinInterface
             $pin_helper->geolocation = new Point($this->request->geo_latitude, $this->request->geo_longitude);
             $pin_helper->save();
         }
+        if($this->request->has('duration'))
+        {
+            $media->duration = $this->request->duration;
+            $pin_helper = PinHelper::where('pin_id', $media_id)->where('type', 'media')->first();
+            $pin_helper->duration = $media->duration;
+            $pin_helper->save();
+        }
+        if($this->request->has('interaction_radius'))
+        {
+            $media->interaction_radius = $this->request->interaction_radius;
+        }
         $media->save();
         return $this->response->created();
     }
@@ -139,7 +156,7 @@ class MediaController extends Controller implements PinInterface
         }
         $file_ids = is_null($media->file_ids) ? null : explode(';', $media->file_ids);
         $tag_ids = is_null($media->tag_ids) ? null : explode(';', $media->tag_ids);
-        $user_pin_operations = PinOperationController::isSavedisLiked('media', $media_id, $this->request->self_user_id);
+        $user_pin_operations = PinOperationController::getOperations('media', $media_id, $this->request->self_user_id);
         return $this->response->array(array('media_id' => $media->id, 'user_id' => $media->user_id, 'file_ids' => $file_ids, 
             'tag_ids' => $tag_ids, 'description' => $media->description, 'geolocation' => ['latitude' => $media->geolocation->getLat(), 
             'longitude' => $media->geolocation->getLng()], 'created_at' => $media->created_at->format('Y-m-d H:i:s'),
@@ -196,7 +213,7 @@ class MediaController extends Controller implements PinInterface
         $info = array();
         foreach ($medias as $media)
         {
-            $user_pin_operations = PinOperationController::isSavedisLiked('media', $media->id, $this->request->self_user_id);
+            $user_pin_operations = PinOperationController::getOperations('media', $media->id, $this->request->self_user_id);
             $info[] = array('media_id' => $media->id, 'user_id' => $media->user_id, 'file_ids' => explode(';', $media->file_ids), 'tag_ids' => explode(';', $media->tag_ids), 'description' => $media->description, 'geolocation'=>['latitude'=>$media->geolocation->getLat(), 'longitude'=>$media->geolocation->getLng()], 'created_at' => $media->created_at->format('Y-m-d H:i:s'),
                 'user_pin_operations' => $user_pin_operations);   
         }
@@ -211,6 +228,8 @@ class MediaController extends Controller implements PinInterface
             'file_ids' => 'required|regex:/^(\d+\;){0,4}\d+$/',
             'tag_ids' => 'filled|regex:/^(\d+\;){0,49}\d+$/',
             'description' => 'required|string',
+            'duration' => 'required|int|min:0',
+            'interaction_radius' => 'filled|int|min:0'
         ]);
         if($validator->fails())
         {
@@ -221,11 +240,17 @@ class MediaController extends Controller implements PinInterface
     private function updateValidation(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'geo_longitude' => 'filled|required_with:geo_latitude|required_without_all:file_ids,tag_ids,description|numeric|between:-180,180',
-            'geo_latitude' => 'filled|required_with:geo_longitude|required_without_all:file_ids,tag_ids,description|numeric|between:-90,90',
-            'file_ids' => 'filled|required_without_all:tag_ids,description,geo_longitude,geo_latitude|regex:/^(\d+\;){0,4}\d+$/',
-            'tag_ids' => array('filled', 'required_without_all:file_ids,description,geo_longitude,geo_latitude', 'regex:/^(((\d+\;){0,49}\d+)|(null))$/'),
-            'description' => 'filled|required_without_all:tag_ids,file_ids,geo_longitude,geo_latitude|string',
+            'geo_longitude' => 'filled|required_with:geo_latitude|required_without_all:file_ids,tag_ids,
+                                description,duration,interaction_radius|numeric|between:-180,180',
+            'geo_latitude' => 'filled|required_with:geo_longitude|required_without_all:file_ids,tag_ids,
+                                description,duration,interaction_radius|numeric|between:-90,90',
+            'file_ids' => 'filled|required_without_all:tag_ids,description,geo_longitude,geo_latitude,
+                            duration,interaction_radius|regex:/^(\d+\;){0,4}\d+$/',
+            'tag_ids' => array('filled', 'required_without_all:file_ids,description,geo_longitude,geo_latitude,
+                            duration,interaction_radius', 'regex:/^(((\d+\;){0,49}\d+)|(null))$/'),
+            'description' => 'filled|required_without_all:tag_ids,file_ids,geo_longitude,geo_latitude,duration,interaction_radius|string',
+            'duration' => 'filled|required_without_all:tag_ids,file_ids,geo_longitude,geo_latitude,description,interaction_radius|int|min:0',
+            'interaction_radius' => 'filled|required_without_all:tag_ids,file_ids,geo_longitude,geo_latitude,duration,description|int|min:0'
         ]);
         if($validator->fails())
         {

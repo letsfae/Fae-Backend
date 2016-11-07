@@ -218,7 +218,7 @@ class ChatController extends Controller
         $chat = Chats::where('user_a_id', $first)->where('user_b_id', $second)->first();
         if(is_null($chat))
         {
-            return $this->request->errorNotFound();
+            return $this->response->errorNotFound();
         }
         return $this->response->array(array("chat_id" => $chat->id));
     }
