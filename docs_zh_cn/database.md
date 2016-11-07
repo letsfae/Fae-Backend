@@ -176,8 +176,6 @@
 - type enum(media,comment)
 - pin_id 必须是enum所列举的pin的id
 - user_id FK
-- read boolean
-- read_timestamp
 - liked boolean
 - liked_timestamp
 - saved boolean

@@ -48,16 +48,21 @@ class AuthenticationController extends Controller {
         
         // check is_mobile and device_id
         $is_mobile = false;
+        
+        //(tempory)force the is_mobile to be true, so that each user only has one session
+        $is_mobile = true;
+        
         $device_id = null;
         if ($this->request->has('is_mobile')){
-            $is_mobile_input = $this->request->is_mobile;
-            if ( $is_mobile_input == 'true' || $is_mobile_input == 'TRUE' || $is_mobile_input == 'True' || $is_mobile_input == '1'){
-                $is_mobile = true;
-            }else if ( $is_mobile_input == 'false' || $is_mobile_input == 'FALSE' || $is_mobile_input == 'False' || $is_mobile_input == '0'){
-                $is_mobile = false;
-            }else{
-                throw new AccessDeniedHttpException('Bad request, is_mobile is wrong!');
-            }
+            $is_mobile = ($this->request->is_mobile == 'true');
+//            $is_mobile_input = $this->request->is_mobile;
+//            if ( $is_mobile_input == 'true' || $is_mobile_input == 'TRUE' || $is_mobile_input == 'True' || $is_mobile_input == '1'){
+//                $is_mobile = true;
+//            }else if ( $is_mobile_input == 'false' || $is_mobile_input == 'FALSE' || $is_mobile_input == 'False' || $is_mobile_input == '0'){
+//                $is_mobile = false;
+//            }else{
+//                throw new AccessDeniedHttpException('Bad request, is_mobile is wrong!');
+//            }
         }
         
         if ($this->request->has('device_id')){
@@ -175,6 +180,7 @@ class AuthenticationController extends Controller {
             'email' => 'required_without:user_name|max:50|email',
             'user_name' => 'required_without:email|max:50',
             'password' => 'required|between:8,16',
+            'is_mobile' => 'in:true,false',
         ]);
         if($validator->fails())
         {            
@@ -192,14 +198,19 @@ class AuthenticationController extends Controller {
                 'auth' => !$both_are_mobile
              ))
         ));
-        $collection = PushNotification::app('appNameIOS')
-            ->to($previous_device_id)
-            ->send($message);
-       
-        // get response for each device push
-        foreach ($collection->pushManager as $push) {
-            $response = $push->getAdapter()->getResponse();
-        }
+       try{
+            $collection = PushNotification::app('appNameIOS')
+                                                ->to($previous_device_id)
+                                                ->send($message);
+
+            // get response for each device push
+            foreach ($collection->pushManager as $push) {
+                $response = $push->getAdapter()->getResponse();
+            }
+       }catch(\Exception $e){
+           
+       }
+        
     }
     public function logout()
     {

@@ -184,7 +184,7 @@ yes
 | geo_latitude | number | 纬度 |
 | geo_longitude | number | 经度 |
 | duration | number | 持续显示时间，前端需默认为180,单位为min |
-| interaction_radius (optional) | number | 交互范围，默认不存在，单位km |
+| interaction_radius (optional) | number | 交互范围，默认不存在，单位m |
 | anonymous (optinal) | boolean | 匿名，默认为false |
 
 ### response
@@ -307,7 +307,7 @@ yes
 | geo_latitude | number | 纬度 |
 | geo_longitude | number | 经度 |
 | duration | number | 持续显示时间，前端需默认为180,单位为min |
-| interaction_radius (optional) | number | 交互范围，默认不存在，单位km |
+| interaction_radius (optional) | number | 交互范围，默认不存在，单位m |
 | anonymous (optinal) | boolean | 匿名，默认为false |
 
 ### response
@@ -581,7 +581,7 @@ yes
 | geo_latitude | number | 纬度 |
 | geo_longitude | number | 经度 |
 | duration | number | 持续显示时间，前端需默认为1440,单位为min |
-| interaction_radius (optional) | number | 交互范围，默认不存在，单位km |
+| interaction_radius (optional) | number | 交互范围，默认不存在，单位m |
 
 ### response
 
