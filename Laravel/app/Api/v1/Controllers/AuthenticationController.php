@@ -12,6 +12,7 @@ use App\User_exts;
 use App\Sessions;
 use App\Users;
 use App\Api\v1\Controllers\MapController;
+use App\Api\v1\Controllers\SyncController;
 use Davibennun\LaravelPushNotification\Facades\PushNotification;
 class AuthenticationController extends Controller {
     use Helpers;
