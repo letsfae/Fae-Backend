@@ -14,6 +14,8 @@ class CreatePinHelperTable extends Migration
     {
         Schema::create('pin_helper', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
             $table->enum('type',['media','comment','chat_room']);
             $table->integer('pin_id')->unsigned();
             $table->point('geolocation')->nullable();

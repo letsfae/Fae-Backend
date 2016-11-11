@@ -7,6 +7,7 @@ use Dingo\Api\Routing\Helpers;
 use Dingo\Api\Exception\StoreResourceFailedException;
 use Validator;
 use App\Pin_operations;
+use App\PinHelper;
 use App\Comments;
 use App\Medias;
 use App\Pin_comments;
@@ -305,6 +306,16 @@ class PinOperationController extends Controller {
             }
         }
         
+        $validator = Validator::make($this->request->all(), [
+            'start_time' => 'filled|date_format:Y-m-d H:i:s|before:tomorrow',
+            'end_time' => 'filled|date_format:Y-m-d H:i:s|before:tomorrow',
+            'page' => 'filled|integer|min:1'
+        ]);
+        if($validator->fails())
+        {
+            throw new UpdateResourceFailedException('Could not get user comments.',$validator->errors());
+        }
+        
         $start_time = $this->request->has('start_time') ? $this->request->start_time : '1970-01-01 00:00:00';
         $end_time = $this->request->has('end_time') ? $this->request->end_time : date("Y-m-d H:i:s");
         $page =  $this->request->has('page') ? $this->request->page : 1;
@@ -338,15 +349,25 @@ class PinOperationController extends Controller {
     }
 
     public function getUserPinList($user_id) {
-        if(!is_numeric($user_id))
-        {
+        if(!is_numeric($user_id)){
             return $this->response->errorBadRequest();
         }
+         $validator = Validator::make($this->request->all(), [
+            'start_time' => 'filled|date_format:Y-m-d H:i:s|before:tomorrow',
+            'end_time' => 'filled|date_format:Y-m-d H:i:s|before:tomorrow',
+            'page' => 'filled|integer|min:1'
+        ]);
+        if($validator->fails()){
+            throw new UpdateResourceFailedException('Could not get user pin list.',$validator->errors());
+        }
+        
         $start_time = $this->request->has('start_time') ? $this->request->start_time : '1970-01-01 00:00:00';
         $end_time = $this->request->has('end_time') ? $this->request->end_time : date("Y-m-d H:i:s");
         $page =  $this->request->has('page') ? $this->request->page : 1;
         
-        $total = Pin_comments::where('user_id', $user_id)
+        $pin_helper = PinHelper::where('user_id', $user_id)->first();
+        
+        $total = PinHelper::where('user_id', $user_id)
                                 ->where('created_at','>=', $start_time)
                                 ->where('created_at','<=', $end_time)
                                 ->count();
@@ -355,18 +376,18 @@ class PinOperationController extends Controller {
             $total_pages = intval(( $total - 1 )/30) +1;
         }
         
-        $commented_pin_list = Pin_comments::where('user_id', $user_id)
+        $user_pin_helper_list = PinHelper::where('user_id', $user_id)
                                           ->where('created_at','>=', $start_time)
                                           ->where('created_at','<=', $end_time)
                                           ->orderBy('created_at', 'desc')
                                           ->skip(30 * ($page - 1))->take(30)->get();
         
         $info = array();
-        foreach($commented_pin_list as $commented_pin)
+        foreach($user_pin_helper_list as $user_pin_helper)
         {
-            $info[] = array('pin_id' => $commented_pin->pin_id,
-                            'type' => $commented_pin->type,
-                            'content' => $commented_pin->content);
+            $info[] = array('pin_id' => $user_pin_helper->pin_id,
+                            'type' => $user_pin_helper->type,
+                            'created_at' => $user_pin_helper->created_at->format('Y-m-d H:i:s'));
         }
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
     }

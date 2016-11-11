@@ -201,6 +201,7 @@
 
 ## pin_helper
 - id PK
+- user_id FK 创建者
 - type enum(media,comment,chat_room)
 - pin_id
 - geolocation

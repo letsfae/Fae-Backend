@@ -65,6 +65,8 @@ class MediaController extends Controller implements PinInterface
         $media->save();
         $pin_helper = new PinHelper();
         $pin_helper->type = 'media';
+        
+        $pin_helper->user_id = $this->request->self_user_id;
         $pin_helper->geolocation =  new Point($this->request->geo_latitude, $this->request->geo_longitude);
         $pin_helper->pin_id = $media->id;
         $pin_helper->duration = $media->duration;

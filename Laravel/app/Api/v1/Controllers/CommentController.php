@@ -46,6 +46,7 @@ class CommentController extends Controller implements PinInterface
         // pin helper
         $pin_helper = new PinHelper();
         $pin_helper->type = 'comment';
+        $pin_helper->user_id = $this->request->self_user_id;
         $pin_helper->geolocation =  new Point($this->request->geo_latitude, $this->request->geo_longitude);
         $pin_helper->pin_id = $comment->id;
         $pin_helper->duration = $comment->duration;
