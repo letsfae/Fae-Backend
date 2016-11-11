@@ -30,7 +30,7 @@ class MediaTest extends TestCase {
     }
     //test correct response of the method of creatMedia.
     public function testCreate() {
-        $this->markTestSkipped();
+        // $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -128,7 +128,7 @@ class MediaTest extends TestCase {
 
     //test the response when the tag information does not exist with the tag_ids.
     public function testCreate2() {
-        $this->markTestSkipped();
+        // $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -203,7 +203,7 @@ class MediaTest extends TestCase {
 
     //test whether the input format is right.
     public function testCreate3() {
-        $this->markTestSkipped();
+        // $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -293,7 +293,7 @@ class MediaTest extends TestCase {
 
     //test the response when the file information does not exist with the file_ids.
     public function testCreate4() {
-        $this->markTestSkipped();
+        // $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -358,7 +358,7 @@ class MediaTest extends TestCase {
 
     //test the response when the request has no tag_ids.
     public function testCreate5() {
-        $this->markTestSkipped();
+        // $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -438,7 +438,7 @@ class MediaTest extends TestCase {
 
     //test correct response of the method of updateMedia.
     public function testUpdate() {
-        $this->markTestSkipped();
+        // $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -537,7 +537,7 @@ class MediaTest extends TestCase {
 
     //test whether the input format of the media_id is right.
     public function testUpdate2() {
-        $this->markTestSkipped();
+        // $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -633,7 +633,7 @@ class MediaTest extends TestCase {
 
     //test whether the input format is right.
     public function testUpdate3() {
-        $this->markTestSkipped();
+        // $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -732,7 +732,7 @@ class MediaTest extends TestCase {
 
     //test the response when the media information does not exist with the media_id.
     public function testUpdate4() {
-        $this->markTestSkipped();
+        // $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -828,7 +828,7 @@ class MediaTest extends TestCase {
 
     //test the response when the tag information does not exist with the tag_ids.
     public function testUpdate5() {
-        $this->markTestSkipped();
+        // $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -910,7 +910,7 @@ class MediaTest extends TestCase {
 
     //test the response when the request of tag_ids is null.
     public function testUpdate6() {
-        $this->markTestSkipped();
+        // $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -1007,7 +1007,7 @@ class MediaTest extends TestCase {
 
     //test the response when the request of tag_ids exists in the tag table. 
     public function testUpdate7() {
-        $this->markTestSkipped();
+        // $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -1120,7 +1120,7 @@ class MediaTest extends TestCase {
 
     //test correct response of the method of getOneMedia.
     public function testGetOne() {
-        $this->markTestSkipped();
+        // $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -1235,7 +1235,7 @@ class MediaTest extends TestCase {
 
     //test whether the input format of the media_id is right.
     public function testGetOne2() {
-        $this->markTestSkipped();
+        // $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -1328,7 +1328,7 @@ class MediaTest extends TestCase {
 
     //test the response when the media information does not exist with the media_id.
     public function testGetOne3() {
-        $this->markTestSkipped();
+        // $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -1421,7 +1421,7 @@ class MediaTest extends TestCase {
 
     //test correct response of the method of deleteMedia.
     public function testDelete() {
-        $this->markTestSkipped();
+        // $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -1509,7 +1509,7 @@ class MediaTest extends TestCase {
 
     //test whether the input format of the media_id is right.
     public function testDelete2() {
-        $this->markTestSkipped();
+        // $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -1602,7 +1602,7 @@ class MediaTest extends TestCase {
 
     //test the response when the media information does not exist with the media_id.
     public function testDelete3() {
-        $this->markTestSkipped();
+        // $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -1695,7 +1695,7 @@ class MediaTest extends TestCase {
 
     //test the response when the deleted user_id is not the same as the self_user_id.
     public function testDelete4() {
-        $this->markTestSkipped();
+        // $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -1846,7 +1846,7 @@ class MediaTest extends TestCase {
 
     //test correct response of the method of getFromUser.
     public function testGetFromUser() {
-        $this->markTestSkipped();
+        // $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -2006,7 +2006,7 @@ class MediaTest extends TestCase {
 
     //test whether the input format of the user_id is right.
     public function testGetFromUser2() {
-        $this->markTestSkipped();
+        // $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -2113,7 +2113,7 @@ class MediaTest extends TestCase {
 
     //test the response when the user information does not exist with the user_id. 
     public function testGetFromUser3() {
-        $this->markTestSkipped();
+        // $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -2220,7 +2220,7 @@ class MediaTest extends TestCase {
 
     //test whenther the input format is right.
     public function testGetFromUser4() {
-        $this->markTestSkipped();
+        // $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',

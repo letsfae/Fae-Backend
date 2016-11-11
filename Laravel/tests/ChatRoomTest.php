@@ -36,7 +36,7 @@ class ChatRoomTest extends TestCase {
 
     // the correct response of the create chatRoom.
     public function testCreated() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -87,7 +87,7 @@ class ChatRoomTest extends TestCase {
 
     // to test whether the input format is right.
     public function testCreated2() {
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -133,7 +133,7 @@ class ChatRoomTest extends TestCase {
 
     //test the correct response of method of updateChatRoom.
     public function testUpdate() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -189,7 +189,7 @@ class ChatRoomTest extends TestCase {
 
     //test whether the format of the given chat_room_id is valid.
     public function testUpdate2() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -242,7 +242,7 @@ class ChatRoomTest extends TestCase {
 
     //test whether the format of the input is valid. 
     public function testUpdate3() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -296,7 +296,7 @@ class ChatRoomTest extends TestCase {
 
     //test the chatroom with the given chat_room_id does not exist.
     public function testUpdate4() { 
-        $this->markTestSkipped();  
+        // $this->markTestSkipped();  
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -348,7 +348,7 @@ class ChatRoomTest extends TestCase {
 
     //test whether the user_id of the chat_room is the same as the current user_id.
     public function testUpdate5() { 
-        $this->markTestSkipped();  
+        // $this->markTestSkipped();  
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -415,7 +415,7 @@ class ChatRoomTest extends TestCase {
 
     // the correct response of the get chatRoom with the chat_room_id.
     public function testGetOne() {
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -479,7 +479,7 @@ class ChatRoomTest extends TestCase {
 
     //test whether the format of the chat_room_id is valid.
     public function testGetOne2() {
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -530,7 +530,7 @@ class ChatRoomTest extends TestCase {
 
     // the chat_room with the given chat_room_id does not exist.
     public function testGetOne3() {
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -581,7 +581,7 @@ class ChatRoomTest extends TestCase {
 
     // the correct response of the method of getting all chatRomms of the given user.
     public function testGetFromUser() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -682,7 +682,7 @@ class ChatRoomTest extends TestCase {
 
     //test whether the user with user_id exists.
     public function testGetFromUser2() { 
-        $this->markTestSkipped();  
+        // $this->markTestSkipped();  
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -724,7 +724,7 @@ class ChatRoomTest extends TestCase {
 
     //test whether the format of the user_id is right.
     public function testGetFromUser3() { 
-        $this->markTestSkipped();  
+        // $this->markTestSkipped();  
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -766,7 +766,7 @@ class ChatRoomTest extends TestCase {
 
     //test whether the format of the input is valid.
     public function testGetFromUser4() { 
-        $this->markTestSkipped();  
+        // $this->markTestSkipped();  
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -813,7 +813,7 @@ class ChatRoomTest extends TestCase {
 
     // test the select page is larger than the total page.
     public function testGetFromUser5() {  
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -869,7 +869,7 @@ class ChatRoomTest extends TestCase {
 
     // the correct response of the method of sending message to chatRoom.
     public function testSend() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -936,7 +936,7 @@ class ChatRoomTest extends TestCase {
 
     // test the response when the format of the chat_room_id is wrong.
     public function testSend2() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -1002,7 +1002,7 @@ class ChatRoomTest extends TestCase {
 
     // test the response when the input format is wrong.
     public function testSend3() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -1068,7 +1068,7 @@ class ChatRoomTest extends TestCase {
 
     // test the response when the chatRoom information does not exist with the given chat_room_id. 
     public function testSend4() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -1133,7 +1133,7 @@ class ChatRoomTest extends TestCase {
 
     // test the response when the unread_count of the user with self_user_id is bigger than 0;
     public function testSend5() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -1206,7 +1206,7 @@ class ChatRoomTest extends TestCase {
 
     // the correct response of the method of getUnread.
     public function testGetUnread() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -1309,7 +1309,7 @@ class ChatRoomTest extends TestCase {
 
     // the correct response of the method of markRead.
     public function testMarkRead() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -1395,7 +1395,7 @@ class ChatRoomTest extends TestCase {
 
     // test the response when the format of the chat_room_id is wrong.
     public function testMarkRead2() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -1482,7 +1482,7 @@ class ChatRoomTest extends TestCase {
 
     // test the response when the chatRoom information does not exist with the given chat_room_id. 
     public function testMarkRead3() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -1569,7 +1569,7 @@ class ChatRoomTest extends TestCase {
 
     // the correct response of the method of getHistory of the chatRoom that the user participates in.
     public function testGetHistory() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -1681,7 +1681,7 @@ class ChatRoomTest extends TestCase {
 
     // the correct response of the method of getUserList of the chatRoom.
     public function testGetUserList() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -1755,7 +1755,7 @@ class ChatRoomTest extends TestCase {
 
     // the response when the chat_room_id format is not valid.
     public function testGetUserList2() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -1823,7 +1823,7 @@ class ChatRoomTest extends TestCase {
 
     // the the response when the chatRomm information does not exist with the given chat_room_id.
     public function testGetUserList3() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',

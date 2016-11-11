@@ -242,6 +242,10 @@ class PinOperationController extends Controller {
     }
 
     public function getUserPinList($user_id) {
+        if(!is_numeric($user_id))
+        {
+            return $this->response->errorBadRequest();
+        }
         $start_time = $this->request->has('start_time') ? $this->request->start_time : '1970-01-01 00:00:00';
         $end_time = $this->request->has('end_time') ? $this->request->end_time : date("Y-m-d H:i:s");
         $page =  $this->request->has('page') ? $this->request->page : 1;

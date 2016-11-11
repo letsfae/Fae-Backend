@@ -33,7 +33,7 @@ class UserProfileTest extends TestCase
 
     // the correct response of getProfile.
     public function testGetProfile() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -79,7 +79,7 @@ class UserProfileTest extends TestCase
 
     // test the response when the user information does not exist with the given user_id.
     public function testGetProfile2() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -120,7 +120,7 @@ class UserProfileTest extends TestCase
 
     // test the response when the format of the given user_id is not right.
     public function testGetProfile3() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -161,7 +161,7 @@ class UserProfileTest extends TestCase
 
     // the correct response of getSelfProfile.
     public function testGetSelfProfile() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',

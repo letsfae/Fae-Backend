@@ -41,7 +41,7 @@ class PinOperationTest extends TestCase
 
     // the correct response of the like.
     public function testLike() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -111,7 +111,7 @@ class PinOperationTest extends TestCase
 
     // the the response when the type is media but the media information does not exist.
     public function testLike2() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -175,7 +175,7 @@ class PinOperationTest extends TestCase
 
     //test the response when the Pin_operations information exists in the database.
     public function testLike3() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -251,7 +251,7 @@ class PinOperationTest extends TestCase
     }
     // test the correct response of the method of unlike when the saved is false.
     public function testUnLike() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -293,7 +293,7 @@ class PinOperationTest extends TestCase
 
     // test the correct response of the method of unlike when the saved is true.
     public function testUnLike2() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -335,7 +335,7 @@ class PinOperationTest extends TestCase
     }
     // test the response when the pin_operations information does not exist in the database.
     public function testUnLike3() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -375,7 +375,7 @@ class PinOperationTest extends TestCase
 
     // the correct response of the save.
     public function testSave() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -445,7 +445,7 @@ class PinOperationTest extends TestCase
 
     // the the response when the type is media but the media information does not exist.
     public function testSave2() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -509,7 +509,7 @@ class PinOperationTest extends TestCase
 
     //test the response when the Pin_operations information exists in the database.
     public function testSave3() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -586,7 +586,7 @@ class PinOperationTest extends TestCase
 
     // test the correct response of the method of unlike when the saved is false.
     public function testUnSave() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -628,7 +628,7 @@ class PinOperationTest extends TestCase
 
     // test the correct response of the method of unsave when the liked is true.
     public function testUnSave2() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -671,7 +671,7 @@ class PinOperationTest extends TestCase
 
     // test the response when the pin_operations information does not exist in the database.
     public function testUnSave3() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -711,7 +711,7 @@ class PinOperationTest extends TestCase
 
     // test the correct response of the comment.
     public function testComment() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -788,7 +788,7 @@ class PinOperationTest extends TestCase
 
     // test whether the input format is right of wrong.
     public function testComment2() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -861,7 +861,7 @@ class PinOperationTest extends TestCase
 
     // the the response when the type is media but the media information does not exist.
     public function testComment3() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -904,7 +904,7 @@ class PinOperationTest extends TestCase
 
     // test the correct response of the unComment.
     public function testUnComment() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -974,7 +974,7 @@ class PinOperationTest extends TestCase
 
     // test the response when the pin_comments information does not exist in the database.
     public function testUnComment2() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -1014,7 +1014,7 @@ class PinOperationTest extends TestCase
 
     // test the correct response of the getPinAttribute.
     public function testGetPinAttribute() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -1109,7 +1109,7 @@ class PinOperationTest extends TestCase
 
     // test the response when the type is media but the media information does not exist.
     public function testGetPinAttribute2() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -1169,7 +1169,7 @@ class PinOperationTest extends TestCase
 
     // test the correct response of the getPinCommentList.
     public function testGetPinCommentList() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -1277,7 +1277,7 @@ class PinOperationTest extends TestCase
 
     // test the response when the type is media but the media information does not exist.
     public function testGetPinCommentList2() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -1331,7 +1331,7 @@ class PinOperationTest extends TestCase
 
     // test the select page is larger than the total page.
     public function testGetPinCommentList3() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -1503,7 +1503,7 @@ class PinOperationTest extends TestCase
 
     // test the correct response of the getUserPinList.
     public function testGetUserPinList() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -1694,7 +1694,7 @@ class PinOperationTest extends TestCase
 
     //test whether the format of the user_id is right. 
     public function testGetUserPinList3() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -1779,7 +1779,7 @@ class PinOperationTest extends TestCase
 
     // test the select page is larger than the total page.
     public function testGetUserPinList4() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -1950,7 +1950,7 @@ class PinOperationTest extends TestCase
     }
     // test the correct response of the getSelfPinList.
     public function testGetSelfPinList() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -2130,7 +2130,6 @@ class PinOperationTest extends TestCase
         //get the pinComments of the page 1.
         $response_page1 = $this->call('get', 'http://'.$this->domain.'/pins/saved', $content, [], [], $this->transformHeadersToServerVars($server2));
         $array2 = json_decode($response_page1->getContent());  
-        print_r($array2);
         for ($i = 0; $i < 30; $i++) {
             $this->seeJson([  
                         'pin_id' => $array2[$i]->pin_id, 

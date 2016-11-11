@@ -41,19 +41,25 @@ class MapTest extends TestCase
 
     // the correct response of the method of getMap when the type is user.
     public function testGetMap() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
-        for ($i = 1; $i < 11; $i++) {  
-            ${'user' . $i} = Users::create([
-                'email' => 'letsfae'.$i.'@126.com',
-                'password' => bcrypt('letsfaego'),
-                'first_name' => 'kevin',
-                'last_name' => 'zhang',
-                'user_name' => 'faeapp'.$i,
-                'gender' => 'male',
-                'birthday' => '1992-02-02',
-                'login_count' => 0, 
-            ]);
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        for ($i = 1; $i < 11; $i++) { 
+            ${'parameters' . $i}  = array(
+            'email' => 'letsfae'.$i.'@126.com', 
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp'.$i,
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+            'login_count' => 0, 
+            );
+            $response = $this->call('post', 'http://'.$this->domain.'/users', ${'parameters' . $i}, [], [], $this->transformHeadersToServerVars($server));
+            $this->refreshApplication();
         }
         for ($i = 1; $i < 11; $i++) { 
             ${'parameter' . $i}  = array(
@@ -62,11 +68,6 @@ class MapTest extends TestCase
             'user_name' => 'faeapp'.$i,
             );
         } 
-        
-        $server = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
-        );
         //login of the user. 
         $latitude = 34.031958;
         $longitude = -118.288125;
@@ -89,11 +90,11 @@ class MapTest extends TestCase
         $parameters = array(
             'geo_latitude' => 34.031958,
             'geo_longitude' => -118.288125, 
-            'type' => 'user'
+            'type' => 'user',
         );
-        //get the map data. 
+        //get the map data.  
         $response = $this->call('get', 'http://'.$this->domain.'/map', $parameters, [], [], $this->transformHeadersToServerVars($server2));
-        $array2 = json_decode($response->getContent());   
+        $array2 = json_decode($response->getContent());  
         for ($i = 0; $i < 10; $i++) {
             $this->seeJson([  
                         'type' => 'user',
@@ -133,29 +134,30 @@ class MapTest extends TestCase
 
     //test whether the input format is right.
     public function testGetMap2() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
-        $user1 = Users::create([
-            'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        ); 
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
             'login_count' => 0, 
-        ]);
+            );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         
         $parameter1 = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
             'user_name' => 'faeapp',
-        );
-         
-        $server = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
-        );
+        ); 
         //login of the user.
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameter1, [], [], $this->transformHeadersToServerVars($server));
         $session1 = Sessions::where('user_id', '=', 1)->first();
@@ -185,19 +187,25 @@ class MapTest extends TestCase
 
     // test the response when the filter of radius is given.
     public function testGetMap3() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
-        for ($i = 1; $i < 11; $i++) {  
-            ${'user' . $i} = Users::create([
-                'email' => 'letsfae'.$i.'@126.com',
-                'password' => bcrypt('letsfaego'),
-                'first_name' => 'kevin',
-                'last_name' => 'zhang',
-                'user_name' => 'faeapp'.$i,
-                'gender' => 'male',
-                'birthday' => '1992-02-02',
-                'login_count' => 0, 
-            ]);
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        for ($i = 1; $i < 11; $i++) { 
+            ${'parameters' . $i}  = array(
+            'email' => 'letsfae'.$i.'@126.com', 
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp'.$i,
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+            'login_count' => 0, 
+            );
+            $response = $this->call('post', 'http://'.$this->domain.'/users', ${'parameters' . $i}, [], [], $this->transformHeadersToServerVars($server));
+            $this->refreshApplication();
         }
         for ($i = 1; $i < 11; $i++) { 
             ${'parameter' . $i}  = array(
@@ -205,12 +213,7 @@ class MapTest extends TestCase
                 'password' => 'letsfaego',
                 'user_name' => 'faeapp'.$i,
             );
-        } 
-        
-        $server = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
-        );
+        }  
         //login of the user. 
         $latitude = 34.031958;
         $longitude = -118.288125;
@@ -275,27 +278,29 @@ class MapTest extends TestCase
 
     //test the response when the type are comment, media, chat_room.
     public function testGetMap4() { 
-        $this->markTestSkipped(); 
-        //register of the user.  
-        $user = Users::create([
-            'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+        // $this->markTestSkipped(); 
+        //register of the user.
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        ); 
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
             'login_count' => 0, 
-        ]);  
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
             'user_name' => 'faeapp',
-        );
-        $server = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
-        );
+        ); 
         //login of the user.
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
         $array = json_decode($login_response->getContent());
@@ -447,19 +452,25 @@ class MapTest extends TestCase
 
     // test the response when the filter of max_count is given.
     public function testGetMap5() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
-        for ($i = 1; $i < 11; $i++) {  
-            ${'user' . $i} = Users::create([
-                'email' => 'letsfae'.$i.'@126.com',
-                'password' => bcrypt('letsfaego'),
-                'first_name' => 'kevin',
-                'last_name' => 'zhang',
-                'user_name' => 'faeapp'.$i,
-                'gender' => 'male',
-                'birthday' => '1992-02-02',
-                'login_count' => 0, 
-            ]);
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        for ($i = 1; $i < 11; $i++) { 
+            ${'parameters' . $i}  = array(
+            'email' => 'letsfae'.$i.'@126.com', 
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp'.$i,
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+            'login_count' => 0, 
+            );
+            $response = $this->call('post', 'http://'.$this->domain.'/users', ${'parameters' . $i}, [], [], $this->transformHeadersToServerVars($server));
+            $this->refreshApplication();
         }
         for ($i = 1; $i < 11; $i++) { 
             ${'parameter' . $i}  = array(
@@ -467,12 +478,7 @@ class MapTest extends TestCase
             'password' => 'letsfaego',
             'user_name' => 'faeapp'.$i,
             );
-        } 
-        
-        $server = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
-        );
+        }  
         //login of the user. 
         $latitude = 34.031958;
         $longitude = -118.288125;
@@ -540,19 +546,25 @@ class MapTest extends TestCase
 
     // test the response when the type wrong.
     public function testGetMap6() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
-        for ($i = 1; $i < 11; $i++) {  
-            ${'user' . $i} = Users::create([
-                'email' => 'letsfae'.$i.'@126.com',
-                'password' => bcrypt('letsfaego'),
-                'first_name' => 'kevin',
-                'last_name' => 'zhang',
-                'user_name' => 'faeapp'.$i,
-                'gender' => 'male',
-                'birthday' => '1992-02-02',
-                'login_count' => 0, 
-            ]);
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        for ($i = 1; $i < 11; $i++) { 
+            ${'parameters' . $i}  = array(
+            'email' => 'letsfae'.$i.'@126.com', 
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp'.$i,
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+            'login_count' => 0, 
+            );
+            $response = $this->call('post', 'http://'.$this->domain.'/users', ${'parameters' . $i}, [], [], $this->transformHeadersToServerVars($server));
+            $this->refreshApplication();
         }
         for ($i = 1; $i < 11; $i++) { 
             ${'parameter' . $i}  = array(
@@ -560,12 +572,7 @@ class MapTest extends TestCase
             'password' => 'letsfaego',
             'user_name' => 'faeapp'.$i,
             );
-        } 
-        
-        $server = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
-        );
+        }  
         //login of the user. 
         $latitude = 34.031958;
         $longitude = -118.288125;
@@ -676,19 +683,25 @@ class MapTest extends TestCase
 
     //test the response when the type are user,commment,media,chat_room.
     public function testGetMap7() { 
-        $this->markTestSkipped(); 
+        // $this->markTestSkipped(); 
         //register of the user.
-        for ($i = 1; $i < 11; $i++) {  
-            ${'user' . $i} = Users::create([
-                'email' => 'letsfae'.$i.'@126.com',
-                'password' => bcrypt('letsfaego'),
-                'first_name' => 'kevin',
-                'last_name' => 'zhang',
-                'user_name' => 'faeapp'.$i,
-                'gender' => 'male',
-                'birthday' => '1992-02-02',
-                'login_count' => 0, 
-            ]);
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        for ($i = 1; $i < 11; $i++) { 
+            ${'parameters' . $i}  = array(
+            'email' => 'letsfae'.$i.'@126.com', 
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp'.$i,
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+            'login_count' => 0, 
+            );
+            $response = $this->call('post', 'http://'.$this->domain.'/users', ${'parameters' . $i}, [], [], $this->transformHeadersToServerVars($server));
+            $this->refreshApplication();
         }
         for ($i = 1; $i < 11; $i++) { 
             ${'parameter' . $i}  = array(
@@ -696,12 +709,7 @@ class MapTest extends TestCase
             'password' => 'letsfaego',
             'user_name' => 'faeapp'.$i,
             );
-        } 
-        
-        $server = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
-        );
+        }  
         //login of the user. 
         $latitude = 34.031958;
         $longitude = -118.288125;
@@ -812,7 +820,7 @@ class MapTest extends TestCase
 
     //test correct response of the method of updateUserLocation. 
     public function testUpdateUserLocation() {
-        $this->markTestSkipped();
+        // $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -863,7 +871,7 @@ class MapTest extends TestCase
 
     //test whether the input format is right.
     public function testUpdateUserLocation2() {
-        $this->markTestSkipped();
+        // $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -915,7 +923,7 @@ class MapTest extends TestCase
  
     //test the response when the is_mobile is false.
     public function testUpdateUserLocation3() {
-        $this->markTestSkipped();
+        // $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',

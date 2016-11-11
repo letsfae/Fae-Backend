@@ -1451,7 +1451,7 @@ class UsersTest extends TestCase {
             'phone' => $this->testPhone,
         );
         $response = $this->call('post', 'http://'.$this->domain.'/users/account/phone', $parameters2, [], [], $this->transformHeadersToServerVars($server2));   
-        $array2 = json_decode($response->getContent()); 
+        $array2 = json_decode($response->getContent());  
         $result = false;
         $verification = Verifications::where('phone','=', $this->testPhone)->first();
         if ($response->status() == '201') {
