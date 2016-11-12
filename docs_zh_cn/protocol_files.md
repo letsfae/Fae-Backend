@@ -23,7 +23,7 @@ yes
 | description (optional) | 语义化的文件描述 |
 | custom_tag (optional) | 标签化的文件描述 |
 
-文件大小需小于10MB。
+文件大小需小于30MB。
 
 ### response
 

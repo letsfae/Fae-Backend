@@ -14,13 +14,13 @@ no
 | --- | --- | --- |
 | password | string(8-16) | 密码 |
 | email | string(50) | 电邮 |
-| user_name | string(30) | 用户名 |
+| user_name | string(20) | 用户名 |
 | first_name | string(50) | 名字 |
 | last_name | string(50) | 姓氏 |
 | birthday | string(YYYY-MM-DD) | 生日 |
-| gender | string("male", "female") | 性别 |
+| gender | string('male','female') | 性别 |
 
-user_name格式要求为：字母开头，仅可包含大小写字母、数字及下划线，长度6-30。
+user_name格式要求为：仅可包含大小写字母、数字及下划线，长度3-20，对字母大小写不敏感（即显示区分大小写，但AAA与aAa视为相同用户名）。
 
 ### response
 
@@ -215,7 +215,7 @@ yes
 
 所有字段均为可选，但必须至少包含一个字段。这些接口没有特殊操作（有特殊操作的请使用特定接口，如更新password）。
 
-需要注意的是，user_name格式要求为：字母开头，仅可包含大小写字母、数字及下划线，长度6-30。
+需要注意的是，user_name格式要求同用户注册。
 
 ### response
 
@@ -567,7 +567,7 @@ yes
 
 Status: 201
 
-## 保存NameCard
+## 保存NameCard :white_check_mark:
 
 `POST /users/:user_id/name_card/save`
 
@@ -579,7 +579,7 @@ yes
 
 Status: 201
 
-## 取消保存NameCard
+## 取消保存NameCard :white_check_mark:
 
 `DELETE /users/:user_id/name_card/save`
 
@@ -591,7 +591,7 @@ yes
 
 Status: 204
 
-## 获取所有保存的namecard
+## 获取所有保存的namecard :white_check_mark:
 
 `GET /users/name_card/saved`
 

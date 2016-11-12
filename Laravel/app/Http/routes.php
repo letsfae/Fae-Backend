@@ -133,7 +133,8 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     // richtext (hashtags and at)
     $api->get('/richtext/hashtag/{hashtag}', 'App\Api\v1\Controllers\RichTextController@searchHashtag');
     $api->get('/richtext/hashtag/{hashtag}/contains', 'App\Api\v1\Controllers\RichTextController@searchHashtagWithText');
-
+    // feedback
+    $api->post('/feedback', 'App\Api\v1\Controllers\FeedbackController@sendFeedback');
 });
 
 /**
