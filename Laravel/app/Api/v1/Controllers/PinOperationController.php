@@ -486,6 +486,10 @@ class PinOperationController extends Controller {
     public static function checkDistance($user_id, $session_id, $type, $pin_id)
     {
         $obj = self::getObj($type, $pin_id);
+        if($obj->interaction_radius == 0)
+        {
+            return true;
+        }
         if($user_id != $obj->user_id)
         {
             $session = Sessions::find($session_id);
