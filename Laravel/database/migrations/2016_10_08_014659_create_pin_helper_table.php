@@ -20,6 +20,7 @@ class CreatePinHelperTable extends Migration
             $table->integer('pin_id')->unsigned();
             $table->point('geolocation')->nullable();
             $table->integer('duration')->unsigned();
+            $table->boolean('anonymous')->default(false);
             $table->timestamps();
         });
     }

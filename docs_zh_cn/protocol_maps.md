@@ -225,7 +225,7 @@ Status: 200
 
 	{
 		"comment_id": @number,
-		"user_id": @number, 如果非自身创建的pin且anonymous为false，则user_id为null
+		"user_id": @number, 如果非自身创建的pin且anonymous为true，则user_id为null
 		"anonymous": @boolean,
 		"content": @string,
 		"geolocation": {
@@ -263,6 +263,8 @@ yes
 | page | number | 页数，默认为第1页（头30条） |
 
 过滤参数均为可选。
+
+该user发布的anonymous为true的pin将不会被获取（自身的pin除外）。
 
 ### response
 
@@ -355,7 +357,7 @@ Status: 200
 
 	{
 		"media_id": @number,
-		"user_id": @number, 如果非自身创建的pin且anonymous为false，则user_id为null
+		"user_id": @number, 如果非自身创建的pin且anonymous为true，则user_id为null
 		"anonymous": @boolean,
 		"file_ids": [
 			@number, 
@@ -403,6 +405,8 @@ yes
 | page | number | 页数，默认为第1页（头30条） |
 
 过滤参数均为可选。
+
+该user发布的anonymous为true的pin将不会被获取（自身的pin除外）。
 
 ### response
 
