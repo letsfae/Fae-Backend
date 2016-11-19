@@ -48,10 +48,13 @@ yes
 | type | string(user or comment,media,chat_room) | 筛选类型，类型之间用逗号隔开 |
 | max_count (optional) | number | 返回节点最大数量，默认为30，最大为100 |
 | in_duration (optional) | boolean | 只显示在活跃时间内的pin，默认为false |
+| user_updated_in (optional) | number | 显示多久时间内更新过坐标的用户（仅针对user有效），单位min，默认不限制 |
 
 对于一直在更新的user点，可以每隔一段时间获取一次。
 
 user类型节点只能单独获取。其他类型节点可同时获取（根据Pin创建时间降序排序）。
+
+如果app退出到桌面，ios端将无法发送坐标，`user_updated_in`用于过滤超出活跃时间的但在线的用户。
 
 ### response
 
@@ -78,6 +81,8 @@ Status: 200
 	{
 		"type": "user",
 		"user_id": @number,
+		"mini_avatar": @number,
+		"updated_at": @string,
 		"geolocation": [
 			{
 				"latitude": @number,
@@ -129,8 +134,6 @@ yes
 | --- | --- | --- |
 | page (optional) | number | 页数，默认为第1页（头30条） |
 
-如不设定type，则按照tag热度（即引用次数）降序返回。
-
 ### response
 
 Status: 200
@@ -167,6 +170,38 @@ Status: 200
 		"title": @string,
 		"color": @string
 	}
+
+## 获取指定tag的pin
+
+`GET /tags/:tag_id/pin`
+
+### auth
+
+yes
+
+### filters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| page (optional) | number | 页数，默认为第1页（头30条） |
+
+### response
+
+Status: 200
+
+	page: @number
+	total_pages: @number
+
+	-----
+
+	[
+		{
+			"pin_id": @number,
+			"type": @number
+		},
+		{...},
+		{...}
+	]
 
 ## 发布comment :white_check_mark:
 

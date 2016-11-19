@@ -206,3 +206,8 @@
 - pin_id
 - geolocation
 - created_at
+
+## tag_helper
+- id PK
+- tag_id FK
+- pin_id FK
