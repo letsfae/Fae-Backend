@@ -32,7 +32,7 @@ Status: 201
 
 取地图数据 :white_check_mark:
 
-`GET /map`
+## `GET /map`
 
 ### auth
 
@@ -82,7 +82,7 @@ Status: 200
 		"type": "user",
 		"user_id": @number,
 		"mini_avatar": @number,
-		"updated_at": @string,
+		"location_updated_at": @string,
 		"geolocation": [
 			{
 				"latitude": @number,

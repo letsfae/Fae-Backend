@@ -49,6 +49,7 @@
 - client_version varchar(50)
 - geolocation
 - is_mobile boolean
+- location_updated_at
 - created_at
 
 ## chats
