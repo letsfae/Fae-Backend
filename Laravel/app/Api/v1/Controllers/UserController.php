@@ -32,6 +32,10 @@ class UserController extends Controller
     public function signUp() 
     {
         UserController::signUpValidation($this->request);
+        if(Users::where('user_name', 'ilike', $this->request->user_name)->exists())
+        {
+            return $this->response->errorBadRequest("user name already exists");
+        }
         $user = new Users;
         $user->email = strtolower($this->request->email);
         $user->user_name = $this->request->user_name;
@@ -53,41 +57,34 @@ class UserController extends Controller
     public function updateAccount() 
     {
         $this->updateAccountValidation($this->request);
-        $flag = true;
         $user = Users::find($this->request->self_user_id);
         if($this->request->has('first_name'))
         {
-            $flag = false;
             $user->first_name = $this->request->first_name;
         }
         if($this->request->has('last_name'))
         {
-            $flag = false;
             $user->last_name = $this->request->last_name;
         }
         if($this->request->has('gender'))
         {
-            $flag = false;
             $user->gender = $this->request->gender;
         }
         if($this->request->has('birthday'))
         {
-            $flag = false;
             $user->birthday = $this->request->birthday;
         }
         if($this->request->has('user_name'))
         {
-            $flag = false;
+            if(Users::where('user_name', 'ilike', $this->request->user_name)->exists())
+            {
+                return $this->response->errorBadRequest("user name already exists");
+            }
             $user->user_name = $this->request->user_name;
         }
         if($this->request->has('mini_avatar'))
         {
-            $flag = false;
             $user->mini_avatar = $this->request->mini_avatar;
-        }
-        if($flag)
-        {
-            return $this->response->errorBadRequest();
         }
         $user->save();
         return $this->response->created();
@@ -228,7 +225,7 @@ class UserController extends Controller
         }
         $validator = Validator::make($input, [
             'email' => 'required|unique:users,email|max:50|email',
-            'user_name' => 'required|unique:users,user_name|regex:/^[a-zA-Z][a-zA-Z0-9_]{5,29}$/',
+            'user_name' => 'required|regex:/^[a-zA-Z0-9_]{3,20}$/',
             'password' => 'required|between:8,16',
             'first_name' => 'required|string|max:50',
             'last_name' => 'required|string|max:50',
@@ -244,12 +241,13 @@ class UserController extends Controller
     private function updateAccountValidation(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'first_name' => 'filled|string|max:50',
-            'last_name' => 'filled|string|max:50',
-            'gender' => 'in:male,female',
-            'birthday' => 'filled|date_format:Y-m-d|before:tomorrow|after:1900-00-00',
-            'user_name' => 'filled|unique:users,user_name|regex:/^[a-zA-Z][a-zA-Z0-9_]{5,29}$/',
-            'mini_avatar' => 'filled|integer|between:0,100',
+            'first_name' => 'filled|required_without_all:last_name,gender,birthday,user_name,mini_avatar|string|max:50',
+            'last_name' => 'filled|required_without_all:first_name,gender,birthday,user_name,mini_avatar|string|max:50',
+            'gender' => 'filled|required_without_all:last_name,first_name,birthday,user_name,mini_avatar|in:male,female',
+            'birthday' => 'filled|required_without_all:last_name,gender,first_name,user_name,mini_avatar|
+                           date_format:Y-m-d|before:tomorrow|after:1900-00-00',
+            'user_name' => 'filled|required_without_all:last_name,gender,birthday,first_name,mini_avatar|regex:/^[a-zA-Z0-9_]{3,20}$/',
+            'mini_avatar' => 'filled|required_without_all:last_name,gender,birthday,user_name,first_name|integer|between:0,100',
         ]);
         if($validator->fails())
         {

@@ -86,7 +86,7 @@ class AuthenticationController extends Controller {
             
             return response()->json([
                 'message' => 'Bad request, Password incorrect!',
-                'status_code' => 403,
+                'status_code' => '403-1',
                 'login_count' => $users->login_count,
             ], 403);
             
