@@ -61,6 +61,10 @@ class TagController extends Controller implements RefInterface {
         return $this->response->array(array('tag_id' => $tag->id, 'title' => $tag->title, 'color' => $tag->color));
     }
 
+    public function getAllPins($tag_id) {
+    	
+    }
+
     /**
      * only for controller
      */

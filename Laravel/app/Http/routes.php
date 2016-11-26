@@ -115,6 +115,7 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->post('/tags', 'App\Api\v1\Controllers\TagController@create');
     $api->get('/tags', 'App\Api\v1\Controllers\TagController@getArray');
     $api->get('/tags/{tag_id}', 'App\Api\v1\Controllers\TagController@getOne');
+    $api->get('/tags/{tag_id}/pin', 'App\Api\v1\Controllers\TagController@getAllPins');
     // pin operations
     $api->post('/pins/{type}/{pin_id}/read', 'App\Api\v1\Controllers\PinOperationController@read');
     $api->post('/pins/{type}/{pin_id}/like', 'App\Api\v1\Controllers\PinOperationController@like');
