@@ -212,3 +212,4 @@
 - id PK
 - tag_id FK
 - pin_id FK
+- type enum(media,comment)
