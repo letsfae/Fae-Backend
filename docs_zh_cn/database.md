@@ -21,6 +21,11 @@
 - user_id FK
 - status integer
 - message text
+- show_user_name default true
+- show_email
+- show_phone
+- show_gender
+- show_birthday
 
 ## friendships
 - id PK

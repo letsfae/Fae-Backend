@@ -239,6 +239,8 @@ Status: 200
 			"user_id": @number,
 			"content": @string,
 			"created_at": @string,
+			"vote_up_count": @number,
+			"vote_down_count": @number,
 			"pin_comment_operations": {
 				"vote": @string(up/down/null),
 				"vote_timestamp": @string

@@ -363,7 +363,11 @@ Status: 200
 	{
 		"user_id": @number,
 		"user_name": @string,
-		"mini_avatar": @number
+		"mini_avatar": @number，
+		"birthday": @string,
+		"email": @boolean,
+		"phone": @boolean,
+		"gender": @boolean
 	}
 
 ## 获取其他用户资料 get profile :white_check_mark:
@@ -394,7 +398,7 @@ yes
 
 Status: 201
 
-## 获取用户自己的资料隐私设定 get self profile privacy (待定)
+## 获取用户自己的资料隐私设定 get self profile privacy
 
 `GET /users/profile/privacy`
 
@@ -407,10 +411,14 @@ yes
 Status: 200
 
 	{
-		"xxx": @xxx
+		"show_user_name": @boolean,
+		"show_email": @boolean,
+		"show_phone": @boolean,
+		"show_birthday": @boolean,
+		"show_gender": @boolean
 	}
 
-## 更新自己的资料隐私设定 update self profile privacy (待定)
+## 更新自己的资料隐私设定 update self profile privacy
 
 `POST /users/profile/privacy`
 
@@ -422,9 +430,15 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| xxx | boolean | xxx |
+| show_user_name | boolean | 显示用户名 |
+| show_email | boolean | 显示email |
+| show_phone | boolean | 显示电话 |
+| show_birthday | boolean | 显示生日 |
+| show_gender | boolean | 显示性别 |
 
 所有字段均为可选，但必须至少包含一个字段。
+
+默认所有字段均为true。
 
 ### response
 
