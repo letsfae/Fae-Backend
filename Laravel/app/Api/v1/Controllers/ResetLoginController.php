@@ -71,11 +71,17 @@ class ResetLoginController extends Controller
         }
         
         // send code to this email
+        $email = "Hello!\n\n";
+        $email = $email."This is Fae Support. Below is the code for resetting your password. Please enter the code on your device and proceed to creating your new password. The code will be valid for 3 hours and when a new one is issued.\n";
+        $email = $email."\n".$verification_code."\n\n";
+        $email = $email."Have a wonderful day!\n";
+        $email = $email."Fae Support\n\n";
+        $email = $email."*If you did not request this change then please ignore the email.\n";
         
-        Mail::raw($verification_code, function ($message) {
-            $message->from('auto-reply@letsfae.com', 'Laravel');
+        Mail::raw($email, function ($message) {
+            $message->from('support@letsfae.com', 'Fae Support');
 
-            $message->to($this->request->email);
+            $message->to($this->request->email)->subject('Fae-Reset your password');
         });
 
         return $this->response->created();

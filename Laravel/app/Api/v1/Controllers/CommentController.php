@@ -37,13 +37,18 @@ class CommentController extends Controller implements PinInterface
         $comment->user_id = $this->request->self_user_id;
         $comment->content = $this->request->content;
         $comment->geolocation = new Point($this->request->geo_latitude, $this->request->geo_longitude);
+        $comment->duration = $this->request->duration;
+        if($this->request->has('interaction_radius'))
+        {
+            $comment->interaction_radius = $this->request->interaction_radius;
+        }
         $comment->save();
-
         // pin helper
         $pin_helper = new PinHelper();
         $pin_helper->type = 'comment';
         $pin_helper->geolocation =  new Point($this->request->geo_latitude, $this->request->geo_longitude);
         $pin_helper->pin_id = $comment->id;
+        $pin_helper->duration = $comment->duration;
         $pin_helper->save();
         
         //---------------- for hashtag ----------------
@@ -85,6 +90,17 @@ class CommentController extends Controller implements PinInterface
             $pin_helper->geolocation = new Point($this->request->geo_latitude, $this->request->geo_longitude);
             $pin_helper->save();
         }
+        if($this->request->has('duration'))
+        {
+            $comment->duration = $this->request->duration;
+            $pin_helper = PinHelper::where('pin_id', $comment_id)->where('type', 'comment')->first();
+            $pin_helper->duration = $comment->duration;
+            $pin_helper->save();
+        }
+        if($this->request->has('interaction_radius'))
+        {
+            $comment->interaction_radius = $this->request->interaction_radius;
+        }
         $comment->save();
         return $this->response->created();
     }
@@ -100,7 +116,7 @@ class CommentController extends Controller implements PinInterface
         {
             return $this->response->errorNotFound();
         }
-        $user_pin_operations = PinOperationController::isSavedisLiked('comment', $comment_id, $this->request->self_user_id);
+        $user_pin_operations = PinOperationController::getOperations('comment', $comment_id, $this->request->self_user_id);
         return $this->response->array(array('comment_id' => $comment->id, 'user_id' => $comment->user_id, 
                 'content' => $comment->content, 'geolocation' => array('latitude' => $comment->geolocation->getLat(), 
                 'longitude' => $comment->geolocation->getLng()), 'created_at' => $comment->created_at->format('Y-m-d H:i:s'),
@@ -144,7 +160,6 @@ class CommentController extends Controller implements PinInterface
             return $this->response->errorNotFound();
         }
         $this->getUserValidation($this->request);
-        //date_default_timezone_set("UTC");
         $start_time = $this->request->has('start_time') ? $this->request->start_time:'1970-01-01 00:00:00';
         $end_time = $this->request->has('end_time') ? $this->request->end_time:date("Y-m-d H:i:s");
         $page =  $this->request->has('page') ? $this->request->page:1;
@@ -161,7 +176,7 @@ class CommentController extends Controller implements PinInterface
         $info = array();
         foreach ($comments as $comment)
         {
-            $user_pin_operations = PinOperationController::isSavedisLiked('comment', $comment->id, $this->request->self_user_id);
+            $user_pin_operations = PinOperationController::getOperations('comment', $comment->id, $this->request->self_user_id);
             $info[] = array('comment_id' => $comment->id, 'user_id' => $comment->user_id, 'content' => $comment->content, 
                     'geolocation' => array('latitude' => $comment->geolocation->getLat(), 'longitude' => $comment->geolocation->getLng()), 
                     'created_at' => $comment->created_at->format('Y-m-d H:i:s'), 'user_pin_operations' => $user_pin_operations);    
@@ -175,6 +190,8 @@ class CommentController extends Controller implements PinInterface
             'geo_longitude' => 'required|numeric|between:-180,180',
             'geo_latitude' => 'required|numeric|between:-90,90',
             'content' => 'required|string|max:500',
+            'duration' => 'required|int|min:0',
+            'interaction_radius' => 'filled|int|min:0'
         ]);
         if($validator->fails())
         {
@@ -185,9 +202,13 @@ class CommentController extends Controller implements PinInterface
     private function updateValidation(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'geo_longitude' => 'filled|required_with:geo_latitude|required_without:content|numeric|between:-180,180',
-            'geo_latitude' => 'filled|required_with:geo_longitude|required_without:content|numeric|between:-90,90',
-            'content' => 'filled|required_without_all:geo_longitude,geo_latitude|string|max:500',
+            'geo_longitude' => 'filled|required_with:geo_latitude|required_without:content,duration,interaction_radius|
+                                numeric|between:-180,180',
+            'geo_latitude' => 'filled|required_with:geo_longitude|required_without:content,duration,interaction_radius|
+                                numeric|between:-90,90',
+            'content' => 'filled|required_without_all:geo_longitude,geo_latitude,duration,interaction_radius|string|max:500',
+            'duration' => 'filled|required_without_all:geo_longitude,geo_latitude,content,interaction_radius|int|min:0',
+            'interaction_radius' => 'filled|required_without_all:geo_longitude,geo_latitude,duration,content|int|min:0'
         ]);
         if($validator->fails())
         {

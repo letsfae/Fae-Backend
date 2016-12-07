@@ -2,10 +2,10 @@
 
 分页数据返回在response header中。
 
-对于具有duration及interaction_radius的pin:
+interaction_radius:
 
 - duration为pin的活跃时间，过活跃时间之后不会在map中显示，但是可以在mapboard中查到。后端通过get map的`in_duration`参数实现。
-- interaction_radius为可交互范围，该范围内用户才可以参与pin的交互。交互的定义为：like, comment, vote, reply。
+- interaction_radius，该范围内用户才可以参与pin的交互。交互的定义为：like, comment, vote, reply。
 
 ## 更新用户自身的当前坐标 :white_check_mark:
 
@@ -184,7 +184,8 @@ yes
 | geo_latitude | number | 纬度 |
 | geo_longitude | number | 经度 |
 | duration | number | 持续显示时间，前端需默认为180,单位为min |
-| interaction_radius (optional) | number | 交互范围，默认不存在，单位km |
+| interaction_radius (optional) | number | 交互范围，默认不存在，单位m |
+| anonymous (optinal) | boolean | 匿名，默认为false |
 
 ### response
 
@@ -224,13 +225,17 @@ Status: 200
 
 	{
 		"comment_id": @number,
-		"user_id": @number
+		"user_id": @number, 如果非自身创建的pin且anonymous为false，则user_id为null
+		"anonymous": @boolean,
 		"content": @string,
 		"geolocation": {
 			"latitude": @number,
 			"longitude": @number
 		},
-		"created_at": @string,,
+		"created_at": @string,
+		"liked_count": @number,
+		"saved_count": @number,
+		"comment_count": @number,
 		"user_pin_operations": {
 			"is_read": @boolean, 对当前用户是否已读
 			"read_timestamp" @string,
@@ -305,7 +310,8 @@ yes
 | geo_latitude | number | 纬度 |
 | geo_longitude | number | 经度 |
 | duration | number | 持续显示时间，前端需默认为180,单位为min |
-| interaction_radius (optional) | number | 交互范围，默认不存在，单位km |
+| interaction_radius (optional) | number | 交互范围，默认不存在，单位m |
+| anonymous (optinal) | boolean | 匿名，默认为false |
 
 ### response
 
@@ -349,7 +355,8 @@ Status: 200
 
 	{
 		"media_id": @number,
-		"user_id": @number
+		"user_id": @number, 如果非自身创建的pin且anonymous为false，则user_id为null
+		"anonymous": @boolean,
 		"file_ids": [
 			@number, 
 			..., 
@@ -366,6 +373,9 @@ Status: 200
 			"longitude": @number
 		},
 		"created_at": @string,
+		"liked_count": @number,
+		"saved_count": @number,
+		"comment_count": @number,
 		"user_pin_operations": {
 			"is_read": @boolean, 对当前用户是否已读
 			"read_timestamp" @string,
@@ -577,7 +587,7 @@ yes
 | geo_latitude | number | 纬度 |
 | geo_longitude | number | 经度 |
 | duration | number | 持续显示时间，前端需默认为1440,单位为min |
-| interaction_radius (optional) | number | 交互范围，默认不存在，单位km |
+| interaction_radius (optional) | number | 交互范围，默认不存在，单位m |
 
 ### response
 

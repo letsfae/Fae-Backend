@@ -11,7 +11,7 @@ use App\PinHelper;
 use App\Comments;
 use App\ChatRooms;
 use App\Medias;
-use APP\user_exts;
+use App\User_exts;
 use Validator;
 use DB;
 use Phaza\LaravelPostgis\Eloquent\PostgisTrait;
@@ -36,6 +36,8 @@ class MapController extends Controller
         $latitude = $this->request->geo_latitude;
         $radius = $this->request->has('radius') ? $this->request->radius:200;
         $max_count = $this->request->has('max_count') ? $this->request->max_count:30;
+        $in_duration_str = $this->request->has('in_duration') ? $this->request->in_duration:'false';
+        $in_duration = $in_duration_str == 'true' ? true:false;
         $info = array();
         $type = array();
         if($this->request->type == 'user')
@@ -46,7 +48,9 @@ class MapController extends Controller
                                     ORDER BY ST_Distance(location, ST_SetSRID(ST_Point(:longitude, :latitude),4326)), user_id
                                     LIMIT :max_count;", 
                                     array('longitude' => $longitude, 'latitude' => $latitude,
-                                          'radius' => $radius, 'max_count' => $max_count));                    
+                                          'radius' => $radius, 'max_count' => $max_count));   
+            // $distance = DB::select("SELECT ST_Distance_Spheroid(ST_SetSRID(ST_Point(55, 56.1),4326), ST_SetSRID(ST_Point(56, 56),4326), 'SPHEROID[\"WGS 84\",6378137,298.257223563]')");
+            // echo $distance[0]->st_distance_spheroid; exit();                 
             foreach($sessions as $session)
             {
                 $user_exts = User_exts::find($session->user_id);
@@ -98,14 +102,29 @@ class MapController extends Controller
             }
             
             $type_string = implode(",", $type);
-            $pin_helpers = DB::select("SELECT pin_id, type
-                                       FROM pin_helper 
-                                       WHERE st_dwithin(geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true) 
-                                       AND type IN (".$type_string.") 
-                                       ORDER BY created_at 
-                                       LIMIT :max_count;",
-                                       array('longitude' => $longitude, 'latitude' => $latitude,
-                                             'radius' => $radius, 'max_count' => $max_count));
+
+            $sql_select = "";
+            if($in_duration == true)
+            {
+                $sql_select = "SELECT pin_id, type
+                               FROM pin_helper 
+                               WHERE st_dwithin(geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true)
+                               AND CURRENT_TIMESTAMP - created_at < duration * INTERVAL '1 min' 
+                               AND type IN (".$type_string.")
+                               ORDER BY created_at 
+                               LIMIT :max_count;";
+            }
+            else
+            {
+                $sql_select = "SELECT pin_id, type
+                               FROM pin_helper 
+                               WHERE st_dwithin(geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true)
+                               AND type IN (".$type_string.")
+                               ORDER BY created_at 
+                               LIMIT :max_count;";
+            }
+            $pin_helpers = DB::select($sql_select, array('longitude' => $longitude, 'latitude' => $latitude,
+                                                         'radius' => $radius, 'max_count' => $max_count));
             foreach ($pin_helpers as $pin_helper)
             {
                 if($pin_helper->type == 'comment')
@@ -150,132 +169,6 @@ class MapController extends Controller
         }
         return $this->response->array($info);   
     }
-        
-
-
-
-    // public function getMap()
-    // {
-    //     $this->getMapValidation($this->request);
-    //     $location = new Point($this->request->geo_latitude,$this->request->geo_longitude);
-    //     $longitude = $this->request->geo_longitude;
-    //     $latitude = $this->request->geo_latitude;
-    //     $radius = $this->request->has('radius') ? $this->request->radius:200;
-    //     $max_count = $this->request->has('max_count') ? $this->request->max_count:30;
-    //     $type = array();
-    //     if($this->request->has('type'))
-    //     {
-    //         $types = explode(',',$this->request->type);
-    //         foreach($types as $t)
-    //         {
-    //             $t = trim($t);
-    //             switch($t)
-    //             {
-    //                 case 'user':
-    //                     $type[] = 'user';
-    //                     break;
-    //                 case 'comment':
-    //                     $type[] = 'comment';
-    //                     break;
-    //                 case 'media':
-    //                     $type[] = 'media';
-    //                     break;
-    //                 case 'faevor':
-    //                     $type[] = 'faevor';
-    //                     break;
-    //                 case 'chat_room':
-    //                     $type[] = 'chat_room';
-    //                     break;
-    //                 default:
-    //                     return $this->response->errorNotFound();
-    //             }
-    //         }
-    //     }
-    //     else
-    //     {
-    //         array_push($type, 'user', 'comment', 'media', 'faevor', 'chat_room');
-    //     }
-    //     $info = array();
-    //     foreach($type as $t)
-    //     {
-    //         if($max_count <= 0)
-    //         {
-    //             break;
-    //         }
-    //         switch($t)
-    //         {
-    //             case 'user':
-                    // $sessions = DB::select("SELECT user_id,location,created_at FROM sessions s WHERE st_dwithin(s.location,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true) LIMIT :max_count", array('longitude' => $longitude, 'latitude' => $latitude, 'radius' => $radius, 'max_count' => $max_count));
-                    // foreach($sessions as $session)
-                    // {
-                    //     $location = Geometry::fromWKB($session->location);
-                    //     $locations = array();
-                    //     for($i = 0; $i < 5; $i++)
-                    //     {
-                    //         $distance = mt_rand(1,200);
-                    //         $degree = mt_rand(0,360);
-                    //         $locations_original = DB::select("select ST_AsText(ST_Project(ST_SetSRID(ST_Point(:longitude, :latitude),4326),:distance, radians(:degree)))", array('longitude' => $location->getLng(),'latitude'=>$location->getLat(),'distance'=>$distance,'degree'=>$degree));
-                    //         $locations[] = Point::fromWKT($locations_original[0]->st_astext);
-                    //     } 
-                    //     $info[] = ['type'=>'user','user_id' => $session->user_id,'geolocation'=>[['latitude'=>$locations[0]->getLat(),
-                    //     'longitude'=>$locations[0]->getLng()],['latitude'=>$locations[1]->getLat(),
-                    //     'longitude'=>$locations[1]->getLng()],['latitude'=>$locations[2]->getLat(),
-                    //     'longitude'=>$locations[2]->getLng()],['latitude'=>$locations[3]->getLat(),
-                    //     'longitude'=>$locations[3]->getLng()],['latitude'=>$locations[4]->getLat(),
-                    //     'longitude'=>$locations[4]->getLng()]],'created_at'=>$session->created_at];
-                    //     $max_count--;
-    //                 }
-    //                 break;
-                // case 'comment':
-                //     $comments = DB::select("SELECT id,user_id,content,geolocation,created_at FROM comments c WHERE st_dwithin(c.geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true) LIMIT :max_count", array('longitude' => $longitude, 'latitude'=> $latitude, 'radius' => $radius, 'max_count' => $max_count));
-                //     foreach($comments as $comment)
-                //     {
-                //         $location = Geometry::fromWKB($comment->geolocation);
-                //         $info[] = ['type'=>'comment','comment_id' => $comment->id,'user_id' => $comment->user_id,'content' => $comment->content ,'geolocation'=>['latitude'=>$location->getLat(), 'longitude'=>$location->getLng()],'created_at'=>$comment->created_at];
-                //         $max_count--;
-                //     }
-                //     break;
-                // case 'media':
-                //     $medias = DB::select("SELECT * FROM medias m WHERE st_dwithin(m.geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true) LIMIT :max_count", array('longitude' => $longitude, 'latitude'=> $latitude, 'radius' => $radius, 'max_count' => $max_count));
-                //     foreach ($medias as $media)
-                //     {
-                //         $location = Geometry::fromWKB($media->geolocation);
-                //         $info[] = ['type'=>'media', 'media_id' => $media->id, 'user_id' => $media->user_id, 'file_ids' => explode(';', $media->file_ids), 'tag_ids' => explode(';', $media->tag_ids), 'description' => $media->description, 'geolocation'=>['latitude' => $location->getLat(), 'longitude' => $location->getLng()], 'created_at' => $media->created_at];
-                //         $max_count--;
-                //     }
-                //     break;
-                // case 'faevor':
-                //     $faevors = DB::select("SELECT * FROM faevors f WHERE st_dwithin(f.geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true) LIMIT :max_count", array('longitude' => $longitude, 'latitude'=> $latitude, 'radius' => $radius, 'max_count' => $max_count));
-                //     foreach ($faevors as $faevor )
-                //     {
-                //         $location = Geometry::fromWKB($faevor->geolocation);
-                //         $file_ids = is_null($faevor->file_ids) ? null : explode(';', $faevor->file_ids);
-                //         $tag_ids = is_null($faevor->tag_ids) ? null : explode(';', $faevor->tag_ids);
-                //         $info[] = ['type'=>'faevor', 'faevor_id' => $faevor->id, 'user_id' => $faevor->user_id, 'file_ids' => $file_ids, 'tag_ids' => $tag_ids, 'description' => $faevor->description, 'name' => $faevor->name, 'budget' => $faevor->budget, 'bonus' => $faevor->bonus, 'due_time' => $faevor->due_time, 'expire_time' => $faevor->expire_time, 'geolocation' => ['latitude' => $location->getLat(), 'longitude' => $location->getLng()], 'created_at' => $faevor->created_at];
-                //         $max_count--;
-                //     }
-                //     break;
-                // case 'chat_room':
-                //     $chat_rooms = DB::select("SELECT * FROM chat_rooms c WHERE st_dwithin(c.geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true) LIMIT :max_count", array('longitude' => $longitude, 'latitude'=> $latitude, 'radius' => $radius, 'max_count' => $max_count));
-                //     foreach ($chat_rooms as $chat_room)
-                //     {
-                //         $location = Geometry::fromWKB($faevor->geolocation);
-                //         $info[] = ['type' => 'chat_room', 'chat_room_id' => $chat_room->id, 'title' => $chat_room->title, 
-                //             'user_id' => $chat_room->user_id, 'geolocation' => ['latitude' => $location->getLat(), 
-                //             'longitude' => $location->getLng()], 'last_message' => $chat_room->last_message, 
-                //             'last_message_sender_id' => $chat_room->last_message_sender_id,
-                //             'last_message_type' => $chat_room->last_message_type, 
-                //             'last_message_timestamp' => $chat_room->last_message_timestamp,
-                //             'created_at' => $chat_room->created_at];
-                //         $max_count--;
-                //     }
-                //     break;
-    //             default:
-    //                 return $this->response->errorNotFound();
-    //         }
-    //     }
-    //     return $this->response->array($info);
-    // }
 
     private function getMapValidation(Request $request)
     {
@@ -285,6 +178,7 @@ class MapController extends Controller
             'radius' => 'filled|integer|min:0',
             'type' => 'required|string',
             'max_count' => 'filled|integer|between:0,100',
+            'in_duration' => 'filled|in:true,false'
         ]);
         if($validator->fails())
         {

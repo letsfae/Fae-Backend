@@ -62,9 +62,9 @@ class ChatController extends Controller
         if(Config::get('app.pushback')==true) {
             $sessions = Sessions::where('user_id', $receiver_id)->get();
             foreach($sessions as $key=>$value) {
-                if ($value->is_mobile && !empty($value->device_id)){
-                    $message = PushNotification::Message('New message',array( 
-                        'badge' => 1, 
+                if ($value->is_mobile && !empty($value->device_id)){ 
+                    $message = PushNotification::Message('New message',array(
+                        'badge' => SyncController::getAPNSCount($receiver_id), 
                         'custom' => array('custom data' => array(
                             'type' => 'chat_new_message',
                             'chat_id' => $chat->id,
@@ -77,9 +77,14 @@ class ChatController extends Controller
                         ))
                     ));  
 
-                    $collection = PushNotification::app('appNameIOS')
+                    try{
+                        $collection = PushNotification::app('appNameIOS')
                         ->to($value->device_id)
                         ->send($message);
+                    }catch(\Exception $e){
+                        
+                    }
+                    
                 }
             }
         }

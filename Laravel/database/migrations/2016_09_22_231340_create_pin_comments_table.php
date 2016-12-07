@@ -16,7 +16,6 @@ class CreatePinCommentsTable extends Migration
             $table->increments('id');
              $table->enum('type',['media','comment']);
             $table->integer('pin_id')->unsigned();
-            //$table->foreign('pin_id')->references('id')->on('medias');
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
             $table->string('content',100)->nullable();

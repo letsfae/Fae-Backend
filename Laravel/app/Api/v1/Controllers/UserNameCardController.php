@@ -102,7 +102,7 @@ class UserNameCardController extends Controller
         }
         if($this->request->has('show_age'))
         {
-            if(strtolower($this->request->show_age) == 'true')
+            if($this->request->show_age == 'true')
             {
                 $nameCard->show_age = true;
             }
@@ -113,7 +113,7 @@ class UserNameCardController extends Controller
         }
         if($this->request->has('show_gender'))
         {
-            if(strtolower($this->request->show_gender) == 'true')
+            if($this->request->show_gender == 'true')
             {
                 $nameCard->show_gender = true;
             }
@@ -181,8 +181,8 @@ class UserNameCardController extends Controller
             'nick_name' => 'filled|required_without_all:short_intro,tag_ids,show_age,show_gender|alpha_num:50',
             'short_intro' => 'filled|required_without_all:nick_name,tag_ids,show_age,show_gender|string|max:200',
             'tag_ids' => 'filled|required_without_all:nick_name,short_intro,show_age,show_gender|regex:/^(\d+\;){0,2}\d+$/',
-            'show_age' => 'filled|required_without_all:nick_name,short_intro,tag_ids,show_gender|in:TRUE,True,true,FALSE,False,false',
-            'show_gender' => 'filled|required_without_all:nick_name,short_intro,tag_ids,show_age|in:TRUE,True,true,FALSE,False,false'
+            'show_age' => 'filled|required_without_all:nick_name,short_intro,tag_ids,show_gender|in:true,false',
+            'show_gender' => 'filled|required_without_all:nick_name,short_intro,tag_ids,show_age|in:true,false'
         ]);
         if($validator->fails())
         {
@@ -193,8 +193,8 @@ class UserNameCardController extends Controller
                     $validator = Validator::make($request->all(), [
                         'nick_name' => 'filled|alpha_num:50',
                         'tag_ids' => 'filled|regex:/^(\d+\;){0,2}\d+$/',
-                        'show_age' => 'filled|in:TRUE,True,true,FALSE,False,false',
-                        'show_gender' => 'filled|in:TRUE,True,true,FALSE,False,false'
+                        'show_age' => 'filled|in:true,false',
+                        'show_gender' => 'filled|in:true,false'
                     ]);
                     if($validator->fails())
                     {
