@@ -86,13 +86,13 @@ class ChatRoomController extends Controller implements PinInterface
         if($this->request->has('duration'))
         {
             $chat_room->duration = $this->request->duration;
-            $pin_helper = PinHelper::where('pin_id', $hat_room_id)->where('type', 'chat_room')->first();
-            $pin_helper->duration = $hat_room->duration;
+            $pin_helper = PinHelper::where('pin_id', $chat_room_id)->where('type', 'chat_room')->first();
+            $pin_helper->duration = $chat_room->duration;
             $pin_helper->save();
         }
         if($this->request->has('interaction_radius'))
         {
-            $hat_room->interaction_radius = $this->request->interaction_radius;
+            $chat_room->interaction_radius = $this->request->interaction_radius;
         }
         $chat_room->save();
         return $this->response->created();

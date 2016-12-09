@@ -12,6 +12,7 @@ use App\Comments;
 use App\ChatRooms;
 use App\Medias;
 use App\User_exts;
+use App\Users;
 use Validator;
 use DB;
 use Phaza\LaravelPostgis\Eloquent\PostgisTrait;
@@ -38,17 +39,33 @@ class MapController extends Controller
         $max_count = $this->request->has('max_count') ? $this->request->max_count:30;
         $in_duration_str = $this->request->has('in_duration') ? $this->request->in_duration:'false';
         $in_duration = $in_duration_str == 'true' ? true:false;
+        $user_updated_in = $this->request->has('user_updated_in') ? $this->request->user_updated_in:0;
         $info = array();
         $type = array();
         if($this->request->type == 'user')
         {
-            $sessions = DB::select("SELECT user_id,location,created_at
-                                    FROM sessions
-                                    WHERE st_dwithin(location,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true)
-                                    ORDER BY ST_Distance(location, ST_SetSRID(ST_Point(:longitude, :latitude),4326)), user_id
-                                    LIMIT :max_count;", 
-                                    array('longitude' => $longitude, 'latitude' => $latitude,
-                                          'radius' => $radius, 'max_count' => $max_count));   
+            $sessions = array();
+            if($user_updated_in == 0)
+            {
+                $sessions = DB::select("SELECT user_id,location,created_at
+                                        FROM sessions
+                                        WHERE st_dwithin(location,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true)
+                                        ORDER BY ST_Distance(location, ST_SetSRID(ST_Point(:longitude, :latitude),4326)), user_id
+                                        LIMIT :max_count;", 
+                                        array('longitude' => $longitude, 'latitude' => $latitude,
+                                              'radius' => $radius, 'max_count' => $max_count));
+            }
+            else
+            {
+                $sessions = DB::select("SELECT user_id,location,created_at
+                                        FROM sessions
+                                        WHERE st_dwithin(location,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true)
+                                        AND CURRENT_TIMESTAMP - location_updated_at < ".strval($user_updated_in)." * INTERVAL '1 min' 
+                                        ORDER BY ST_Distance(location, ST_SetSRID(ST_Point(:longitude, :latitude),4326)), user_id
+                                        LIMIT :max_count;", 
+                                        array('longitude' => $longitude, 'latitude' => $latitude,
+                                              'radius' => $radius, 'max_count' => $max_count));
+            }
             // $distance = DB::select("SELECT ST_Distance_Spheroid(ST_SetSRID(ST_Point(55, 56.1),4326), ST_SetSRID(ST_Point(56, 56),4326), 'SPHEROID[\"WGS 84\",6378137,298.257223563]')");
             // echo $distance[0]->st_distance_spheroid; exit();                 
             foreach($sessions as $session)
@@ -67,13 +84,20 @@ class MapController extends Controller
                     $locations_original = DB::select("select ST_AsText(ST_Project(ST_SetSRID(ST_Point(:longitude,:latitude),4326),:distance, radians(:degree)))", 
                         array('longitude' => $location->getLng(),'latitude'=>$location->getLat(),'distance'=>$distance,'degree'=>$degree));
                         $locations[] = Point::fromWKT($locations_original[0]->st_astext);
-                } 
-                $info[] = ['type'=>'user','user_id' => $session->user_id,'geolocation'=>[['latitude'=>$locations[0]->getLat(),
-                            'longitude'=>$locations[0]->getLng()],['latitude'=>$locations[1]->getLat(),
-                            'longitude'=>$locations[1]->getLng()],['latitude'=>$locations[2]->getLat(),
-                            'longitude'=>$locations[2]->getLng()],['latitude'=>$locations[3]->getLat(),
-                            'longitude'=>$locations[3]->getLng()],['latitude'=>$locations[4]->getLat(),
-                            'longitude'=>$locations[4]->getLng()]],'created_at'=>$session->created_at];
+                }
+                $user = Users::find($session->user_id);
+                if(is_null($user))
+                {
+                    continue;
+                }
+                $info[] = ['type'=>'user', 'user_id' => $session->user_id, 
+                           'mini_avatar' => $user->mini_avatar, 'geolocation'=>[
+                           ['latitude'=>$locations[0]->getLat(),'longitude'=>$locations[0]->getLng()],
+                           ['latitude'=>$locations[1]->getLat(),'longitude'=>$locations[1]->getLng()],
+                           ['latitude'=>$locations[2]->getLat(),'longitude'=>$locations[2]->getLng()],
+                           ['latitude'=>$locations[3]->getLat(),'longitude'=>$locations[3]->getLng()],
+                           ['latitude'=>$locations[4]->getLat(),'longitude'=>$locations[4]->getLng()]],
+                           'created_at'=>$session->created_at];
             }
         }
         else
@@ -178,7 +202,8 @@ class MapController extends Controller
             'radius' => 'filled|integer|min:0',
             'type' => 'required|string',
             'max_count' => 'filled|integer|between:0,100',
-            'in_duration' => 'filled|in:true,false'
+            'in_duration' => 'filled|in:true,false',
+            'user_updated_in' => 'filled|integer|min:1'
         ]);
         if($validator->fails())
         {
@@ -196,7 +221,8 @@ class MapController extends Controller
         }
         if($session->is_mobile)
         {
-            $session->location = new Point($this->request->geo_latitude,$this->request->geo_longitude);
+            $session->location = new Point($this->request->geo_latitude, $this->request->geo_longitude);
+            $session->updateLocationTimestamp();
             $session->save();
             return $this->response->created();
         }
