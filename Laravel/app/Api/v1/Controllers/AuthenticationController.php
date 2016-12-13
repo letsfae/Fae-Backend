@@ -200,18 +200,17 @@ class AuthenticationController extends Controller {
                 'auth' => !$both_are_mobile
              ))
         ));
-       try{
+        try{
             $collection = PushNotification::app('appNameIOS')
                                                 ->to($previous_device_id)
                                                 ->send($message);
-
             // get response for each device push
             foreach ($collection->pushManager as $push) {
                 $response = $push->getAdapter()->getResponse();
             }
-       }catch(\Exception $e){
+        }catch(\Exception $e){
            
-       }
+        }
         
     }
     public function logout()

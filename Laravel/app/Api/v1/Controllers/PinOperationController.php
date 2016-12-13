@@ -314,7 +314,7 @@ class PinOperationController extends Controller {
         $obj = self::getObj($type, $pin_id);
         if(is_null($obj))
         {
-            return errorNotFound('no such pin exists');
+            return $this->response->errorNotFound('no such pin exists');
         }
         $validator = Validator::make($this->request->all(), [
             'start_time' => 'filled|date_format:Y-m-d H:i:s|before:tomorrow',
@@ -354,6 +354,8 @@ class PinOperationController extends Controller {
                             'user_id' => $commented_pin->user_id,
                             'content' => $commented_pin->content,
                             'pin_comment_operations' => $pin_comment_operations,
+                            'vote_up_count' => $commented_pin->vote_up_count,
+                            'vote_down_count' => $commented_pin->vote_down_count,
                             'created_at' => $commented_pin->created_at->format('Y-m-d H:i:s'));
         }
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);

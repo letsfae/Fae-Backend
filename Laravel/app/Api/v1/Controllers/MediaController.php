@@ -41,18 +41,17 @@ class MediaController extends Controller implements PinInterface
             if(TagController::existsByString($this->request->tag_ids))
             {
                 $media->tag_ids = $this->request->tag_ids;
-                TagController::refByString($this->request->tag_ids);
             }
             else
             {
                 return $this->errorNotFound('tags not exist');
             }
         }
-        // if(!FileController::existsByString($this->request->file_ids))
-        // {
-        //     return $this->errorNotFound('files not exist');
-        // }
-        // FileController::refByString($this->request->file_ids);
+        if(!FileController::existsByString($this->request->file_ids))
+        {
+            return $this->errorNotFound('files not exist');
+        }
+        FileController::refByString($this->request->file_ids);
         $media->file_ids = $this->request->file_ids;
         $media->description = $this->request->description;
         $media->geolocation = new Point($this->request->geo_latitude,$this->request->geo_longitude);
@@ -69,6 +68,10 @@ class MediaController extends Controller implements PinInterface
             $pin_helper->anonymous = $media->anonymous;
         }
         $media->save();
+        if($this->request->has('tag_ids'))
+        {
+            TagController::refByString($this->request->tag_ids, $media->id, 'media');
+        }
         $pin_helper->type = 'media';
         $pin_helper->user_id = $this->request->self_user_id;
         $pin_helper->geolocation =  new Point($this->request->geo_latitude, $this->request->geo_longitude);
@@ -110,12 +113,12 @@ class MediaController extends Controller implements PinInterface
         {
             if($this->request->tag_ids == 'null')
             {
-                TagController::updateRefByString($media->tag_ids, $this->request->tag_ids);
+                TagController::updateRefByString($media->tag_ids, $this->request->tag_ids, $media->id, 'media');
                 $media->tag_ids = null;
             }
             else if(TagController::existsByString($this->request->tag_ids))
             {
-                TagController::updateRefByString($media->tag_ids, $this->request->tag_ids);
+                TagController::updateRefByString($media->tag_ids, $this->request->tag_ids, $media->id, 'media');
                 $media->tag_ids = $this->request->tag_ids;
             }
             else
@@ -196,7 +199,7 @@ class MediaController extends Controller implements PinInterface
             throw new AccessDeniedHttpException('You can not delete this media');
         }
         FileController::derefByString($media->file_ids);
-        TagController::derefByString($media->tag_ids);
+        TagController::derefByString($media->tag_ids, $media->id, 'media');
         $pin_helper = PinHelper::where('pin_id', $media_id)->where('type', 'media')->first();
         //$pin_helper->delete();
         PinOperationController::deletePinOperations('media', $media->id);
@@ -274,9 +277,9 @@ class MediaController extends Controller implements PinInterface
         $validator = Validator::make($request->all(), [
             'geo_longitude' => 'required|numeric|between:-180,180',
             'geo_latitude' => 'required|numeric|between:-90,90',
-            'file_ids' => 'required|regex:/^(\d+\;){0,4}\d+$/',
+            'file_ids' => 'required|regex:/^(\d+\;){0,5}\d+$/',
             'tag_ids' => 'filled|regex:/^(\d+\;){0,49}\d+$/',
-            'description' => 'required|string',
+            'description' => 'filled|string',
             'duration' => 'required|int|min:0',
             'interaction_radius' => 'filled|int|min:0',
             'anonymous' => 'filled|in:true,false'
@@ -295,7 +298,7 @@ class MediaController extends Controller implements PinInterface
             'geo_latitude' => 'filled|required_with:geo_longitude|required_without_all:file_ids,tag_ids,
                                 description,duration,interaction_radius,anonymous|numeric|between:-90,90',
             'file_ids' => 'filled|required_without_all:tag_ids,description,geo_longitude,geo_latitude,
-                            duration,interaction_radius,anonymous|regex:/^(\d+\;){0,4}\d+$/',
+                            duration,interaction_radius,anonymous|regex:/^(\d+\;){0,5}\d+$/',
             'tag_ids' => array('filled', 'required_without_all:file_ids,description,geo_longitude,geo_latitude,
                             duration,interaction_radius,anonymous', 'regex:/^(((\d+\;){0,49}\d+)|(null))$/'),
             'description' => 'filled|required_without_all:tag_ids,file_ids,geo_longitude,geo_latitude,

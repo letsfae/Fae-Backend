@@ -158,8 +158,8 @@ class CommentController extends Controller implements PinInterface
         // pin helper
         $pin_helper = PinHelper::where('pin_id', $comment_id)->where('type', 'comment')->first();
         $pin_helper->delete();
-        $PinOperationController::deletePinOperations('comment', $comment->id);
-        $PinOperationController::deletePinComments('comment', $comment->id);
+        PinOperationController::deletePinOperations('comment', $comment->id);
+        PinOperationController::deletePinComments('comment', $comment->id);
         // richtext        
         $comment->deleteRichtext($comment->content);
         $comment->delete();
