@@ -260,7 +260,7 @@ Status: 200
 
 `POST /chat_rooms/:chat_room_id/message`
 
-一旦用户发送消息，该用户即成为该ChatRoom参与者。
+一旦用户发送消息，该用户即成为该ChatRoom参与者。如果capacity达到上限，则无法再加入。
 
 ### auth
 
@@ -357,7 +357,7 @@ Status: 200
 			"last_message_timestamp": @string,
 			"unread_count": @number
 			"created_at": @string,
-			"server_sent_timestamp":@string
+			"server_sent_timestamp": @string
 		},
 		{...},
 		{...}

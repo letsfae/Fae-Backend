@@ -209,3 +209,36 @@ Body图片数据。
 yes
 
 其余同通用获取NameCard指定位置图片的接口。
+
+## 设置聊天室cover_image
+
+`POST /files/chat_rooms/cover_image`
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Description |
+| --- | --- |
+| chat_room_id | 聊天室id |
+| cover_image | 图片内容 |
+
+### response
+
+Status: 201
+
+## 获取聊天室cover_image
+
+`GET /files/chat_rooms/:chat_room_id/cover_image`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+Body图片数据。

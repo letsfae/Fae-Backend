@@ -341,7 +341,7 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| file_ids | file_id | 最多5个，通过;区分 |
+| file_ids | file_id | 最多6个，通过;区分 |
 | tag_ids (optional) | tag_id | 最多50个，通过;区分 |
 | description | string | 描述 |
 | geo_latitude | number | 纬度 |
@@ -627,6 +627,9 @@ yes
 | geo_longitude | number | 经度 |
 | duration | number | 持续显示时间，前端需默认为1440,单位为min |
 | interaction_radius (optional) | number | 交互范围，默认不存在，单位m |
+| description (optional) | string | 描述 |
+| tag_ids (optional) | tag_id | 最多50个，通过;区分 |
+| capacity (optional) | number | 房间容量，默认50，范围5-100 |
 
 ### response
 
@@ -676,7 +679,14 @@ Status: 200
 		"last_message_sender_id": @number,
 		"last_message_type": @string,
 		"last_message_timestamp": @string,
-		"created_at": @string
+		"created_at": @string,
+		"capacity": @number,
+		"tags_ids": [
+			@number, 
+			..., 
+			@number
+		],
+		"description": @string
 	}
 
 ## 获取某个用户创建的所有ChatRoom :white_check_mark:

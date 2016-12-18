@@ -147,6 +147,7 @@ $api->version('v1', function ($api) {
     $api->get('/files/users/{user_id}/avatar', 'App\Api\v1\Controllers\UserFileController@getAvatar');
     $api->get('/files/users/{user_id}/name_card_cover', 'App\Api\v1\Controllers\UserFileController@getNameCardCover');
     $api->get('/files/users/{user_id}/name_card_photo/{position}', 'App\Api\v1\Controllers\UserFileController@getNameCardPhoto');
+    $api->post('/files/chat_rooms/{chat_room_id}/cover_image', 'App\Api\v1\Controllers\ChatRoomFileController@getChatRoomCoverImage');
 });
 
 $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], function ($api) {
@@ -163,4 +164,6 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->post('/files/users/name_card_photo', 'App\Api\v1\Controllers\UserFileController@updateNameCardPhoto');
     $api->delete('/files/users/name_card_photo/{position}', 'App\Api\v1\Controllers\UserFileController@deleteNameCardPhoto');
     $api->get('/files/users/name_card_photo/{position}', 'App\Api\v1\Controllers\UserFileController@getSelfNameCardPhoto');
+    // char room cover
+    $api->post('/files/chat_rooms/cover_image', 'App\Api\v1\Controllers\ChatRoomFileController@setChatRoomCoverImage');
 });
