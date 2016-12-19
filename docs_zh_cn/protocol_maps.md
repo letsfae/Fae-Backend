@@ -49,6 +49,12 @@ yes
 | max_count (optional) | number | 返回节点最大数量，默认为30，最大为100 |
 | in_duration (optional) | boolean | 只显示在活跃时间内的pin，默认为false |
 | user_updated_in (optional) | number | 显示多久时间内更新过坐标的用户（仅针对user有效），单位min，默认不限制 |
+| is_saved (optional) | bool | 默认false |
+| is_unsaved (optional) | bool | 默认false |
+| is_liked (optional) | bool | 默认false |
+| is_unliked (optional) | bool | 默认false |
+| is_read (optional) | bool | 默认false |
+| is_unread (optional) | bool | 默认false |
 
 对于一直在更新的user点，可以每隔一段时间获取一次。
 
