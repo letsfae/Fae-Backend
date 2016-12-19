@@ -2,6 +2,15 @@
 
 除非特别说明，否则上传时parameters的类型为form-data，特别注意此时Content-Type不要设置。
 
+#　文件缓存
+
+文件缓存采用HTTP协议中部分标准进行缓存。该部分适用于所有GET file data的接口。在response header中：
+
+- `Etag:XXX`：服务器生成的文件指纹。
+- `Cache-Control: max-age=XXX`：用于指定缓存时间。
+
+前端在请求数据后，需要记录Etag，并在Cache-Control超时之后再次向服务器发起文件请求，同时在header中带有`If-None-Match:XXX`字段，且内容为Etag中的文件指纹。如果文件未更新，服务器将返回`304 Not Modified`，前端更新一个缓存周期（即继续缓存一个max-age的时间），否则返回文件数据。
+
 # 文件类通用接口
 
 利用通用接口上传文件后，如若一段时间未得到引用（指某种pin引用该文件），则该文件会被永久删除。
