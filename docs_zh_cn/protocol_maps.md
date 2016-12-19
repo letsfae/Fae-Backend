@@ -405,7 +405,7 @@ Status: 200
 			..., 
 			@number
 		],
-		"tags_ids": [
+		"tag_ids": [
 			@number, 
 			..., 
 			@number
@@ -520,7 +520,7 @@ yes
 
 同发布faevor，但所有参数均为可选。
 
-如果需要删除file_ids、tags_id、bouns，将字段内容置位`null`。
+如果需要删除file_ids、tag_ids、bouns，将字段内容置位`null`。
 
 ### response
 
@@ -546,7 +546,7 @@ Status: 200
 			..., 
 			@number
 		],
-		"tags_ids": [
+		"tag_ids": [
 			@number, 
 			..., 
 			@number
@@ -687,7 +687,7 @@ Status: 200
 		"last_message_timestamp": @string,
 		"created_at": @string,
 		"capacity": @number,
-		"tags_ids": [
+		"tag_ids": [
 			@number, 
 			..., 
 			@number

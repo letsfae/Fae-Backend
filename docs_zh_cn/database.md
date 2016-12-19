@@ -11,7 +11,7 @@
 - gender enum(male,female)
 - birthday dateTime
 - created_at timestamp
-- last_login_at timestamp (default 1970-01-01)
+- last_login_at timestamp (default null)
 - role integer
 - login_count integer
 - mini_avatar integer (default 0)
@@ -170,7 +170,7 @@
 - created_at
 - duration integer (unit in min)
 - interaction_radius (unit in km) default 0
-- tags_id
+- tag_ids
 - description
 - capacity
 
