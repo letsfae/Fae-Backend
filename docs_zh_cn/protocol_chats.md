@@ -22,7 +22,9 @@ yes
 | --- | --- | --- |
 | receiver_id | number | 目标用户id |
 | message | string | 具体内容 |
-| type | string('text','image','sticker','location','audio') | 区分内容的类型 |
+| type | string('text','image','sticker','location','audio','customize') | 区分内容的类型 |
+
+其中customize类型的message内容可自定义。
 
 ### response
 
