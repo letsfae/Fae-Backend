@@ -211,24 +211,24 @@
 - pin_id FK
 - type enum(media,comment)
 
-## friendships
+## friends
 - id PK
 - user_id FK reference on users
 - friend_id FK reference on users
 - created_at
 
-## friend_request
+## friend_requests
 - id PK
 - user_id FK 请求用户 reference on users
 - requested_user_id FK 被请求用户 reference on users
 - created_at
 
-## block
+## blocks
 - id PK
 - user_id FK
 - block_id FK 被屏蔽用户id
 
-## follow
+## follows
 - id PK
 - user_id
 - followee_id 被follow用户的id
