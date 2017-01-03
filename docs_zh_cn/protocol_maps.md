@@ -177,7 +177,7 @@ Status: 200
 		"color": @string
 	}
 
-## 获取指定tag的pin
+## 获取指定tag的pin :white_check_mark:
 
 `GET /tags/:tag_id/pin`
 
@@ -349,7 +349,7 @@ yes
 | --- | --- | --- |
 | file_ids | file_id | 最多6个，通过;区分 |
 | tag_ids (optional) | tag_id | 最多50个，通过;区分 |
-| description | string | 描述 |
+| description (optinal) | string | 描述 |
 | geo_latitude | number | 纬度 |
 | geo_longitude | number | 经度 |
 | duration | number | 持续显示时间，前端需默认为180,单位为min |
@@ -494,7 +494,7 @@ yes
 | budget | integer | 费用，单位为美元 |
 | bouns (optional) | string | 奖励的文字描述 |
 | name | string | 名字 |
-| description | string | 描述 |
+| description (optinal) | string | 描述 |
 | due_time | string(YYYY-MM-DD hh:mm:ss) | 终止时间 |
 | expire_time | string(YYYY-MM-DD hh:mm:ss) | 过期时间 |
 | geo_latitude | number | 纬度 |
