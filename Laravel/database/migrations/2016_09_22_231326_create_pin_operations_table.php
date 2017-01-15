@@ -18,8 +18,6 @@ class CreatePinOperationsTable extends Migration
             $table->integer('pin_id')->unsigned();
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
-            //$table->boolean('read')->default(false);
-            //$table->timestamp('read_timestamp')->nullable();
             $table->boolean('liked')->default(false);
             $table->timestamp('liked_timestamp')->nullable();
             $table->boolean('saved')->default(false);

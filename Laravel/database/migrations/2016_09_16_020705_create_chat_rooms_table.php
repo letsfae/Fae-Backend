@@ -26,6 +26,9 @@ class CreateChatRoomsTable extends Migration
             $table->enum('last_message_type',['text','image','sticker','location','audio'])->nullable();
             $table->integer('duration')->unsigned();
             $table->integer('interaction_radius')->unsigned()->default(0);
+            $table->text('tag_ids')->nullable();
+            $table->string('description', 100)->nullable();
+            $table->integer('capacity')->default(50);
             $table->timestamps();
         });
     }

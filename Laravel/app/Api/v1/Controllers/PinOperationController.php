@@ -131,6 +131,7 @@ class PinOperationController extends Controller {
                 $newobj_pin_operation->user_id = $this->request->self_user_id;
                 $newobj_pin_operation->pin_id = $pin_id;
                 $newobj_pin_operation->type = $type;
+                //$newobj_pin_operation->read = true;
                 $newobj_pin_operation->saved = false;
                 $newobj_pin_operation->liked = false;
                 $newobj_pin_operation->interacted = false;

@@ -19,6 +19,7 @@ use App\Users;
 use APP\Sessions;
 use DB;
 use App\PinHelper;
+use App\Api\v1\Controllers\TagController;
 
 class ChatRoomController extends Controller implements PinInterface
 {
@@ -41,7 +42,30 @@ class ChatRoomController extends Controller implements PinInterface
         {
             $chat_room->interaction_radius = $this->request->interaction_radius;
         }
+        if($this->request->has('description'))
+        {
+            $chat_room->description = $this->request->description;
+        }
+        if($this->request->has('capacity'))
+        {
+            $chat_room->capacity = $this->request->capacity;
+        }
+        if($this->request->has('tag_ids'))
+        {
+            if(TagController::existsByString($this->request->tag_ids))
+            {
+                $chat_room->tag_ids = $this->request->tag_ids;
+            }
+            else
+            {
+                return $this->errorNotFound('tags not exist');
+            }
+        }
         $chat_room->save();
+        if($this->request->has('tag_ids'))
+        {
+            TagController::refByString($this->request->tag_ids, $chat_room->id, 'chat_room');
+        }
         $chat_room_user = new ChatRoomUsers();
         $chat_room_user->user_id = $this->request->self_user_id;
         $chat_room_user->chat_room_id = $chat_room->id;
@@ -94,6 +118,31 @@ class ChatRoomController extends Controller implements PinInterface
         {
             $chat_room->interaction_radius = $this->request->interaction_radius;
         }
+        if($this->request->has('description'))
+        {
+            $chat_room->description = $this->request->description;
+        }
+        if($this->request->has('capacity'))
+        {
+            $chat_room->capacity = $this->request->capacity;
+        }
+        if($this->request->has('tag_ids'))
+        {
+            if($this->request->tag_ids == 'null')
+            {
+                TagController::updateRefByString($chat_room->tag_ids, $this->request->tag_ids, $chat_room->id, 'chat_room');
+                $chat_room->tag_ids = null;
+            }
+            else if(TagController::existsByString($this->request->tag_ids))
+            {
+                TagController::updateRefByString($chat_room->tag_ids, $this->request->tag_ids, $chat_room->id, 'chat_room');
+                $chat_room->tag_ids = $this->request->tag_ids;
+            }
+            else
+            {
+                return $this->errorNotFound();
+            }
+        }
         $chat_room->save();
         return $this->response->created();
     }
@@ -109,11 +158,14 @@ class ChatRoomController extends Controller implements PinInterface
         {
             return $this->response->errorNotFound();
         }
-        return $this->response->array(array('chat_room_id' => $chat_room->id, 'title' => $chat_room->title, 'user_id' => $chat_room->user_id,
+        $tag_ids = is_null($chat_room->tag_ids) ? null : explode(';', $chat_room->tag_ids);
+        return $this->response->array(array('chat_room_id' => $chat_room->id, 
+            'title' => $chat_room->title, 'user_id' => $chat_room->user_id,
             'geolocation' => ['latitude' => $chat_room->geolocation->getLat(), 'longitude' => $chat_room->geolocation->getLng()], 
             'last_message' => $chat_room->last_message, 'last_message_sender_id' => $chat_room->last_message_sender_id,
             'last_message_type' => $chat_room->last_message_type, 'last_message_timestamp' => $chat_room->last_message_timestamp, 
-            'created_at' => $chat_room->created_at->format('Y-m-d H:i:s')));
+            'created_at' => $chat_room->created_at->format('Y-m-d H:i:s'), 'capacity' => $chat_room->capacity,
+            'tag_ids' => $tag_ids, 'description' => $chat_room->description));
     }
 
     public function delete($chat_room_id)
@@ -147,11 +199,14 @@ class ChatRoomController extends Controller implements PinInterface
         $info = array();
         foreach($chat_rooms as $chat_room)
         {
+            $tag_ids = is_null($chat_room->tag_ids) ? null : explode(';', $chat_room->tag_ids);
             $info[] = array('chat_room_id' => $chat_room->id, 'title' => $chat_room->title, 
-            'user_id' => $chat_room->user_id,'geolocation' => ['latitude' => $chat_room->geolocation->getLat(), 
+            'user_id' => $chat_room->user_id, 'geolocation' => ['latitude' => $chat_room->geolocation->getLat(), 
             'longitude' => $chat_room->geolocation->getLng()], 'last_message' => $chat_room->last_message, 
             'last_message_sender_id' => $chat_room->last_message_sender_id, 'last_message_type' => $chat_room->last_message_type, 
-            'last_message_timestamp' => $chat_room->last_message_timestamp, 'created_at' => $chat_room->created_at->format('Y-m-d H:i:s'));
+            'last_message_timestamp' => $chat_room->last_message_timestamp, 
+            'created_at' => $chat_room->created_at->format('Y-m-d H:i:s'), 'capacity' => $chat_room->capacity,
+            'tag_ids' => $tag_ids, 'description' => $chat_room->description);
         }
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
     }
@@ -171,6 +226,11 @@ class ChatRoomController extends Controller implements PinInterface
         $chat_room_user = ChatRoomUsers::where('chat_room_id', $chat_room_id)->where('user_id', $this->request->self_user_id)->first();
         if(is_null($chat_room_user))
         {
+            $count = ChatRoomUsers::where('chat_room_id', $chat_room_id)->count();
+            if($count >= $chat_room->capacity)
+            {
+                return $this->response->errorBadRequest('this chat room has been filled to capacity');
+            }
             $session = Sessions::find($this->request->self_session_id);
             if(is_null($session) || !$session->is_mobile || $session->location == null)
             {
@@ -189,7 +249,7 @@ class ChatRoomController extends Controller implements PinInterface
             $new_chat_room_user->user_id = $this->request->self_user_id;
             $new_chat_room_user->save();
         }
-        if(!is_null($chat_room_user) && $chat_room_user->unread_count > 0)
+        else if(!is_null($chat_room_user) && $chat_room_user->unread_count > 0)
         {
             return $this->response->errorBadRequest('Please mark unread messages before sending new messages!');
         }
@@ -222,13 +282,15 @@ class ChatRoomController extends Controller implements PinInterface
             {
                 return $this->errorNotFound();
             }
+            $tag_ids = is_null($chat_room->tag_ids) ? null : explode(';', $chat_room->tag_ids);
             $info[] = array('chat_room_id' => $chat_room->id, 'title' => $chat_room->title, 'user_id' => $chat_room->user_id,
             'geolocation' => ['latitude' => $chat_room->geolocation->getLat(), 'longitude' => $chat_room->geolocation->getLng()], 
             'last_message' => $chat_room->last_message, 'last_message_sender_id' => $chat_room->last_message_sender_id, 
             'last_message_sender_name' => $last_message_sender->user_name,
             'last_message_type' => $chat_room->last_message_type, 'last_message_timestamp' => $chat_room->last_message_timestamp, 
             'unread_count' => $chat_room_user->unread_count, 'created_at' => $chat_room->created_at->format('Y-m-d H:i:s'), 
-            'server_sent_timestamp' => $time);
+            'server_sent_timestamp' => $time, 'capacity' => $chat_room->capacity,
+            'tag_ids' => $tag_ids, 'description' => $chat_room->description);
         }
         $filed = array();
         foreach ($info as $key => $value)
@@ -269,13 +331,15 @@ class ChatRoomController extends Controller implements PinInterface
             {
                 return $this->errorNotFound();
             }
+            $tag_ids = is_null($chat_room->tag_ids) ? null : explode(';', $chat_room->tag_ids);
             $info[] = array('chat_room_id' => $chat_room->id, 'title' => $chat_room->title, 'user_id' => $chat_room->user_id,
             'geolocation' => ['latitude' => $chat_room->geolocation->getLat(), 'longitude' => $chat_room->geolocation->getLng()], 
             'last_message' => $chat_room->last_message, 'last_message_sender_id' => $chat_room->last_message_sender_id, 
             'last_message_sender_name' => $last_message_sender->user_name,
             'last_message_type' => $chat_room->last_message_type, 'last_message_timestamp' => $chat_room->last_message_timestamp, 
             'unread_count' => $chat_room_user->unread_count, 'created_at' => $chat_room->created_at->format('Y-m-d H:i:s'), 
-            'server_sent_timestamp' => $time);
+            'server_sent_timestamp' => $time, 'capacity' => $chat_room->capacity,
+            'tag_ids' => $tag_ids, 'description' => $chat_room->description);
         }
         $filed = array();
         foreach ($info as $key => $value)
@@ -314,7 +378,10 @@ class ChatRoomController extends Controller implements PinInterface
             'geo_longitude' => 'required|numeric|between:-180,180',
             'geo_latitude' => 'required|numeric|between:-90,90',
             'duration' => 'required|int|min:0',
-            'interaction_radius' => 'filled|int|min:0'
+            'interaction_radius' => 'filled|int|min:0',
+            'description' => 'filled|string',
+            'tag_ids' => 'filled|regex:/^(\d+\;){0,49}\d+$/',
+            'capacity' => 'filled|int|min:5|max:100'
         ]);
         if($validator->fails())
         {
@@ -325,13 +392,22 @@ class ChatRoomController extends Controller implements PinInterface
     private function updateValidation(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'title' => 'filled|required_without_all:geo_longitude,geo_latitude,duration,interaction_radius|string|max:100',
-            'geo_longitude' => 'filled|required_with:geo_latitude|required_without_all:title,duration,interaction_radius
-                                |numeric|between:-180,180',
-            'geo_latitude' => 'filled|required_with:geo_longitude|required_without_all:title,duration,interaction_radius
-                                |numeric|between:-90,90',
-            'duration' => 'filled|required_without_all:geo_longitude,geo_latitude,title,interaction_radius|int|min:0',
-            'interaction_radius' => 'filled|required_without_all:geo_longitude,geo_latitude,duration,title|int|min:0'
+            'title' => 'filled|required_without_all:geo_longitude,geo_latitude,duration,interaction_radius,
+                        description,tag_ids,capacity|string|max:100',
+            'geo_longitude' => 'filled|required_with:geo_latitude|required_without_all:title,duration,
+                                interaction_radius,description,tag_ids,capacity|numeric|between:-180,180',
+            'geo_latitude' => 'filled|required_with:geo_longitude|required_without_all:title,duration,interaction_radius,
+                               description,tag_ids,capacity|numeric|between:-90,90',
+            'duration' => 'filled|required_without_all:geo_longitude,geo_latitude,title,interaction_radius,
+                           description,tag_ids,capacity|int|min:0',
+            'interaction_radius' => 'filled|required_without_all:geo_longitude,geo_latitude,duration,
+                                     title,description,tag_ids,capacity|int|min:0',
+            'description' => 'filled|required_without_all:title,geo_longitude,geo_latitude,duration,interaction_radius,
+                              tag_ids,capacity|string',
+            'tag_ids' => array('filled', 'required_without_all:title,geo_longitude,geo_latitude,duration,interaction_radius,
+                                description,capacity', 'regex:/^(((\d+\;){0,49}\d+)|(null))$/'),
+            'capacity' => 'filled|required_without_all:title,geo_longitude,geo_latitude,duration,interaction_radius,
+                           description,tag_ids|int|min:5|max:100'
         ]);
         if($validator->fails())
         {

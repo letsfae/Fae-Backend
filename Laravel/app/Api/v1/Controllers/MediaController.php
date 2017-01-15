@@ -201,7 +201,7 @@ class MediaController extends Controller implements PinInterface
         FileController::derefByString($media->file_ids);
         TagController::derefByString($media->tag_ids, $media->id, 'media');
         $pin_helper = PinHelper::where('pin_id', $media_id)->where('type', 'media')->first();
-        //$pin_helper->delete();
+        $pin_helper->delete();
         PinOperationController::deletePinOperations('media', $media->id);
         PinOperationController::deletePinComments('media', $media->id);
         $media->delete();

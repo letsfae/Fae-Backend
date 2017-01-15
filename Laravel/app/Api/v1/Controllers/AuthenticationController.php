@@ -150,6 +150,7 @@ class AuthenticationController extends Controller {
             $session_id = $session->id;
         }
         $users->login_count = 0;
+        $users->updateLastLoginAtTimestamp();
         $users->save();
         
         

@@ -15,7 +15,7 @@ class CreateTagHelperTable extends Migration
         Schema::create('tag_helper', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('pin_id')->unsigned();
-            $table->enum('type',['media','comment']);
+            $table->enum('type',['media','comment', 'chat_room']);
             $table->integer('tag_id')->unsigned();
             $table->foreign('tag_id')->references('id')->on('tags');
         });

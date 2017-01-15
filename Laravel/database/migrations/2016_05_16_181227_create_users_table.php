@@ -26,8 +26,9 @@ class CreateUsersTable extends Migration
             $table->enum('gender',['male','female'])->nullable();
             $table->date('birthday')->nullable();
             $table->integer('role')->default(0);
-            $table->timestamps();
             $table->integer('mini_avatar')->default(0);
+            $table->timestamp('last_login_at')->nullable();
+            $table->timestamps();
             $table->unique('user_name');
             $table->unique('email');
         });
