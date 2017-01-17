@@ -432,7 +432,7 @@ class ChatRoomController extends Controller implements PinInterface
     {
         $validator = Validator::make($request->all(), [
             'message' => 'required|string',
-            'type' => 'required|in:text,image,sticker,location,audio',
+            'type' => 'required|in:text,image,sticker,location,audio,customize',
         ]);
         if($validator->fails())
         {

@@ -229,7 +229,7 @@ class ChatController extends Controller
         $validator = Validator::make($request->all(), [
             'receiver_id' => 'required|exists:users,id',
             'message' => 'required|string',
-            'type' => 'required|in:text,image,sticker,location,audio',
+            'type' => 'required|in:text,image,sticker,location,audio,customize',
         ]);
         if($validator->fails())
         {

@@ -13,6 +13,7 @@ use App\ChatRooms;
 use App\Medias;
 use App\User_exts;
 use App\Users;
+use App\Api\v1\Controllers\PinOperationController;
 use Validator;
 use DB;
 use Phaza\LaravelPostgis\Eloquent\PostgisTrait;
@@ -40,9 +41,6 @@ class MapController extends Controller
         $in_duration_str = $this->request->has('in_duration') ? $this->request->in_duration : 'false';
         $in_duration = $in_duration_str == 'true' ? true : false;
         $user_updated_in = $this->request->has('user_updated_in') ? $this->request->user_updated_in : 0;
-        // $is_saved = $this->request->has('is_saved') ? null : $this->request->is_saved == 'true' ? true : false;
-        // $is_liked = $this->request->has('is_liked') ? null : $this->request->is_liked == 'true' ? true : false;
-        // $is_read = $this->request->has('is_read') ? null : $this->request->is_read == 'true' ? true : false;
         $info = array();
         $type = array();
         if($this->request->type == 'user')
@@ -191,7 +189,8 @@ class MapController extends Controller
                     $info[] = ['type'=>'comment','comment_id' => $comment->id,'user_id' => $comment->user_id,
                                'content' => $comment->content ,'geolocation'=>['latitude'=>$comment->geolocation->getLat(), 
                                'longitude' => $comment->geolocation->getLng()],
-                               'created_at' => $comment->created_at->format('Y-m-d H:i:s')];
+                               'created_at' => $comment->created_at->format('Y-m-d H:i:s'),
+                               'user_pin_operations' => PinOperationController::getOperations('comment', $pin_helper->pin_id, $this->request->self_user_id)];
                 }
                 else if($pin_helper->type == 'media')
                 {
@@ -204,7 +203,8 @@ class MapController extends Controller
                                'file_ids' => explode(';', $media->file_ids), 'tag_ids' => explode(';', $media->tag_ids), 
                                'description' => $media->description, 'geolocation'=>['latitude' => $media->geolocation->getLat(), 
                                'longitude' => $media->geolocation->getLng()], 
-                               'created_at' => $media->created_at->format('Y-m-d H:i:s')];
+                               'created_at' => $media->created_at->format('Y-m-d H:i:s'),
+                               'user_pin_operations' => PinOperationController::getOperations('media', $pin_helper->pin_id, $this->request->self_user_id)];
                 }
                 else if($pin_helper->type == 'chat_room')
                 {
@@ -219,7 +219,7 @@ class MapController extends Controller
                                'last_message_sender_id' => $chat_room->last_message_sender_id,
                                'last_message_type' => $chat_room->last_message_type, 
                                'last_message_timestamp' => $chat_room->last_message_timestamp,
-                               'created_at' => $chat_room->created_at->format('Y-m-d H:i:s')];
+                               'created_at' => $chat_room->created_at->format('Y-m-d H:i:s'),];
                 }
             }
         }
