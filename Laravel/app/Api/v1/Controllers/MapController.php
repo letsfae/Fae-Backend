@@ -13,6 +13,7 @@ use App\ChatRooms;
 use App\Medias;
 use App\User_exts;
 use App\Users;
+use App\Api\v1\Controllers\PinOperationController;
 use Validator;
 use DB;
 use Phaza\LaravelPostgis\Eloquent\PostgisTrait;
@@ -37,9 +38,9 @@ class MapController extends Controller
         $latitude = $this->request->geo_latitude;
         $radius = $this->request->has('radius') ? $this->request->radius:200;
         $max_count = $this->request->has('max_count') ? $this->request->max_count:30;
-        $in_duration_str = $this->request->has('in_duration') ? $this->request->in_duration:'false';
-        $in_duration = $in_duration_str == 'true' ? true:false;
-        $user_updated_in = $this->request->has('user_updated_in') ? $this->request->user_updated_in:0;
+        $in_duration_str = $this->request->has('in_duration') ? $this->request->in_duration : 'false';
+        $in_duration = $in_duration_str == 'true' ? true : false;
+        $user_updated_in = $this->request->has('user_updated_in') ? $this->request->user_updated_in : 0;
         $info = array();
         $type = array();
         if($this->request->type == 'user')
@@ -102,7 +103,7 @@ class MapController extends Controller
         }
         else
         {
-            $types = explode(',',$this->request->type);
+            $types = explode(',', $this->request->type);
             foreach($types as $t)
             {
                 $t = trim($t);
@@ -127,28 +128,55 @@ class MapController extends Controller
             
             $type_string = implode(",", $type);
 
-            $sql_select = "";
+            $sql_select = "SELECT p1.pin_id, p1.type FROM pin_helper p1";
+            if($this->request->has('is_saved') || $this->request->has('is_liked') || $this->request->has('is_read'))
+            {
+                $sql_select .= ", pin_operations p2";
+            }
+            $sql_select .= "\nWHERE st_dwithin(geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true)\n";
             if($in_duration == true)
             {
-                $sql_select = "SELECT pin_id, type
-                               FROM pin_helper 
-                               WHERE st_dwithin(geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true)
-                               AND CURRENT_TIMESTAMP - created_at < duration * INTERVAL '1 min' 
-                               AND type IN (".$type_string.")
-                               ORDER BY created_at 
-                               LIMIT :max_count;";
+                $sql_select .= "AND CURRENT_TIMESTAMP - p1.created_at < duration * INTERVAL '1 min'\n";
+            }
+            $sql_select .= "AND p1.type IN (".$type_string.")\n";
+            if($this->request->has('is_saved') || $this->request->has('is_liked') || $this->request->has('is_read'))
+            {
+                if(!$this->request->has('is_read') || $this->request->is_read == 'true')
+                {
+                    $sql_select .= "AND p1.pin_id = p2.pin_id
+                                    AND p1.type = p2.type
+                                    AND p2.user_id = :user_id\n";
+                    if($this->request->has('is_saved')) 
+                    {
+                        $sql_select .= "AND p2.saved = ".$this->request->is_saved."\n";
+                    }
+                    if($this->request->has('is_liked'))
+                    {
+                        $sql_select .= "AND p2.liked = ".$this->request->is_liked."\n";
+                    }
+                }
+                else
+                {
+                    $sql_select .= "AND NOT EXISTS
+                                    (SELECT * FROM pin_operations p3 
+                                    WHERE p1.pin_id = p3.pin_id 
+                                    AND p1.type = p3.type  
+                                    AND p3.user_id = :user_id)\n";
+                }   
+            }
+            $sql_select .= "ORDER BY p1.created_at
+                            LIMIT :max_count;";
+            if($this->request->has('is_saved') || $this->request->has('is_liked') || $this->request->has('is_read'))
+            {
+                $pin_helpers = DB::select($sql_select, array('longitude' => $longitude, 'latitude' => $latitude,
+                                                             'radius' => $radius, 'max_count' => $max_count, 
+                                                             'user_id' => $this->request->self_user_id));
             }
             else
             {
-                $sql_select = "SELECT pin_id, type
-                               FROM pin_helper 
-                               WHERE st_dwithin(geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true)
-                               AND type IN (".$type_string.")
-                               ORDER BY created_at 
-                               LIMIT :max_count;";
+                $pin_helpers = DB::select($sql_select, array('longitude' => $longitude, 'latitude' => $latitude,
+                                                             'radius' => $radius, 'max_count' => $max_count));
             }
-            $pin_helpers = DB::select($sql_select, array('longitude' => $longitude, 'latitude' => $latitude,
-                                                         'radius' => $radius, 'max_count' => $max_count));
             foreach ($pin_helpers as $pin_helper)
             {
                 if($pin_helper->type == 'comment')
@@ -160,7 +188,9 @@ class MapController extends Controller
                     }
                     $info[] = ['type'=>'comment','comment_id' => $comment->id,'user_id' => $comment->user_id,
                                'content' => $comment->content ,'geolocation'=>['latitude'=>$comment->geolocation->getLat(), 
-                               'longitude'=>$comment->geolocation->getLng()],'created_at'=>$comment->created_at->format('Y-m-d H:i:s')];
+                               'longitude' => $comment->geolocation->getLng()],
+                               'created_at' => $comment->created_at->format('Y-m-d H:i:s'),
+                               'user_pin_operations' => PinOperationController::getOperations('comment', $pin_helper->pin_id, $this->request->self_user_id)];
                 }
                 else if($pin_helper->type == 'media')
                 {
@@ -172,7 +202,9 @@ class MapController extends Controller
                     $info[] = ['type'=>'media', 'media_id' => $media->id, 'user_id' => $media->user_id, 
                                'file_ids' => explode(';', $media->file_ids), 'tag_ids' => explode(';', $media->tag_ids), 
                                'description' => $media->description, 'geolocation'=>['latitude' => $media->geolocation->getLat(), 
-                               'longitude' => $media->geolocation->getLng()], 'created_at' => $media->created_at->format('Y-m-d H:i:s')];
+                               'longitude' => $media->geolocation->getLng()], 
+                               'created_at' => $media->created_at->format('Y-m-d H:i:s'),
+                               'user_pin_operations' => PinOperationController::getOperations('media', $pin_helper->pin_id, $this->request->self_user_id)];
                 }
                 else if($pin_helper->type == 'chat_room')
                 {
@@ -187,7 +219,7 @@ class MapController extends Controller
                                'last_message_sender_id' => $chat_room->last_message_sender_id,
                                'last_message_type' => $chat_room->last_message_type, 
                                'last_message_timestamp' => $chat_room->last_message_timestamp,
-                               'created_at' => $chat_room->created_at->format('Y-m-d H:i:s')];
+                               'created_at' => $chat_room->created_at->format('Y-m-d H:i:s'),];
                 }
             }
         }
@@ -203,7 +235,10 @@ class MapController extends Controller
             'type' => 'required|string',
             'max_count' => 'filled|integer|between:0,100',
             'in_duration' => 'filled|in:true,false',
-            'user_updated_in' => 'filled|integer|min:1'
+            'user_updated_in' => 'filled|integer|min:1',
+            'is_saved' => 'filled|in:true,false',
+            'is_liked' => 'filled|in:true,false',
+            'is_read' => 'filled|in:true,false',
         ]);
         if($validator->fails())
         {
