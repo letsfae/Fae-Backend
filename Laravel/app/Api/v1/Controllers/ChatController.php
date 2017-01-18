@@ -61,10 +61,11 @@ class ChatController extends Controller
 
         if(Config::get('app.pushback')==true) {
             $sessions = Sessions::where('user_id', $receiver_id)->get();
+            $sender = Users::find($sender_id);
             foreach($sessions as $key=>$value) {
                 if ($value->is_mobile && !empty($value->device_id)){
-                    $message = PushNotification::Message('New message',array(
-                        'badge' => 1,
+                    $message = PushNotification::Message($sender->user_name.': '.$this->request->message,array(
+                        'badge' => SyncController::getAPNSCount($receiver_id),
                         'custom' => array('custom data' => array(
                             'type' => 'chat_new_message',
                             'chat_id' => $chat->id,
@@ -77,9 +78,14 @@ class ChatController extends Controller
                         ))
                     ));
 
-                    $collection = PushNotification::app('appNameIOS')
+                    try{
+                        $collection = PushNotification::app('appNameIOS')
                         ->to($value->device_id)
                         ->send($message);
+                    }catch(\Exception $e){
+                        
+                    }
+                    
                 }
             }
         }
@@ -204,12 +210,16 @@ class ChatController extends Controller
 
     public function getChatIdFromUserId($user_a_id, $user_b_id)
     {
+        if(!is_numeric($user_a_id) || !is_numeric($user_b_id) )
+        {
+            return $this->response->errorBadRequest("user_id is not integer");
+        }
         $first = min($user_a_id,$user_b_id);
         $second = max($user_a_id,$user_b_id);
         $chat = Chats::where('user_a_id', $first)->where('user_b_id', $second)->first();
         if(is_null($chat))
         {
-            return $this->request->errorNotFound();
+            return $this->response->errorNotFound();
         }
         return $this->response->array(array("chat_id" => $chat->id));
     }
@@ -219,7 +229,7 @@ class ChatController extends Controller
         $validator = Validator::make($request->all(), [
             'receiver_id' => 'required|exists:users,id',
             'message' => 'required|string',
-            'type' => 'required|in:text,image',
+            'type' => 'required|in:text,image,sticker,location,audio',
         ]);
         if($validator->fails())
         {

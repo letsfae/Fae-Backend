@@ -37,13 +37,24 @@ class CommentController extends Controller implements PinInterface
         $comment->user_id = $this->request->self_user_id;
         $comment->content = $this->request->content;
         $comment->geolocation = new Point($this->request->geo_latitude, $this->request->geo_longitude);
-        $comment->save();
-
-        // pin helper
+        $comment->duration = $this->request->duration;
         $pin_helper = new PinHelper();
+        if($this->request->has('interaction_radius'))
+        {
+            $comment->interaction_radius = $this->request->interaction_radius;
+        }
+        if($this->request->has('anonymous'))
+        {
+            $comment->anonymous = $this->request->anonymous == 'true' ? true : false;
+            $pin_helper->anonymous = $comment->anonymous;
+        }
+        $comment->save();
+        // pin helper
         $pin_helper->type = 'comment';
+        $pin_helper->user_id = $this->request->self_user_id;
         $pin_helper->geolocation =  new Point($this->request->geo_latitude, $this->request->geo_longitude);
         $pin_helper->pin_id = $comment->id;
+        $pin_helper->duration = $comment->duration;
         $pin_helper->save();
         
         //---------------- for hashtag ----------------
@@ -85,6 +96,24 @@ class CommentController extends Controller implements PinInterface
             $pin_helper->geolocation = new Point($this->request->geo_latitude, $this->request->geo_longitude);
             $pin_helper->save();
         }
+        if($this->request->has('duration'))
+        {
+            $comment->duration = $this->request->duration;
+            $pin_helper = PinHelper::where('pin_id', $comment_id)->where('type', 'comment')->first();
+            $pin_helper->duration = $comment->duration;
+            $pin_helper->save();
+        }
+        if($this->request->has('interaction_radius'))
+        {
+            $comment->interaction_radius = $this->request->interaction_radius;
+        }
+        if($this->request->has('anonymous'))
+        {
+            $comment->anonymous = $this->request->anonymous == 'true' ? true : false;
+            $pin_helper = PinHelper::where('pin_id', $comment_id)->where('type', 'comment')->first();
+            $pin_helper->anonymous = $comment->anonymous;
+            $pin_helper->save();
+        }
         $comment->save();
         return $this->response->created();
     }
@@ -100,10 +129,13 @@ class CommentController extends Controller implements PinInterface
         {
             return $this->response->errorNotFound();
         }
-        $user_pin_operations = PinOperationController::isSavedisLiked('comment', $comment_id, $this->request->self_user_id);
-        return $this->response->array(array('comment_id' => $comment->id, 'user_id' => $comment->user_id, 
+        $user_pin_operations = PinOperationController::getOperations('comment', $comment_id, $this->request->self_user_id);
+        return $this->response->array(array('comment_id' => $comment->id, 
+                'user_id' => ($comment->anonymous && $comment->user_id != $this->request->self_user_id) ? null : $comment->user_id, 
                 'content' => $comment->content, 'geolocation' => array('latitude' => $comment->geolocation->getLat(), 
-                'longitude' => $comment->geolocation->getLng()), 'created_at' => $comment->created_at->format('Y-m-d H:i:s'),
+                'longitude' => $comment->geolocation->getLng()), 'liked_count' => $comment->liked_count, 
+                'saved_count' => $comment->saved_count, 'comment_count' => $comment->comment_count,
+                'created_at' => $comment->created_at->format('Y-m-d H:i:s'),
                 'user_pin_operations' => $user_pin_operations));
     }
 
@@ -126,7 +158,8 @@ class CommentController extends Controller implements PinInterface
         // pin helper
         $pin_helper = PinHelper::where('pin_id', $comment_id)->where('type', 'comment')->first();
         $pin_helper->delete();
-
+        PinOperationController::deletePinOperations('comment', $comment->id);
+        PinOperationController::deletePinComments('comment', $comment->id);
         // richtext        
         $comment->deleteRichtext($comment->content);
         $comment->delete();
@@ -144,15 +177,38 @@ class CommentController extends Controller implements PinInterface
             return $this->response->errorNotFound();
         }
         $this->getUserValidation($this->request);
-        //date_default_timezone_set("UTC");
         $start_time = $this->request->has('start_time') ? $this->request->start_time:'1970-01-01 00:00:00';
         $end_time = $this->request->has('end_time') ? $this->request->end_time:date("Y-m-d H:i:s");
         $page =  $this->request->has('page') ? $this->request->page:1;
-        $comments = Comments::where('user_id', $user_id)->where('created_at','>=', $start_time)->where('created_at','<=', $end_time)->orderBy('created_at', 'desc')->skip(30 * ($page - 1))->take(30)->get();
-        $total = Comments::where('user_id', $user_id)
-                        ->where('created_at','>=', $start_time)
-                        ->where('created_at','<=', $end_time)
-                        ->count();
+        $comments = array();
+        $total = 0;
+        if($this->request->self_user_id == $user_id)
+        {
+            $comments = Comments::where('user_id', $user_id)
+                                ->where('created_at','>=', $start_time)
+                                ->where('created_at','<=', $end_time)
+                                ->orderBy('created_at', 'desc')
+                                ->skip(30 * ($page - 1))->take(30)->get();
+            $total = Comments::where('user_id', $user_id)
+                             ->where('created_at','>=', $start_time)
+                             ->where('created_at','<=', $end_time)
+                             ->count();
+        }
+        else
+        {
+            $comments = Comments::where('user_id', $user_id)
+                                ->where('anonymous', false)
+                                ->where('created_at','>=', $start_time)
+                                ->where('created_at','<=', $end_time)
+                                ->orderBy('created_at', 'desc')
+                                ->skip(30 * ($page - 1))->take(30)->get();
+            $total = Comments::where('user_id', $user_id)
+                             ->where('anonymous', false)
+                             ->where('created_at','>=', $start_time)
+                             ->where('created_at','<=', $end_time)
+                             ->count();
+        }
+        
         $total_pages = 0;
         if($total > 0)
         {
@@ -161,9 +217,12 @@ class CommentController extends Controller implements PinInterface
         $info = array();
         foreach ($comments as $comment)
         {
-            $user_pin_operations = PinOperationController::isSavedisLiked('comment', $comment->id, $this->request->self_user_id);
-            $info[] = array('comment_id' => $comment->id, 'user_id' => $comment->user_id, 'content' => $comment->content, 
-                    'geolocation' => array('latitude' => $comment->geolocation->getLat(), 'longitude' => $comment->geolocation->getLng()), 
+            $user_pin_operations = PinOperationController::getOperations('comment', $comment->id, $this->request->self_user_id);
+            $info[] = array('comment_id' => $comment->id, 
+                    'user_id' => $comment->user_id,
+                    'content' => $comment->content, 'geolocation' => array('latitude' => $comment->geolocation->getLat(), 
+                    'longitude' => $comment->geolocation->getLng()), 'liked_count' => $comment->liked_count, 
+                    'saved_count' => $comment->saved_count, 'comment_count' => $comment->comment_count,
                     'created_at' => $comment->created_at->format('Y-m-d H:i:s'), 'user_pin_operations' => $user_pin_operations);    
         }
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
@@ -175,6 +234,9 @@ class CommentController extends Controller implements PinInterface
             'geo_longitude' => 'required|numeric|between:-180,180',
             'geo_latitude' => 'required|numeric|between:-90,90',
             'content' => 'required|string|max:500',
+            'duration' => 'required|int|min:0',
+            'interaction_radius' => 'filled|int|min:0',
+            'anonymous' => 'filled|in:true,false'
         ]);
         if($validator->fails())
         {
@@ -185,9 +247,14 @@ class CommentController extends Controller implements PinInterface
     private function updateValidation(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'geo_longitude' => 'filled|required_with:geo_latitude|required_without:content|numeric|between:-180,180',
-            'geo_latitude' => 'filled|required_with:geo_longitude|required_without:content|numeric|between:-90,90',
-            'content' => 'filled|required_without_all:geo_longitude,geo_latitude|string|max:500',
+            'geo_longitude' => 'filled|required_with:geo_latitude|required_without:content,duration,interaction_radius,anonymous|
+                                numeric|between:-180,180',
+            'geo_latitude' => 'filled|required_with:geo_longitude|required_without:content,duration,interaction_radius,anonymous|
+                                numeric|between:-90,90',
+            'content' => 'filled|required_without_all:geo_longitude,geo_latitude,duration,interaction_radius,anonymous|string|max:500',
+            'duration' => 'filled|required_without_all:geo_longitude,geo_latitude,content,interaction_radius,anonymous|int|min:0',
+            'interaction_radius' => 'filled|required_without_all:geo_longitude,geo_latitude,duration,content,anonymous|int|min:0',
+            'anonymous' => 'filled|required_without_all:geo_longitude,geo_latitude,duration,content,interaction_radius|in:true,false'
         ]);
         if($validator->fails())
         {

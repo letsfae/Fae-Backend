@@ -10,8 +10,9 @@ use Validator;
 use Dingo\Api\Exception\StoreResourceFailedException;
 use Dingo\Api\Exception\UpdateResourceFailedException;
 use App\Tags;
+use App\TagHelper;
 
-class TagController extends Controller implements RefInterface {
+class TagController extends Controller {
     use Helpers;
     
     public function __construct(Request $request)
@@ -61,10 +62,49 @@ class TagController extends Controller implements RefInterface {
         return $this->response->array(array('tag_id' => $tag->id, 'title' => $tag->title, 'color' => $tag->color));
     }
 
+    public function getAllPins($tag_id) 
+    {
+    	if(!is_numeric($tag_id))
+        {
+            return $this->response->errorBadRequest('id should be integer');
+        }
+        $tag = Tags::find($tag_id);
+        if (is_null($tag))
+        {
+            return $this->response->errorNotFound('tag does not exist');
+        }
+        $this->getAllPinsValidation($this->request);
+        $page =  $this->request->has('page') ? $this->request->page : 1;
+        $pins = TagHelper::where('tag_id', $tag_id)->skip(30 * ($page - 1))->take(30)->get();
+        $total = $tag->reference_count;
+        $total_pages = 0;
+        if($total > 0)
+        {
+            $total_pages = intval(($total-1)/30)+1;
+        }
+        $info = array();
+        foreach($pins as $pin)
+        {
+            $info[] = array('pin_id' => $pin->pin_id, 'type' => $pin->type);
+        }
+        return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
+    }
+
+    private function getAllPinsValidation(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'page' => 'filled|integer|min:1'
+        ]);
+        if($validator->fails())
+        {
+            throw new UpdateResourceFailedException('Could not get user pins.',$validator->errors());
+        }
+    }
+
     /**
      * only for controller
      */
-    public static function ref($tag_id)
+    public static function ref($tag_id, $pin_id, $type)
     {
         $tag = Tags::find($tag_id);
         if(is_null($tag))
@@ -73,16 +113,27 @@ class TagController extends Controller implements RefInterface {
         }
         $tag->reference_count++;
         $tag->save();
+        $tag_helper = new TagHelper();
+        $tag_helper->pin_id = $pin_id;
+        $tag_helper->type = $type;
+        $tag_helper->tag_id = $tag_id;
+        $tag_helper->save();
         return true;
     }
 
-    public static function deref($tag_id)
+    public static function deref($tag_id, $pin_id, $type)
     {
         $tag = Tags::find($tag_id);
         if(is_null($tag))
         {
             return false;
         }
+        $tag_helper = TagHelper::where('pin_id', $pin_id)->where('type', $type)->where('tag_id', $tag_id)->first();
+        if(is_null($tag_helper))
+        {
+            return false;
+        }
+        $tag_helper->delete();
         if($tag->reference_count > 0)
         {
             $tag->reference_count--;
@@ -91,19 +142,22 @@ class TagController extends Controller implements RefInterface {
         return true;
     }
 
-    public static function exists($tag_id) {
+    public static function exists($tag_id) 
+    {
         return Tags::where('id', $tag_id)->exists();
     }
 
-    public static function refByString($tag_string) {
+    public static function refByString($tag_string, $pin_id, $type) 
+    {
         $tag_ids = explode(';', $tag_string);
         foreach ($tag_ids as $tag_id)
         {
-            TagController::ref($tag_id);
+            TagController::ref($tag_id, $pin_id, $type);
         }
     }
 
-    public static function derefByString($tag_string) {
+    public static function derefByString($tag_string, $pin_id, $type) 
+    {
         if(is_null($tag_string))
         {
             return false;
@@ -111,17 +165,18 @@ class TagController extends Controller implements RefInterface {
         $tag_ids = explode(';', $tag_string);
         foreach ($tag_ids as $tag_id)
         {
-            TagController::deref($tag_id);
+            TagController::deref($tag_id, $pin_id, $type);
         }
     }
 
-    public static function updateRefByString($old_tag_string, $new_tag_string) {
+    public static function updateRefByString($old_tag_string, $new_tag_string, $pin_id, $type) 
+    {
         if($old_tag_string  != null)
         {
             $old_tag_ids = explode(';', $old_tag_string);
             foreach ($old_tag_ids as $tag_id)
             {
-                TagController::deref($tag_id);
+                TagController::deref($tag_id, $pin_id, $type);
             }
         }
         if($new_tag_string != 'null')
@@ -129,13 +184,14 @@ class TagController extends Controller implements RefInterface {
             $new_tag_ids = explode(';', $new_tag_string);
             foreach ($new_tag_ids as $tag_id)
             {
-                TagController::ref($tag_id);
+                TagController::ref($tag_id, $pin_id, $type);
             }
         }
         
     }
 
-    public static function existsByString($tag_string) {
+    public static function existsByString($tag_string) 
+    {
         $tag_ids = explode(';', $tag_string);
         foreach($tag_ids as $tag_id) {
             if(!TagController::exists($tag_id)) {

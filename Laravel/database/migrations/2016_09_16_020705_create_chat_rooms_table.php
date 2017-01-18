@@ -23,7 +23,9 @@ class CreateChatRoomsTable extends Migration
             $table->foreign('last_message_sender_id')->references('id')->on('users');
             $table->text('last_message')->nullable();
             $table->timestamp('last_message_timestamp')->nullable();
-            $table->enum('last_message_type',['text','image'])->nullable();
+            $table->enum('last_message_type',['text','image','sticker','location','audio'])->nullable();
+            $table->integer('duration')->unsigned();
+            $table->integer('interaction_radius')->unsigned()->default(0);
             $table->timestamps();
         });
     }

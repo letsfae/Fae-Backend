@@ -21,6 +21,12 @@ class CreateMediasTable extends Migration
             $table->point('geolocation');
             $table->text('tag_ids')->nullable();
             $table->text('file_ids');
+            $table->integer('duration')->unsigned();
+            $table->integer('interaction_radius')->unsigned()->default(0);
+            $table->integer('saved_count')->default(0);
+            $table->integer('liked_count')->default(0);
+            $table->integer('comment_count')->default(0);
+            $table->boolean('anonymous')->default(false);
             $table->timestamps();
         });
     }

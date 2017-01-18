@@ -1,5 +1,13 @@
 # 用户及认证类接口
 
+## 特殊用户
+
+保留1-99作为特殊用户id。
+
+| user_id | user_name | description |
+| --- | --- | --- |
+| 1 | Fae Map Crew | 新用户注册成功后会收到该用户发出的欢迎消息 (ref #51) |
+
 ## 注册 Sign up :white_check_mark:
 
 `POST /users`
@@ -14,13 +22,13 @@ no
 | --- | --- | --- |
 | password | string(8-16) | 密码 |
 | email | string(50) | 电邮 |
-| user_name | string(30) | 用户名 |
+| user_name | string(20) | 用户名 |
 | first_name | string(50) | 名字 |
 | last_name | string(50) | 姓氏 |
 | birthday | string(YYYY-MM-DD) | 生日 |
-| gender | string("male", "female") | 性别 |
+| gender | string('male','female') | 性别 |
 
-user_name格式要求为：字母开头，仅可包含大小写字母、数字及下划线，长度6-30。
+user_name格式要求为：仅可包含大小写字母、数字及下划线，长度3-20，对字母大小写不敏感（即显示区分大小写，但AAA与aAa视为相同用户名）。
 
 ### response
 
@@ -191,7 +199,8 @@ Status: 200
 		"birthday": @string,
 		"phone": @string(xxx-xxx-xxxx),
 		"phone_verified": @boolean,
-		"mini_avatar": @number 地图上显示的用户小头像，未设置则默认为0
+		"mini_avatar": @number, 地图上显示的用户小头像，未设置则默认为0
+		"last_login_at": @string
 	}
 
 ## 更新账户信息 update account :white_check_mark:
@@ -215,7 +224,7 @@ yes
 
 所有字段均为可选，但必须至少包含一个字段。这些接口没有特殊操作（有特殊操作的请使用特定接口，如更新password）。
 
-需要注意的是，user_name格式要求为：字母开头，仅可包含大小写字母、数字及下划线，长度6-30。
+需要注意的是，user_name格式要求同用户注册。
 
 ### response
 
@@ -363,7 +372,11 @@ Status: 200
 	{
 		"user_id": @number,
 		"user_name": @string,
-		"mini_avatar": @number
+		"mini_avatar": @number，
+		"birthday": @string,
+		"email": @boolean,
+		"phone": @boolean,
+		"gender": @boolean
 	}
 
 ## 获取其他用户资料 get profile :white_check_mark:
@@ -394,7 +407,7 @@ yes
 
 Status: 201
 
-## 获取用户自己的资料隐私设定 get self profile privacy (待定)
+## 获取用户自己的资料隐私设定 get self profile privacy
 
 `GET /users/profile/privacy`
 
@@ -407,10 +420,14 @@ yes
 Status: 200
 
 	{
-		"xxx": @xxx
+		"show_user_name": @boolean,
+		"show_email": @boolean,
+		"show_phone": @boolean,
+		"show_birthday": @boolean,
+		"show_gender": @boolean
 	}
 
-## 更新自己的资料隐私设定 update self profile privacy (待定)
+## 更新自己的资料隐私设定 update self profile privacy
 
 `POST /users/profile/privacy`
 
@@ -422,9 +439,15 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| xxx | boolean | xxx |
+| show_user_name | boolean | 显示用户名 |
+| show_email | boolean | 显示email |
+| show_phone | boolean | 显示电话 |
+| show_birthday | boolean | 显示生日 |
+| show_gender | boolean | 显示性别 |
 
 所有字段均为可选，但必须至少包含一个字段。
+
+默认所有字段均为true。
 
 ### response
 
@@ -567,7 +590,7 @@ yes
 
 Status: 201
 
-## 保存NameCard
+## 保存NameCard :white_check_mark:
 
 `POST /users/:user_id/name_card/save`
 
@@ -579,7 +602,7 @@ yes
 
 Status: 201
 
-## 取消保存NameCard
+## 取消保存NameCard :white_check_mark:
 
 `DELETE /users/:user_id/name_card/save`
 
@@ -591,7 +614,7 @@ yes
 
 Status: 204
 
-## 获取所有保存的namecard
+## 获取所有保存的namecard :white_check_mark:
 
 `GET /users/name_card/saved`
 

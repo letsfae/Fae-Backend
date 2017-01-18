@@ -16,13 +16,15 @@ class CreatePinOperationsTable extends Migration
             $table->increments('id');
             $table->enum('type',['media','comment']);
             $table->integer('pin_id')->unsigned();
-            //$table->foreign('pin_id')->references('id')->on('medias');
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
+            //$table->boolean('read')->default(false);
+            //$table->timestamp('read_timestamp')->nullable();
             $table->boolean('liked')->default(false);
             $table->timestamp('liked_timestamp')->nullable();
             $table->boolean('saved')->default(false);
             $table->timestamp('saved_timestamp')->nullable();
+            $table->boolean('interacted')->default(false);
             $table->timestamps();
         });
     }

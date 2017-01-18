@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePinCommentsTable extends Migration
+class CreatePinCommentOperations extends Migration
 {
     /**
      * Run the migrations.
@@ -12,15 +12,14 @@ class CreatePinCommentsTable extends Migration
      */
     public function up()
     {
-         Schema::create('pin_comments', function (Blueprint $table) {
+        Schema::create('pin_comment_operations', function (Blueprint $table) {
             $table->increments('id');
-            $table->enum('type',['media','comment']);
-            $table->integer('pin_id')->unsigned();
+            $table->integer('pin_comment_id')->unsigned();
+            $table->foreign('pin_comment_id')->references('id')->on('pin_comments');
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
-            $table->string('content',100)->nullable();
-            $table->integer('vote_up_count')->default(0);
-            $table->integer('vote_down_count')->default(0);
+            $table->integer('vote');
+            $table->timestamp('vote_timestamp');
             $table->timestamps();
         });
     }
@@ -32,6 +31,6 @@ class CreatePinCommentsTable extends Migration
      */
     public function down()
     {
-         Schema::drop('pin_comments');
+        Schema::drop('pin_comment_operations');
     }
 }

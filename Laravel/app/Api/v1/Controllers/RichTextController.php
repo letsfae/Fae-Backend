@@ -129,7 +129,7 @@ class RichTextController extends Controller {
         if ($matches) {
             foreach ($matches[0] as $match){
                 preg_match('/(\@\w+)/u', $match[0], $context);
-                echo substr($context[0],1);
+                //echo substr($context[0],1);
                 $user = Users::where('user_name', substr($context[0],1))->first();
                 if(is_null($user)){
                     return $content;
@@ -147,12 +147,12 @@ class RichTextController extends Controller {
         
          $obj = ('App\\'.$className)::find($obj_id);
         
-        preg_match_all('/(\<a\>@\w+\<\/a\>)/u', $richtext, $matches, PREG_OFFSET_CAPTURE);
+        preg_match_all('/(\<a\>@\w+\<\/a\>)/u', $old_richtext, $matches, PREG_OFFSET_CAPTURE);
         $content = array();
         if ($matches) {
             foreach ($matches[0] as $match){
                 preg_match('/(\@\w+)/u', $match[0], $context);
-                echo substr($context[0],1);
+                //echo substr($context[0],1);
                 $user = Users::where('user_name', substr($context[0],1))->first();
                 $obj->ats()->detach();
             }

@@ -11,6 +11,7 @@
 - gender enum(male,female)
 - birthday dateTime
 - created_at timestamp
+- last_login_at timestamp (default null)
 - role integer
 - login_count integer
 - mini_avatar integer (default 0)
@@ -21,18 +22,11 @@
 - user_id FK
 - status integer
 - message text
-
-## friendships
-- id PK
-- user_id FK reference on users
-- friend_id FK reference on users
-- created_at
-
-## friend_request
-- id PK
-- user_id FK 请求用户 reference on users
-- requested_user_id FK 被请求用户 reference on users
-- created_at
+- show_user_name default true
+- show_email
+- show_phone
+- show_gender
+- show_birthday
 
 ## verifications
 - id PK
@@ -49,6 +43,7 @@
 - client_version varchar(50)
 - geolocation
 - is_mobile boolean
+- location_updated_at
 - created_at
 
 ## chats
@@ -112,10 +107,14 @@
 - user_id FK
 - content_text string
 - created_at 
+- liked_count
+- saved_count
+- comment_count
 - geolocation point
 - duration integer (unit in min)
-- interation_radius (unit in km)
-- created_at
+- interaction_
+-  (unit in km) default 0
+- anonymous default false
 
 ## medias
 - id PK
@@ -125,12 +124,12 @@
 - tag_ids ;分割
 - file_ids ;分割
 - created_at
-- like_count
+- liked_count
 - saved_count
 - comment_count
 - duration integer (unit in min)
-- interation_radius (unit in km)
-- created_at
+- interaction_radius (unit in km) default 0
+- anonymous default false
 
 ## faevors
 - id PK
@@ -158,7 +157,10 @@
 - user_count
 - created_at
 - duration integer (unit in min)
-- interation_radius (unit in km)
+- interaction_radius (unit in km) default 0
+- tag_ids
+- description
+- capacity
 
 ## chat_room_users
 - id PK
@@ -172,13 +174,11 @@
 - type enum(media,comment)
 - pin_id 必须是enum所列举的pin的id
 - user_id FK
-- read boolean
-- read_timestamp
 - liked boolean
 - liked_timestamp
 - saved boolean
 - saved_timestamp
-- created_at
+- interacted boolean default false
 
 ## pin_comments
 - id PK
@@ -186,10 +186,49 @@
 - pin_id 必须是enum所列举的pin的id
 - user_id FK
 - content text
+- created_at
+- vote_up_count
+- vote_down_count
+
+## pin_comment_operations
+- id PK
+- pin_comment_id FK
+- user_id FK
+- vote (1 for up, -1 for down)
+- vote_timestamp
 
 ## pin_helper
 - id PK
+- user_id FK 创建者
 - type enum(media,comment,chat_room)
 - pin_id
 - geolocation
 - created_at
+
+## tag_helper
+- id PK
+- tag_id FK
+- pin_id FK
+- type enum(media,comment)
+
+## friends
+- id PK
+- user_id FK reference on users
+- friend_id FK reference on users
+- created_at
+
+## friend_requests
+- id PK
+- user_id FK 请求用户 reference on users
+- requested_user_id FK 被请求用户 reference on users
+- created_at
+
+## blocks
+- id PK
+- user_id FK
+- block_id FK 被屏蔽用户id
+
+## follows
+- id PK
+- user_id
+- followee_id 被follow用户的id

@@ -50,8 +50,8 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->post('/users/profile', 'App\Api\v1\Controllers\UserProfileController@updateSelfProfile');
     $api->get('/users/profile', 'App\Api\v1\Controllers\UserProfileController@getSelfProfile');
     $api->get('/users/{user_id}/profile', 'App\Api\v1\Controllers\UserProfileController@getProfile');
-    // $api->post('/users/profile/privacy', 'App\Api\v1\Controllers\UserProfileController@updatePrivacy');
-    // $api->get('/users/profile/privacy', 'App\Api\v1\Controllers\UserProfileController@getPrivacy');
+    $api->post('/users/profile/privacy', 'App\Api\v1\Controllers\UserProfileController@updatePrivacy');
+    $api->get('/users/profile/privacy', 'App\Api\v1\Controllers\UserProfileController@getPrivacy');
     // name card
     $api->get('/users/{user_id}/name_card', 'App\Api\v1\Controllers\UserNameCardController@getNameCard');
     $api->get('/users/name_card', 'App\Api\v1\Controllers\UserNameCardController@getSelfNameCard');
@@ -93,13 +93,16 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->post('/friends/accept', 'App\Api\v1\Controllers\FriendController@acceptRequest');
     $api->post('/friends/ignore', 'App\Api\v1\Controllers\FriendController@ignoreRequest');
     $api->delete('/friends/{user_id}', 'App\Api\v1\Controllers\FriendController@deleteFriend');
+    // blocks
+    $api->post('/blocks', 'App\Api\v1\Controllers\BlockController@add');
+    $api->get('/blocks/{user_id}', 'App\Api\v1\Controllers\BlockController@delete');
     // chats
     $api->post('/chats', 'App\Api\v1\Controllers\ChatController@send');
     $api->get('/chats/unread', 'App\Api\v1\Controllers\ChatController@getUnread');
     $api->post('/chats/read', 'App\Api\v1\Controllers\ChatController@markRead');
     $api->get('/chats', 'App\Api\v1\Controllers\ChatController@getHistory');
     $api->delete('/chats/{chat_id}', 'App\Api\v1\Controllers\ChatController@delete');
-    $api->get('/chats/users/{$user_a_id}/{$user_b_id}', 'App\Api\v1\Controllers\ChatController@getChatIdFromUserId');
+    $api->get('/chats/users/{user_a_id}/{user_b_id}', 'App\Api\v1\Controllers\ChatController@getChatIdFromUserId');
     // chat rooms
     $api->post('/chat_rooms', 'App\Api\v1\Controllers\ChatRoomController@create');
     $api->post('/chat_rooms/{chat_room_id}', 'App\Api\v1\Controllers\ChatRoomController@update');
@@ -115,6 +118,7 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->post('/tags', 'App\Api\v1\Controllers\TagController@create');
     $api->get('/tags', 'App\Api\v1\Controllers\TagController@getArray');
     $api->get('/tags/{tag_id}', 'App\Api\v1\Controllers\TagController@getOne');
+    $api->get('/tags/{tag_id}/pin', 'App\Api\v1\Controllers\TagController@getAllPins');
     // pin operations
     $api->post('/pins/{type}/{pin_id}/read', 'App\Api\v1\Controllers\PinOperationController@read');
     $api->post('/pins/{type}/{pin_id}/like', 'App\Api\v1\Controllers\PinOperationController@like');
@@ -128,10 +132,13 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->get('/pins/saved', 'App\Api\v1\Controllers\PinOperationController@getSavedPinList');
     $api->get('/pins/users', 'App\Api\v1\Controllers\PinOperationController@getSelfPinList');
     $api->get('/pins/users/{user_id}', 'App\Api\v1\Controllers\PinOperationController@getUserPinList');
+    $api->post('/pins/comments/{pin_comment_id}/vote', 'App\Api\v1\Controllers\PinOperationController@vote');
+    $api->delete('/pins/comments/{pin_comment_id}/vote', 'App\Api\v1\Controllers\PinOperationController@cancelVote');
     // richtext (hashtags and at)
     $api->get('/richtext/hashtag/{hashtag}', 'App\Api\v1\Controllers\RichTextController@searchHashtag');
     $api->get('/richtext/hashtag/{hashtag}/contains', 'App\Api\v1\Controllers\RichTextController@searchHashtagWithText');
-
+    // feedback
+    $api->post('/feedback', 'App\Api\v1\Controllers\FeedbackController@sendFeedback');
 });
 
 /**
@@ -143,6 +150,7 @@ $api->version('v1', function ($api) {
     $api->get('/files/users/{user_id}/avatar', 'App\Api\v1\Controllers\UserFileController@getAvatar');
     $api->get('/files/users/{user_id}/name_card_cover', 'App\Api\v1\Controllers\UserFileController@getNameCardCover');
     $api->get('/files/users/{user_id}/name_card_photo/{position}', 'App\Api\v1\Controllers\UserFileController@getNameCardPhoto');
+    $api->post('/files/chat_rooms/{chat_room_id}/cover_image', 'App\Api\v1\Controllers\ChatRoomFileController@getChatRoomCoverImage');
 });
 
 $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], function ($api) {
@@ -159,4 +167,6 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->post('/files/users/name_card_photo', 'App\Api\v1\Controllers\UserFileController@updateNameCardPhoto');
     $api->delete('/files/users/name_card_photo/{position}', 'App\Api\v1\Controllers\UserFileController@deleteNameCardPhoto');
     $api->get('/files/users/name_card_photo/{position}', 'App\Api\v1\Controllers\UserFileController@getSelfNameCardPhoto');
+    // char room cover
+    $api->post('/files/chat_rooms/cover_image', 'App\Api\v1\Controllers\ChatRoomFileController@setChatRoomCoverImage');
 });

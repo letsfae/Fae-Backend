@@ -2,11 +2,10 @@
 
 分页数据返回在response header中。
 
-对于具有duration及interaction_radius的pin:
+interaction_radius:
 
-duration为pin的活跃时间，过活跃时间之后不会被检索到。
-
-interaction_radius为可交互范围，该范围内用户才可以参与pin的操作。
+- duration为pin的活跃时间，过活跃时间之后不会在map中显示，但是可以在mapboard中查到。后端通过get map的`in_duration`参数实现。
+- interaction_radius，该范围内用户才可以参与pin的交互。交互的定义为：like, comment, vote, reply。
 
 ## 更新用户自身的当前坐标 :white_check_mark:
 
@@ -33,7 +32,7 @@ Status: 201
 
 取地图数据 :white_check_mark:
 
-`GET /map`
+## `GET /map`
 
 ### auth
 
@@ -49,10 +48,19 @@ yes
 | type | string(user or comment,media,chat_room) | 筛选类型，类型之间用逗号隔开 |
 | max_count (optional) | number | 返回节点最大数量，默认为30，最大为100 |
 | in_duration (optional) | boolean | 只显示在活跃时间内的pin，默认为false |
+| user_updated_in (optional) | number | 显示多久时间内更新过坐标的用户（仅针对user有效），单位min，默认不限制 |
+| is_saved (optional) | bool | 默认该字段不设置，可设置为true/false |
+| is_unsaved (optional) | bool | 同上 |
+| is_liked (optional) | bool | 同上 |
+| is_unliked (optional) | bool | 同上 |
+| is_read (optional) | bool | 同上 |
+| is_unread (optional) | bool | 同上 |
 
 对于一直在更新的user点，可以每隔一段时间获取一次。
 
 user类型节点只能单独获取。其他类型节点可同时获取（根据Pin创建时间降序排序）。
+
+如果app退出到桌面，ios端将无法发送坐标，`user_updated_in`用于过滤超出活跃时间的但在线的用户。
 
 ### response
 
@@ -79,6 +87,8 @@ Status: 200
 	{
 		"type": "user",
 		"user_id": @number,
+		"mini_avatar": @number,
+		"location_updated_at": @string,
 		"geolocation": [
 			{
 				"latitude": @number,
@@ -130,8 +140,6 @@ yes
 | --- | --- | --- |
 | page (optional) | number | 页数，默认为第1页（头30条） |
 
-如不设定type，则按照tag热度（即引用次数）降序返回。
-
 ### response
 
 Status: 200
@@ -169,6 +177,38 @@ Status: 200
 		"color": @string
 	}
 
+## 获取指定tag的pin :white_check_mark:
+
+`GET /tags/:tag_id/pin`
+
+### auth
+
+yes
+
+### filters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| page (optional) | number | 页数，默认为第1页（头30条） |
+
+### response
+
+Status: 200
+
+	page: @number
+	total_pages: @number
+
+	-----
+
+	[
+		{
+			"pin_id": @number,
+			"type": @number
+		},
+		{...},
+		{...}
+	]
+
 ## 发布comment :white_check_mark:
 
 `POST /comments`
@@ -185,7 +225,8 @@ yes
 | geo_latitude | number | 纬度 |
 | geo_longitude | number | 经度 |
 | duration | number | 持续显示时间，前端需默认为180,单位为min |
-| interaction_radius | number | 交互范围，前端需默认为1，单位km |
+| interaction_radius (optional) | number | 交互范围，默认不存在，单位m |
+| anonymous (optinal) | boolean | 匿名，默认为false |
 
 ### response
 
@@ -225,13 +266,17 @@ Status: 200
 
 	{
 		"comment_id": @number,
-		"user_id": @number
+		"user_id": @number, 如果非自身创建的pin且anonymous为true，则user_id为null
+		"anonymous": @boolean,
 		"content": @string,
 		"geolocation": {
 			"latitude": @number,
 			"longitude": @number
 		},
-		"created_at": @string,,
+		"created_at": @string,
+		"liked_count": @number,
+		"saved_count": @number,
+		"comment_count": @number,
 		"user_pin_operations": {
 			"is_read": @boolean, 对当前用户是否已读
 			"read_timestamp" @string,
@@ -259,6 +304,8 @@ yes
 | page | number | 页数，默认为第1页（头30条） |
 
 过滤参数均为可选。
+
+该user发布的anonymous为true的pin将不会被获取（自身的pin除外）。
 
 ### response
 
@@ -300,13 +347,14 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| file_ids | file_id | 最多5个，通过;区分 |
+| file_ids | file_id | 最多6个，通过;区分 |
 | tag_ids (optional) | tag_id | 最多50个，通过;区分 |
-| description | string | 描述 |
+| description (optinal) | string | 描述 |
 | geo_latitude | number | 纬度 |
 | geo_longitude | number | 经度 |
 | duration | number | 持续显示时间，前端需默认为180,单位为min |
-| interaction_radius | number | 交互范围，前端需默认为1，单位km |
+| interaction_radius (optional) | number | 交互范围，默认不存在，单位m |
+| anonymous (optinal) | boolean | 匿名，默认为false |
 
 ### response
 
@@ -350,13 +398,14 @@ Status: 200
 
 	{
 		"media_id": @number,
-		"user_id": @number
+		"user_id": @number, 如果非自身创建的pin且anonymous为true，则user_id为null
+		"anonymous": @boolean,
 		"file_ids": [
 			@number, 
 			..., 
 			@number
 		],
-		"tags_ids": [
+		"tag_ids": [
 			@number, 
 			..., 
 			@number
@@ -367,6 +416,9 @@ Status: 200
 			"longitude": @number
 		},
 		"created_at": @string,
+		"liked_count": @number,
+		"saved_count": @number,
+		"comment_count": @number,
 		"user_pin_operations": {
 			"is_read": @boolean, 对当前用户是否已读
 			"read_timestamp" @string,
@@ -394,6 +446,8 @@ yes
 | page | number | 页数，默认为第1页（头30条） |
 
 过滤参数均为可选。
+
+该user发布的anonymous为true的pin将不会被获取（自身的pin除外）。
 
 ### response
 
@@ -440,7 +494,7 @@ yes
 | budget | integer | 费用，单位为美元 |
 | bouns (optional) | string | 奖励的文字描述 |
 | name | string | 名字 |
-| description | string | 描述 |
+| description (optinal) | string | 描述 |
 | due_time | string(YYYY-MM-DD hh:mm:ss) | 终止时间 |
 | expire_time | string(YYYY-MM-DD hh:mm:ss) | 过期时间 |
 | geo_latitude | number | 纬度 |
@@ -466,7 +520,7 @@ yes
 
 同发布faevor，但所有参数均为可选。
 
-如果需要删除file_ids、tags_id、bouns，将字段内容置位`null`。
+如果需要删除file_ids、tag_ids、bouns，将字段内容置位`null`。
 
 ### response
 
@@ -492,7 +546,7 @@ Status: 200
 			..., 
 			@number
 		],
-		"tags_ids": [
+		"tag_ids": [
 			@number, 
 			..., 
 			@number
@@ -578,7 +632,10 @@ yes
 | geo_latitude | number | 纬度 |
 | geo_longitude | number | 经度 |
 | duration | number | 持续显示时间，前端需默认为1440,单位为min |
-| interaction_radius | number | 交互范围，前端需默认为1，单位km |
+| interaction_radius (optional) | number | 交互范围，默认不存在，单位m |
+| description (optional) | string | 描述 |
+| tag_ids (optional) | tag_id | 最多50个，通过;区分 |
+| capacity (optional) | number | 房间容量，默认50，范围5-100 |
 
 ### response
 
@@ -628,7 +685,14 @@ Status: 200
 		"last_message_sender_id": @number,
 		"last_message_type": @string,
 		"last_message_timestamp": @string,
-		"created_at": @string
+		"created_at": @string,
+		"capacity": @number,
+		"tag_ids": [
+			@number, 
+			..., 
+			@number
+		],
+		"description": @string
 	}
 
 ## 获取某个用户创建的所有ChatRoom :white_check_mark:
