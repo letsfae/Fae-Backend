@@ -106,6 +106,7 @@ class UserController extends Controller
                 'phone' => $user->phone,
                 'phone_verified' => $user->phone_verified,
                 'mini_avatar' => $user->mini_avatar,
+                'last_login_at' => $user->last_login_at
             );
             return $this->response->array($account);
         }
