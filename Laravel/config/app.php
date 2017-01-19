@@ -167,7 +167,9 @@ return [
         
         Davibennun\LaravelPushNotification\LaravelPushNotificationServiceProvider::class,
         
-        Aloha\Twilio\Support\Laravel\ServiceProvider::class
+        Aloha\Twilio\Support\Laravel\ServiceProvider::class,
+
+        Intervention\Image\ImageServiceProvider::class
 
     ],
 
@@ -218,6 +220,8 @@ return [
         'PushNotification' => Davibennun\LaravelPushNotification\Facades\PushNotification::class,
         
         'Twilio' => Aloha\Twilio\Support\Laravel\Facade::class,
+
+        'Image' => Intervention\Image\Facades\Image::class,
 
     ],
     

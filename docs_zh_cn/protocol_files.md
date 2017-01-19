@@ -114,6 +114,21 @@ Status: 200
 
 Body图片数据，其中`Content-Type`为`image/jpeg`。
 
+## 获取头像缩略图 :white_check_mark:
+
+`GET /files/users/avatar/:size`
+
+size为0、1、2。
+0为原图；1为500px宽度，高自适应；2为200px宽度，高自适应。
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
 ## 获取其他用户头像 get avatar :white_check_mark:
 
 `GET /files/users/:user_id/avatar`

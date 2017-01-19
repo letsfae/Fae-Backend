@@ -13,6 +13,8 @@ use DB;
 use App\Hashtags;
 use App\Richtext_one;
 use App\Users;
+use App\Files;
+use App\Api\v1\Controllers\FileController;
 
 class RichTextController extends Controller {
     use Helpers;
@@ -159,6 +161,41 @@ class RichTextController extends Controller {
         }
         
         //return RichTextController::atUsersFromRichtext($obj_id, $richtext, $className);
+    }
+    
+    public static function addImageFromRichtext($obj_id, $richtext, $className){
+        preg_match_all('/(\<image\>\w+\<\/image\>)/u', $richtext, $matches, PREG_OFFSET_CAPTURE);
+        
+        $content = array();
+        if ($matches) {
+            foreach ($matches[0] as $match){
+                //echo substr($context[0],1);
+                $files = Files::find($match[0]);
+                if(is_null($files)){
+                    return $content;
+                }
+                FileController::ref($match[0]);
+                
+            }
+        }
+       
+    }
+    
+    public static function deleteImageFromRichtext($obj_id, $old_richtext, $className){
+        preg_match_all('/(\<image\>\w+\<\/image\>)/u', $richtext, $matches, PREG_OFFSET_CAPTURE);
+        
+        $content = array();
+        if ($matches) {
+            foreach ($matches[0] as $match){
+                $files = Files::find($match[0]);
+                if(is_null($files)){
+                    return $content;
+                }
+                FileController::deref($match[0]);
+                
+            }
+        }
+        
     }
     
     public static function getRichtextWithHashtagID($hashtag_id, $className){
