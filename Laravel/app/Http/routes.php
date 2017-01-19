@@ -147,7 +147,8 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
 $api->version('v1', function ($api) {
     // * no auth due to the request of front-end
     $api->get('/files/{file_id}/data', 'App\Api\v1\Controllers\FileController@getData');
-    $api->get('/files/users/{user_id}/avatar', 'App\Api\v1\Controllers\UserFileController@getAvatar');
+    $api->get('/files/users/{user_id}/avatar', 'App\Api\v1\Controllers\UserFileController@getAvatarMaxSize');
+    $api->get('/files/users/{user_id}/avatar/{size}', 'App\Api\v1\Controllers\UserFileController@getAvatar');
     $api->get('/files/users/{user_id}/name_card_cover', 'App\Api\v1\Controllers\UserFileController@getNameCardCover');
     $api->get('/files/users/{user_id}/name_card_photo/{position}', 'App\Api\v1\Controllers\UserFileController@getNameCardPhoto');
     $api->post('/files/chat_rooms/{chat_room_id}/cover_image', 'App\Api\v1\Controllers\ChatRoomFileController@getChatRoomCoverImage');
@@ -159,7 +160,8 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->get('/files/{file_id}/attribute', 'App\Api\v1\Controllers\FileController@getAttribute');
     // avatar
     $api->post('/files/users/avatar', 'App\Api\v1\Controllers\UserFileController@setSelfAvatar');
-    $api->get('/files/users/avatar', 'App\Api\v1\Controllers\UserFileController@getSelfAvatar');
+    $api->get('/files/users/avatar', 'App\Api\v1\Controllers\UserFileController@getSelfAvatarMaxSize');
+    $api->get('/files/users/avatar/{size}', 'App\Api\v1\Controllers\UserFileController@getSelfAvatar');
     // name card cover
     $api->post('/files/users/name_card_cover', 'App\Api\v1\Controllers\UserFileController@setSelfNameCardCover');
     $api->get('/files/users/name_card_cover', 'App\Api\v1\Controllers\UserFileController@getSelfNameCardCover');
