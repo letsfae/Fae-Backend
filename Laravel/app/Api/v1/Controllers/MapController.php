@@ -189,6 +189,9 @@ class MapController extends Controller
                     $info[] = ['type'=>'comment','comment_id' => $comment->id,'user_id' => $comment->user_id,
                                'content' => $comment->content ,'geolocation'=>['latitude'=>$comment->geolocation->getLat(), 
                                'longitude' => $comment->geolocation->getLng()],
+                               'liked_count' => $comment->liked_count, 
+                               'saved_count' => $comment->saved_count, 
+                               'comment_count' => $comment->comment_count,
                                'created_at' => $comment->created_at->format('Y-m-d H:i:s'),
                                'user_pin_operations' => PinOperationController::getOperations('comment', $pin_helper->pin_id, $this->request->self_user_id)];
                 }
@@ -203,6 +206,9 @@ class MapController extends Controller
                                'file_ids' => explode(';', $media->file_ids), 'tag_ids' => explode(';', $media->tag_ids), 
                                'description' => $media->description, 'geolocation'=>['latitude' => $media->geolocation->getLat(), 
                                'longitude' => $media->geolocation->getLng()], 
+                               'liked_count' => $media->liked_count, 
+                               'saved_count' => $media->saved_count, 
+                               'comment_count' => $media->comment_count,
                                'created_at' => $media->created_at->format('Y-m-d H:i:s'),
                                'user_pin_operations' => PinOperationController::getOperations('media', $pin_helper->pin_id, $this->request->self_user_id)];
                 }
