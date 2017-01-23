@@ -17,6 +17,7 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Dingo\Api\Routing\Helpers;
 use App\Name_cards;
+use App\Chats;
 use Mail;
 use Twilio;
 
@@ -51,6 +52,21 @@ class UserController extends Controller
         $nameCard = new Name_cards;
         $nameCard->user_id = $user->id;
         $nameCard->save();
+
+        $chat = new Chats;
+        $chat->user_a_id = 1;
+        $chat->user_b_id = $user->id;
+        $chat->last_message = 'Hey there! Welcome to Fae Map! Super happy to see you here. We’re here to
+                               enhance your experience on Fae Map and make your time more fun. Let us know
+                               of any problems you encounter or what we can do to make your experience better. 
+                               We’ll be hitting you up with surprises, recommendations, favorite places, cool 
+                               deals, and tons of fun stuff. Feel free to chat with us here anytime about 
+                               anything. Let’s Fae!';
+        $chat->last_message_type = 'text';
+        $chat->last_message_sender_id = 1;
+        $chat->updateTimestamp();
+        $chat->user_b_unread_count++;
+        $chat->save();
         return $this->response->created();
     }
 

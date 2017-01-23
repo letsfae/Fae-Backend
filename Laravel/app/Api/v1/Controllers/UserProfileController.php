@@ -42,7 +42,7 @@ class UserProfileController extends Controller
         {
             $this->response->errorNotFound('user does not exist');
         }
-        $profile = array('user_id' => $user->id, 'mini_avatar' => $user->mini_avatar);
+        $profile = array('user_id' => $user->id, 'mini_avatar' => $user->mini_avatar, 'last_login_at' => $user->last_login_at);
         if($user_exts->show_user_name)
         {
             $profile['user_name'] = $user->user_name;
@@ -76,7 +76,7 @@ class UserProfileController extends Controller
         }
         $profile = array('user_id' => $user->id, 'user_name' => $user->user_name, 'mini_avatar' => $user->mini_avatar, 
                          'birthday' => $user->birthday, 'email' => $user->email, 'phone' => $user->phone, 
-                         'gender' => $user->gender);
+                         'gender' => $user->gender, 'last_login_at' => $user->last_login_at);
         return $this->response->array($profile);
     }
 

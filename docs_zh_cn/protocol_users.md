@@ -376,7 +376,8 @@ Status: 200
 		"birthday": @string,
 		"email": @boolean,
 		"phone": @boolean,
-		"gender": @boolean
+		"gender": @boolean,
+		"last_login_at": @string
 	}
 
 ## 获取其他用户资料 get profile :white_check_mark:
