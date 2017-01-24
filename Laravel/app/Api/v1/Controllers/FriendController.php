@@ -17,6 +17,7 @@ use App\Users;
 use App\Friendships;
 use App\Friend_requests;
 use App\Sessions;
+use App\Blocks;
 
 class FriendController extends Controller {
     use Helpers;
@@ -45,6 +46,17 @@ class FriendController extends Controller {
         $requested_user = Users::where('id', $requested_user_id)->first();
         if ($requested_user == null) {
             throw new StoreResourceFailedException('Bad request, Request user incorrect!');
+        }
+        
+        //if blocked, then this friendship cannot be set
+        $curr_block = Blocks::where('user_id', $self_user_id)->where('block_id', $requested_user_id)->first();
+        if ($curr_block != null) {
+            throw new StoreResourceFailedException('Bad request, you have already blocked the user!');
+        }   
+
+        $curr_block = Blocks::where('user_id', $requested_user_id)->where('block_id', $self_user_id)->first();
+        if ($curr_block != null) {
+            throw new StoreResourceFailedException('Bad request, you have already been blocked the user!');
         }
         
         //find the request if exist
@@ -98,6 +110,17 @@ class FriendController extends Controller {
         if ($curr_request == null) {
             throw new StoreResourceFailedException('Bad request, No such friend request!');
         }        
+
+        //if blocked, then this friendship cannot be set
+        $curr_block = Blocks::where('user_id', $self_user_id)->where('block_id', $requested_user_id)->first();
+        if ($curr_block != null) {
+            throw new StoreResourceFailedException('Bad request, you have already blocked the user!');
+        }   
+
+        $curr_block = Blocks::where('user_id', $requested_user_id)->where('block_id', $self_user_id)->first();
+        if ($curr_block != null) {
+            throw new StoreResourceFailedException('Bad request, you have already been blocked the user!');
+        }   
         
         //create friendship and store it
         $new_friendships = new Friendships;
