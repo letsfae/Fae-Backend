@@ -14,7 +14,7 @@ use Davibennun\LaravelPushNotification\Facades\PushNotification;
 use Config;
 
 use App\Users;
-use App\Friendships;
+use App\Friends;
 use App\Friend_requests;
 use App\Sessions;
 use App\Blocks;
@@ -112,26 +112,27 @@ class FriendController extends Controller {
         }        
 
         //if blocked, then this friendship cannot be set
-        $curr_block = Blocks::where('user_id', $self_user_id)->where('block_id', $requested_user_id)->first();
+        $self_user_id = $this->request->self_user_id;
+        $curr_block = Blocks::where('user_id', $self_user_id)->where('block_id', $curr_request->user_id)->first();
         if ($curr_block != null) {
             throw new StoreResourceFailedException('Bad request, you have already blocked the user!');
         }   
 
-        $curr_block = Blocks::where('user_id', $requested_user_id)->where('block_id', $self_user_id)->first();
+        $curr_block = Blocks::where('user_id', $curr_request->user_id)->where('block_id', $self_user_id)->first();
         if ($curr_block != null) {
             throw new StoreResourceFailedException('Bad request, you have already been blocked the user!');
         }   
         
         //create friendship and store it
-        $new_friendships = new Friendships;
-        $new_friendships->user_id = $curr_request->user_id;
-        $new_friendships->friend_id = $curr_request->requested_user_id;
-        $new_friendships->save();
+        $new_friends = new Friends;
+        $new_friends->user_id = $curr_request->user_id;
+        $new_friends->friend_id = $curr_request->requested_user_id;
+        $new_friends->save();
         
-        $new_friendships_reverse = new Friendships;
-        $new_friendships_reverse->user_id = $curr_request->requested_user_id;
-        $new_friendships_reverse->friend_id = $curr_request->user_id;
-        $new_friendships_reverse->save();
+        $new_friends_reverse = new Friends;
+        $new_friends_reverse->user_id = $curr_request->requested_user_id;
+        $new_friends_reverse->friend_id = $curr_request->user_id;
+        $new_friends_reverse->save();
         
         //------- friendship already exist-------
         
@@ -214,13 +215,13 @@ class FriendController extends Controller {
     public function deleteFriend($user_id) {
         //find the friendship by user_id
         $self_user_id = $this->request->self_user_id;
-        $curr_friendship = Friendships::where('user_id', $self_user_id)->where('friend_id', $user_id)->first();
+        $curr_friendship = Friends::where('user_id', $self_user_id)->where('friend_id', $user_id)->first();
         if ($curr_friendship != null) {
             //delete this request
             $curr_friendship->delete();
         }
         
-        $curr_friendship = Friendships::where('friend_id', $self_user_id)->where('user_id', $user_id)->first();
+        $curr_friendship = Friends::where('friend_id', $self_user_id)->where('user_id', $user_id)->first();
         if ($curr_friendship != null) {
             //delete this request
             $curr_friendship->delete();

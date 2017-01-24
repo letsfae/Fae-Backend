@@ -12,7 +12,7 @@ use Dingo\Api\Exception\StoreResourceFailedException;
 use Davibennun\LaravelPushNotification\Facades\PushNotification;
 
 use App\Users;
-use App\Friendships;
+use App\Friends;
 use App\Friend_requests;
 use App\Sessions;
 use App\Blocks;
@@ -56,15 +56,15 @@ class BlockController extends Controller {
             $new_block->block_id = $requested_user_id;
             $new_block->save();
 
-            //delete the friendship if exists
-	        $curr_friendship = Friendships::where('user_id', $self_user_id)->where('friend_id', $requested_user_id)->first();
-	        if ($curr_friendship != null) {
-	            $curr_friendship->delete();
+            //delete the friend if exists
+	        $curr_friend = Friends::where('user_id', $self_user_id)->where('friend_id', $requested_user_id)->first();
+	        if ($curr_friend != null) {
+	            $curr_friend->delete();
 	        }
 	        
-	        $curr_friendship = Friendships::where('friend_id', $self_user_id)->where('user_id', $requested_user_id)->first();
-	        if ($curr_friendship != null) {
-	            $curr_friendship->delete();
+	        $curr_friend = Friends::where('friend_id', $self_user_id)->where('user_id', $requested_user_id)->first();
+	        if ($curr_friend != null) {
+	            $curr_friend->delete();
 	        }
         }
     }
