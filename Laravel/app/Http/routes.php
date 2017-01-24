@@ -95,7 +95,7 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->delete('/friends/{user_id}', 'App\Api\v1\Controllers\FriendController@deleteFriend');
     // blocks
     $api->post('/blocks', 'App\Api\v1\Controllers\BlockController@add');
-    $api->get('/blocks/{user_id}', 'App\Api\v1\Controllers\BlockController@delete');
+    $api->delete('/blocks/{user_id}', 'App\Api\v1\Controllers\BlockController@delete');
     // chats
     $api->post('/chats', 'App\Api\v1\Controllers\ChatController@send');
     $api->get('/chats/unread', 'App\Api\v1\Controllers\ChatController@getUnread');

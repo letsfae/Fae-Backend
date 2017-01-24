@@ -2,7 +2,7 @@
 
 联系人contacts级接口（总接口）包含三种关系，friends，follows及blocks。
 
-## 发起好友请求
+## 发起好友请求 :white_check_mark:
 
 `POST /friends/request`
 
@@ -20,7 +20,7 @@ yes
 
 Status: 201
 
-## 确认好友请求
+## 确认好友请求 :white_check_mark:
 
 `POST /friends/accept`
 
@@ -38,7 +38,7 @@ yes
 
 Status: 201
 
-## 忽略好友请求
+## 忽略好友请求 :white_check_mark:
 
 `POST /friends/ignore`
 
@@ -56,7 +56,7 @@ yes
 
 Status: 201
 
-## 删除好友
+## 删除好友 :white_check_mark:
 
 `DELETE /friends/:user_id`
 
@@ -68,7 +68,7 @@ yes
 
 Status: 204
 
-## 获取所有好友请求
+## 获取所有好友请求 :white_check_mark:
 
 `GET /friends/request`
 
@@ -99,7 +99,7 @@ Status: 200
 
 ...
 
-## 屏蔽某人
+## 屏蔽某人 :white_check_mark:
 
 `POST /blocks`
 
@@ -122,7 +122,7 @@ yes
 
 Status: 201
 
-## 解除屏蔽
+## 解除屏蔽 :white_check_mark:
 
 `DELETE /blocks/:user_id`
 

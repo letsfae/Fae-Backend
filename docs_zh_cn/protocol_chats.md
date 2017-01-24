@@ -134,7 +134,7 @@ yes
 
 Status: 204
 
-## 根据聊天双方user_id获取chat_id
+## 根据聊天双方user_id获取chat_id :white_check_mark:
 
 `GET /chats/users/:user_a_id/:user_b_id`
 
