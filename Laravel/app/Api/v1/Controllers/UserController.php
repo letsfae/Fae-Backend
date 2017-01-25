@@ -163,7 +163,7 @@ class UserController extends Controller
     {
         if($this->request->has('password'))
         {
-            $user = $user = Users::find($this->request->self_user_id);
+            $user = Users::find($this->request->self_user_id);
             $password_right = Hash::check($this->request->password, $user->password);
             if (!$password_right)
             {

@@ -150,7 +150,6 @@ class AuthenticationController extends Controller {
             $session_id = $session->id;
         }
         $users->login_count = 0;
-        $users->updateLastLoginAtTimestamp();
         $users->save();
         
         
@@ -163,7 +162,8 @@ class AuthenticationController extends Controller {
         }
         
         //------------------------------------ printout result ------------------------------------
-        $content = array('user_id' => $user_id, 'token' => $token, 'session_id' => $session_id);
+        $content = array('user_id' => $user_id, 'token' => $token, 'session_id' => $session_id, 
+                         'last_login_at' => $users->last_login_at);
         //var_dump($content);
         if(Config::get('app.debug')) {
             $content['debug_base64ed'] = base64_encode($user_id.':'.$token.':'.$session_id);
@@ -217,8 +217,11 @@ class AuthenticationController extends Controller {
     public function logout()
     {
         $session = Sessions::find($this->request->self_session_id);
+        $user = Users::find($this->request->self_user_id);
         if($session!= null){
             $user_id = $session->user_id;
+            $user->last_login_at = $session->created_at;
+            $user->save();
             $session->delete();
             
             $remaining_sessions = Sessions::where('user_id', $user_id)->first();
