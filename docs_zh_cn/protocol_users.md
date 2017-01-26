@@ -69,10 +69,13 @@ Status: 201
 	{
 		"user_id": @number
 		"token": @string
-		"session_id": @number
+		"session_id": @number,
+		"last_login_at": @string
 	}
 
 错误后会返回login_count。
+
+last_login_at为最后一次登录时间（将在logout后被更新）。如果为null，则为初次登录。
 
 ## 登出 logout :white_check_mark:
 
