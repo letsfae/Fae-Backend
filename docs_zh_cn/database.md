@@ -21,6 +21,11 @@
 - user_id FK
 - status integer
 - message text
+- show_user_name default true
+- show_email
+- show_phone
+- show_gender
+- show_birthday
 
 ## friendships
 - id PK
@@ -49,6 +54,7 @@
 - client_version varchar(50)
 - geolocation
 - is_mobile boolean
+- location_updated_at
 - created_at
 
 ## chats
@@ -201,7 +207,14 @@
 
 ## pin_helper
 - id PK
+- user_id FK 创建者
 - type enum(media,comment,chat_room)
 - pin_id
 - geolocation
 - created_at
+
+## tag_helper
+- id PK
+- tag_id FK
+- pin_id FK
+- type enum(media,comment)

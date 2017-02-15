@@ -59,6 +59,14 @@ class UserProfileController extends Controller
         return $this->response->created();
     }
 
+    public function updatePrivacy() {
+
+    }
+
+    public function getPrivacy() {
+        
+    }
+
     private function updateProfileUpdate(Request $request)
     {
         if(count($request->all()) == 0)

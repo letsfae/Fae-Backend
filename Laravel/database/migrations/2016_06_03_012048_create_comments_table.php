@@ -21,6 +21,10 @@ class CreateCommentsTable extends Migration
             $table->point('geolocation')->nullable();
             $table->integer('duration')->unsigned();
             $table->integer('interaction_radius')->unsigned()->default(0);
+            $table->integer('saved_count')->default(0);
+            $table->integer('liked_count')->default(0);
+            $table->integer('comment_count')->default(0);
+            $table->boolean('anonymous')->default(false);
             $table->timestamps();
         });
     }

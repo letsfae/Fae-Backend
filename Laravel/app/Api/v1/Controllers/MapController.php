@@ -62,7 +62,7 @@ class MapController extends Controller
                 $locations = array();
                 for($i = 0; $i < 5; $i++)
                 {
-                    $distance = mt_rand(1,200);
+                    $distance = mt_rand(300,600);
                     $degree = mt_rand(0,360);
                     $locations_original = DB::select("select ST_AsText(ST_Project(ST_SetSRID(ST_Point(:longitude,:latitude),4326),:distance, radians(:degree)))", 
                         array('longitude' => $location->getLng(),'latitude'=>$location->getLat(),'distance'=>$distance,'degree'=>$degree));

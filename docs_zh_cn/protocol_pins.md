@@ -1,6 +1,6 @@
 # 用户对于pin的操作
 
-## 标记已读
+## 标记已读 :white_check_mark:
 
 `POST /pins/:type/:pin_id/read`
 
@@ -145,7 +145,7 @@ Status: 200
 		{...}
 	]
 
-## 获取my pin
+## 获取my pin :white_check_mark:
 
 `GET /pins/users`
 
@@ -180,9 +180,11 @@ Status: 200
 		{...}
 	]
 
-## 获取user pin
+## 获取user pin :white_check_mark:
 
 `GET /pins/users/:user_id`
+
+该user发布的anonymous为true的pin将不会被获取（自身的pin除外）。
 
 其余同获取my pin。
 
@@ -237,8 +239,10 @@ Status: 200
 			"user_id": @number,
 			"content": @string,
 			"created_at": @string,
+			"vote_up_count": @number,
+			"vote_down_count": @number,
 			"pin_comment_operations": {
-				"vote": @string(up/down),
+				"vote": @string(up/down/null),
 				"vote_timestamp": @string
 			}
 		},
@@ -246,7 +250,7 @@ Status: 200
 		{...}
 	]
 
-## 对于comment的vote
+## 对于comment的vote :white_check_mark:
 
 `POST /pins/comments/:pin_comment_id/vote`
 
@@ -260,13 +264,13 @@ yes
 | --- | --- | --- |
 | vote | string(up,down) | 投票状态 |
 
-如果已经up vote过再up vote则无效，down与之相同。
+如果已经up vote过再up vote则无效，down与之相同。但如果已经up vote了，此时直接down vote是合法的，反之亦然。
 
 ### response
 
 Status: 201
 
-## cancel对于comment的vote
+## cancel对于comment的vote :white_check_mark:
 
 `DELETE /pins/comments/:pin_comment_id/vote`
 

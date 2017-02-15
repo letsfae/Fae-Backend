@@ -3,7 +3,7 @@ namespace App\Api\v1\Utilities;
 
 class TimeUtility
 {
-	static function timeFormat($time)
+	public static function timeFormat($time)
 	{
 		if(is_object($time))
 		{

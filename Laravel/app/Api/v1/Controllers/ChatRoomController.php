@@ -52,6 +52,7 @@ class ChatRoomController extends Controller implements PinInterface
         $chat_room_user->save();
         $pin_helper = new PinHelper();
         $pin_helper->type = 'chat_room';
+        $pin_helper->user_id = $this->request->self_user_id;
         $pin_helper->geolocation =  new Point($this->request->geo_latitude, $this->request->geo_longitude);
         $pin_helper->pin_id = $chat_room->id;
         $pin_helper->duration = $chat_room->duration;
@@ -88,9 +89,9 @@ class ChatRoomController extends Controller implements PinInterface
         }
         if($this->request->has('duration'))
         {
-            $chat_room->duration = $this->request->duration;
-            $pin_helper = PinHelper::where('pin_id', $chat_room_id)->where('type', 'chat_room')->first();
-            $pin_helper->duration = $chat_room->duration;
+            $chat_room->duration = $this->request->duration; 
+            $pin_helper = PinHelper::where('pin_id', $hat_room_id)->where('type', 'chat_room')->first();
+            $pin_helper->duration = $hat_room->duration; 
             $pin_helper->save();
         }
         if($this->request->has('interaction_radius'))
@@ -175,7 +176,7 @@ class ChatRoomController extends Controller implements PinInterface
         if(is_null($chat_room_user))
         {
             $session = Sessions::find($this->request->self_session_id);
-            if(is_null($session) || !$session->is_mobile)
+            if(is_null($session) || !$session->is_mobile || $session->location == null)
             {
                 return $this->response->errorNotFound();
             }
