@@ -28,7 +28,7 @@ class ChatTest extends TestCase {
 
     //test correct response of the method of sending message.
     public function testSend() { 
-        // $this->markTestSkipped();   
+        $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -97,7 +97,7 @@ class ChatTest extends TestCase {
 
     //test whether the input format is correct.
     public function testSend2() { 
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -163,7 +163,7 @@ class ChatTest extends TestCase {
 
     //test whether the unread messages has been marked.
     public function testSend3() {  
-        // $this->markTestSkipped();
+        $this->markTestS1kipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -238,7 +238,7 @@ class ChatTest extends TestCase {
 
     //test the response when the sender_id is the same as the receiver_id. 
     public function testSend4() {   
-        // $this->markTestSkipped();
+        $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -313,7 +313,7 @@ class ChatTest extends TestCase {
 
     //test correct response of the method of getting unread. 
     public function testGetUnread() {  
-        // $this->markTestSkipped();
+        $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -405,7 +405,7 @@ class ChatTest extends TestCase {
 
     //test correct response of the method of marking read. 
     public function testMarkRead() { 
-        // $this->markTestSkipped();  
+        $this->markTestSkipped();  
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -479,7 +479,7 @@ class ChatTest extends TestCase {
 
     //test whether the input format is right. 
     public function testMarkRead2() {   
-        // $this->markTestSkipped();
+        $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -553,7 +553,7 @@ class ChatTest extends TestCase {
 
     //test correct response of the method of getting history. 
     public function testGetHistory() {   
-        // $this->markTestSkipped();
+        $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -646,7 +646,7 @@ class ChatTest extends TestCase {
 
     //test correct response of the method of deleting message. 
     public function testDelete() {  
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -713,7 +713,7 @@ class ChatTest extends TestCase {
 
     //test whether the input format is right. 
     public function testDelete2() {  
-        // $this->markTestSkipped();
+        $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -784,7 +784,7 @@ class ChatTest extends TestCase {
 
     //test whether the user who have logged in have the right to delete this chat.
     public function testDelete3() {   
-        // $this->markTestSkipped();
+        $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -870,7 +870,7 @@ class ChatTest extends TestCase {
 
     //test correct response of the method of getting getChatIdFromUserId. 
     public function testGetChatIdFromUserId() {   
-        // $this->markTestSkipped();
+        $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -944,7 +944,7 @@ class ChatTest extends TestCase {
 
     //test response when the format of the input user_a_id is not right.
     public function testGetChatIdFromUserId2() {   
-        // $this->markTestSkipped();
+        $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -1014,7 +1014,7 @@ class ChatTest extends TestCase {
 
     //test response when the chat information does not exist with the given two user_id.
     public function testGetChatIdFromUserId3() {   
-        // $this->markTestSkipped();
+        $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',

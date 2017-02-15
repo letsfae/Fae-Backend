@@ -27,7 +27,7 @@ class TagsTest extends TestCase {
     }
     //test correct response of the method of creatTags. 
     public function testCreate() {
-        // $this->markTestSkipped();
+        $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -79,7 +79,7 @@ class TagsTest extends TestCase {
 
     //test whether the input format is right. 
     public function testCreate2() {
-        // $this->markTestSkipped();
+        $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -128,7 +128,7 @@ class TagsTest extends TestCase {
 
     //test the response when the tag information has existed in the database. 
     public function testCreate3() {
-        // $this->markTestSkipped();
+        $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -184,7 +184,7 @@ class TagsTest extends TestCase {
 
     //test correct response of the method of getArray.
     public function testGetArray() {
-        // $this->markTestSkipped();
+        $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -268,7 +268,7 @@ class TagsTest extends TestCase {
 
     //test the response when the input format is wrong.
     public function testGetArray2() {
-        // $this->markTestSkipped();
+        $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -330,7 +330,7 @@ class TagsTest extends TestCase {
 
     //test correct response of the method of getOne.
     public function testGetOne() {
-        // $this->markTestSkipped();
+        $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -393,7 +393,7 @@ class TagsTest extends TestCase {
 
     //test the response when the tag with the tag_id is null.
     public function testGetOne2() {
-        // $this->markTestSkipped();
+        $this->markTestSkipped();
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',

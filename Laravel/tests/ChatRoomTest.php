@@ -78,6 +78,7 @@ class ChatRoomTest extends TestCase {
                  'chat_room_id' => 1,
         ]);
         $result = false;
+        var_dump($response);
         if ($response->status() == '201') {
             $result = true;
         }  
@@ -874,7 +875,7 @@ class ChatRoomTest extends TestCase {
 
     // the correct response of the method of sending message to chatRoom.
     public function testSend() { 
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',

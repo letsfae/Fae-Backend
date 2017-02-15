@@ -27,7 +27,7 @@ class resetLoginTest extends TestCase {
 
     //test the correct response of the method of sendResetCode.
     public function testSendResetCode() {
-        // $this->markTestSkipped();   
+        $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -89,7 +89,7 @@ class resetLoginTest extends TestCase {
 
     //test whether the input format is correct.
     public function testSendResetCode2() {
-        // $this->markTestSkipped();   
+        $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -150,7 +150,7 @@ class resetLoginTest extends TestCase {
 
     //test whether the user exists in the database.
     public function testSendResetCode3() {
-        // $this->markTestSkipped();   
+        $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -196,7 +196,7 @@ class resetLoginTest extends TestCase {
 
     //test how the database of verifications changed after the code existing more than 30 minitues.
     public function testSendResetCode4() {
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -265,7 +265,7 @@ class resetLoginTest extends TestCase {
 
     //test correct response of the method of VerifyResetCode.
     public function testVerifyResetCode() {
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -334,7 +334,7 @@ class resetLoginTest extends TestCase {
 
     //test whether the input format is right.
     public function testVerifyResetCode2() {
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -403,7 +403,7 @@ class resetLoginTest extends TestCase {
 
     //test whether the data of the verification exists.
     public function testVerifyResetCode3() {
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -466,7 +466,7 @@ class resetLoginTest extends TestCase {
 
     //test the response when the input code is not the same as the code in verifications table.
     public function testVerifyResetCode4() {
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -535,7 +535,7 @@ class resetLoginTest extends TestCase {
 
     //test what is the response when the data has created more than 30 minitues in the verifications table.
     public function testVerifyResetCode5() {
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -605,7 +605,7 @@ class resetLoginTest extends TestCase {
 
     //test correct response of the method of resetPassword.
     public function testResetPassword() {
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -676,7 +676,7 @@ class resetLoginTest extends TestCase {
 
     //test whether the input format is right.
     public function testResetPassword2() {
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -746,7 +746,7 @@ class resetLoginTest extends TestCase {
 
     //test whether the data of the verification exists.
     public function testResetPassword3() {
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -810,7 +810,7 @@ class resetLoginTest extends TestCase {
 
     //test the response when the input code is not the same as the code in verifications table.
     public function testResetPassword4() {
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -880,7 +880,7 @@ class resetLoginTest extends TestCase {
 
     //test what is the response when the data has created more than 30 minitues in the verifications table.
     public function testResetPassword5() {
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         $parameter = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',

@@ -60,7 +60,7 @@ class AuthenticationTest extends TestCase {
                  'debug_base64ed' => $array->debug_base64ed,
         ]);
         $session = Sessions::where('user_id', '=', 1)->first();
-        $result = false;
+        $result = false; 
         if ($response->status() == '201') {
             $result = true;
         }
@@ -177,9 +177,10 @@ class AuthenticationTest extends TestCase {
             'Fae-Client-Version' => 'ios-0.0.1',  
         );
         $response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        // var_dump($response);
         $array = json_decode($response->getContent());
         $result = false;
-        if ($response->status() == '403' && $array->message == 'Bad request, Password incorrect!') {
+        if ($response->status() == '403' && $array->message == 'Bad request, Password incorrect!' && $array->error_code == '403-1' && $array->status_code == '403' && $array->login_count == 1) {
             $result = true;
         }
         $this->assertEquals(true, $result);
