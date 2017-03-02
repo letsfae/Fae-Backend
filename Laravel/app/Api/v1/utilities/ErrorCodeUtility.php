@@ -20,7 +20,14 @@ class ErrorCodeUtility
     const CHAT_ROOM_FULLFILLED = '400-4';
     const NOT_MOBILE = '400-5';
     const BLOCKED_ALREADY = '400-6';
-    const WRONG_TYPE = '400-6';
+    const WRONG_TYPE = '400-7';
+    const LIKED_ALREADY = '400-8';
+    const NOT_SAVED = '400-9';
+    const SAVED_ALREADY = '400-10';
+    const NOT_LIKED = '400-11';
+    const VOTED_UP_ALREADY = '400-12';
+    const VOTED_DOWN_ALREADY = '400-13';
+    const NOT_VOTED = '400-14';
 
     //401 Unauthorized
     /*
@@ -41,6 +48,8 @@ class ErrorCodeUtility
 	const USER_NOT_IN_CHAT = '403-1';
 	const NOT_OWNER_OF_PIN = '403-2';
 	const TOO_FAR_AWAY = '403-3';
+	const VERIFICATION_TIMEOUT = '403-4';
+	const VERIFICATION_WRONG_CODE = '403-5';
 
     //404 Not Found
     /*
@@ -58,6 +67,9 @@ class ErrorCodeUtility
 	const MEDIA_NOT_FOUND = '404-10';
 	const FILE_NOT_FOUND = '404-11';
 	const FRIEND_REQUEST_NOT_FOUND = '404-12';
+	const PIN_NOT_FOUND = '404-13';
+	const VERIFICATION_NOT_FOUND = '404-14';
+	const NAME_CARD_NOT_FOUND = '404-15';
 
     //405 Method Not Allowed
     /*
@@ -137,6 +149,10 @@ class ErrorCodeUtility
 	/*
 		The request was well-formed but was unable to be followed due to semantic errors.
 	*/
+	const USER_ALREADY_EXISTS = '422-1';
+	const USER_NAME_ALREADY_EXISTS = '422-2';
+	const EMAIL_ALREADY_EXISTS = '422-3';
+	const PHONE_ALREADY_EXISTS = '422-4';
 
 	//423 Locked (WebDAV; RFC 4918)
 	/*

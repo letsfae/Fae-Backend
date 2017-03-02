@@ -7,7 +7,7 @@ return response()->json([
             ], 400);
 
 return response()->json([
-                    'message' => 'user_id is not integer',
+                    'message' => 'id is not integer',
                     'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
                     'status_code' => '400'
                 ], 400);
@@ -25,10 +25,66 @@ return response()->json([
             ], 400);
 
 return response()->json([
+                'message' => 'Bad request, you have already liked this pin!',
+                'error_code' => ErrorCodeUtility::LIKED_ALREADY,
+                'status_code' => '400'
+            ], 400);
+
+return response()->json([
+                'message' => 'Bad request, you have not liked this pin yet!',
+                'error_code' => ErrorCodeUtility::NOT_LIKED,
+                'status_code' => '400'
+            ], 400);
+
+return response()->json([
+                'message' => 'Bad request, you have already saved this pin!',
+                'error_code' => ErrorCodeUtility::SAVED_ALREADY,
+                'status_code' => '400'
+            ], 400);
+
+return response()->json([
+                'message' => 'Bad request, you have not saved this pin yet!',
+                'error_code' => ErrorCodeUtility::NOT_SAVED,
+                'status_code' => '400'
+            ], 400);
+
+return response()->json([
                 'message' => 'wrong type, neither media nor comment',
                 'error_code' => ErrorCodeUtility::WRONG_TYPE,
                 'status_code' => '400'
             ], 400);
+
+return response()->json([
+                'message' => 'Bad request, you have already voted up!',
+                'error_code' => ErrorCodeUtility::VOTED_UP_ALREADY,
+                'status_code' => '400'
+            ], 400);
+
+return response()->json([
+                'message' => 'Bad request, you have already voted down!',
+                'error_code' => ErrorCodeUtility::VOTED_DOWN_ALREADY,
+                'status_code' => '400'
+            ], 400);
+
+return response()->json([
+                'message' => 'Bad request, you have not voted yet!',
+                'error_code' => ErrorCodeUtility::NOT_VOTED,
+                'status_code' => '400'
+            ], 400);
+
+
+
+
+
+/*401*/
+return response()->json([
+                    'message' => 'incorrect password',
+                    'error_code' => ErrorCodeUtility::INCORRECT_PASSWORD,
+                    'status_code' => '401'
+                ], 401);
+
+
+
 
 /*403*/
 return response()->json([
@@ -42,6 +98,21 @@ return response()->json([
                     'error_code' => ErrorCodeUtility::NOT_OWNER_OF_PIN,
                     'status_code' => '403'
                 ], 403);
+return response()->json([
+                    'message' => 'verification timeout',
+                    'error_code' => ErrorCodeUtility::VERIFICATION_TIMEOUT,
+                    'status_code' => '403'
+                ], 403);
+return response()->json([
+                    'message' => 'verification code is wrong',
+                    'error_code' => ErrorCodeUtility::VERIFICATION_WRONG_CODE,
+                    'status_code' => '403'
+                ], 403);
+
+
+
+
+
 
 /*404*/
 return response()->json([
@@ -121,4 +192,43 @@ return response()->json([
                     'error_code' => ErrorCodeUtility::PIN_NOT_FOUND,
                     'status_code' => '404'
                 ], 404);
+
+return response()->json([
+                    'message' => 'verification not found',
+                    'error_code' => ErrorCodeUtility::VERIFICATION_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
+
+return response()->json([
+                    'message' => 'name card not found',
+                    'error_code' => ErrorCodeUtility::VERIFICATION_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
+
+
+
+
+
+/*422*/
+return response()->json([
+                    'message' => 'user already exists',
+                    'error_code' => ErrorCodeUtility::USER_ALREADY_EXISTS,
+                    'status_code' => '422'
+                ], 422);
+
+return response()->json([
+                    'message' => 'user name already exists',
+                    'error_code' => ErrorCodeUtility::USER_NAME_ALREADY_EXISTS,
+                    'status_code' => '422'
+                ], 422);
+return response()->json([
+                    'message' => 'email already exists',
+                    'error_code' => ErrorCodeUtility::EMAIL_ALREADY_EXISTS,
+                    'status_code' => '422'
+                ], 422);
+return response()->json([
+                    'message' => 'phone number already exists',
+                    'error_code' => ErrorCodeUtility::PHONE_ALREADY_EXISTS,
+                    'status_code' => '422'
+                ], 422);
 
