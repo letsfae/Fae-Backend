@@ -18,6 +18,7 @@ use App\Friends;
 use App\Friend_requests;
 use App\Sessions;
 use App\Blocks;
+use App\Api\v1\Utilities\ErrorCodeUtility;
 
 class FriendController extends Controller {
     use Helpers;
@@ -39,24 +40,40 @@ class FriendController extends Controller {
         $self_user_id = $this->request->self_user_id;
         $self_user = Users::where('id', $self_user_id)->first();
         if ($self_user == null) {
-            throw new StoreResourceFailedException('Bad request, No such users exist!');
+            return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         
         $requested_user_id = $this->request->requested_user_id;
         $requested_user = Users::where('id', $requested_user_id)->first();
         if ($requested_user == null) {
-            throw new StoreResourceFailedException('Bad request, Request user incorrect!');
+            return response()->json([
+                    'message' => 'request user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         
         //if blocked, then this friendship cannot be set
         $curr_block = Blocks::where('user_id', $self_user_id)->where('block_id', $requested_user_id)->first();
         if ($curr_block != null) {
-            throw new StoreResourceFailedException('Bad request, you have already blocked the user!');
+            return response()->json([
+                'message' => 'Bad request, you have already blocked the user!',
+                'error_code' => ErrorCodeUtility::BLOCKED_ALREADY,
+                'status_code' => '400'
+            ], 400);
         }   
 
         $curr_block = Blocks::where('user_id', $requested_user_id)->where('block_id', $self_user_id)->first();
         if ($curr_block != null) {
-            throw new StoreResourceFailedException('Bad request, you have already been blocked the user!');
+            return response()->json([
+                'message' => 'Bad request, you have already blocked the user!',
+                'error_code' => ErrorCodeUtility::BLOCKED_ALREADY,
+                'status_code' => '400'
+            ], 400);
         }
         
         //find the request if exist
@@ -108,19 +125,31 @@ class FriendController extends Controller {
         $curr_request_id = $this->request->friend_request_id;
         $curr_request = Friend_requests::where('id', $curr_request_id)->first();
         if ($curr_request == null) {
-            throw new StoreResourceFailedException('Bad request, No such friend request!');
+            return response()->json([
+                    'message' => 'friend request not found',
+                    'error_code' => ErrorCodeUtility::FRIEND_REQUEST_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }        
 
         //if blocked, then this friendship cannot be set
         $self_user_id = $this->request->self_user_id;
         $curr_block = Blocks::where('user_id', $self_user_id)->where('block_id', $curr_request->user_id)->first();
         if ($curr_block != null) {
-            throw new StoreResourceFailedException('Bad request, you have already blocked the user!');
+            return response()->json([
+                'message' => 'Bad request, you have already blocked the user!',
+                'error_code' => ErrorCodeUtility::BLOCKED_ALREADY,
+                'status_code' => '400'
+            ], 400);
         }   
 
         $curr_block = Blocks::where('user_id', $curr_request->user_id)->where('block_id', $self_user_id)->first();
         if ($curr_block != null) {
-            throw new StoreResourceFailedException('Bad request, you have already been blocked the user!');
+            return response()->json([
+                'message' => 'Bad request, you have already blocked the user!',
+                'error_code' => ErrorCodeUtility::BLOCKED_ALREADY,
+                'status_code' => '400'
+            ], 400);
         }   
         
         //create friendship and store it
@@ -178,7 +207,12 @@ class FriendController extends Controller {
         $curr_request_id = $this->request->friend_request_id;
         $curr_request = Friend_requests::where('id', $curr_request_id)->first();
         if ($curr_request == null) {
-            throw new StoreResourceFailedException('Bad request, No such friend request!');
+            return response()->json([
+                    'message' => 'friend request not found',
+                    'error_code' => ErrorCodeUtility::FRIEND_REQUEST_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
+
         }
         
         //------- friendship already exist-------

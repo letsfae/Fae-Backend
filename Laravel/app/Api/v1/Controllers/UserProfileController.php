@@ -30,17 +30,29 @@ class UserProfileController extends Controller
     {
         if(!is_numeric($user_id))
         {
-            return $this->response->errorBadRequest();
+            return response()->json([
+                    'message' => 'id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
         $user = Users::find($user_id);
         if(is_null($user))
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         $user_exts = User_exts::find($user_id);
         if(is_null($user_exts)) 
         {
-            $this->response->errorNotFound('user does not exist');
+            return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         $profile = array('user_id' => $user->id, 'mini_avatar' => $user->mini_avatar, 'last_login_at' => $user->last_login_at);
         if($user_exts->show_user_name)
@@ -72,7 +84,11 @@ class UserProfileController extends Controller
         $user = Users::find($this->request->self_user_id);
         if(is_null($user))
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         $profile = array('user_id' => $user->id, 'user_name' => $user->user_name, 'mini_avatar' => $user->mini_avatar, 
                          'birthday' => $user->birthday, 'email' => $user->email, 'phone' => $user->phone, 
@@ -86,7 +102,11 @@ class UserProfileController extends Controller
         $user = Users::find($this->request->self_user_id);
         if(is_null($user)) 
         {
-            return $this->response->errorNotFound('user does not exist');
+            return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         if($this->request->has('first_name'))
         {
@@ -117,7 +137,11 @@ class UserProfileController extends Controller
         $user_exts = User_exts::find($this->request->self_user_id);
         if(is_null($user_exts)) 
         {
-            $this->response->errorNotFound('user does not exist');
+            return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         return $this->response->array(array(
             'show_user_name' => $user_exts->show_user_name, 
@@ -133,7 +157,11 @@ class UserProfileController extends Controller
         $user_exts = User_exts::find($this->request->self_user_id);
         if(is_null($user_exts)) 
         {
-            $this->response->errorNotFound('user does not exist');
+            return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         if($this->request->has('show_user_name'))
         {

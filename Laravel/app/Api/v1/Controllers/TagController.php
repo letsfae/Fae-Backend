@@ -11,6 +11,7 @@ use Dingo\Api\Exception\StoreResourceFailedException;
 use Dingo\Api\Exception\UpdateResourceFailedException;
 use App\Tags;
 use App\TagHelper;
+use App\Api\v1\Utilities\ErrorCodeUtility;
 
 class TagController extends Controller {
     use Helpers;
@@ -54,10 +55,22 @@ class TagController extends Controller {
 
     public function getOne($tag_id)
     {
+        if(!is_numeric($tag_id))
+        {
+            return response()->json([
+                    'message' => 'id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
+        }
         $tag = Tags::find($tag_id);
         if(is_null($tag))
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'tag not found',
+                    'error_code' => ErrorCodeUtility::TAG_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         return $this->response->array(array('tag_id' => $tag->id, 'title' => $tag->title, 'color' => $tag->color));
     }
@@ -66,12 +79,20 @@ class TagController extends Controller {
     {
     	if(!is_numeric($tag_id))
         {
-            return $this->response->errorBadRequest('id should be integer');
+            return response()->json([
+                    'message' => 'id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
         $tag = Tags::find($tag_id);
         if (is_null($tag))
         {
-            return $this->response->errorNotFound('tag does not exist');
+            return response()->json([
+                    'message' => 'tag not found',
+                    'error_code' => ErrorCodeUtility::TAG_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         $this->getAllPinsValidation($this->request);
         $page =  $this->request->has('page') ? $this->request->page : 1;
@@ -220,7 +241,7 @@ class TagController extends Controller {
         ]);
         if($validator->fails())
         {
-            return $this->response->errorBadRequest();
+            throw new StoreResourceFailedException('Could not get array.', $validator->errors());
         }
     }
 }

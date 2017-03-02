@@ -19,6 +19,7 @@ use DB;
 use Phaza\LaravelPostgis\Eloquent\PostgisTrait;
 use Phaza\LaravelPostgis\Geometries\Point;
 use Phaza\LaravelPostgis\Geometries\Geometry;
+use App\Api\v1\Utilities\ErrorCodeUtility;
 
 class MapController extends Controller
 {
@@ -68,7 +69,8 @@ class MapController extends Controller
                                               'radius' => $radius, 'max_count' => $max_count));
             }
             // $distance = DB::select("SELECT ST_Distance_Spheroid(ST_SetSRID(ST_Point(55, 56.1),4326), ST_SetSRID(ST_Point(56, 56),4326), 'SPHEROID[\"WGS 84\",6378137,298.257223563]')");
-            // echo $distance[0]->st_distance_spheroid; exit();                 
+            // echo $distance[0]->st_distance_spheroid; exit();
+            //bug here! 如果存在隐身用户，返回数量会少于max_count              
             foreach($sessions as $session)
             {
                 $user_exts = User_exts::find($session->user_id);
@@ -258,7 +260,11 @@ class MapController extends Controller
         $session = Sessions::find($this->request->self_session_id);
         if(is_null($session))
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'session not found',
+                    'error_code' => ErrorCodeUtility::SESSION_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         if($session->is_mobile)
         {
@@ -269,7 +275,11 @@ class MapController extends Controller
         }
         else
         {
-            throw new UpdateResourceFailedException('current user is not active');
+            return response()->json([
+                    'message' => 'current client is not mobile',
+                    'error_code' => ErrorCodeUtility::NOT_MOBILE,
+                    'status_code' => '400'
+                ], 400);
         }
     }
 
