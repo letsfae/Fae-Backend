@@ -24,10 +24,6 @@
 | --- | --- |
 | 401-1 | 密码不正确 |
 
-## 401 Unauthorized
-| Error Code | Description |
-| --- | --- |
-
 ## 402 Payment Required
 | Error Code | Description |
 | --- | --- |
