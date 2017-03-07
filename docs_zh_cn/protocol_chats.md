@@ -67,6 +67,48 @@ Status: 200
 
 可通过unread_count来获取有几条消息未读，从而实现“阅后即焚”（即通过unread_count来实现只获取最近的n条消息）。
 
+## 获取两名用户之间的消息（通过chat_id）
+
+`GET /chats/:chat_id`
+
+### filters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| count | number | 获取该数量的聊天记录 |
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	[
+		{
+			"chat_id": @number,
+			"message": @string,
+			"message_sender_id": @number,
+			"message_sender_name": @string,
+			"message_timestamp": @string,
+			"message_type": @string,
+			"server_sent_timestamp":@string
+		},
+		{...},
+		{...}
+	]
+
+## 获取两名用户之间的消息（通过user_id）
+
+`GET /chats/:user_a_id/:user_b_id`
+
+a与b的顺序不敏感。
+
+其余同`通过chat_id获取`的接口。
+
+该接口可视为`根据聊天双方user_id获取chat_id`与`获取两名用户之间的消息（通过chat_id）`接口的合并操作。
+
 ## 标记已读消息 mark read :white_check_mark:
 
 `POST /chats/read`

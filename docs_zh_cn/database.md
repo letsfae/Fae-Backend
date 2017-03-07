@@ -53,12 +53,25 @@
 - last_message text
 - last_message_timestamp
 - last_message_sender_id FK
-- last_message_type enum(text,image)
+- last_message_type enum(text,image,sticker,location,audio,customize)
 - user_a_unread_count integer default 0
 - user_b_unread_count integer default 0
 - created_at
 
 注意user_a_id < user_b_id
+
+## chats in firebase
+- id
+- alias_id `user_a_id` + `_` + `user_b_id`
+- user_a_id FK
+- user_b_id FK
+- message text
+- message_timestamp
+- message_sender_id
+- message_type
+- user_a_unread_count integer default 0
+- user_b_unread_count integer default 0
+- created_at
 
 ## name_cards
 - user_id FK 同user_ext表 外主键

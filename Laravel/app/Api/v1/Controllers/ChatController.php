@@ -260,6 +260,14 @@ class ChatController extends Controller
         return $this->response->array(array("chat_id" => $chat->id));
     }
 
+    public function getMessageByUserId($user_a_id, $user_b_id) {
+
+    }
+
+    public function getMessageByChatId($chat_id) {
+
+    }
+
     private function sendValidation(Request $request)
     {
         $validator = Validator::make($request->all(), [
