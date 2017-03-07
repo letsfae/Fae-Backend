@@ -198,6 +198,7 @@
 - type enum(media,comment)
 - pin_id 必须是enum所列举的pin的id
 - user_id FK
+- anonymous default false
 - content text
 - created_at
 - vote_up_count

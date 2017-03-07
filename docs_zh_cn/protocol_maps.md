@@ -269,6 +269,7 @@ Status: 200
 	{
 		"comment_id": @number,
 		"user_id": @number, 如果非自身创建的pin且anonymous为true，则user_id为null
+		"nick_name": @string,
 		"anonymous": @boolean,
 		"content": @string,
 		"geolocation": {
@@ -401,6 +402,7 @@ Status: 200
 	{
 		"media_id": @number,
 		"user_id": @number, 如果非自身创建的pin且anonymous为true，则user_id为null
+		"nick_name": @string,
 		"anonymous": @boolean,
 		"file_ids": [
 			@number, 
@@ -678,7 +680,8 @@ Status: 200
 	{
 		"chat_room_id": @number,
 		"title": @string,
-		"user_id": @number 创建者id
+		"user_id": @number 创建者id,
+		"nick_name": @string,
 		"geolocation": {
 			"latitude": @number,
 			"longitude": @number

@@ -82,9 +82,10 @@ yes
 
 ### parameters
 
-| Name | Description |
-| --- | --- |
-| content | 评论内容 |
+| Name | Type | Description |
+| --- | --- | --- |
+| content | text | 评论内容 |
+| anonymous (optinal) | boolean | 匿名，默认为false |
 
 ### response
 
@@ -236,7 +237,9 @@ Status: 200
 	[
 		{
 			"pin_comment_id": @number,
-			"user_id": @number,
+			"user_id": @number, 如果非自身创建的pin且anonymous为true，则user_id为null
+			"anonymous": @boolean,
+			"nick_name": @string,
 			"content": @string,
 			"created_at": @string,
 			"vote_up_count": @number,
