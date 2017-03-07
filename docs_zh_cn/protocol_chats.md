@@ -76,6 +76,9 @@ Status: 200
 | Name | Type | Description |
 | --- | --- | --- |
 | count | number | 获取该数量的聊天记录 |
+| offset | number | 从第几条开始获取聊天记录，base为1 |
+
+注意聊天记录是按照时间降序返回的。
 
 ### auth
 

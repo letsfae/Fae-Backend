@@ -259,7 +259,21 @@ Status: 201
 
 ### auth
 
-yes
+no
+
+### response
+
+Status: 200
+
+Body图片数据。
+
+## 获取商家图片
+
+`GET /files/businesses/:business_id/image`
+
+### auth
+
+no
 
 ### response
 

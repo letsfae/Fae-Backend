@@ -141,6 +141,8 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->get('/richtext/hashtag/{hashtag}/contains', 'App\Api\v1\Controllers\RichTextController@searchHashtagWithText');
     // feedback
     $api->post('/feedback', 'App\Api\v1\Controllers\FeedbackController@sendFeedback');
+    // business
+    $api->get('/pins/businesses/{business_id}', 'App\Api\v1\Controllers\BusinessController@getOne');
 });
 
 /**
@@ -153,7 +155,8 @@ $api->version('v1', function ($api) {
     $api->get('/files/users/{user_id}/avatar/{size}', 'App\Api\v1\Controllers\UserFileController@getAvatar');
     $api->get('/files/users/{user_id}/name_card_cover', 'App\Api\v1\Controllers\UserFileController@getNameCardCover');
     $api->get('/files/users/{user_id}/name_card_photo/{position}', 'App\Api\v1\Controllers\UserFileController@getNameCardPhoto');
-    $api->post('/files/chat_rooms/{chat_room_id}/cover_image', 'App\Api\v1\Controllers\ChatRoomFileController@getChatRoomCoverImage');
+    $api->get('/files/chat_rooms/{chat_room_id}/cover_image', 'App\Api\v1\Controllers\ChatRoomFileController@getChatRoomCoverImage');
+    $api->get('/files/businesses/{business_id}', 'App\Api\v1\Controllers\BusinessController@getImage');
 });
 
 $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], function ($api) {

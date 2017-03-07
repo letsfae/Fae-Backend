@@ -737,3 +737,35 @@ Status: 200
 ## 删除ChatRoom
 
 禁止删除ChatRoom。
+
+## 获取商家数据
+
+`GET /business/:business_id`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	{
+		"business_id": @number,
+		"name": @string,
+		"categories": [
+			@string,
+			...
+		],
+		"geolocation": {
+			"latitude": @number,
+			"longitude": @number
+		},
+		"location": {
+			"city": @string,
+	        "country": @string,
+	        "state": @string,
+	        "address": @string,
+	        "zip_code": @string
+		}
+	}
