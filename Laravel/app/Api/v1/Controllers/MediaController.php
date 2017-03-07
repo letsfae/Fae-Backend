@@ -44,12 +44,20 @@ class MediaController extends Controller implements PinInterface
             }
             else
             {
-                return $this->errorNotFound('tags not exist');
+                return response()->json([
+                    'message' => 'tags not found',
+                    'error_code' => ErrorCodeUtility::TAG_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
             }
         }
         if(!FileController::existsByString($this->request->file_ids))
         {
-            return $this->errorNotFound('files not exist');
+            return response()->json([
+                    'message' => 'files not found',
+                    'error_code' => ErrorCodeUtility::FILE_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         FileController::refByString($this->request->file_ids);
         $media->file_ids = $this->request->file_ids;
@@ -85,17 +93,29 @@ class MediaController extends Controller implements PinInterface
     {
         if(!is_numeric($media_id))
         {
-            return $this->response->errorBadRequest();
+            return response()->json([
+                    'message' => 'media_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
         $this->updateValidation($this->request);
         $media = Medias::find($media_id);
         if(is_null($media))
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'media not found',
+                    'error_code' => ErrorCodeUtility::MEDIA_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         if($media->user_id != $this->request->self_user_id)
         {
-            throw new AccessDeniedHttpException('You can not update this media');
+            return response()->json([
+                    'message' => 'You can not update this media',
+                    'error_code' => ErrorCodeUtility::NOT_OWNER_OF_PIN,
+                    'status_code' => '403'
+                ], 403);
         }
         if($this->request->has('file_ids'))
         { 
@@ -106,7 +126,11 @@ class MediaController extends Controller implements PinInterface
             }
             else
             {
-                return $this->errorNotFound();
+                return response()->json([
+                    'message' => 'file not found',
+                    'error_code' => ErrorCodeUtility::FILE_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
             }
         }
         if($this->request->has('tag_ids'))
@@ -123,7 +147,11 @@ class MediaController extends Controller implements PinInterface
             }
             else
             {
-                return $this->errorNotFound();
+                return response()->json([
+                    'message' => 'tag not found',
+                    'error_code' => ErrorCodeUtility::TAG_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
             }
         }
         if($this->request->has('description'))
@@ -163,12 +191,20 @@ class MediaController extends Controller implements PinInterface
     {
         if(!is_numeric($media_id))
         {
-            return $this->response->errorBadRequest();
+            return response()->json([
+                    'message' => 'media_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
         $media = Medias::find($media_id);
         if(is_null($media))
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'media not found',
+                    'error_code' => ErrorCodeUtility::MEDIA_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         $file_ids = is_null($media->file_ids) ? null : explode(';', $media->file_ids);
         $tag_ids = is_null($media->tag_ids) ? null : explode(';', $media->tag_ids);
@@ -187,16 +223,28 @@ class MediaController extends Controller implements PinInterface
     {
         if(!is_numeric($media_id))
         {
-            return $this->response->errorBadRequest();
+            return response()->json([
+                    'message' => 'media_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
         $media = Medias::find($media_id);
         if(is_null($media))
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'media not found',
+                    'error_code' => ErrorCodeUtility::MEDIA_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         if($media->user_id != $this->request->self_user_id)
         {
-            throw new AccessDeniedHttpException('You can not delete this media');
+            return response()->json([
+                    'message' => 'You can not delete this media',
+                    'error_code' => ErrorCodeUtility::NOT_OWNER_OF_PIN,
+                    'status_code' => '403'
+                ], 403);
         }
         FileController::derefByString($media->file_ids);
         TagController::derefByString($media->tag_ids, $media->id, 'media');
@@ -212,11 +260,19 @@ class MediaController extends Controller implements PinInterface
     {
         if(!is_numeric($user_id))
         {
-            return $this->response->errorBadRequest('id should be integer');
+            return response()->json([
+                    'message' => 'user_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
         if (is_null(Users::find($user_id)))
         {
-            return $this->response->errorNotFound('user does not exist');
+            return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         $this->getFromUserValidation($this->request);
         $start_time = $this->request->has('start_time') ? $this->request->start_time : '1970-01-01 00:00:00';

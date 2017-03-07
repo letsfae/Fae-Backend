@@ -14,9 +14,9 @@ use App\Users;
 use App\Api\v1\Controllers\MapController;
 use App\Api\v1\Controllers\SyncController;
 use Davibennun\LaravelPushNotification\Facades\PushNotification;
+use App\Api\v1\Utilities\ErrorCodeUtility;
 class AuthenticationController extends Controller {
     use Helpers;
-    
     public function __construct(Request $request) {
         $this->request = $request;
     }
@@ -86,10 +86,10 @@ class AuthenticationController extends Controller {
             
             return response()->json([
                 'message' => 'Bad request, Password incorrect!',
-                'error_code' => '403-1',
-                'status_code' => '403',
-                'login_count' => $users->login_count,
-            ], 403);
+                'error_code' => ErrorCodeUtility::INCORRECT_PASSWORD,
+                'status_code' => '401',
+                'login_count' => $users->login_count
+            ], 401);
             
             //throw new AccessDeniedHttpException('Bad request, Password incorrect!');  
         }

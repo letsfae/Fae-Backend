@@ -68,8 +68,10 @@ Base URL：`https://api.letsfae.com/`
 	{
 		"status_code": @number,
 		"message": @string,
-		"errors": {}
+		"error_code": @string
 	}
+
+具体协议参考[错误码](protocol_error_code.md)。
 
 # 接口功能
 

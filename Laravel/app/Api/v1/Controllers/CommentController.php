@@ -19,6 +19,7 @@ use App\Api\v1\Controllers\PinOperationController;
 use Auth;
 use App\Api\v1\Interfaces\PinInterface;
 use App\Api\v1\Controllers\RichTextController;
+use App\Api\v1\Utilities\ErrorCodeUtility;
 
 class CommentController extends Controller implements PinInterface
 {
@@ -71,17 +72,29 @@ class CommentController extends Controller implements PinInterface
     {
         if(!is_numeric($comment_id))
         {
-            return $this->response->errorBadRequest();
+            return response()->json([
+                    'message' => 'comment_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
         $this->updateValidation($this->request);
         $comment = Comments::find($comment_id);
         if(is_null($comment))
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'comment not found',
+                    'error_code' => ErrorCodeUtility::COMMENT_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         if($comment->user_id != $this->request->self_user_id)
         {
-            throw new AccessDeniedHttpException('You can not update this comment');
+            return response()->json([
+                    'message' => 'You can not update this comment',
+                    'error_code' => ErrorCodeUtility::NOT_OWNER_OF_PIN,
+                    'status_code' => '403'
+                ], 403);
         }
         if($this->request->has('content'))
         {
@@ -122,12 +135,20 @@ class CommentController extends Controller implements PinInterface
     {
         if(!is_numeric($comment_id))
         {
-            return $this->response->errorBadRequest();
+            return response()->json([
+                    'message' => 'comment_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
         $comment = Comments::find($comment_id);
         if(is_null($comment))
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'comment not found',
+                    'error_code' => ErrorCodeUtility::COMMENT_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         $user_pin_operations = PinOperationController::getOperations('comment', $comment_id, $this->request->self_user_id);
         return $this->response->array(array('comment_id' => $comment->id, 
@@ -143,16 +164,28 @@ class CommentController extends Controller implements PinInterface
     {
         if(!is_numeric($comment_id))
         {
-            return $this->response->errorBadRequest();
+            return response()->json([
+                    'message' => 'comment_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
         $comment = Comments::find($comment_id);
         if(is_null($comment))
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'comment not found',
+                    'error_code' => ErrorCodeUtility::COMMENT_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         if($comment->user_id != $this->request->self_user_id)
         {
-            throw new AccessDeniedHttpException('You can not delete this comment');
+            return response()->json([
+                    'message' => 'You can not delete this comment',
+                    'error_code' => ErrorCodeUtility::NOT_OWNER_OF_PIN,
+                    'status_code' => '403'
+                ], 403);
         }
 
         // pin helper
@@ -170,11 +203,19 @@ class CommentController extends Controller implements PinInterface
     {
         if(!is_numeric($user_id))
         {
-            return $this->response->errorBadRequest();
+            return response()->json([
+                    'message' => 'user_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
         if (is_null(Users::find($user_id)))
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         $this->getUserValidation($this->request);
         $start_time = $this->request->has('start_time') ? $this->request->start_time:'1970-01-01 00:00:00';

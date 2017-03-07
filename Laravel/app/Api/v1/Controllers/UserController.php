@@ -20,6 +20,7 @@ use App\Name_cards;
 use App\Chats;
 use Mail;
 use Twilio;
+use App\Api\v1\Utilities\ErrorCodeUtility;
 
 class UserController extends Controller
 {
@@ -35,7 +36,11 @@ class UserController extends Controller
         UserController::signUpValidation($this->request);
         if(Users::where('user_name', 'ilike', $this->request->user_name)->exists())
         {
-            return $this->response->errorBadRequest("user name already exists");
+            return response()->json([
+                    'message' => 'user name already exists',
+                    'error_code' => ErrorCodeUtility::USER_NAME_ALREADY_EXISTS,
+                    'status_code' => '422'
+                ], 422);
         }
         $user = new Users;
         $user->email = strtolower($this->request->email);
@@ -94,7 +99,11 @@ class UserController extends Controller
         {
             if(Users::where('user_name', 'ilike', $this->request->user_name)->exists())
             {
-                return $this->response->errorBadRequest("user name already exists");
+                return response()->json([
+                    'message' => 'user name already exists',
+                    'error_code' => ErrorCodeUtility::USER_NAME_ALREADY_EXISTS,
+                    'status_code' => '422'
+                ], 422);
             }
             $user->user_name = $this->request->user_name;
         }
@@ -126,7 +135,11 @@ class UserController extends Controller
             );
             return $this->response->array($account);
         }
-        return $this->response->errorNotFound();
+        return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
     }
 
     public function updatePassword() 
@@ -142,14 +155,18 @@ class UserController extends Controller
             {
                 $session = Sessions::find($this->request->self_session_id);
                 $session->delete();
-                throw new UnauthorizedHttpException(null, 'Incorrect password, automatically lougout');
+                return response()->json([
+                    'message' => 'Incorrect password, automatically lougout',
+                    'error_code' => ErrorCodeUtility::INCORRECT_PASSWORD,
+                    'status_code' => '401'
+                ], 401);
             }
-            
             return response()->json([
-                'message' => 'Incorrect password, you still have '.(3-$user->login_count).' chances',
-                'status_code' => 401,
-                'login_count' => $user->login_count,
-            ], 401);
+                    'message' => 'Incorrect password, you still have '.(6-$user->login_count).' chances',
+                    'error_code' => ErrorCodeUtility::INCORRECT_PASSWORD,
+                    'status_code' => '401',
+                    'login_count' => $user->login_count
+                ], 401);
             
             //throw new UnauthorizedHttpException('Incorrect password, you still have '.(3-$user->login_count).' chances');
         }
@@ -173,15 +190,18 @@ class UserController extends Controller
                 {
                     $session = Sessions::find($this->request->self_session_id);
                     $session->delete();
-                    throw new UnauthorizedHttpException(null, 'Incorrect password, automatically lougout');
+                    return response()->json([
+                        'message' => 'Incorrect password, automatically lougout',
+                        'error_code' => ErrorCodeUtility::INCORRECT_PASSWORD,
+                        'status_code' => '401'
+                    ], 401);
                 }
-                
                 return response()->json([
-                    'message' => 'Bad request, Password incorrect!',
-                    'status_code' => 401,
-                    'login_count' => $user->login_count,
+                    'message' => 'Incorrect password, you still have '.(6-$user->login_count).' chances',
+                    'error_code' => ErrorCodeUtility::INCORRECT_PASSWORD,
+                    'status_code' => '401',
+                    'login_count' => $user->login_count
                 ], 401);
-                //throw new UnauthorizedHttpException('Incorrect password, please verify your information!');
             }
             $user->login_count = 0;
             $user->save();
@@ -220,7 +240,11 @@ class UserController extends Controller
         $user_exts = User_exts::find($user_id);
         if(is_null($user_exts))
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         if($user_id != $this->request->self_user_id && $user_exts->status == 5)
         {
@@ -333,7 +357,11 @@ class UserController extends Controller
         if( ( count($user)!=0 ) ){
             $current_user = Users::find($this->request->self_user_id);
             if ($current_user->email != $user[0]->email){
-                throw new AccessDeniedHttpException('Email already in use, please use another one!');
+                return response()->json([
+                    'message' => 'email already exists',
+                    'error_code' => ErrorCodeUtility::EMAIL_ALREADY_EXISTS,
+                    'status_code' => '422'
+                ], 422);
             }
         }
         
@@ -420,7 +448,11 @@ class UserController extends Controller
                 
                 return $this->response->created();
             }else{
-                return $this->response->errorNotFound();
+                return response()->json([
+                    'message' => 'verification code is wrong',
+                    'error_code' => ErrorCodeUtility::VERIFICATION_WRONG_CODE,
+                    'status_code' => '403'
+                ], 403);
             }
         }
     }
@@ -442,7 +474,11 @@ class UserController extends Controller
         if( ( count($user)!=0 ) ){
             $current_user = Users::find($this->request->self_user_id);
             if ($current_user->phone != $user[0]->phone){
-                throw new AccessDeniedHttpException('Phone number already in use, please use another one!');
+                return response()->json([
+                    'message' => 'phone number already exists',
+                    'error_code' => ErrorCodeUtility::PHONE_ALREADY_EXISTS,
+                    'status_code' => '422'
+                ], 422);
             }
         }
         
@@ -500,8 +536,13 @@ class UserController extends Controller
             return $this->response->errorNotFound();
         }else{
             if($verification[0]->code == $input['code']){
-                if ($verification[0]->created_at->diffInMinutes()>30)
-                    return $this->response->errorNotFound();
+                if ($verification[0]->created_at->diffInMinutes()>30){
+                    return response()->json([
+                        'message' => 'verification timeout',
+                        'error_code' => ErrorCodeUtility::VERIFICATION_TIMEOUT,
+                        'status_code' => '403'
+                    ], 403);
+                }
                 $verification[0]->delete();
                 
                 //$user = Users::where('email','=',$input['email'])->get();
@@ -512,7 +553,11 @@ class UserController extends Controller
                 
                 return $this->response->created();
             }else{
-                return $this->response->errorNotFound();
+                return response()->json([
+                    'message' => 'verification code is wrong',
+                    'error_code' => ErrorCodeUtility::VERIFICATION_WRONG_CODE,
+                    'status_code' => '403'
+                ], 403);
             }
         }
     }
