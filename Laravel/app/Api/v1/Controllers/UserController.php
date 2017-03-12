@@ -284,7 +284,7 @@ class UserController extends Controller
         }
         $validator = Validator::make($input, [
             'email' => 'required|unique:users,email|max:50|email',
-            'user_name' => 'required|regex:/^[a-zA-Z0-9_]{3,20}$/',
+            'user_name' => 'required|regex:/^[a-zA-Z0-9_\-.]{3,20}$/',
             'password' => 'required|between:8,16',
             'first_name' => 'required|string|max:50',
             'last_name' => 'required|string|max:50',

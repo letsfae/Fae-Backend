@@ -14,6 +14,7 @@ use App\Medias;
 use App\Pin_comments;
 use App\PinCommentOperations;
 use App\Sessions;
+use App\Name_cards;
 use App\Users;
 use DB;
 
@@ -550,7 +551,11 @@ class PinOperationController extends Controller {
         {
             $pin_comment_operations = $this->getPinCommentOperations($commented_pin->id, $this->request->self_user_id);
             $info[] = array('pin_comment_id' => $commented_pin->id,
-                            'user_id' => $commented_pin->user_id,
+                            'user_id' => ($commented_pin->anonymous && $commented_pin->user_id != $this->request->self_user_id) ? 
+                            null : $commented_pin->user_id,
+                            'anonymous' => $commented_pin->anonymous,
+                            'nick_name' => ($commented_pin->anonymous && $commented_pin->user_id != $this->request->self_user_id) ? 
+                            null : Name_cards::find($commented_pin->user_id)->nick_name,
                             'content' => $commented_pin->content,
                             'pin_comment_operations' => $pin_comment_operations,
                             'vote_up_count' => $commented_pin->vote_up_count,

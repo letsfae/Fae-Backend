@@ -17,6 +17,7 @@ use App\ChatRooms;
 use App\ChatRoomUsers;
 use App\Users;
 use APP\Sessions;
+use App\Name_cards;
 use DB;
 use App\PinHelper;
 use App\Api\v1\Controllers\TagController;
@@ -191,6 +192,7 @@ class ChatRoomController extends Controller implements PinInterface
         }
         $tag_ids = is_null($chat_room->tag_ids) ? null : explode(';', $chat_room->tag_ids);
         return $this->response->array(array('chat_room_id' => $chat_room->id, 
+            'nick_name' => Name_cards::find($chat_room->user_id)->nick_name,
             'title' => $chat_room->title, 'user_id' => $chat_room->user_id,
             'geolocation' => ['latitude' => $chat_room->geolocation->getLat(), 'longitude' => $chat_room->geolocation->getLng()], 
             'last_message' => $chat_room->last_message, 'last_message_sender_id' => $chat_room->last_message_sender_id,
@@ -240,7 +242,9 @@ class ChatRoomController extends Controller implements PinInterface
         {
             $tag_ids = is_null($chat_room->tag_ids) ? null : explode(';', $chat_room->tag_ids);
             $info[] = array('chat_room_id' => $chat_room->id, 'title' => $chat_room->title, 
-            'user_id' => $chat_room->user_id, 'geolocation' => ['latitude' => $chat_room->geolocation->getLat(), 
+            'user_id' => $chat_room->user_id, 
+            'nick_name' => Name_cards::find($chat_room->user_id)->nick_name,
+            'geolocation' => ['latitude' => $chat_room->geolocation->getLat(), 
             'longitude' => $chat_room->geolocation->getLng()], 'last_message' => $chat_room->last_message, 
             'last_message_sender_id' => $chat_room->last_message_sender_id, 'last_message_type' => $chat_room->last_message_type, 
             'last_message_timestamp' => $chat_room->last_message_timestamp, 

@@ -15,6 +15,7 @@ use App\Files;
 use App\Tags;
 use App\Users;
 use App\PinHelper;
+use App\Name_cards;
 use App\Api\v1\Controllers\PinOperationController;
 use Phaza\LaravelPostgis\Eloquent\PostgisTrait;
 use Phaza\LaravelPostgis\Geometries\Point;
@@ -211,10 +212,17 @@ class MediaController extends Controller implements PinInterface
         $user_pin_operations = PinOperationController::getOperations('media', $media_id, $this->request->self_user_id);
         return $this->response->array(array('media_id' => $media->id, 
             'user_id' => ($media->anonymous && $media->user_id != $this->request->self_user_id) ? null : $media->user_id, 
-            'anonymous' => $media->anonymous, 'file_ids' => $file_ids, 'tag_ids' => $tag_ids, 
-            'description' => $media->description, 'geolocation' => ['latitude' => $media->geolocation->getLat(), 
-            'longitude' => $media->geolocation->getLng()], 'liked_count' => $media->liked_count, 
-            'saved_count' => $media->saved_count, 'comment_count' => $media->comment_count,
+            'anonymous' => $media->anonymous, 
+            'file_ids' => $file_ids, 
+            'tag_ids' => $tag_ids, 
+            'nick_name' => ($media->anonymous && $media->user_id != $this->request->self_user_id) ? 
+                            null : Name_cards::find($commented_pin->user_id)->nick_name,
+            'description' => $media->description, 
+            'geolocation' => ['latitude' => $media->geolocation->getLat(), 
+            'longitude' => $media->geolocation->getLng()], 
+            'liked_count' => $media->liked_count, 
+            'saved_count' => $media->saved_count, 
+            'comment_count' => $media->comment_count,
             'created_at' => $media->created_at->format('Y-m-d H:i:s'),
             'user_pin_operations' => $user_pin_operations));
     }
