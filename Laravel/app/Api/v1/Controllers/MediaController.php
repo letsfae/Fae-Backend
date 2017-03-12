@@ -212,11 +212,11 @@ class MediaController extends Controller implements PinInterface
         $user_pin_operations = PinOperationController::getOperations('media', $media_id, $this->request->self_user_id);
         return $this->response->array(array('media_id' => $media->id, 
             'user_id' => ($media->anonymous && $media->user_id != $this->request->self_user_id) ? null : $media->user_id, 
+            'nick_name' => ($media->anonymous && $media->user_id != $this->request->self_user_id) ? 
+                            null : Name_cards::find($media->user_id)->nick_name,
             'anonymous' => $media->anonymous, 
             'file_ids' => $file_ids, 
             'tag_ids' => $tag_ids, 
-            'nick_name' => ($media->anonymous && $media->user_id != $this->request->self_user_id) ? 
-                            null : Name_cards::find($commented_pin->user_id)->nick_name,
             'description' => $media->description, 
             'geolocation' => ['latitude' => $media->geolocation->getLat(), 
             'longitude' => $media->geolocation->getLng()], 
@@ -324,7 +324,8 @@ class MediaController extends Controller implements PinInterface
         {
             $user_pin_operations = PinOperationController::getOperations('media', $media->id, $this->request->self_user_id);
             $info[] = array('media_id' => $media->id, 
-                'user_id' => $media->user_id, 
+                'user_id' => $media->user_id,
+                'nick_name' => Name_cards::find($commented_pin->user_id)->nick_name,
                 'file_ids' => explode(';', $media->file_ids), 
                 'tag_ids' => explode(';', $media->tag_ids), 'description' => $media->description, 
                 'geolocation'=>['latitude'=>$media->geolocation->getLat(), 'longitude'=>$media->geolocation->getLng()], 
