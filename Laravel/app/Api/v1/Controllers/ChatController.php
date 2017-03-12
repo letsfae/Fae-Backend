@@ -50,7 +50,7 @@ class ChatController extends Controller
         {
             return response()->json([
                 'message' => 'You can not send messages to yourself!',
-                'error_code' => ErrorCodeUtility::,
+                'error_code' => ErrorCodeUtility::SEND_TO_SELF,
                 'status_code' => '400'
             ], 400);
         }
