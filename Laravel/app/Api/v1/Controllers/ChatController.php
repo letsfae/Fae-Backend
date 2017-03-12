@@ -14,6 +14,8 @@ use App\Users;
 use App\Sessions;
 use App\Chats;
 use App\Api\v1\Utilities\ErrorCodeUtility;
+use DateTime;
+use Firebase\Firebase;
 
 class ChatController extends Controller 
 {
@@ -50,7 +52,7 @@ class ChatController extends Controller
         {
             return response()->json([
                 'message' => 'You can not send messages to yourself!',
-                'error_code' => ErrorCodeUtility::,
+                'error_code' => ErrorCodeUtility::SEND_TO_SELF,
                 'status_code' => '400'
             ], 400);
         }
@@ -67,6 +69,16 @@ class ChatController extends Controller
             $chat->user_b_unread_count++;
         }
         $chat->save();
+
+        $fb = Firebase::initialize('https://faeapp-5ea31.firebaseio.com', 'LiYqgdzrv8Y1s2lRN7iziHy4Z5UCgvUlJJhHcZRe');
+        $dateTime = new DateTime();
+        $fb->push('Message-dev/'.$user_a_id.'-'.$user_b_id, 
+                    array('message' => $this->request->message,
+                          'message_type' => $this->request->type,
+                          'message_sender_id' => $sender_id,
+                          'message_sender_name' => Users::find($this->request->self_user_id)->user_name,
+                          'date' => $dateTime->format('Ymdhis'))
+                  );
 
         if(Config::get('app.pushback')==true) {
             $sessions = Sessions::where('user_id', $receiver_id)->get();
@@ -246,6 +258,13 @@ class ChatController extends Controller
                     'status_code' => '400'
                 ], 400);
         }
+        if($this->request->self_user_id != $user_a_id && $this->request->self_user_id != $user_b_id) {
+            return response()->json([
+                    'message' => 'user not in this chat',
+                    'error_code' => ErrorCodeUtility::USER_NOT_IN_CHAT,
+                    'status_code' => '403'
+                ], 403);
+        }
         $first = min($user_a_id,$user_b_id);
         $second = max($user_a_id,$user_b_id);
         $chat = Chats::where('user_a_id', $first)->where('user_b_id', $second)->first();
@@ -261,11 +280,54 @@ class ChatController extends Controller
     }
 
     public function getMessageByUserId($user_a_id, $user_b_id) {
-
+        if(!is_numeric($user_a_id) || !is_numeric($user_b_id) )
+        {
+            return response()->json([
+                    'message' => 'user_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
+        }
+        if($this->request->self_user_id != $user_a_id && $this->request->self_user_id != $user_b_id) {
+            return response()->json([
+                    'message' => 'user not in this chat',
+                    'error_code' => ErrorCodeUtility::USER_NOT_IN_CHAT,
+                    'status_code' => '403'
+                ], 403);
+        }
+        $first = min($user_a_id,$user_b_id);
+        $second = max($user_a_id,$user_b_id);
+        $fb = Firebase::initialize('https://faeapp-5ea31.firebaseio.com', 'LiYqgdzrv8Y1s2lRN7iziHy4Z5UCgvUlJJhHcZRe');
+        return $this->response->array($fb->get('Message-dev/'.$first.'-'.$second));
     }
 
     public function getMessageByChatId($chat_id) {
-
+        if(!is_numeric($chat_id)) 
+        {
+            return response()->json([
+                    'message' => 'chat_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
+        }
+        $chat = Chats::find($chat_id);
+        if(is_null($chat))
+        {
+            return response()->json([
+                    'message' => 'chat not found',
+                    'error_code' => ErrorCodeUtility::CHAT_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
+        }
+        if($this->request->self_user_id != $chat->user_a_id && $this->request->self_user_id != $chat->user_b_id) {
+            return response()->json([
+                    'message' => 'user not in this chat',
+                    'error_code' => ErrorCodeUtility::USER_NOT_IN_CHAT,
+                    'status_code' => '403'
+                ], 403);
+        }
+        $fb = Firebase::initialize('https://faeapp-5ea31.firebaseio.com', 'LiYqgdzrv8Y1s2lRN7iziHy4Z5UCgvUlJJhHcZRe');
+        return $this->response->array($fb->get('Message-dev/'.$chat->user_a_id.'-'.$chat->user_b_id));
     }
 
     private function sendValidation(Request $request)
