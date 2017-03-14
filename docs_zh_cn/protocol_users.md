@@ -1,5 +1,13 @@
 # 用户及认证类接口
 
+## 特殊用户
+
+保留1-99作为特殊用户id。
+
+| user_id | user_name | description |
+| --- | --- | --- |
+| 1 | Fae Map Crew | 新用户注册成功后会收到该用户发出的欢迎消息 (ref #51) |
+
 ## 注册 Sign up :white_check_mark:
 
 `POST /users`
@@ -61,10 +69,13 @@ Status: 201
 	{
 		"user_id": @number
 		"token": @string
-		"session_id": @number
+		"session_id": @number,
+		"last_login_at": @string
 	}
 
 错误后会返回login_count。
+
+last_login_at为最后一次登录时间（将在logout后被更新）。如果为null，则为初次登录。
 
 ## 登出 logout :white_check_mark:
 
@@ -191,7 +202,8 @@ Status: 200
 		"birthday": @string,
 		"phone": @string(xxx-xxx-xxxx),
 		"phone_verified": @boolean,
-		"mini_avatar": @number 地图上显示的用户小头像，未设置则默认为0
+		"mini_avatar": @number, 地图上显示的用户小头像，未设置则默认为0
+		"last_login_at": @string
 	}
 
 ## 更新账户信息 update account :white_check_mark:
@@ -367,7 +379,8 @@ Status: 200
 		"birthday": @string,
 		"email": @boolean,
 		"phone": @boolean,
-		"gender": @boolean
+		"gender": @boolean,
+		"last_login_at": @string
 	}
 
 ## 获取其他用户资料 get profile :white_check_mark:

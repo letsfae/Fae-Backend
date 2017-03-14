@@ -10,6 +10,13 @@ class Users extends Model implements AuthenticatableContract
 {
 	use Authenticatable;
     protected $table = 'users';
+
+    public function updateLastLoginAtTimestamp()
+    {
+        $this->last_login_at = $this->freshTimestamp();
+        return $this->save();
+    }
+
     public function hasManySessions() 
     {
     	return $this->hasMany('App\Sessions','user_id','id');

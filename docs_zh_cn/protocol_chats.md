@@ -1,103 +1,4 @@
-# 好友及聊天类接口
-
-
-## 发起好友请求
-
-`POST /friends/request`
-
-### auth
-
-yes
-
-### parameters
-
-| Name | Type | Description |
-| --- | --- | --- |
-| requested_user_id | number | 被请求用户id |
-
-### response
-
-Status: 201
-
-## 确认好友请求
-
-`POST /friends/accept`
-
-### auth
-
-yes
-
-### parameters
-
-| Name | Type | Description |
-| --- | --- | --- |
-| friend_request_id | number | 好友请求id |
-
-### response
-
-Status: 201
-
-## 忽略好友请求
-
-`POST /friends/ignore`
-
-### auth
-
-yes
-
-### parameters
-
-| Name | Type | Description |
-| --- | --- | --- |
-| friend_request_id | number | 好友请求id |
-
-### response
-
-Status: 201
-
-## 删除好友
-
-`DELETE /friends/:user_id`
-
-### auth
-
-yes
-
-### response
-
-Status: 204
-
-## 获取所有好友请求
-
-`GET /friends/request`
-
-当sync接口中得到friend_request数量不为0的时候，可请求该接口获取所有朋友请求。
-
-### auth
-
-yes
-
-### response
-
-Status: 200
-
-	[
-		{
-			"friend_request_id": @number,
-			"request_user_id": @number,
-			"request_user_name": @string,
-			"request_email": @string,
-			"created_at": @string
-		},
-		...		
-	]
-
-此处冗余了user_name及email，方便显示。
-
-## 获取好友列表
-
-...
-
+# 聊天类接口
 
 ----------
 
@@ -121,7 +22,9 @@ yes
 | --- | --- | --- |
 | receiver_id | number | 目标用户id |
 | message | string | 具体内容 |
-| type | string('text','image','sticker','location','audio') | 区分内容的类型 |
+| type | string('text','image','sticker','location','audio','customize') | 区分内容的类型 |
+
+其中customize类型的message内容可自定义。
 
 ### response
 
@@ -231,7 +134,7 @@ yes
 
 Status: 204
 
-## 根据聊天双方user_id获取chat_id
+## 根据聊天双方user_id获取chat_id :white_check_mark:
 
 `GET /chats/users/:user_a_id/:user_b_id`
 
@@ -260,7 +163,7 @@ Status: 200
 
 `POST /chat_rooms/:chat_room_id/message`
 
-一旦用户发送消息，该用户即成为该ChatRoom参与者。
+一旦用户发送消息，该用户即成为该ChatRoom参与者。如果capacity达到上限，则无法再加入。
 
 ### auth
 
@@ -357,7 +260,7 @@ Status: 200
 			"last_message_timestamp": @string,
 			"unread_count": @number
 			"created_at": @string,
-			"server_sent_timestamp":@string
+			"server_sent_timestamp": @string
 		},
 		{...},
 		{...}

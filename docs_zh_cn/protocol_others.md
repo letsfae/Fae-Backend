@@ -20,7 +20,7 @@ Status: 200
 		"chat_room": @number 未读聊天室消息数量
 	}
 
-## 反馈接口
+## 反馈接口 :white_check_mark:
 
 `POST /feedback`
 

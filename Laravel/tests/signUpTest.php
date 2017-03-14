@@ -29,6 +29,7 @@ class signUpTest extends TestCase {
 
     // the correct response of the register.
     public function testSignUp() {  
+        $this->markTestSkipped(); 
         $parameters = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -52,6 +53,7 @@ class signUpTest extends TestCase {
 
     //test whether the format of the input is right.
     public function testSignUp2() { 
+        $this->markTestSkipped(); 
         $parameters = array(
             'email' => 'letsfae126.com', //the email format is not right.
             'password' => 'letsfaego',
@@ -76,6 +78,7 @@ class signUpTest extends TestCase {
 
     //test the response when the user_name is null.
     public function testSignUp3() { 
+        $this->markTestSkipped(); 
         $parameters = array(
             'email' => 'letsfae@126.com',  
             'password' => 'letsfaego',
@@ -92,6 +95,42 @@ class signUpTest extends TestCase {
         $array = json_decode($response->getContent());
         $result = false; 
         if ($response->status() == '422' && $array->message == 'Could not create new user.' && $array->errors->user_name[0] == 'The user name field is required.') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);
+    }
+    //test the response when the user_name exists.
+    public function testSignUp4() { 
+        $this->markTestSkipped(); 
+        $parameters = array(
+            'email' => 'letsfae@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameters, [], [], $this->transformHeadersToServerVars($server));
+         $this->refreshApplication();
+        $array = json_decode($response->getContent());
+        $parameters2 = array(
+            'email' => 'letsfae2@126.com',  
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang', 
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        ); 
+        $response2 = $this->call('post', 'http://'.$this->domain.'/users', $parameters2, [], [], $this->transformHeadersToServerVars($server)); 
+        $array2 = json_decode($response2->getContent());
+        $result = false; 
+        if ($response2->status() == '400' && $array2->message == 'user name already exists') {
             $result = true;
         }
         $this->assertEquals(true, $result);

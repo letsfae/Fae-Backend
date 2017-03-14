@@ -19,6 +19,11 @@ class Sessions extends Model
     public function users() 
     {
     	return $this->belongsTo('App\Users','user_id','id');
+    }  
+    protected $fillable = array('user_id', 'token', 'device_id', 'client_version', 'location', 'is_mobile'); 
+    public function updateLocationTimestamp()
+    {
+        $this->location_updated_at = $this->freshTimestamp();
+        return $this->save();
     } 
-    protected $fillable = array('user_id', 'token', 'device_id', 'client_version', 'location', 'is_mobile');
 }

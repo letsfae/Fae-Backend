@@ -108,7 +108,8 @@ class MediaTest extends TestCase {
             'geo_latitude' => 34.2799,
             'geo_longitude' => -118.2799,
             'duration' => 1440,
-            'interaction_radius' => 100
+            'interaction_radius' => 100,
+            'anonymous' => 'true'
         );
         $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent()); 
@@ -120,12 +121,12 @@ class MediaTest extends TestCase {
             $result = true;
         }
         $this->assertEquals(true, $result);
-        $this->seeInDatabase('medias', ['user_id' => 1, 'description' => 'this is a test', 'tag_ids' => '1;2', 'file_ids' => '1;2', 'geolocation' => '0101000020E6100000A089B0E1E9915DC0401361C3D3234140', 'duration' => 1440, 'interaction_radius' => 100]);
+        $this->seeInDatabase('medias', ['user_id' => 1, 'description' => 'this is a test', 'tag_ids' => '1;2', 'file_ids' => '1;2', 'geolocation' => '0101000020E6100000A089B0E1E9915DC0401361C3D3234140', 'duration' => 1440, 'interaction_radius' => 100,  'anonymous' => true]);
         $this->seeInDatabase('tags', ['user_id' => 1, 'title' => 'fae', 'color' => '#fff000', 'reference_count' => 1]);
         $this->seeInDatabase('tags', ['user_id' => 1, 'title' => 'fae1', 'color' => '#fff000', 'reference_count' => 1]);
         $this->seeInDatabase('files', ['user_id' => 1, 'type' => 'video', 'mine_type' => 'video', 'size' => 256, 'reference_count' => 1]);
         $this->seeInDatabase('files', ['user_id' => 1, 'type' => 'image', 'mine_type' => 'image', 'size' => 256, 'reference_count' => 1]);
-        $this->seeInDatabase('pin_helper', ['type' => 'media', 'pin_id' => 1, 'geolocation' => '0101000020E6100000A089B0E1E9915DC0401361C3D3234140', 'duration' => 1440]);
+        $this->seeInDatabase('pin_helper', ['type' => 'media', 'pin_id' => 1, 'geolocation' => '0101000020E6100000A089B0E1E9915DC0401361C3D3234140', 'duration' => 1440, 'anonymous' => true, 'user_id' => 1]);
     }
 
     //test the response when the tag information does not exist with the tag_ids.
@@ -193,11 +194,14 @@ class MediaTest extends TestCase {
             'description' => 'this is a test',
             'geo_latitude' => '-89.99',
             'geo_longitude' => '-118.2799',
+            'duration' => '1440',
+            'interaction_radius' => '100', 
         );
         $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
+        var_dump($response);
         $array2 = json_decode($response->getContent());  
         $result = false;
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
+        if ($response->status() == '404' && $array2->message == 'tags not exist') {
             $result = true;
         }
         $this->assertEquals(true, $result); 
@@ -283,6 +287,8 @@ class MediaTest extends TestCase {
             'description' => 'this is a test',
             'geo_latitude' => '-89.99',
             'geo_longitude' => '-218.2799',
+            'duration' => 1440,
+            'interaction_radius' => 100
         );
         $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent());   
@@ -348,11 +354,13 @@ class MediaTest extends TestCase {
             'description' => 'this is a test',
             'geo_latitude' => '-89.99',
             'geo_longitude' => '-118.2799',
+            'duration' => 1440,
+            'interaction_radius' => 100
         );
         $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent());  
         $result = false;
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
+        if ($response->status() == '404' && $array2->message == 'files not exist') {
             $result = true;
         }
         $this->assertEquals(true, $result); 
@@ -422,6 +430,7 @@ class MediaTest extends TestCase {
             'description' => 'this is a test',
             'geo_latitude' => '-89.99',
             'geo_longitude' => '-118.2799',
+            'duration' => 1440, 
         );
         $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent()); 
@@ -518,6 +527,8 @@ class MediaTest extends TestCase {
             'geo_latitude' => 34.2799,
             'geo_longitude' => -118.2799,
             'duration' => 1440, 
+            'interaction_radius' => '100', 
+            'anonymous' => 'true'
         );
         $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent()); 
@@ -527,7 +538,8 @@ class MediaTest extends TestCase {
             'geo_latitude' => 35.5799,
             'geo_longitude' => -120.2799,
             'duration' => 1440,
-            'interaction_radius' => 100
+            'interaction_radius' => '100',
+            'anonymous' => 'true'
         );
         $response2 = $this->call('post', 'http://'.$this->domain.'/medias/1', $parameters1, [], [], $this->transformHeadersToServerVars($server2));  
         $array3 = json_decode($response2->getContent()); 
@@ -536,8 +548,8 @@ class MediaTest extends TestCase {
             $result = true;
         }
         $this->assertEquals(true, $result);
-        $this->seeInDatabase('medias', ['user_id' => 1, 'description' => 'this is a test2', 'tag_ids' => '1;2', 'file_ids' => '1;2', 'geolocation' => '0101000020E6100000A089B0E1E9115EC0A779C7293ACA4140', 'duration' => 1440, 'interaction_radius' => 100]);
-        $this->seeInDatabase('pin_helper', ['geolocation' => '0101000020E6100000A089B0E1E9115EC0A779C7293ACA4140', 'duration' => 1440]);
+        $this->seeInDatabase('medias', ['user_id' => 1, 'description' => 'this is a test2', 'tag_ids' => '1;2', 'file_ids' => '1;2', 'geolocation' => '0101000020E6100000A089B0E1E9115EC0A779C7293ACA4140', 'duration' => 1440, 'interaction_radius' => 100,'anonymous' => 'true']);
+        $this->seeInDatabase('pin_helper', ['geolocation' => '0101000020E6100000A089B0E1E9115EC0A779C7293ACA4140', 'duration' => 1440, 'anonymous' => 'true']);
     }
 
     //test whether the input format of the media_id is right.
@@ -1202,6 +1214,7 @@ class MediaTest extends TestCase {
             'description' => 'this is a test',
             'geo_latitude' => '-89.99',
             'geo_longitude' => '-118.2799',
+             'duration' => 1440, 
         );
         $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent()); 
@@ -1211,7 +1224,13 @@ class MediaTest extends TestCase {
         //post save pin_operations
         $response_save = $this->call('post', 'http://'.$this->domain.'/pins/media/1/save', [], [], [], $this->transformHeadersToServerVars($server2));
         $this->refreshApplication();
-        $response2 = $this->call('get', 'http://'.$this->domain.'/medias/1', [], [], [], $this->transformHeadersToServerVars($server2));  
+        $parameters1 = array(
+            'content' => 'This is the pin comment test', 
+        );  
+        //post comment pin_operations
+        $response_comment = $this->call('post', 'http://'.$this->domain.'/pins/media/1/comments', $parameters1, [], [], $this->transformHeadersToServerVars($server2));  
+        $this->refreshApplication();  
+        $response2 = $this->call('get', 'http://'.$this->domain.'/medias/1', [], [], [], $this->transformHeadersToServerVars($server2));
         $array3 = json_decode($response2->getContent());  
         $this->seeJson([ 
                     'media_id' => 1,
@@ -1219,17 +1238,23 @@ class MediaTest extends TestCase {
                     'file_ids' => array('1','2'),
                     'tag_ids' => array('1','2'),
                     'description' => 'this is a test',
+                    'anonymous' => false,
                     'geolocation' => array(
                         'latitude' => -89.99,
                         'longitude' => -118.2799,
-                    ), 
+                    ),   
+                    'liked_count' => 1,
+                    'saved_count' => 1,
+                    'comment_count' => 1,
                     'created_at' => $array3->created_at,
                     'user_pin_operations' => array(
-                    'is_liked' => true,
-                    'liked_timestamp' => $array3->user_pin_operations->liked_timestamp,
-                    'is_saved' => true,
-                    'saved_timestamp' => $array3->user_pin_operations->saved_timestamp,
-                ),
+                        'is_liked' => true,
+                        'liked_timestamp' => $array3->user_pin_operations->liked_timestamp,
+                        'is_saved' => true,
+                        'saved_timestamp' => $array3->user_pin_operations->saved_timestamp,
+                        'is_read' => true,
+                        'read_timestamp' => $array3->user_pin_operations->read_timestamp,
+                    ), 
         ]);
         $result = false;
         if ($response2->status() == '200') {
@@ -1849,7 +1874,7 @@ class MediaTest extends TestCase {
         $this->assertEquals(true, $result);
     }
 
-    //test correct response of the method of getFromUser.
+    //test correct response of the method of getFromUser and the request user_id is not the same as the logged in user_id.
     public function testGetFromUser() {
         $this->markTestSkipped();
         $parameter1 = array(
@@ -1933,6 +1958,8 @@ class MediaTest extends TestCase {
                 'description' => 'this is the test'.$i,
                 'geo_latitude' => '-89.99',
                 'geo_longitude' => '-118.2799',
+                'duration' => '1440',
+                'interaction_radius' => '100', 
                 ); 
         }
         //create the medias.
@@ -1943,9 +1970,40 @@ class MediaTest extends TestCase {
             $response_like = $this->call('post', 'http://'.$this->domain.'/pins/media/'.($i + 1).'/like', [], [], [], $this->transformHeadersToServerVars($server2));
             $this->refreshApplication();
             //post save pin_operations
-            $response_save = $this->call('post', 'http://'.$this->domain.'/pins/media/'.($i + 1).'/save', [], [], [], $this->transformHeadersToServerVars($server2));
+            $response_save = $this->call('post', 'http://'.$this->domain.'/pins/media/'.($i + 1).'/save', [], [], [], $this->transformHeadersToServerVars($server2)); 
             $this->refreshApplication();
-        } 
+            $parameters1 = array(
+                'content' => 'This is the pin comment test', 
+             );  
+            //post comment pin_operations
+            $response_comment = $this->call('post', 'http://'.$this->domain.'/pins/media/'.($i + 1).'/comments', $parameters1, [], [], $this->transformHeadersToServerVars($server2));  
+            $this->refreshApplication();  
+        }  
+        $parameter2 = array(
+            'email' => 'letsfae2@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp2',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+            'login_count' => 0, 
+        ); 
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server)); 
+        $this->refreshApplication();
+        $parameter3 = array(
+            'email' => 'letsfae2@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp2',
+        );
+        $login_response2 = $this->call('post', 'http://'.$this->domain.'/authentication', $parameter3, [], [], $this->transformHeadersToServerVars($server));
+        $array_2 = json_decode($login_response2->getContent());
+        $server3 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array_2->debug_base64ed,
+        );
+
         $content = array(
             'start_time' => '2016-06-08 21:22:39',
             'end_time' => date("Y-m-d H:i:s"),
@@ -1953,7 +2011,7 @@ class MediaTest extends TestCase {
         );
          //get the medias of the user with the user_id.
         //get the medias of the page 1.
-        $response_page1 = $this->call('get', 'http://'.$this->domain.'/medias/users/1', $content, [], [], $this->transformHeadersToServerVars($server2));
+        $response_page1 = $this->call('get', 'http://'.$this->domain.'/medias/users/1', $content, [], [], $this->transformHeadersToServerVars($server3));
         $array2 = json_decode($response_page1->getContent());   
         for ($i = 0; $i < 30; $i++) {
             $this->seeJson([ 
@@ -1966,12 +2024,17 @@ class MediaTest extends TestCase {
                         'latitude' => -89.99,
                         'longitude' => -118.2799,
                     ), 
+                    'liked_count' => 1, 
+                    'saved_count' => 1, 
+                    'comment_count' => 1,
                     'created_at' => $array2[$i]->created_at,
                     'user_pin_operations' => array(
-                        'is_liked' => true,
+                        'is_liked' => false,
                         'liked_timestamp' => $array2[$i]->user_pin_operations->liked_timestamp,
-                        'is_saved' => true,
+                        'is_saved' => false,
                         'saved_timestamp' => $array2[$i]->user_pin_operations->saved_timestamp,
+                        'is_read' => false,
+                        'read_timestamp' => $array2[$i]->user_pin_operations->read_timestamp,
                     ),
              ]); 
         }
@@ -1982,7 +2045,7 @@ class MediaTest extends TestCase {
             'page' => 2,
         );
         // //get the medias of the page 2.
-        $response_page2 = $this->call('get', 'http://'.$this->domain.'/medias/users/1', $content2, [], [], $this->transformHeadersToServerVars($server2)); 
+        $response_page2 = $this->call('get', 'http://'.$this->domain.'/medias/users/1', $content2, [], [], $this->transformHeadersToServerVars($server3)); 
         $array3 = json_decode($response_page2->getContent()); 
         $this->seeJson([ 
                     'media_id' => 1,
@@ -1994,12 +2057,17 @@ class MediaTest extends TestCase {
                         'latitude' => -89.99,
                         'longitude' => -118.2799,
                     ), 
+                    'liked_count' => 1, 
+                    'saved_count' => 1, 
+                    'comment_count' => 1,
                     'created_at' => $array3[0]->created_at,
                     'user_pin_operations' => array(
-                        'is_liked' => true,
+                        'is_liked' => false,
                         'liked_timestamp' => $array3[0]->user_pin_operations->liked_timestamp,
-                        'is_saved' => true,
+                        'is_saved' => false,
                         'saved_timestamp' => $array3[0]->user_pin_operations->saved_timestamp,
+                        'is_read' => false,
+                        'read_timestamp' => $array3[0]->user_pin_operations->read_timestamp,
                     ),
              ]);
         $result = false;
@@ -2110,7 +2178,7 @@ class MediaTest extends TestCase {
         $response_page1 = $this->call('get', 'http://'.$this->domain.'/medias/users/fae', $content, [], [], $this->transformHeadersToServerVars($server2));
         $array2 = json_decode($response_page1->getContent()); 
         $result = false;
-        if ($response_page1->status() == '400' && $array2->message == 'Bad Request') {
+        if ($response_page1->status() == '400' && $array2->message == 'id should be integer') {
             $result = true;
         }
         $this->assertEquals(true, $result); 
@@ -2217,7 +2285,7 @@ class MediaTest extends TestCase {
         $response_page1 = $this->call('get', 'http://'.$this->domain.'/medias/users/-1', $content, [], [], $this->transformHeadersToServerVars($server2));
         $array2 = json_decode($response_page1->getContent()); 
         $result = false;
-        if ($response_page1->status() == '404' && $array2->message == 'Not Found') {
+        if ($response_page1->status() == '404' && $array2->message == 'user does not exist') {
             $result = true;
         }
         $this->assertEquals(true, $result);

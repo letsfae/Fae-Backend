@@ -30,7 +30,7 @@ class PinOperationController extends Controller {
         {
             return $this->response->errorBadRequest('wrong type or id format');
         }
-        $obj_pin_operation = $this->readOperation($type, $pin_id);
+        $obj_pin_operation = $this->readOperation($type, $pin_id); 
         if(is_null($obj_pin_operation))
         { 
             return $this->response->errorNotFound('no such pin exsits');
@@ -39,6 +39,7 @@ class PinOperationController extends Controller {
         {
             return $this->response->errorBadRequest('already saved this pin'); 
         }
+        
         $obj_pin_operation->saved = true;
         $obj_pin_operation->updateSavedTimestamp();
         $obj_pin_operation->save();
@@ -118,7 +119,7 @@ class PinOperationController extends Controller {
                 $obj = Medias::find($pin_id);
             }
             else if($type == 'comment')
-            {
+            { 
                 $obj = Comments::find($pin_id);
             }
             if (is_null($obj))
@@ -131,28 +132,32 @@ class PinOperationController extends Controller {
                 $newobj_pin_operation->user_id = $this->request->self_user_id;
                 $newobj_pin_operation->pin_id = $pin_id;
                 $newobj_pin_operation->type = $type;
+                //$newobj_pin_operation->read = true;
+                
                 $newobj_pin_operation->saved = false;
                 $newobj_pin_operation->liked = false;
                 $newobj_pin_operation->interacted = false;
-                $newobj_pin_operation->save();
+                $newobj_pin_operation->save(); 
                 return $newobj_pin_operation;
-            }
+            } 
         }
         else
         {
             return $obj_pin_operation;
         }
+        
     }
 
     public function like($type, $pin_id)
-    {
+    {   
+        
         if(!is_numeric($pin_id) || ($type != 'media' && $type != 'comment'))
         {
             return $this->response->errorBadRequest('wrong type or id format');
-        }
+        } 
         $obj_pin_operation = $this->readOperation($type, $pin_id);
         if(is_null($obj_pin_operation))
-        {
+        { 
             return $this->response->errorBadRequest('no such pin exists');
         }
         if($obj_pin_operation->liked == true)
@@ -160,7 +165,7 @@ class PinOperationController extends Controller {
             return $this->response->errorBadRequest('already liked this pin');
         }
         if($obj_pin_operation->interacted == false)
-        {
+        { 
             $inDistance = $this->checkDistance($this->request->self_user_id, $this->request->self_session_id, $type, $pin_id);
             if($inDistance === false)
             {
@@ -314,7 +319,7 @@ class PinOperationController extends Controller {
         $obj = self::getObj($type, $pin_id);
         if(is_null($obj))
         {
-            return errorNotFound('no such pin exists');
+            return $this->response->errorNotFound('no such pin exists');
         }
         $validator = Validator::make($this->request->all(), [
             'start_time' => 'filled|date_format:Y-m-d H:i:s|before:tomorrow',
@@ -323,13 +328,11 @@ class PinOperationController extends Controller {
         ]);
         if($validator->fails())
         {
-            throw new UpdateResourceFailedException('Could not get user comments.',$validator->errors());
+            throw new StoreResourceFailedException('Could not get user comments.',$validator->errors());
         }
-        
         $start_time = $this->request->has('start_time') ? $this->request->start_time : '1970-01-01 00:00:00';
         $end_time = $this->request->has('end_time') ? $this->request->end_time : date("Y-m-d H:i:s");
-        $page =  $this->request->has('page') ? $this->request->page : 1;
-        
+        $page =  $this->request->has('page') ? $this->request->page : 1; 
         $total = Pin_comments::where('pin_id', $pin_id)
                              ->where('type', $type)
                              ->where('created_at','>=', $start_time)
@@ -354,6 +357,8 @@ class PinOperationController extends Controller {
                             'user_id' => $commented_pin->user_id,
                             'content' => $commented_pin->content,
                             'pin_comment_operations' => $pin_comment_operations,
+                            'vote_up_count' => $commented_pin->vote_up_count,
+                            'vote_down_count' => $commented_pin->vote_down_count,
                             'created_at' => $commented_pin->created_at->format('Y-m-d H:i:s'));
         }
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
@@ -616,7 +621,7 @@ class PinOperationController extends Controller {
     { 
         $obj = self::getObj($type, $pin_id);
         if($obj->interaction_radius == 0)
-        {
+        { 
             return true;
         }
         if($user_id != $obj->user_id)

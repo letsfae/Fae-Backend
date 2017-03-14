@@ -23,7 +23,7 @@ class CreateChatsTable extends Migration
             $table->foreign('last_message_sender_id')->references('id')->on('users');
             $table->text('last_message');
             $table->timestamp('last_message_timestamp');
-            $table->enum('last_message_type',['text','image','sticker','location','audio']);
+            $table->enum('last_message_type',['text','image','sticker','location','audio','customize']);
             $table->integer('user_a_unread_count')->default(0);
             $table->integer('user_b_unread_count')->default(0);
             $table->timestamps();

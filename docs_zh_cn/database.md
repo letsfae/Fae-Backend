@@ -11,6 +11,7 @@
 - gender enum(male,female)
 - birthday dateTime
 - created_at timestamp
+- last_login_at timestamp (default null)
 - role integer
 - login_count integer
 - mini_avatar integer (default 0)
@@ -26,18 +27,6 @@
 - show_phone
 - show_gender
 - show_birthday
-
-## friendships
-- id PK
-- user_id FK reference on users
-- friend_id FK reference on users
-- created_at
-
-## friend_request
-- id PK
-- user_id FK 请求用户 reference on users
-- requested_user_id FK 被请求用户 reference on users
-- created_at
 
 ## verifications
 - id PK
@@ -169,6 +158,9 @@
 - created_at
 - duration integer (unit in min)
 - interaction_radius (unit in km) default 0
+- tag_ids
+- description
+- capacity
 
 ## chat_room_users
 - id PK
@@ -218,3 +210,25 @@
 - tag_id FK
 - pin_id FK
 - type enum(media,comment)
+
+## friends
+- id PK
+- user_id FK reference on users
+- friend_id FK reference on users
+- created_at
+
+## friend_requests
+- id PK
+- user_id FK 请求用户 reference on users
+- requested_user_id FK 被请求用户 reference on users
+- created_at
+
+## blocks
+- id PK
+- user_id FK
+- block_id FK 被屏蔽用户id
+
+## follows
+- id PK
+- user_id
+- followee_id 被follow用户的id
