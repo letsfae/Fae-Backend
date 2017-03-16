@@ -901,8 +901,8 @@ class PinOperationController extends Controller {
         }
     }
 
-    private function getFormattedPinObject($type, $pin_id) {
-        
+    private function getPinObject($type, $pin_id) {
+        // 注意和接口函数的重名，前面需要加入namespace
     }
 
     private function deletePinCommentOperations($pin_comment_id)

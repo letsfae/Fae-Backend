@@ -244,8 +244,7 @@ class ChatRoomController extends Controller implements PinInterface
     }
 
     public function delete($chat_room_id) {}
-    public function getRawPinData($chat_room_id) {}
-    public function formatRawPinData($chat_room_obj) {}
+    public function getPinObject($chat_room_id) {}
 
     public function send($chat_room_id)
     {

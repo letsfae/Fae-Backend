@@ -13,12 +13,10 @@ class BusinessController extends Controller implements PinInterface {
         $this->request = $request;
     }
 
-    public function create() {};
-    public function update($business_id) {};
-    public function delete($business_id) {};
-    public function getFromUser($user_id) {};
-    public function getRawPinData($business_id) {};
-    public function formatRawPinData($business_obj) {};
+    public function create() {}
+    public function update($business_id) {}
+    public function delete($business_id) {}
+    public function getPinObject($business_id) {}
 
     public function getOne($business_id) {
 

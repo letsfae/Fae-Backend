@@ -11,6 +11,5 @@ interface PinInterface
     public function getFromUser($user_id);
 
     // inner method
-    public function getRawPinData($id); // return db resource object
-    public function formatRawPinData($obj); // db res obj --> json object
+    public function getPinObject($id);
 }
