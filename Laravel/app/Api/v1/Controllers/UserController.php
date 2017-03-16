@@ -20,7 +20,9 @@ use App\Name_cards;
 use App\Chats;
 use Mail;
 use Twilio;
+use DateTime;
 use App\Api\v1\Utilities\ErrorCodeUtility;
+use Firebase\Firebase;
 
 class UserController extends Controller
 {
@@ -58,6 +60,23 @@ class UserController extends Controller
         $nameCard->user_id = $user->id;
         $nameCard->save();
 
+        $fb = Firebase::initialize('https://faeapp-5ea31.firebaseio.com', 'LiYqgdzrv8Y1s2lRN7iziHy4Z5UCgvUlJJhHcZRe');
+        $dateTime = new DateTime();
+        $fb->push('Message-dev/1-'.$user->id, 
+                    array('message' => 'Hey there! Welcome to Fae Map! Super happy to see you here. We’re here to
+                               enhance your experience on Fae Map and make your time more fun. Let us know
+                               of any problems you encounter or what we can do to make your experience better. 
+                               We’ll be hitting you up with surprises, recommendations, favorite places, cool 
+                               deals, and tons of fun stuff. Feel free to chat with us here anytime about 
+                               anything. Let’s Fae!',
+                          'message_type' => 'text',
+                          'message_sender_id' => 1,
+                          'message_sender_name' => 'Fae Map Crew',
+                          'hasTimeStamp' => true,
+                          'index' => 1,
+                          'date' => $dateTime->format('Ymdhis'))
+                  );
+
         $chat = new Chats;
         $chat->user_a_id = 1;
         $chat->user_b_id = $user->id;
@@ -72,6 +91,7 @@ class UserController extends Controller
         $chat->updateTimestamp();
         $chat->user_b_unread_count++;
         $chat->save();
+
         return $this->response->created();
     }
 
@@ -266,7 +286,7 @@ class UserController extends Controller
         }
         $validator = Validator::make($input, [
             'email' => 'required|unique:users,email|max:50|email',
-            'user_name' => 'required|regex:/^[a-zA-Z0-9_]{3,20}$/',
+            'user_name' => 'required|regex:/^[a-zA-Z0-9_\-.]{3,20}$/',
             'password' => 'required|between:8,16',
             'first_name' => 'required|string|max:50',
             'last_name' => 'required|string|max:50',

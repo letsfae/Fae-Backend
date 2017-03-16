@@ -15,6 +15,7 @@ use Dingo\Api\Routing\Helpers;
 use App\Comments;
 use App\Users;
 use App\PinHelper;
+use App\Name_cards;
 use App\Api\v1\Controllers\PinOperationController;
 use Auth;
 use App\Api\v1\Interfaces\PinInterface;
@@ -152,10 +153,16 @@ class CommentController extends Controller implements PinInterface
         }
         $user_pin_operations = PinOperationController::getOperations('comment', $comment_id, $this->request->self_user_id);
         return $this->response->array(array('comment_id' => $comment->id, 
-                'user_id' => ($comment->anonymous && $comment->user_id != $this->request->self_user_id) ? null : $comment->user_id, 
-                'content' => $comment->content, 'geolocation' => array('latitude' => $comment->geolocation->getLat(), 
-                'longitude' => $comment->geolocation->getLng()), 'liked_count' => $comment->liked_count, 
-                'saved_count' => $comment->saved_count, 'comment_count' => $comment->comment_count,
+                'user_id' => ($comment->anonymous && $comment->user_id != $this->request->self_user_id) ? null : $comment->user_id,
+                'nick_name' => ($comment->anonymous && $comment->user_id != $this->request->self_user_id) ? 
+                            null : Name_cards::find($comment->user_id)->nick_name,
+                'anonymous' => $comment->anonymous,
+                'content' => $comment->content, 
+                'geolocation' => array('latitude' => $comment->geolocation->getLat(), 
+                'longitude' => $comment->geolocation->getLng()), 
+                'liked_count' => $comment->liked_count, 
+                'saved_count' => $comment->saved_count, 
+                'comment_count' => $comment->comment_count,
                 'created_at' => $comment->created_at->format('Y-m-d H:i:s'),
                 'user_pin_operations' => $user_pin_operations));
     }
@@ -261,6 +268,7 @@ class CommentController extends Controller implements PinInterface
             $user_pin_operations = PinOperationController::getOperations('comment', $comment->id, $this->request->self_user_id);
             $info[] = array('comment_id' => $comment->id, 
                     'user_id' => $comment->user_id,
+                    'nick_name' => Name_cards::find($comment->user_id)->nick_name,
                     'content' => $comment->content, 'geolocation' => array('latitude' => $comment->geolocation->getLat(), 
                     'longitude' => $comment->geolocation->getLng()), 'liked_count' => $comment->liked_count, 
                     'saved_count' => $comment->saved_count, 'comment_count' => $comment->comment_count,

@@ -15,6 +15,7 @@ class CreatePinCommentsTable extends Migration
          Schema::create('pin_comments', function (Blueprint $table) {
             $table->increments('id');
             $table->enum('type',['media','comment']);
+            $table->boolean('anonymous')->default(false);
             $table->integer('pin_id')->unsigned();
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');

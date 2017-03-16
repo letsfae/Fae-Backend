@@ -17,10 +17,13 @@ use App\ChatRooms;
 use App\ChatRoomUsers;
 use App\Users;
 use APP\Sessions;
+use App\Name_cards;
 use DB;
 use App\PinHelper;
 use App\Api\v1\Controllers\TagController;
 use App\Api\v1\Utilities\ErrorCodeUtility;
+use DateTime;
+use Firebase\Firebase;
 
 class ChatRoomController extends Controller implements PinInterface
 {
@@ -189,6 +192,7 @@ class ChatRoomController extends Controller implements PinInterface
         }
         $tag_ids = is_null($chat_room->tag_ids) ? null : explode(';', $chat_room->tag_ids);
         return $this->response->array(array('chat_room_id' => $chat_room->id, 
+            'nick_name' => Name_cards::find($chat_room->user_id)->nick_name,
             'title' => $chat_room->title, 'user_id' => $chat_room->user_id,
             'geolocation' => ['latitude' => $chat_room->geolocation->getLat(), 'longitude' => $chat_room->geolocation->getLng()], 
             'last_message' => $chat_room->last_message, 'last_message_sender_id' => $chat_room->last_message_sender_id,
@@ -233,7 +237,9 @@ class ChatRoomController extends Controller implements PinInterface
         {
             $tag_ids = is_null($chat_room->tag_ids) ? null : explode(';', $chat_room->tag_ids);
             $info[] = array('chat_room_id' => $chat_room->id, 'title' => $chat_room->title, 
-            'user_id' => $chat_room->user_id, 'geolocation' => ['latitude' => $chat_room->geolocation->getLat(), 
+            'user_id' => $chat_room->user_id, 
+            'nick_name' => Name_cards::find($chat_room->user_id)->nick_name,
+            'geolocation' => ['latitude' => $chat_room->geolocation->getLat(), 
             'longitude' => $chat_room->geolocation->getLng()], 'last_message' => $chat_room->last_message, 
             'last_message_sender_id' => $chat_room->last_message_sender_id, 'last_message_type' => $chat_room->last_message_type, 
             'last_message_timestamp' => $chat_room->last_message_timestamp, 
@@ -334,6 +340,11 @@ class ChatRoomController extends Controller implements PinInterface
         $chat_room->last_message_type = $this->request->type;
         $chat_room->updateTimestamp();
         $chat_room->save();
+
+        $fb = Firebase::initialize('https://faeapp-5ea31.firebaseio.com', 'LiYqgdzrv8Y1s2lRN7iziHy4Z5UCgvUlJJhHcZRe');
+        $fb->push('Message-dev/chat_room-'.$chat_room->id, 
+                    $this->request->toArray()
+                  );
         
         $chat_room_users = ChatRoomUsers::where('chat_room_id', $chat_room_id)->where('user_id', '!=', $this->request->self_user_id)->get();
         foreach ($chat_room_users as $chat_room_user)
