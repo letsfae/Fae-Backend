@@ -269,6 +269,14 @@ class CommentController extends Controller implements PinInterface
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
     }
 
+    public function getRawPinData($comment_id) {
+
+    }
+
+    public function formatRawPinData($comment_obj) {
+
+    }
+
     private function createValidation(Request $request)
     {
         $validator = Validator::make($request->all(), [

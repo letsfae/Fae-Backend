@@ -197,11 +197,6 @@ class ChatRoomController extends Controller implements PinInterface
             'tag_ids' => $tag_ids, 'description' => $chat_room->description));
     }
 
-    public function delete($chat_room_id)
-    {
-        // non use
-    }
-
     public function getFromUser($user_id)
     {
         if(!is_numeric($user_id))
@@ -247,6 +242,10 @@ class ChatRoomController extends Controller implements PinInterface
         }
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
     }
+
+    public function delete($chat_room_id) {}
+    public function getRawPinData($chat_room_id) {}
+    public function formatRawPinData($chat_room_obj) {}
 
     public function send($chat_room_id)
     {

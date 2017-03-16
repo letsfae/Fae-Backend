@@ -901,6 +901,10 @@ class PinOperationController extends Controller {
         }
     }
 
+    private function getFormattedPinObject($type, $pin_id) {
+        
+    }
+
     private function deletePinCommentOperations($pin_comment_id)
     {
 

@@ -140,11 +140,16 @@ Status: 200
 		{
 			"type": @string,
 			"pin_id": @number,
-			"created_at": @string
+			"created_at": @string,
+			"pin_object": {
+				...
+			}
 		},
 		{...},
 		{...}
 	]
+
+其中pin_object中为具体的pin内容（同该pin的get pin返回）。
 
 ## 获取my pin :white_check_mark:
 
@@ -175,11 +180,16 @@ Status: 200
 		{
 			"type": @string,
 			"pin_id": @number,
-			"created_at": @string
+			"created_at": @string,
+			"pin_object": {
+				...
+			}
 		},
 		{...},
 		{...}
 	]
+
+其中pin_object中为具体的pin内容（同该pin的get pin返回）。
 
 ## 获取user pin :white_check_mark:
 
