@@ -72,6 +72,8 @@ class UserController extends Controller
                           'message_type' => 'text',
                           'message_sender_id' => 1,
                           'message_sender_name' => 'Fae Map Crew',
+                          'hasTimeStamp' => true,
+                          'index' => 1,
                           'date' => $dateTime->format('Ymdhis'))
                   );
 

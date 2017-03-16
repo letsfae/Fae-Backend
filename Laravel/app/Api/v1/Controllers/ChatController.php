@@ -69,15 +69,9 @@ class ChatController extends Controller
             $chat->user_b_unread_count++;
         }
         $chat->save();
-
         $fb = Firebase::initialize('https://faeapp-5ea31.firebaseio.com', 'LiYqgdzrv8Y1s2lRN7iziHy4Z5UCgvUlJJhHcZRe');
-        $dateTime = new DateTime();
         $fb->push('Message-dev/'.$user_a_id.'-'.$user_b_id, 
-                    array('message' => $this->request->message,
-                          'message_type' => $this->request->type,
-                          'message_sender_id' => $sender_id,
-                          'message_sender_name' => Users::find($this->request->self_user_id)->user_name,
-                          'date' => $dateTime->format('Ymdhis'))
+                    $this->request->toArray()
                   );
 
         if(Config::get('app.pushback')==true) {
