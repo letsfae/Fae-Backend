@@ -181,7 +181,7 @@ class ChatRoomController extends Controller implements PinInterface
                     'status_code' => '400'
                 ], 400);
         }
-        $chat_room = ChatRooms::find($chat_room_id);
+        $chat_room = $this->getPinObject($chat_room_id, $this->request->self_user_id);
         if(is_null($chat_room))
         {
             return response()->json([
@@ -190,15 +190,7 @@ class ChatRoomController extends Controller implements PinInterface
                     'status_code' => '404'
                 ], 404);
         }
-        $tag_ids = is_null($chat_room->tag_ids) ? null : explode(';', $chat_room->tag_ids);
-        return $this->response->array(array('chat_room_id' => $chat_room->id, 
-            'nick_name' => Name_cards::find($chat_room->user_id)->nick_name,
-            'title' => $chat_room->title, 'user_id' => $chat_room->user_id,
-            'geolocation' => ['latitude' => $chat_room->geolocation->getLat(), 'longitude' => $chat_room->geolocation->getLng()], 
-            'last_message' => $chat_room->last_message, 'last_message_sender_id' => $chat_room->last_message_sender_id,
-            'last_message_type' => $chat_room->last_message_type, 'last_message_timestamp' => $chat_room->last_message_timestamp, 
-            'created_at' => $chat_room->created_at->format('Y-m-d H:i:s'), 'capacity' => $chat_room->capacity,
-            'tag_ids' => $tag_ids, 'description' => $chat_room->description));
+        return $this->response->array($chat_room);
     }
 
     public function getFromUser($user_id)
@@ -250,7 +242,30 @@ class ChatRoomController extends Controller implements PinInterface
     }
 
     public function delete($chat_room_id) {}
-    public function getPinObject($chat_room_id) {}
+
+    public static function getPinObject($chat_room_id, $user_id) {
+        $chat_room = ChatRooms::find($chat_room_id);
+        if(is_null($chat_room))
+        {
+            return null;
+        }
+        return array(
+            'chat_room_id' => $chat_room->id, 
+            'nick_name' => Name_cards::find($chat_room->user_id)->nick_name,
+            'title' => $chat_room->title, 
+            'user_id' => $chat_room->user_id,
+            'geolocation' => ['latitude' => $chat_room->geolocation->getLat(), 
+            'longitude' => $chat_room->geolocation->getLng()], 
+            'last_message' => $chat_room->last_message, 
+            'last_message_sender_id' => $chat_room->last_message_sender_id,
+            'last_message_type' => $chat_room->last_message_type, 
+            'last_message_timestamp' => $chat_room->last_message_timestamp, 
+            'created_at' => $chat_room->created_at->format('Y-m-d H:i:s'), 
+            'capacity' => $chat_room->capacity,
+            'tag_ids' => is_null($chat_room->tag_ids) ? null : explode(';', $chat_room->tag_ids), 
+            'description' => $chat_room->description
+        );
+    }
 
     public function send($chat_room_id)
     {

@@ -199,33 +199,15 @@ class MediaController extends Controller implements PinInterface
                     'status_code' => '400'
                 ], 400);
         }
-        $media = Medias::find($media_id);
-        if(is_null($media))
-        {
+        $media = $this->getPinObject($media_id, $this->request->self_user_id);
+        if(is_null($media)) {
             return response()->json([
                     'message' => 'media not found',
                     'error_code' => ErrorCodeUtility::MEDIA_NOT_FOUND,
                     'status_code' => '404'
                 ], 404);
         }
-        $file_ids = is_null($media->file_ids) ? null : explode(';', $media->file_ids);
-        $tag_ids = is_null($media->tag_ids) ? null : explode(';', $media->tag_ids);
-        $user_pin_operations = PinOperationController::getOperations('media', $media_id, $this->request->self_user_id);
-        return $this->response->array(array('media_id' => $media->id, 
-            'user_id' => ($media->anonymous && $media->user_id != $this->request->self_user_id) ? null : $media->user_id, 
-            'nick_name' => ($media->anonymous && $media->user_id != $this->request->self_user_id) ? 
-                            null : Name_cards::find($media->user_id)->nick_name,
-            'anonymous' => $media->anonymous, 
-            'file_ids' => $file_ids, 
-            'tag_ids' => $tag_ids, 
-            'description' => $media->description, 
-            'geolocation' => ['latitude' => $media->geolocation->getLat(), 
-            'longitude' => $media->geolocation->getLng()], 
-            'liked_count' => $media->liked_count, 
-            'saved_count' => $media->saved_count, 
-            'comment_count' => $media->comment_count,
-            'created_at' => $media->created_at->format('Y-m-d H:i:s'),
-            'user_pin_operations' => $user_pin_operations));
+        return $this->response->array($media);
     }
 
     public function delete($media_id)
@@ -338,8 +320,32 @@ class MediaController extends Controller implements PinInterface
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
     }
 
-    public function getPinObject($media_id) {
-
+    public static function getPinObject($media_id, $user_id) {
+        $media = Medias::find($media_id);
+        if(is_null($media))
+        {
+            return null;
+        }
+        $file_ids = is_null($media->file_ids) ? null : explode(';', $media->file_ids);
+        $tag_ids = is_null($media->tag_ids) ? null : explode(';', $media->tag_ids);
+        $user_pin_operations = PinOperationController::getOperations('media', $media_id, $user_id);
+        return array(
+            'media_id' => $media->id, 
+            'user_id' => ($media->anonymous && $media->user_id != $user_id) ? null : $media->user_id, 
+            'nick_name' => ($media->anonymous && $media->user_id != $user_id) ? 
+                            null : Name_cards::find($media->user_id)->nick_name,
+            'anonymous' => $media->anonymous, 
+            'file_ids' => $file_ids, 
+            'tag_ids' => $tag_ids, 
+            'description' => $media->description, 
+            'geolocation' => ['latitude' => $media->geolocation->getLat(), 
+            'longitude' => $media->geolocation->getLng()], 
+            'liked_count' => $media->liked_count, 
+            'saved_count' => $media->saved_count, 
+            'comment_count' => $media->comment_count,
+            'created_at' => $media->created_at->format('Y-m-d H:i:s'),
+            'user_pin_operations' => $user_pin_operations
+        );
     }
 
     private function createValidation(Request $request)

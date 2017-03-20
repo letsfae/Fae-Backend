@@ -20,6 +20,7 @@ use Phaza\LaravelPostgis\Eloquent\PostgisTrait;
 use Phaza\LaravelPostgis\Geometries\Point;
 use Phaza\LaravelPostgis\Geometries\Geometry;
 use App\Api\v1\Utilities\ErrorCodeUtility;
+use App\Api\v1\Utilities\PinUtility;
 
 class MapController extends Controller
 {
@@ -130,7 +131,7 @@ class MapController extends Controller
             
             $type_string = implode(",", $type);
 
-            $sql_select = "SELECT p1.pin_id, p1.type FROM pin_helper p1";
+            $sql_select = "SELECT p1.pin_id, p1.type, p1.created_at FROM pin_helper p1";
             if($this->request->has('is_saved') || $this->request->has('is_liked') || $this->request->has('is_read'))
             {
                 $sql_select .= ", pin_operations p2";
@@ -181,54 +182,59 @@ class MapController extends Controller
             }
             foreach ($pin_helpers as $pin_helper)
             {
-                if($pin_helper->type == 'comment')
-                {
-                    $comment = Comments::find($pin_helper->pin_id);
-                    if(is_null($comment))
-                    {
-                        continue;
-                    }
-                    $info[] = ['type'=>'comment','comment_id' => $comment->id,'user_id' => $comment->user_id,
-                               'content' => $comment->content ,'geolocation'=>['latitude'=>$comment->geolocation->getLat(), 
-                               'longitude' => $comment->geolocation->getLng()],
-                               'liked_count' => $comment->liked_count, 
-                               'saved_count' => $comment->saved_count, 
-                               'comment_count' => $comment->comment_count,
-                               'created_at' => $comment->created_at->format('Y-m-d H:i:s'),
-                               'user_pin_operations' => PinOperationController::getOperations('comment', $pin_helper->pin_id, $this->request->self_user_id)];
-                }
-                else if($pin_helper->type == 'media')
-                {
-                    $media = Medias::find($pin_helper->pin_id);
-                    if(is_null($media))
-                    {
-                        continue;
-                    }
-                    $info[] = ['type'=>'media', 'media_id' => $media->id, 'user_id' => $media->user_id, 
-                               'file_ids' => explode(';', $media->file_ids), 'tag_ids' => explode(';', $media->tag_ids), 
-                               'description' => $media->description, 'geolocation'=>['latitude' => $media->geolocation->getLat(), 
-                               'longitude' => $media->geolocation->getLng()], 
-                               'liked_count' => $media->liked_count, 
-                               'saved_count' => $media->saved_count, 
-                               'comment_count' => $media->comment_count,
-                               'created_at' => $media->created_at->format('Y-m-d H:i:s'),
-                               'user_pin_operations' => PinOperationController::getOperations('media', $pin_helper->pin_id, $this->request->self_user_id)];
-                }
-                else if($pin_helper->type == 'chat_room')
-                {
-                    $chat_room = ChatRooms::find($pin_helper->pin_id);
-                    if(is_null($chat_room))
-                    {
-                        continue;
-                    }
-                    $info[] = ['type' => 'chat_room', 'chat_room_id' => $chat_room->id, 'title' => $chat_room->title, 
-                               'user_id' => $chat_room->user_id, 'geolocation' => ['latitude' => $chat_room->geolocation->getLat(), 
-                               'longitude' => $chat_room->geolocation->getLng()], 'last_message' => $chat_room->last_message, 
-                               'last_message_sender_id' => $chat_room->last_message_sender_id,
-                               'last_message_type' => $chat_room->last_message_type, 
-                               'last_message_timestamp' => $chat_room->last_message_timestamp,
-                               'created_at' => $chat_room->created_at->format('Y-m-d H:i:s'),];
-                }
+                $info[] = array('pin_id' => $pin_helper->pin_id,
+                                'type' => $pin_helper->type,
+                                'created_at' => $pin_helper->created_at,
+                                'pin_object' => PinUtility::getPinObject($pin_helper->type, $pin_helper->pin_id, 
+                                    $this->request->self_user_id));
+                // if($pin_helper->type == 'comment')
+                // {
+                //     $comment = Comments::find($pin_helper->pin_id);
+                //     if(is_null($comment))
+                //     {
+                //         continue;
+                //     }
+                //     $info[] = ['type'=>'comment','comment_id' => $comment->id,'user_id' => $comment->user_id,
+                //                'content' => $comment->content ,'geolocation'=>['latitude'=>$comment->geolocation->getLat(), 
+                //                'longitude' => $comment->geolocation->getLng()],
+                //                'liked_count' => $comment->liked_count, 
+                //                'saved_count' => $comment->saved_count, 
+                //                'comment_count' => $comment->comment_count,
+                //                'created_at' => $comment->created_at->format('Y-m-d H:i:s'),
+                //                'user_pin_operations' => PinOperationController::getOperations('comment', $pin_helper->pin_id, $this->request->self_user_id)];
+                // }
+                // else if($pin_helper->type == 'media')
+                // {
+                //     $media = Medias::find($pin_helper->pin_id);
+                //     if(is_null($media))
+                //     {
+                //         continue;
+                //     }
+                //     $info[] = ['type'=>'media', 'media_id' => $media->id, 'user_id' => $media->user_id, 
+                //                'file_ids' => explode(';', $media->file_ids), 'tag_ids' => explode(';', $media->tag_ids), 
+                //                'description' => $media->description, 'geolocation'=>['latitude' => $media->geolocation->getLat(), 
+                //                'longitude' => $media->geolocation->getLng()], 
+                //                'liked_count' => $media->liked_count, 
+                //                'saved_count' => $media->saved_count, 
+                //                'comment_count' => $media->comment_count,
+                //                'created_at' => $media->created_at->format('Y-m-d H:i:s'),
+                //                'user_pin_operations' => PinOperationController::getOperations('media', $pin_helper->pin_id, $this->request->self_user_id)];
+                // }
+                // else if($pin_helper->type == 'chat_room')
+                // {
+                //     $chat_room = ChatRooms::find($pin_helper->pin_id);
+                //     if(is_null($chat_room))
+                //     {
+                //         continue;
+                //     }
+                //     $info[] = ['type' => 'chat_room', 'chat_room_id' => $chat_room->id, 'title' => $chat_room->title, 
+                //                'user_id' => $chat_room->user_id, 'geolocation' => ['latitude' => $chat_room->geolocation->getLat(), 
+                //                'longitude' => $chat_room->geolocation->getLng()], 'last_message' => $chat_room->last_message, 
+                //                'last_message_sender_id' => $chat_room->last_message_sender_id,
+                //                'last_message_type' => $chat_room->last_message_type, 
+                //                'last_message_timestamp' => $chat_room->last_message_timestamp,
+                //                'created_at' => $chat_room->created_at->format('Y-m-d H:i:s'),];
+                // }
             }
         }
         return $this->response->array($info);   
