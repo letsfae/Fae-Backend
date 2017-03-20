@@ -12,6 +12,7 @@ use App\NameCardsSaved;
 use Validator;
 use Dingo\Api\Exception\UpdateResourceFailedException;
 use App\Api\v1\utilities\TimeUtility;
+use App\Api\v1\Utilities\ErrorCodeUtility;
 
 class UserNameCardController extends Controller
 {

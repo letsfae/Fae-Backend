@@ -16,6 +16,7 @@ use Dingo\Api\Exception\UpdateResourceFailedException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Dingo\Api\Routing\Helpers;
+use App\Api\v1\Utilities\ErrorCodeUtility;
 
 class UserProfileController extends Controller
 {

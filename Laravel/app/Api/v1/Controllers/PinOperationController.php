@@ -17,6 +17,7 @@ use App\Sessions;
 use App\Name_cards;
 use App\Users;
 use DB;
+use App\Api\v1\Utilities\ErrorCodeUtility;
 
 class PinOperationController extends Controller {
     use Helpers;

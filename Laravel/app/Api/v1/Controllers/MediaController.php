@@ -22,6 +22,7 @@ use Phaza\LaravelPostgis\Geometries\Point;
 use Phaza\LaravelPostgis\Geometries\Geometry;
 use App\Api\v1\Controllers\TagController;
 use App\Api\v1\Controllers\FileController;
+use App\Api\v1\Utilities\ErrorCodeUtility;
 
 class MediaController extends Controller implements PinInterface
 {
