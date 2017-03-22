@@ -70,6 +70,40 @@ yes
 
 Status: 204
 
+## Feeling
+
+`POST /pins/:type/:pin_id/feeling`
+
+其中type可为`media`、`comment`。
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| feeling | integer(1-11) | feeling表情 |
+
+### response
+
+Status: 201
+
+## Remove Feeling
+
+`DELETE /pins/:type/:pin_id/feeling`
+
+其中type可为`media`、`comment`。
+
+### auth
+
+yes
+
+### response
+
+Status: 204
+
 ## comment 评论 :white_check_mark:
 
 `POST /pins/:type/:pin_id/comments`

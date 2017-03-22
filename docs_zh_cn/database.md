@@ -123,6 +123,7 @@
 - liked_count
 - saved_count
 - comment_count
+- feeling_count
 - geolocation point
 - duration integer (unit in min)
 - interaction_
@@ -140,6 +141,7 @@
 - liked_count
 - saved_count
 - comment_count
+- feeling_count
 - duration integer (unit in min)
 - interaction_radius (unit in km) default 0
 - anonymous default false
@@ -191,6 +193,8 @@
 - liked_timestamp
 - saved boolean
 - saved_timestamp
+- feeling integer
+- feeling_timestamp
 - interacted boolean default false
 
 ## pin_comments
