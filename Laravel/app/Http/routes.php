@@ -129,6 +129,8 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->delete('/pins/comments/{pin_comment_id}', 'App\Api\v1\Controllers\PinOperationController@uncomment');
     $api->post('/pins/{type}/{pin_id}/save', 'App\Api\v1\Controllers\PinOperationController@save');
     $api->delete('/pins/{type}/{pin_id}/save', 'App\Api\v1\Controllers\PinOperationController@unsave');
+    $api->post('/pins/{type}/{pin_id}/feeling', 'App\Api\v1\Controllers\PinOperationController@feeling');
+    $api->delete('/pins/{type}/{pin_id}/feeling', 'App\Api\v1\Controllers\PinOperationController@removeFeeling');
     $api->get('/pins/{type}/{pin_id}/attribute', 'App\Api\v1\Controllers\PinOperationController@getPinAttribute');
     $api->get('/pins/{type}/{pin_id}/comments', 'App\Api\v1\Controllers\PinOperationController@getPinCommentList');
     $api->get('/pins/saved', 'App\Api\v1\Controllers\PinOperationController@getSavedPinList');

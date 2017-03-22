@@ -113,6 +113,15 @@ class PinOperationController extends Controller {
         return $this->response->noContent();
     }
 
+
+    public function feeling($type, $pin_id) {
+
+    }
+
+    public function removeFeeling($type, $pin_id) {
+
+    }
+
     public static function getOperations($type, $pin_id, $user_id)
     {
         if(!is_numeric($pin_id) || !is_numeric($user_id))
