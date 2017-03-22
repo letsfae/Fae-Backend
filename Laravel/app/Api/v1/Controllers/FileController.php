@@ -118,7 +118,11 @@ class FileController extends Controller implements RefInterface {
 			$file = Storage::disk('local')->get('files/'.$file_data->directory.$file_data->file_name_storage);
             $mimetype = Storage::mimeType('files/'.$file_data->directory.$file_data->file_name_storage);
 		} catch(\Exception $e) {
-			return $this->response->errorNotFound();
+			return response()->json([
+                    'message' => 'file not found',
+                    'error_code' => ErrorCodeUtility::FILE_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
 		}
     
 		return response($file, 200)->header('Content-Type', $mimetype);

@@ -142,7 +142,7 @@ class CommentController extends Controller implements PinInterface
                     'status_code' => '400'
                 ], 400);
         }
-        $comment = Comments::find($comment_id);
+        $comment = $this->getPinObject($comment_id, $this->request->self_user_id);
         if(is_null($comment))
         {
             return response()->json([
@@ -151,20 +151,7 @@ class CommentController extends Controller implements PinInterface
                     'status_code' => '404'
                 ], 404);
         }
-        $user_pin_operations = PinOperationController::getOperations('comment', $comment_id, $this->request->self_user_id);
-        return $this->response->array(array('comment_id' => $comment->id, 
-                'user_id' => ($comment->anonymous && $comment->user_id != $this->request->self_user_id) ? null : $comment->user_id,
-                'nick_name' => ($comment->anonymous && $comment->user_id != $this->request->self_user_id) ? 
-                            null : Name_cards::find($comment->user_id)->nick_name,
-                'anonymous' => $comment->anonymous,
-                'content' => $comment->content, 
-                'geolocation' => array('latitude' => $comment->geolocation->getLat(), 
-                'longitude' => $comment->geolocation->getLng()), 
-                'liked_count' => $comment->liked_count, 
-                'saved_count' => $comment->saved_count, 
-                'comment_count' => $comment->comment_count,
-                'created_at' => $comment->created_at->format('Y-m-d H:i:s'),
-                'user_pin_operations' => $user_pin_operations));
+        return $this->response->array($comment);
     }
 
     public function delete($comment_id)
@@ -277,8 +264,28 @@ class CommentController extends Controller implements PinInterface
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
     }
 
-    public function getPinObject($comment_id) {
-
+    public static function getPinObject($comment_id, $user_id) {
+        $comment = Comments::find($comment_id);
+        if(is_null($comment))
+        {
+            return null;
+        }
+        $user_pin_operations = PinOperationController::getOperations('comment', $comment_id, $user_id);
+        return array(
+            'comment_id' => $comment->id, 
+            'user_id' => ($comment->anonymous && $comment->user_id != $user_id) ? null : $comment->user_id,
+            'nick_name' => ($comment->anonymous && $comment->user_id != $user_id) ? 
+                            null : Name_cards::find($comment->user_id)->nick_name,
+            'anonymous' => $comment->anonymous,
+            'content' => $comment->content, 
+            'geolocation' => array('latitude' => $comment->geolocation->getLat(), 
+            'longitude' => $comment->geolocation->getLng()), 
+            'liked_count' => $comment->liked_count, 
+            'saved_count' => $comment->saved_count, 
+            'comment_count' => $comment->comment_count,
+            'created_at' => $comment->created_at->format('Y-m-d H:i:s'),
+            'user_pin_operations' => $user_pin_operations
+        );
     }
     private function createValidation(Request $request)
     {

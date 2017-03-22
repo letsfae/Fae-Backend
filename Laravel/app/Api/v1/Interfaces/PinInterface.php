@@ -11,5 +11,5 @@ interface PinInterface
     public function getFromUser($user_id);
 
     // inner method
-    public function getPinObject($id);
+    public static function getPinObject($pin_id, $user_id);
 }

@@ -18,6 +18,7 @@ use App\Name_cards;
 use App\Users;
 use DB;
 use App\Api\v1\Utilities\ErrorCodeUtility;
+use App\Api\v1\Utilities\PinUtility;
 
 class PinOperationController extends Controller {
     use Helpers;
@@ -656,7 +657,9 @@ class PinOperationController extends Controller {
         {
             $info[] = array('pin_id' => $user_pin_helper->pin_id,
                             'type' => $user_pin_helper->type,
-                            'created_at' => $user_pin_helper->created_at->format('Y-m-d H:i:s'));
+                            'created_at' => $user_pin_helper->created_at->format('Y-m-d H:i:s'),
+                            'pin_object' => PinUtility::getPinObject($user_pin_helper->type, $user_pin_helper->pin_id, 
+                                $this->request->self_user_id));
         }
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
     }
@@ -694,7 +697,9 @@ class PinOperationController extends Controller {
         {
             $info[] = array('pin_id' => $saved_pin->pin_id,
                             'type' => $saved_pin->type,
-                            'created_at' => $saved_pin->saved_timestamp);
+                            'created_at' => $saved_pin->saved_timestamp,
+                            'pin_object' => PinUtility::getPinObject($user_pin_helper->type, $user_pin_helper->pin_id, 
+                                $this->request->self_user_id));
         }
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
     }

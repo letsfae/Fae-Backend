@@ -16,7 +16,7 @@ class BusinessController extends Controller implements PinInterface {
     public function create() {}
     public function update($business_id) {}
     public function delete($business_id) {}
-    public function getPinObject($business_id) {}
+    public static function getPinObject($business_id, $user_id) {}
 
     public function getOne($business_id) {
 
