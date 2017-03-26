@@ -26,6 +26,7 @@ class CreateMediasTable extends Migration
             $table->integer('saved_count')->default(0);
             $table->integer('liked_count')->default(0);
             $table->integer('comment_count')->default(0);
+            $table->string('feeling_count')->default('0,0,0,0,0,0,0,0,0,0,0');
             $table->boolean('anonymous')->default(false);
             $table->timestamps();
         });

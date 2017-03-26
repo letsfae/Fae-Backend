@@ -23,6 +23,7 @@ use Phaza\LaravelPostgis\Geometries\Geometry;
 use App\Api\v1\Controllers\TagController;
 use App\Api\v1\Controllers\FileController;
 use App\Api\v1\Utilities\ErrorCodeUtility;
+use App\Api\v1\Utilities\PinUtility;
 
 class MediaController extends Controller implements PinInterface
 {
@@ -310,10 +311,13 @@ class MediaController extends Controller implements PinInterface
                 'user_id' => $media->user_id,
                 'nick_name' => Name_cards::find($commented_pin->user_id)->nick_name,
                 'file_ids' => explode(';', $media->file_ids), 
-                'tag_ids' => explode(';', $media->tag_ids), 'description' => $media->description, 
+                'tag_ids' => explode(';', $media->tag_ids), 
+                'description' => $media->description, 
                 'geolocation'=>['latitude'=>$media->geolocation->getLat(), 'longitude'=>$media->geolocation->getLng()], 
                 'liked_count' => $media->liked_count, 
-                'saved_count' => $media->saved_count, 'comment_count' => $media->comment_count,
+                'saved_count' => $media->saved_count, 
+                'comment_count' => $media->comment_count,
+                'feeling_count' => PinUtility::decodeFeelings($media->feeling_count),
                 'created_at' => $media->created_at->format('Y-m-d H:i:s'),
                 'user_pin_operations' => $user_pin_operations);   
         }
@@ -343,6 +347,7 @@ class MediaController extends Controller implements PinInterface
             'liked_count' => $media->liked_count, 
             'saved_count' => $media->saved_count, 
             'comment_count' => $media->comment_count,
+            'feeling_count' => PinUtility::decodeFeelings($media->feeling_count),
             'created_at' => $media->created_at->format('Y-m-d H:i:s'),
             'user_pin_operations' => $user_pin_operations
         );

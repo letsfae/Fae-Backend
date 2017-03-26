@@ -88,7 +88,8 @@ class PinOperationController extends Controller {
                 'error_code' => ErrorCodeUtility::WRONG_TYPE,
                 'status_code' => '400'
             ], 400);
-        }        $obj_pin_operation = $this->readOperation($type, $pin_id);
+        }        
+        $obj_pin_operation = $this->readOperation($type, $pin_id);
         if(is_null($obj_pin_operation))
         {
             return response()->json([
@@ -116,11 +117,94 @@ class PinOperationController extends Controller {
 
 
     public function feeling($type, $pin_id) {
-
+        $this->feelingValidation($this->request);
+        if(!is_numeric($pin_id))
+        {
+            return response()->json([
+                    'message' => 'pin_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
+        }
+        if($type != 'media' && $type != 'comment')
+        {
+            return response()->json([
+                'message' => 'wrong type, neither media nor comment',
+                'error_code' => ErrorCodeUtility::WRONG_TYPE,
+                'status_code' => '400'
+            ], 400);
+        }
+        $obj_pin_operation = $this->readOperation($type, $pin_id);
+        if(is_null($obj_pin_operation))
+        {
+            return response()->json([
+                    'message' => 'PIN not found',
+                    'error_code' => ErrorCodeUtility::PIN_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
+        }
+        $obj = self::getObj($type, $pin_id);
+        if(is_null($obj)) 
+        {
+            return response()->json([
+                    'message' => 'PIN not found',
+                    'error_code' => ErrorCodeUtility::PIN_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
+        }
+        if($obj_pin_operation->feeling != null) {
+             $obj->feeling_count = PinUtility::decreaseFeelingCount($obj->feeling_count, $obj_pin_operation->feeling);
+        }
+        $obj_pin_operation->feeling = $this->request->feeling;
+        $obj_pin_operation->updateFeelingTimestamp();
+        $obj_pin_operation->save();
+        $obj->feeling_count = PinUtility::increaseFeelingCount($obj->feeling_count, $this->request->feeling);
+        $obj->save();
+        return $this->response->created();
     }
 
     public function removeFeeling($type, $pin_id) {
-
+        if(!is_numeric($pin_id))
+        {
+            return response()->json([
+                    'message' => 'pin_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
+        }
+        if($type != 'media' && $type != 'comment')
+        {
+            return response()->json([
+                'message' => 'wrong type, neither media nor comment',
+                'error_code' => ErrorCodeUtility::WRONG_TYPE,
+                'status_code' => '400'
+            ], 400);
+        }        
+        $obj_pin_operation = $this->readOperation($type, $pin_id);
+        if(is_null($obj_pin_operation))
+        {
+            return response()->json([
+                    'message' => 'PIN not found',
+                    'error_code' => ErrorCodeUtility::PIN_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
+        }
+        if($obj_pin_operation->feeling == null)
+        {
+            return response()->json([
+                'message' => 'Bad request, you have not post feeling of this pin yet!',
+                'error_code' => ErrorCodeUtility::NO_FEELING,
+                'status_code' => '400'
+            ], 400);
+        }
+        $feeling = $obj_pin_operation->feeling;
+        $obj_pin_operation->feeling = null;
+        $obj_pin_operation->updateFeelingTimestamp();
+        $obj_pin_operation->save();
+        $obj = self::getObj($type, $pin_id);
+        $obj->feeling_count = PinUtility::decreaseFeelingCount($obj->feeling_count, $feeling);
+        $obj->save();
+        return $this->response->noContent();
     }
 
     public static function getOperations($type, $pin_id, $user_id)
@@ -151,6 +235,7 @@ class PinOperationController extends Controller {
         }
         return array('is_liked' => $pin_operation->liked, 'liked_timestamp' => $pin_operation->liked_timestamp, 
                      'is_saved' => $pin_operation->saved, 'saved_timestamp' => $pin_operation->saved_timestamp,
+                     'feeling' => $pin_operation->feeling, 'feeling_timestamp' => $pin_operation->feeling_timestamp,
                      'is_read'  => true, 'read_timestamp'  => $pin_operation->created_at->format('Y-m-d H:i:s'));
     }
 
@@ -214,6 +299,7 @@ class PinOperationController extends Controller {
                 //$newobj_pin_operation->read = true;
                 $newobj_pin_operation->saved = false;
                 $newobj_pin_operation->liked = false;
+                $newobj_pin_operation->feeling = null;
                 $newobj_pin_operation->interacted = false;
                 $newobj_pin_operation->save();
                 return $newobj_pin_operation;
@@ -903,6 +989,17 @@ class PinOperationController extends Controller {
         if($validator->fails())
         {
             throw new StoreResourceFailedException('Could not vote this comment.',$validator->errors());
+        }
+    }
+
+    private function feelingValidation(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'feeling' => 'required|integer|min:0|max:10'
+        ]);
+        if($validator->fails())
+        {
+            throw new StoreResourceFailedException('Could not update feeling',$validator->errors());
         }
     }
 

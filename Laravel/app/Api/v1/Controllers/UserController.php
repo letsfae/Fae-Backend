@@ -63,17 +63,14 @@ class UserController extends Controller
         $fb = Firebase::initialize('https://faeapp-5ea31.firebaseio.com', 'LiYqgdzrv8Y1s2lRN7iziHy4Z5UCgvUlJJhHcZRe');
         $dateTime = new DateTime();
         $fb->push('Message-dev/1-'.$user->id, 
-                    array('message' => 'Hey there! Welcome to Fae Map! Super happy to see you here. We’re here to
-                               enhance your experience on Fae Map and make your time more fun. Let us know
-                               of any problems you encounter or what we can do to make your experience better. 
-                               We’ll be hitting you up with surprises, recommendations, favorite places, cool 
-                               deals, and tons of fun stuff. Feel free to chat with us here anytime about 
-                               anything. Let’s Fae!',
-                          'message_type' => 'text',
-                          'message_sender_id' => 1,
-                          'message_sender_name' => 'Fae Map Crew',
+                    array('message' => 'Hey there! Welcome to Fae Map! Super happy to see you here. We’re here to enhance your experience on Fae Map and make your time more fun. Let us know of any problems you encounter or what we can do to make your experience better. We’ll be hitting you up with surprises, recommendations, favorite places, cool deals, and tons of fun stuff. Feel free to chat with us here anytime about anything. Let’s Fae!',
+                          'type' => 'text',
+                          'senderId' => '1',
+                          'senderName' => 'Fae Map Crew',
+                          'messageId' => uniqid(),
                           'hasTimeStamp' => true,
                           'index' => 1,
+                          'status' => 'Delivered',
                           'date' => $dateTime->format('Ymdhis'))
                   );
 
