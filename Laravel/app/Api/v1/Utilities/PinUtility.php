@@ -18,4 +18,24 @@ class PinUtility
         return null;
     }
 
+    public static function encodeFeelings($arr) {
+        return implode(',', $arr);
+    }
+
+    public static function decodeFeelings($str) {
+        return explode(',', $str);
+    }
+
+    public static function increaseFeelingCount($str, $num) {
+        $arr = PinUtility::decodeFeelings($str);
+        $arr[$num]++;
+        return PinUtility::encodeFeelings($arr);
+    }
+
+    public static function decreaseFeelingCount($str, $num) {
+        $arr = PinUtility::decodeFeelings($str);
+        $arr[$num]--;
+        return PinUtility::encodeFeelings($arr);
+    }
+
 }

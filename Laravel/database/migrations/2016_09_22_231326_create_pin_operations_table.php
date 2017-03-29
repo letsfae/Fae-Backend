@@ -22,6 +22,8 @@ class CreatePinOperationsTable extends Migration
             $table->timestamp('liked_timestamp')->nullable();
             $table->boolean('saved')->default(false);
             $table->timestamp('saved_timestamp')->nullable();
+            $table->integer('feeling')->nullable();
+            $table->timestamp('feeling_timestamp')->nullable();
             $table->boolean('interacted')->default(false);
             $table->timestamps();
         });

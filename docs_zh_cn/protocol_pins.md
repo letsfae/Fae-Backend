@@ -84,7 +84,7 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| feeling | integer(1-11) | feeling表情 |
+| feeling | integer(0-10) | feeling表情 |
 
 ### response
 

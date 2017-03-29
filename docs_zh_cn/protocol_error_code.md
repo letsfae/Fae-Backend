@@ -17,6 +17,7 @@
 | 400-12 | 已vote up |
 | 400-13 | 已vote down |
 | 400-14 | 未vote |
+| 400-15 | 未发过表情 |
 
 ## 401 Unauthorized
 | Error Code | Description |

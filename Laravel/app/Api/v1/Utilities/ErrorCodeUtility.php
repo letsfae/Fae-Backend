@@ -20,6 +20,7 @@ class ErrorCodeUtility
     const VOTED_UP_ALREADY = '400-12';
     const VOTED_DOWN_ALREADY = '400-13';
     const NOT_VOTED = '400-14';
+    const NO_FEELING = '400-15';
 
     //401 Unauthorized
     /*

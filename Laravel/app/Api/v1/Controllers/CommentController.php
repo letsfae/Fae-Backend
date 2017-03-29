@@ -21,6 +21,7 @@ use Auth;
 use App\Api\v1\Interfaces\PinInterface;
 use App\Api\v1\Controllers\RichTextController;
 use App\Api\v1\Utilities\ErrorCodeUtility;
+use App\Api\v1\Utilities\PinUtility;
 
 class CommentController extends Controller implements PinInterface
 {
@@ -259,6 +260,7 @@ class CommentController extends Controller implements PinInterface
                     'content' => $comment->content, 'geolocation' => array('latitude' => $comment->geolocation->getLat(), 
                     'longitude' => $comment->geolocation->getLng()), 'liked_count' => $comment->liked_count, 
                     'saved_count' => $comment->saved_count, 'comment_count' => $comment->comment_count,
+                    'feeling_count' => PinUtility::decodeFeelings($comment->feeling_count),
                     'created_at' => $comment->created_at->format('Y-m-d H:i:s'), 'user_pin_operations' => $user_pin_operations);    
         }
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
@@ -283,6 +285,7 @@ class CommentController extends Controller implements PinInterface
             'liked_count' => $comment->liked_count, 
             'saved_count' => $comment->saved_count, 
             'comment_count' => $comment->comment_count,
+            'feeling_count' => PinUtility::decodeFeelings($comment->feeling_count),
             'created_at' => $comment->created_at->format('Y-m-d H:i:s'),
             'user_pin_operations' => $user_pin_operations
         );
