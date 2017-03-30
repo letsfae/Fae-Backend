@@ -786,8 +786,8 @@ class PinOperationController extends Controller {
             $info[] = array('pin_id' => $saved_pin->pin_id,
                             'type' => $saved_pin->type,
                             'created_at' => $saved_pin->saved_timestamp,
-                            'pin_object' => PinUtility::getPinObject($user_pin_helper->type, $user_pin_helper->pin_id, 
-                                $this->request->self_user_id));
+                            'pin_object' => PinUtility::getPinObject($saved_pin->type, $saved_pin->pin_id, 
+                            $this->request->self_user_id));
         }
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
     }
