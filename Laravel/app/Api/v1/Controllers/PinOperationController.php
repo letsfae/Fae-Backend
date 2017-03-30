@@ -446,7 +446,8 @@ class PinOperationController extends Controller {
             ], 400);
         }
         $validator = Validator::make($this->request->all(), [
-            'content' => 'required|string|max:100'
+            'content' => 'required|string|max:100',
+            'anonymous' => 'filled|in:true,false'
         ]);
         if($validator->fails())
         {
@@ -487,6 +488,7 @@ class PinOperationController extends Controller {
         $newobj_pin_comment->user_id = $this->request->self_user_id;
         $newobj_pin_comment->pin_id = $pin_id;
         $newobj_pin_comment->type = $type;
+        $newobj_pin_comment->anonymous = $this->request->anonymous == 'true' ? true : false;
         $newobj_pin_comment->content = $this->request->content;
         $newobj_pin_comment->save();
         $obj = self::getObj($type, $pin_id);
