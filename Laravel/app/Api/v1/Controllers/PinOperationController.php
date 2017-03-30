@@ -152,7 +152,7 @@ class PinOperationController extends Controller {
                     'status_code' => '404'
                 ], 404);
         }
-        if($obj_pin_operation->feeling != null) {
+        if($obj_pin_operation->feeling != -1) {
              $obj->feeling_count = PinUtility::decreaseFeelingCount($obj->feeling_count, $obj_pin_operation->feeling);
         }
         $obj_pin_operation->feeling = $this->request->feeling;
@@ -198,7 +198,7 @@ class PinOperationController extends Controller {
             ], 400);
         }
         $feeling = $obj_pin_operation->feeling;
-        $obj_pin_operation->feeling = null;
+        $obj_pin_operation->feeling = -1;
         $obj_pin_operation->updateFeelingTimestamp();
         $obj_pin_operation->save();
         $obj = self::getObj($type, $pin_id);
@@ -299,7 +299,7 @@ class PinOperationController extends Controller {
                 //$newobj_pin_operation->read = true;
                 $newobj_pin_operation->saved = false;
                 $newobj_pin_operation->liked = false;
-                $newobj_pin_operation->feeling = null;
+                $newobj_pin_operation->feeling = -1;
                 $newobj_pin_operation->interacted = false;
                 $newobj_pin_operation->save();
                 return $newobj_pin_operation;
