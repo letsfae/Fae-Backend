@@ -488,7 +488,9 @@ class PinOperationController extends Controller {
         $newobj_pin_comment->user_id = $this->request->self_user_id;
         $newobj_pin_comment->pin_id = $pin_id;
         $newobj_pin_comment->type = $type;
-        $newobj_pin_comment->anonymous = $this->request->anonymous == 'true' ? true : false;
+        if($this->request->has('anonymous')) {
+            $newobj_pin_comment->anonymous = $this->request->anonymous == 'true' ? true : false;
+        }
         $newobj_pin_comment->content = $this->request->content;
         $newobj_pin_comment->save();
         $obj = self::getObj($type, $pin_id);
