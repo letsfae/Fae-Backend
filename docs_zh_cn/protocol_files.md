@@ -267,9 +267,9 @@ Status: 200
 
 Body图片数据。
 
-## 获取商家图片
+## 获取地点图片 :white_check_mark:
 
-`GET /files/businesses/:business_id/image`
+`GET /files/places/:place_id/image`
 
 ### auth
 

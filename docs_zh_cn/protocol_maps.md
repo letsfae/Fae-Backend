@@ -45,9 +45,9 @@ yes
 | geo_latitude | number | 中心点纬度 |
 | geo_longitude | number | 中心点经度 |
 | radius (optional) | number | 半径，默认值为200m |
-| type | string(user or comment,media,chat_room) | 筛选类型，类型之间用逗号隔开 |
+| type | string(user or place or comment,media,chat_room) | 筛选类型，类型之间用逗号隔开 |
 | max_count (optional) | number | 返回节点最大数量，默认为30，最大为100 |
-| in_duration (optional) | boolean | 只显示在活跃时间内的pin，默认为false |
+| in_duration (optional) | boolean | 只显示在活跃时间内的pin，默认为false（对user,place无效） |
 | user_updated_in (optional) | number | 显示多久时间内更新过坐标的用户（仅针对user有效），单位min，默认不限制 |
 | is_saved (optional) | bool | 默认该字段不设置（无限制），可设置为true/false |
 | is_unsaved (optional) | bool | 同上 |
@@ -58,7 +58,7 @@ yes
 
 对于一直在更新的user点，可以每隔一段时间获取一次。
 
-user类型节点只能单独获取。其他类型节点可同时获取（根据Pin创建时间降序排序）。
+user及place类型节点只能单独获取。其他类型节点可同时获取（根据Pin创建时间降序排序）。
 
 如果app退出到桌面，ios端将无法发送坐标，`user_updated_in`用于过滤超出活跃时间的但在线的用户。
 
@@ -750,9 +750,9 @@ Status: 200
 
 禁止删除ChatRoom。
 
-## 获取商家数据
+## 获取地点数据 :white_check_mark:
 
-`GET /business/:business_id`
+`GET /places/:place_id`
 
 ### auth
 
@@ -763,7 +763,7 @@ yes
 Status: 200
 
 	{
-		"business_id": @number,
+		"place_id": @number,
 		"name": @string,
 		"categories": [
 			@string,

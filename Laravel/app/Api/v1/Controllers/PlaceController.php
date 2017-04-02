@@ -11,9 +11,9 @@ use Illuminate\Support\Facades\File;
 use App\Api\v1\Interfaces\PinInterface;
 
 use App\Api\v1\Utilities\ErrorCodeUtility;
-use App\Businesses;
+use App\Places;
 
-class BusinessController extends Controller implements PinInterface {
+class PlaceController extends Controller implements PinInterface {
     use Helpers;
     
     public function __construct(Request $request) {
@@ -24,68 +24,68 @@ class BusinessController extends Controller implements PinInterface {
 
     }
 
-    public function update($business_id) {
+    public function update($place_id) {
 
     }
 
-    public function delete($business_id) {
+    public function delete($place_id) {
 
     }
 
-     public static function getPinObject($business_id, $user_id) {
-        $business = Businesses::find($business_id);
-        if(is_null($business))
+     public static function getPinObject($place_id, $user_id) {
+        $place = Places::find($place_id);
+        if(is_null($place))
         {
             return null;
         }
 
-        $categories = explode(', ', $business->categories);
+        $categories = explode(', ', $place->categories);
 
         return array(
-            'business_id' => $business->id, 
-            'name' => $business->name,
+            'place_id' => $place->id, 
+            'name' => $place->name,
             'categories' => $categories,
-            'geolocation' => ['latitude' => $business->geolocation->getLat(), 
-            'longitude' => $business->geolocation->getLng()], 
-            'country' => $business->country, 
-            'state' => $business->state,
-            'address' => $business->address, 
-            'zip_code' => $business->zip_code
+            'geolocation' => ['latitude' => $place->geolocation->getLat(), 
+            'longitude' => $place->geolocation->getLng()], 
+            'country' => $place->country, 
+            'state' => $place->state,
+            'address' => $place->address, 
+            'zip_code' => $place->zip_code
         );
      }
 
-     public function getOne($business_id) {
-        if(!is_numeric($business_id)){
+     public function getOne($place_id) {
+        if(!is_numeric($place_id)){
             return response()->json([
-                    'message' => 'business_id is not integer',
+                    'message' => 'place_id is not integer',
                     'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
                     'status_code' => '400'
                 ], 400);
         }
 
-        $business = $this->getPinObject($business_id, $this->request->self_user_id);
-        if(is_null($business))
+        $place = $this->getPinObject($place_id, $this->request->self_user_id);
+        if(is_null($place))
         {
             return response()->json([
-                    'message' => 'business not found',
+                    'message' => 'place not found',
                     //'error_code' => ErrorCodeUtility::CHAT_ROOM_NOT_FOUND,
                     'status_code' => '404'
                 ], 404);
         }
-        return $this->response->array($business);
+        return $this->response->array($place);
      }
 
-    public function getImage($business_id) {
-        if(!is_numeric($business_id)){
+    public function getImage($place_id) {
+        if(!is_numeric($place_id)){
             return response()->json([
-                    'message' => 'business_id is not integer',
+                    'message' => 'place_id is not integer',
                     'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
                     'status_code' => '400'
                 ], 400);
         }
 
         try {
-            $file = Storage::disk('local')->get('businessPicture/'.$business_id.'.jpg');
+            $file = Storage::disk('local')->get('placePicture/'.$place_id.'.jpg');
         } catch(\Exception $e) {
             return response()->json([
                 'message' => 'Bad request, image not found',
