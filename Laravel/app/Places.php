@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use Phaza\LaravelPostgis\Eloquent\PostgisTrait;
 use Phaza\LaravelPostgis\Geometries\Point;
 
-class Businesses extends Model
+class Places extends Model
 {
 	use PostgisTrait;
 
     protected $connection = 'yelp';
-    protected $table = 'businesses';
+    protected $table = 'places';
     protected $postgisFields = [
         'geolocation' => Point::class,
     ];
