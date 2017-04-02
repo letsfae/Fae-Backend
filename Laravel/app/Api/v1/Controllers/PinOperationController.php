@@ -152,7 +152,7 @@ class PinOperationController extends Controller {
                     'status_code' => '404'
                 ], 404);
         }
-        if($obj_pin_operation->feeling != null) {
+        if($obj_pin_operation->feeling != -1) {
              $obj->feeling_count = PinUtility::decreaseFeelingCount($obj->feeling_count, $obj_pin_operation->feeling);
         }
         $obj_pin_operation->feeling = $this->request->feeling;
@@ -198,7 +198,7 @@ class PinOperationController extends Controller {
             ], 400);
         }
         $feeling = $obj_pin_operation->feeling;
-        $obj_pin_operation->feeling = null;
+        $obj_pin_operation->feeling = -1;
         $obj_pin_operation->updateFeelingTimestamp();
         $obj_pin_operation->save();
         $obj = self::getObj($type, $pin_id);
@@ -299,7 +299,11 @@ class PinOperationController extends Controller {
                 //$newobj_pin_operation->read = true;
                 $newobj_pin_operation->saved = false;
                 $newobj_pin_operation->liked = false;
+<<<<<<< HEAD
                 $newobj_pin_operation->feeling = null;
+=======
+                $newobj_pin_operation->feeling = -1;
+>>>>>>> bb7152065d9d636ef70e72e9e22141ba2acec98a
                 $newobj_pin_operation->interacted = false;
                 $newobj_pin_operation->save();
                 return $newobj_pin_operation;
@@ -446,7 +450,8 @@ class PinOperationController extends Controller {
             ], 400);
         }
         $validator = Validator::make($this->request->all(), [
-            'content' => 'required|string|max:100'
+            'content' => 'required|string|max:100',
+            'anonymous' => 'filled|in:true,false'
         ]);
         if($validator->fails())
         {
@@ -487,6 +492,9 @@ class PinOperationController extends Controller {
         $newobj_pin_comment->user_id = $this->request->self_user_id;
         $newobj_pin_comment->pin_id = $pin_id;
         $newobj_pin_comment->type = $type;
+        if($this->request->has('anonymous')) {
+            $newobj_pin_comment->anonymous = $this->request->anonymous == 'true' ? true : false;
+        }
         $newobj_pin_comment->content = $this->request->content;
         $newobj_pin_comment->save();
         $obj = self::getObj($type, $pin_id);
@@ -784,8 +792,8 @@ class PinOperationController extends Controller {
             $info[] = array('pin_id' => $saved_pin->pin_id,
                             'type' => $saved_pin->type,
                             'created_at' => $saved_pin->saved_timestamp,
-                            'pin_object' => PinUtility::getPinObject($user_pin_helper->type, $user_pin_helper->pin_id, 
-                                $this->request->self_user_id));
+                            'pin_object' => PinUtility::getPinObject($saved_pin->type, $saved_pin->pin_id, 
+                            $this->request->self_user_id));
         }
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
     }
