@@ -299,11 +299,10 @@ class PinOperationController extends Controller {
                 //$newobj_pin_operation->read = true;
                 $newobj_pin_operation->saved = false;
                 $newobj_pin_operation->liked = false;
-<<<<<<< HEAD
-                $newobj_pin_operation->feeling = null;
-=======
+
+                //$newobj_pin_operation->feeling = null;
+
                 $newobj_pin_operation->feeling = -1;
->>>>>>> bb7152065d9d636ef70e72e9e22141ba2acec98a
                 $newobj_pin_operation->interacted = false;
                 $newobj_pin_operation->save();
                 return $newobj_pin_operation;
