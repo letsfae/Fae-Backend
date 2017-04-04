@@ -30,7 +30,7 @@ class PinOperationTest extends TestCase
     public function setUp() {
         parent::setUp();
         $this->domain = Config::get('api.domain'); 
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
     } 
 
     public function tearDown() {
@@ -2018,7 +2018,7 @@ class PinOperationTest extends TestCase
     }
     // test the correct response of the getPinCommentList.
     public function testGetPinCommentList() { 
-        // $this->markTestSkipped(); 
+        $this->markTestSkipped(); 
         //register of the user.
         $user = Users::create([
             'email' => 'letsfae@126.com',
@@ -2077,7 +2077,7 @@ class PinOperationTest extends TestCase
             'description' => 'This is the test1',
             'geolocation' => new Point(34.031958,-118.288125),  
             'file_ids' => '1;2',
-             'duration' => 1440
+            'duration' => 1440
         ]);  
         for ($i = 1; $i < 32; $i++) {
             ${'pinComments' . $i} = Pin_comments::create([
@@ -2087,6 +2087,12 @@ class PinOperationTest extends TestCase
                 'content' => 'This is the pinComments'.$i 
             ]);   
         }
+        $parameters2 = array(
+             'vote' => 'up',
+        ); 
+        for ($i = 1; $i < 32; $i++) {
+            ${'vote_response'.$i} = $this->call('post', 'http://'.$this->domain.'/pins/comments/'.$i.'/vote', $parameters2, [], [], $this->transformHeadersToServerVars($server2));
+        }
         $content = array(
             'start_time' => '2016-06-08 21:22:39',
             'end_time' => date("Y-m-d H:i:s"),
@@ -2094,36 +2100,48 @@ class PinOperationTest extends TestCase
         );
         // get the pinComments of the page 1.
         $response_page1 = $this->call('get', 'http://'.$this->domain.'/pins/media/1/comments', $content, [], [], $this->transformHeadersToServerVars($server2));
-        var_dump($response_page1);
-        $array2 = json_decode($response_page1->getContent());  
-        // for ($i = 0; $i < 30; $i++) {
-        //     $this->seeJson([  
-        //                 'pin_comment_id' => $array2[$i]->pin_comment_id,
-        //                 'user_id' => $array2[$i]->user_id,
-        //                 'content' => $array2[$i]->content, 
-        //                 'created_at' => $array2[$i]->created_at, 
-        //     ]);
-        // }
-        // $this->refreshApplication();
-        // $content2 = array(
-        //     'start_time' => '2016-06-08 21:22:39',
-        //     'end_time' => date("Y-m-d H:i:s"),
-        //     'page' => 2,
-        // );
-        // // get the pinComments of the page 2.
-        // $response_page2 = $this->call('get', 'http://'.$this->domain.'/pins/media/1/comments', $content2, [], [], $this->transformHeadersToServerVars($server2)); 
-        // $array3 = json_decode($response_page2->getContent()); 
-        // $this->seeJson([ 
-        //             'pin_comment_id' => $array3[0]->pin_comment_id,
-        //             'user_id' => $array3[0]->user_id,
-        //             'content' => $array3[0]->content, 
-        //             'created_at' => $array3[0]->created_at, 
-        // ]);
-        // $result = false;
-        // if ($response_page1->headers->get('page') == '1' && $response_page1->headers->get('total-pages') == '2' && $response_page1->status() == '200') {
-        //     $result = true;
-        // } 
-        // $this->assertEquals(true, $result);
+        // var_dump($response_page1);
+        $array2 = json_decode($response_page1->getContent());   
+        for ($i = 0; $i < 30; $i++) {
+            $this->seeJson([  
+                        'pin_comment_id' => $i + 1,
+                        'user_id' => 1,
+                        'content' => 'This is the pinComments'.($i + 1), 
+                        'pin_comment_operations' => array(
+                            'vote' => 'up',
+                            'vote_timestamp' => $array2[$i]->pin_comment_operations->vote_timestamp, 
+                        ),
+                        'vote_up_count' => 1,
+                        'vote_down_count' => 0,
+                        'created_at' => $array2[$i]->created_at, 
+            ]);
+        }
+        $this->refreshApplication();
+        $content2 = array(
+            'start_time' => '2016-06-08 21:22:39',
+            'end_time' => date("Y-m-d H:i:s"),
+            'page' => 2,
+        );
+        // get the pinComments of the page 2.
+        $response_page2 = $this->call('get', 'http://'.$this->domain.'/pins/media/1/comments', $content2, [], [], $this->transformHeadersToServerVars($server2)); 
+        $array3 = json_decode($response_page2->getContent()); 
+        $this->seeJson([  
+                    'pin_comment_id' => 31,
+                    'user_id' => 1,
+                    'content' => 'This is the pinComments31', 
+                    'pin_comment_operations' => array(
+                        'vote' => 'up',
+                        'vote_timestamp' => $array3[0]->pin_comment_operations->vote_timestamp, 
+                    ),
+                    'vote_up_count' => 1,
+                    'vote_down_count' => 0,
+                    'created_at' => $array3[0]->created_at, 
+        ]);
+        $result = false;
+        if ($response_page1->headers->get('page') == '1' && $response_page1->headers->get('total-pages') == '2' && $response_page1->status() == '200') {
+            $result = true;
+        } 
+        $this->assertEquals(true, $result);
     }
 
     // test the response when the type is media but the media information does not exist.
@@ -2354,8 +2372,8 @@ class PinOperationTest extends TestCase
         }
         $this->assertEquals(true, $result);
     }
-
-    // test the correct response of the getUserPinList.
+ 
+    // test the correct response of the method of getUserPinList of the given user when the request user_id is not the same as the logged in user_id.
     public function testGetUserPinList() { 
         $this->markTestSkipped(); 
         //register of the user.
@@ -2387,6 +2405,7 @@ class PinOperationTest extends TestCase
             'Authorization' => 'FAE '.$array->debug_base64ed,
         );   
 
+
         $files = new Files;
         $files->user_id = 1;
         $files->type = 'video';
@@ -2411,28 +2430,88 @@ class PinOperationTest extends TestCase
         $files->reference_count = 0;
         $files->save();
 
-        $media = Medias::create([
-            'user_id' => 1,
-            'description' => 'This is the test1',
-            'geolocation' => new Point(34.031958,-118.288125),  
-            'file_ids' => '1;2',
-             'duration' => 1440
-        ]);  
-        for ($i = 1; $i < 32; $i++) {
-            ${'pinComments' . $i} = Pin_comments::create([
-                'user_id' => 1,
-                'type' => 'media',
-                'pin_id' => 1,
-                'content' => 'This is the pinComments'.$i 
-            ]);   
+        $tags = new Tags;
+        $tags->title = 'fae';
+        $tags->color = '#fff000';
+        $tags->user_id = 1;  
+        $tags->reference_count = 0;
+        $tags->save();
+
+        $tags = new Tags;
+        $tags->title = 'fae1';
+        $tags->color = '#fff000';
+        $tags->user_id = 1;  
+        $tags->reference_count = 0;
+        $tags->save();
+            
+        $this->refreshApplication(); 
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        ); 
+        $parameters = array();
+        $response = array();
+        for ($i = 0; $i < 31; $i++) {
+            $parameters[$i] = array(
+                'file_ids' => '1;2',
+                'tag_ids' => '1;2',
+                'description' => 'this is the test'.$i,
+                'geo_latitude' => '-89.99',
+                'geo_longitude' => '-118.2799',
+                'duration' => '1440',
+                'interaction_radius' => '100', 
+                ); 
         }
+        //create the medias.
+        for ($i = 0; $i < 31; $i++) {
+            $response[$i] = $this->call('post', 'http://'.$this->domain.'/medias', $parameters[$i], [], [], $this->transformHeadersToServerVars($server2));   
+            // sleep(1);
+            $this->refreshApplication();
+            $response_like = $this->call('post', 'http://'.$this->domain.'/pins/media/'.($i + 1).'/like', [], [], [], $this->transformHeadersToServerVars($server2));
+            $this->refreshApplication();
+            //post save pin_operations
+            $response_save = $this->call('post', 'http://'.$this->domain.'/pins/media/'.($i + 1).'/save', [], [], [], $this->transformHeadersToServerVars($server2)); 
+            $this->refreshApplication();
+            $parameters1 = array(
+                'content' => 'This is the pin comment test', 
+             );  
+            //post comment pin_operations
+            $response_comment = $this->call('post', 'http://'.$this->domain.'/pins/media/'.($i + 1).'/comments', $parameters1, [], [], $this->transformHeadersToServerVars($server2));  
+            $this->refreshApplication();  
+        }  
+        $parameter2 = array(
+            'email' => 'letsfae2@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp2',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+            'login_count' => 0, 
+        ); 
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server)); 
+        $this->refreshApplication();
+        $parameter3 = array(
+            'email' => 'letsfae2@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp2',
+        );
+        $login_response2 = $this->call('post', 'http://'.$this->domain.'/authentication', $parameter3, [], [], $this->transformHeadersToServerVars($server));
+        $array_2 = json_decode($login_response2->getContent());
+        $server3 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array_2->debug_base64ed,
+        );
+         
         $content = array(
             'start_time' => '2016-06-08 21:22:39',
             'end_time' => date("Y-m-d H:i:s"),
             'page' => 1,
-        );
+        ); 
         // get the pinComments of the page 1.
-        $response_page1 = $this->call('get', 'http://'.$this->domain.'/pins/users/1', $content, [], [], $this->transformHeadersToServerVars($server2));
+        $response_page1 = $this->call('get', 'http://'.$this->domain.'/pins/users/1', $content, [], [], $this->transformHeadersToServerVars($server3));
         $array2 = json_decode($response_page1->getContent());  
         for ($i = 0; $i < 30; $i++) {
             $this->seeJson([  
@@ -2539,10 +2618,10 @@ class PinOperationTest extends TestCase
             'page' => 1,
         );
         // no such user exists
-        $response = $this->call('get', 'http://'.$this->domain.'/pins/users/2', $content, [], [], $this->transformHeadersToServerVars($server2));
+        $response = $this->call('get', 'http://'.$this->domain.'/pins/users/3', $content, [], [], $this->transformHeadersToServerVars($server2));
         $array2 = json_decode($response->getContent());   
         $result = false; 
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
+        if ($response->status() == '404' && $array2->message == 'user does not exist') {
             $result = true;
         }
         $this->assertEquals(true, $result);  
@@ -2628,7 +2707,7 @@ class PinOperationTest extends TestCase
         $response = $this->call('get', 'http://'.$this->domain.'/pins/users/letsfae', $content, [], [], $this->transformHeadersToServerVars($server2));
         $array2 = json_decode($response->getContent());   
         $result = false;
-        if ($response->status() == '400' && $array2->message == 'Bad Request') {
+        if ($response->status() == '400' && $array2->message == 'wrong type or id format') {
             $result = true;
         }
         $this->assertEquals(true, $result); 
@@ -2799,10 +2878,10 @@ class PinOperationTest extends TestCase
             'page' => 1,
         );
         // get the pinComments of the page 1.
-        $response = $this->call('get', 'http://'.$this->domain.'/pins/users/1', $content, [], [], $this->transformHeadersToServerVars($server2));
+        $response = $this->call('get', 'http://'.$this->domain.'/pins/users/1', $content, [], [], $this->transformHeadersToServerVars($server2)); 
         $array2 = json_decode($response->getContent());  
         $result = false;
-        if ($response->status() == '422' && $array2->message == 'Could not get pin comments.' && $array2->errors->start_time[0] == 'The start time does not match the format Y-m-d H:i:s.') {
+        if ($response->status() == '422' && $array2->message == 'Could not get user pin list.' && $array2->errors->start_time[0] == 'The start time does not match the format Y-m-d H:i:s.') {
             $result = true;
         }
         $this->assertEquals(true, $result);
@@ -3018,4 +3097,572 @@ class PinOperationTest extends TestCase
         } 
         $this->assertEquals(true, $result);
     }
+
+    // test the correct response of the vote.
+    public function testVote() { 
+        $this->markTestSkipped(); 
+        //register of the user.
+        $user = Users::create([
+            'email' => 'letsfae@126.com',
+            'password' => bcrypt('letsfaego'),
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+            'login_count' => 0, 
+        ]);
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent());
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );   
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'video';
+        $files->mine_type = 'video';
+        $files->size = 256;
+        $files->hash = 'test';
+        $files->directory = 'test';
+        $files->file_name_storage = 'test';
+        $files->file_name = 'test';
+        $files->reference_count = 0;
+        $files->save();
+
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'image';
+        $files->mine_type = 'image';
+        $files->size = 256;
+        $files->hash = 'test1';
+        $files->directory = 'test1';
+        $files->file_name_storage = 'test1';
+        $files->file_name = 'test1';
+        $files->reference_count = 0;
+        $files->save();
+
+        $media = Medias::create([
+            'user_id' => 1,
+            'description' => 'This is the test1',
+            'geolocation' => new Point(34.031958,-118.288125),  
+            'file_ids' => '1;2',
+             'duration' => 1440
+        ]);   
+        $pinComments = Pin_comments::create([
+                'user_id' => 1,
+                'type' => 'media',
+                'pin_id' => 1,
+                'content' => 'This is the pinComment'  
+        ]);  
+        $content = array(
+            'vote' => 'up', 
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/pins/comments/1/vote', $content, [], [], $this->transformHeadersToServerVars($server2)); 
+        $array2 = json_decode($response->getContent());  
+        $result = false;
+        if ($response->status() == '201') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);
+        $this->seeInDatabase('pin_comments', ['user_id' => 1, 'pin_id' => 1, 'type' => 'media', 'content' => 'This is the pinComment', 'vote_up_count' => 1, 'vote_down_count' => 0]);
+        $this->seeInDatabase('pin_comment_operations', ['user_id' => 1, 'pin_comment_id' => 1, 'vote' => 1]);
+    }
+    // test the response when the input format is wrong.
+    public function testVote2() { 
+        $this->markTestSkipped(); 
+        //register of the user.
+        $user = Users::create([
+            'email' => 'letsfae@126.com',
+            'password' => bcrypt('letsfaego'),
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+            'login_count' => 0, 
+        ]);
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent());
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );   
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'video';
+        $files->mine_type = 'video';
+        $files->size = 256;
+        $files->hash = 'test';
+        $files->directory = 'test';
+        $files->file_name_storage = 'test';
+        $files->file_name = 'test';
+        $files->reference_count = 0;
+        $files->save();
+
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'image';
+        $files->mine_type = 'image';
+        $files->size = 256;
+        $files->hash = 'test1';
+        $files->directory = 'test1';
+        $files->file_name_storage = 'test1';
+        $files->file_name = 'test1';
+        $files->reference_count = 0;
+        $files->save();
+
+        $media = Medias::create([
+            'user_id' => 1,
+            'description' => 'This is the test1',
+            'geolocation' => new Point(34.031958,-118.288125),  
+            'file_ids' => '1;2',
+             'duration' => 1440
+        ]);   
+        $pinComments = Pin_comments::create([
+                'user_id' => 1,
+                'type' => 'media',
+                'pin_id' => 1,
+                'content' => 'This is the pinComment'  
+        ]);  
+        $content = array(
+            'vote' => 'wrong format', 
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/pins/comments/1/vote', $content, [], [], $this->transformHeadersToServerVars($server2)); 
+        $array2 = json_decode($response->getContent()); 
+        $result = false;
+        if ($response->status() == '422' && $array2->message == 'Could not vote this comment.' && $array2->errors->vote[0] == 'The selected vote is invalid.') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);
+    }
+    // test the response when the pin_comment_id is not valid.
+    public function testVote3() { 
+        $this->markTestSkipped(); 
+        //register of the user.
+        $user = Users::create([
+            'email' => 'letsfae@126.com',
+            'password' => bcrypt('letsfaego'),
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+            'login_count' => 0, 
+        ]);
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent());
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );   
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'video';
+        $files->mine_type = 'video';
+        $files->size = 256;
+        $files->hash = 'test';
+        $files->directory = 'test';
+        $files->file_name_storage = 'test';
+        $files->file_name = 'test';
+        $files->reference_count = 0;
+        $files->save();
+
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'image';
+        $files->mine_type = 'image';
+        $files->size = 256;
+        $files->hash = 'test1';
+        $files->directory = 'test1';
+        $files->file_name_storage = 'test1';
+        $files->file_name = 'test1';
+        $files->reference_count = 0;
+        $files->save();
+
+        $media = Medias::create([
+            'user_id' => 1,
+            'description' => 'This is the test1',
+            'geolocation' => new Point(34.031958,-118.288125),  
+            'file_ids' => '1;2',
+             'duration' => 1440
+        ]);   
+        $pinComments = Pin_comments::create([
+                'user_id' => 1,
+                'type' => 'media',
+                'pin_id' => 1,
+                'content' => 'This is the pinComment'  
+        ]);  
+        $content = array(
+            'vote' => 'up', 
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/pins/comments/faeapp/vote', $content, [], [], $this->transformHeadersToServerVars($server2)); 
+        $array2 = json_decode($response->getContent()); 
+        $result = false;
+        if ($response->status() == '400' && $array2->message == 'id should be integer') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);
+    }
+
+    // test the response when the pin_comment is null.
+    public function testVote4() { 
+        $this->markTestSkipped(); 
+        //register of the user.
+        $user = Users::create([
+            'email' => 'letsfae@126.com',
+            'password' => bcrypt('letsfaego'),
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+            'login_count' => 0, 
+        ]);
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent());
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );   
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'video';
+        $files->mine_type = 'video';
+        $files->size = 256;
+        $files->hash = 'test';
+        $files->directory = 'test';
+        $files->file_name_storage = 'test';
+        $files->file_name = 'test';
+        $files->reference_count = 0;
+        $files->save();
+
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'image';
+        $files->mine_type = 'image';
+        $files->size = 256;
+        $files->hash = 'test1';
+        $files->directory = 'test1';
+        $files->file_name_storage = 'test1';
+        $files->file_name = 'test1';
+        $files->reference_count = 0;
+        $files->save();
+
+        $media = Medias::create([
+            'user_id' => 1,
+            'description' => 'This is the test1',
+            'geolocation' => new Point(34.031958,-118.288125),  
+            'file_ids' => '1;2',
+             'duration' => 1440
+        ]);    
+        $content = array(
+            'vote' => 'up', 
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/pins/comments/1/vote', $content, [], [], $this->transformHeadersToServerVars($server2)); 
+        $array2 = json_decode($response->getContent());  
+        $result = false;
+        if ($response->status() == '404' && $array2->message == 'comment not exist') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);
+    }
+
+    // test the response when the pin_comment is not null and the vote in PinCommentOperations and the request vote are all equal to 1.
+    public function testVote5() { 
+        $this->markTestSkipped(); 
+        //register of the user.
+        $user = Users::create([
+            'email' => 'letsfae@126.com',
+            'password' => bcrypt('letsfaego'),
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+            'login_count' => 0, 
+        ]);
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent());
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );   
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'video';
+        $files->mine_type = 'video';
+        $files->size = 256;
+        $files->hash = 'test';
+        $files->directory = 'test';
+        $files->file_name_storage = 'test';
+        $files->file_name = 'test';
+        $files->reference_count = 0;
+        $files->save();
+
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'image';
+        $files->mine_type = 'image';
+        $files->size = 256;
+        $files->hash = 'test1';
+        $files->directory = 'test1';
+        $files->file_name_storage = 'test1';
+        $files->file_name = 'test1';
+        $files->reference_count = 0;
+        $files->save();
+
+        $media = Medias::create([
+            'user_id' => 1,
+            'description' => 'This is the test1',
+            'geolocation' => new Point(34.031958,-118.288125),  
+            'file_ids' => '1;2',
+             'duration' => 1440
+        ]);   
+        $pinComments = Pin_comments::create([
+                'user_id' => 1,
+                'type' => 'media',
+                'pin_id' => 1,
+                'content' => 'This is the pinComment'  
+        ]);   
+        $content = array(
+            'vote' => 'up', 
+        );
+        $response1 = $this->call('post', 'http://'.$this->domain.'/pins/comments/1/vote', $content, [], [], $this->transformHeadersToServerVars($server2)); 
+        $this->refreshApplication();
+        $response2 = $this->call('post', 'http://'.$this->domain.'/pins/comments/1/vote', $content, [], [], $this->transformHeadersToServerVars($server2));  
+        $array2 = json_decode($response2->getContent());  
+        $result = false;
+        if ($response2->status() == '400' && $array2->message == 'already voted up') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);
+    } 
+
+    // test the response when the pin_comment is not null and the vote in PinCommentOperations is 1 and the request vote is -1.
+    public function testVote6() { 
+        $this->markTestSkipped(); 
+        //register of the user.
+        $user = Users::create([
+            'email' => 'letsfae@126.com',
+            'password' => bcrypt('letsfaego'),
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+            'login_count' => 0, 
+        ]);
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent());
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );   
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'video';
+        $files->mine_type = 'video';
+        $files->size = 256;
+        $files->hash = 'test';
+        $files->directory = 'test';
+        $files->file_name_storage = 'test';
+        $files->file_name = 'test';
+        $files->reference_count = 0;
+        $files->save();
+
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'image';
+        $files->mine_type = 'image';
+        $files->size = 256;
+        $files->hash = 'test1';
+        $files->directory = 'test1';
+        $files->file_name_storage = 'test1';
+        $files->file_name = 'test1';
+        $files->reference_count = 0;
+        $files->save();
+
+        $media = Medias::create([
+            'user_id' => 1,
+            'description' => 'This is the test1',
+            'geolocation' => new Point(34.031958,-118.288125),  
+            'file_ids' => '1;2',
+             'duration' => 1440
+        ]);   
+        $pinComments = Pin_comments::create([
+                'user_id' => 1,
+                'type' => 'media',
+                'pin_id' => 1,
+                'content' => 'This is the pinComment'  
+        ]);   
+        $content = array(
+            'vote' => 'up', 
+        );
+        $response1 = $this->call('post', 'http://'.$this->domain.'/pins/comments/1/vote', $content, [], [], $this->transformHeadersToServerVars($server2)); 
+        $this->refreshApplication();
+        $content2 = array(
+            'vote' => 'down', 
+        );
+        $response2 = $this->call('post', 'http://'.$this->domain.'/pins/comments/1/vote', $content2, [], [], $this->transformHeadersToServerVars($server2));  
+        $array2 = json_decode($response2->getContent());  
+        $result = false;
+        if ($response2->status() == '201') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);
+        $this->seeInDatabase('pin_comments', ['user_id' => 1, 'pin_id' => 1, 'type' => 'media', 'content' => 'This is the pinComment', 'vote_up_count' => 0, 'vote_down_count' => 1]);
+        $this->seeInDatabase('pin_comment_operations', ['user_id' => 1, 'pin_comment_id' => 1, 'vote' => -1]);
+    } 
+
+    // test the response when the vote in PinCommentOperations is 1.
+    public function testVote7() { 
+        $this->markTestSkipped(); 
+        //register of the user.
+        $user = Users::create([
+            'email' => 'letsfae@126.com',
+            'password' => bcrypt('letsfaego'),
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+            'login_count' => 0, 
+        ]);
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent());
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );   
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'video';
+        $files->mine_type = 'video';
+        $files->size = 256;
+        $files->hash = 'test';
+        $files->directory = 'test';
+        $files->file_name_storage = 'test';
+        $files->file_name = 'test';
+        $files->reference_count = 0;
+        $files->save();
+
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'image';
+        $files->mine_type = 'image';
+        $files->size = 256;
+        $files->hash = 'test1';
+        $files->directory = 'test1';
+        $files->file_name_storage = 'test1';
+        $files->file_name = 'test1';
+        $files->reference_count = 0;
+        $files->save();
+
+        $media = Medias::create([
+            'user_id' => 1,
+            'description' => 'This is the test1',
+            'geolocation' => new Point(34.031958,-118.288125),  
+            'file_ids' => '1;2',
+             'duration' => 1440
+        ]);   
+        $pinComments = Pin_comments::create([
+                'user_id' => 1,
+                'type' => 'media',
+                'pin_id' => 1,
+                'content' => 'This is the pinComment'  
+        ]);   
+        $content = array(
+            'vote' => 'up', 
+        );
+        $response1 = $this->call('post', 'http://'.$this->domain.'/pins/comments/1/vote', $content, [], [], $this->transformHeadersToServerVars($server2)); 
+        $this->refreshApplication();
+        $content2 = array(
+            'vote' => 'down', 
+        );
+        $response2 = $this->call('delete', 'http://'.$this->domain.'/pins/comments/1/vote', $content2, [], [], $this->transformHeadersToServerVars($server2));  
+        $array2 = json_decode($response2->getContent());  
+        $result = false;
+        if ($response2->status() == '204') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result); 
+    }  
 }
