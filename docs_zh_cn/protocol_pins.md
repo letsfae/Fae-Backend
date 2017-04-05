@@ -328,3 +328,26 @@ yes
 ### response
 
 Status: 204
+
+## 获取用户自身pin的相关统计
+
+`GET /pins/statistics`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	{
+		"user_id": @number,
+		"count": {
+			"created_pin": @number,
+			"saved_pin": @number,
+			"saved_place": @number
+		}
+	}
+
+

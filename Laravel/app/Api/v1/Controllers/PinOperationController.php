@@ -1025,4 +1025,7 @@ class PinOperationController extends Controller {
         }
     }
     
+    public function pinStatistics() { // for a certain user
+
+    }
 }
