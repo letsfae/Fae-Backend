@@ -13,6 +13,8 @@ use App\ChatRooms;
 use App\Medias;
 use App\User_exts;
 use App\Users;
+use App\Places;
+use App\Api\v1\Controllers\PlaceController;
 use App\Api\v1\Controllers\PinOperationController;
 use Validator;
 use DB;
@@ -104,6 +106,20 @@ class MapController extends Controller
                            'created_at'=>$session->created_at];
             }
         }
+        else if($this->request->type == 'place')
+        {
+            $places = DB::connection('yelp')->select(
+                            "SELECT * FROM places
+                            WHERE st_dwithin(geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true)
+                            ORDER BY ST_Distance(geolocation, ST_SetSRID(ST_Point(:longitude, :latitude),4326))
+                            LIMIT :max_count;",
+                            array('longitude' => $longitude, 'latitude' => $latitude,
+                            'radius' => $radius, 'max_count' => $max_count));
+            foreach ($places as $place) 
+            {
+                $info[] = PlaceController::getPinObject($place->id, $this->request->self_user_id);    
+            }
+        }
         else
         {
             $types = explode(',', $this->request->type);
@@ -113,6 +129,9 @@ class MapController extends Controller
                 switch($t)
                 {
                     case 'user':
+                        throw new UpdateResourceFailedException('Could not get map. Wrong types.');
+                        break;
+                    case 'place':
                         throw new UpdateResourceFailedException('Could not get map. Wrong types.');
                         break;
                     case 'comment':
