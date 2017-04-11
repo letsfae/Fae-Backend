@@ -23,7 +23,8 @@ class PinUtility
     }
 
     public static function decodeFeelings($str) {
-        return explode(',', $str);
+        //return explode(',', $str);
+        return array_map('intval', explode(',', $str));
     }
 
     public static function increaseFeelingCount($str, $num) {

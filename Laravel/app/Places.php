@@ -12,6 +12,7 @@ class Places extends Model
 
     protected $connection = 'yelp';
     protected $table = 'places';
+    public $timestamps = false;
     protected $postgisFields = [
         'geolocation' => Point::class,
     ];
