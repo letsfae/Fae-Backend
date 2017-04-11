@@ -523,6 +523,7 @@ yes
 Status: 200
 
 	{
+		"user_name": @string,
 		"nick_name": @string,
 		"short_intro": @string,
 		"tags": [

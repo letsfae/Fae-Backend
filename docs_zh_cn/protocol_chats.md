@@ -150,7 +150,8 @@ Status: 200
 		{
 			"chat_id": @number,
 			"with_user_id": @number 与该id用户聊天,
-			"with_user_name" @string,
+			"with_user_name": @string,
+			"with_nick_name": @string,
 			"last_message": @string,
 			"last_message_sender_id": @number,
 			"last_message_sender_name": @string,

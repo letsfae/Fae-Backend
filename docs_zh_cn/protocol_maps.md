@@ -709,7 +709,11 @@ Status: 200
 			..., 
 			@number
 		],
-		"description": @string
+		"description": @string,
+		"members": [ 群聊用户id
+			@number,
+			...
+		]
 	}
 
 ## 获取某个用户创建的所有ChatRoom :white_check_mark:

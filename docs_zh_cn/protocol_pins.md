@@ -345,8 +345,7 @@ Status: 200
 		"user_id": @number,
 		"count": {
 			"created_pin": @number,
-			"saved_pin": @number,
-			"saved_place": @number
+			"saved_pin": @number
 		}
 	}
 
