@@ -57,7 +57,7 @@ class AuthenticationTest extends TestCase {
                  'user_id' => $array->user_id,
                  'token' => $array->token,
                  'session_id' => $array->session_id,
-                 'debug_base64ed' => $array->debug_base64ed,
+                 'last_login_at' => $array->last_login_at,
         ]);
         $session = Sessions::where('user_id', '=', 1)->first();
         $result = false; 
@@ -65,7 +65,7 @@ class AuthenticationTest extends TestCase {
             $result = true;
         }
         $this->assertEquals(true, $result);
-        $this->seeInDatabase('sessions', ['token' => $session->token, 'is_mobile' => true, 'device_id' => null, 'client_version' => 'ios-0.0.1']);
+        $this->seeInDatabase('sessions', ['user_id' => 1, 'token' => $session->token, 'is_mobile' => true, 'device_id' => null, 'client_version' => 'ios-0.0.1']);
     }
 
     //test the input format of the contents!
@@ -359,7 +359,9 @@ class AuthenticationTest extends TestCase {
             'Fae-Client-Version' => 'ios-0.0.1', 
             'Authorization' => 'FAE '.$array->debug_base64ed,
         );
+        $this->refreshApplication();
         $logout_response = $this->call('delete', 'http://'.$this->domain.'/authentication', [], [], [], $this->transformHeadersToServerVars($servers2));
+        $this->notSeeInDatabase('sessions', ['user_id' => 1]);
         $this->assertResponseStatus(204);
     }
 }

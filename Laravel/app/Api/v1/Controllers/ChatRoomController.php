@@ -227,7 +227,7 @@ class ChatRoomController extends Controller implements PinInterface
         {
             return $this->response->errorNotFound();
         }
-        $chat_room_user = ChatRoomUsers::where('chat_room_id', $chat_room_id)->where('user_id', $this->request->self_user_id)->first();
+        $chat_room_user = ChatRoomUsers::where('chat_room_id', $chat_room_id)->where('user_id', $this->request->self_user_id)->first(); 
         if(is_null($chat_room_user))
         {
             $count = ChatRoomUsers::where('chat_room_id', $chat_room_id)->count();
@@ -237,7 +237,7 @@ class ChatRoomController extends Controller implements PinInterface
             }
             $session = Sessions::find($this->request->self_session_id);
             if(is_null($session) || !$session->is_mobile || $session->location == null)
-            {
+            { 
                 return $this->response->errorNotFound();
             }
             $distance = DB::select("SELECT ST_Distance_Spheroid(ST_SetSRID(ST_Point(:longitude1, :latitude1),4326), 
@@ -245,9 +245,9 @@ class ChatRoomController extends Controller implements PinInterface
                 array('longitude1' => $session->location->getLng(), 'latitude1' => $session->location->getLat(),
                       'longitude2' => $chat_room->geolocation->getLng(), 'latitude2' => $chat_room->geolocation->getLat()));
             if($distance[0]->st_distance_spheroid > ($chat_room->interaction_radius))
-            {
+            { 
                 return $this->response->errorBadRequest('too far away');
-            }
+            } 
             $new_chat_room_user = new ChatRoomUsers();
             $new_chat_room_user->chat_room_id = $chat_room_id;
             $new_chat_room_user->user_id = $this->request->self_user_id;

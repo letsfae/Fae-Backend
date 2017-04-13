@@ -10,6 +10,7 @@ use Phaza\LaravelPostgis\Geometries\Point;
 use Phaza\LaravelPostgis\Geometries\Geometry;
 use App\Users;
 use App\ChatRoomUsers;
+use App\Sessions;
 
 
 class ChatRoomTest extends TestCase {
@@ -77,8 +78,7 @@ class ChatRoomTest extends TestCase {
         $this->seeJson([
                  'chat_room_id' => 1,
         ]);
-        $result = false;
-        var_dump($response);
+        $result = false; 
         if ($response->status() == '201') {
             $result = true;
         }  
@@ -224,6 +224,7 @@ class ChatRoomTest extends TestCase {
             'title' => 'This is the test.',
             'geo_longitude' => -118.2799,
             'geo_latitude' => 34.2799, 
+            'duration' => 1380,
         ); 
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -277,6 +278,7 @@ class ChatRoomTest extends TestCase {
             'title' => 'This is the test.',
             'geo_longitude' => -118.2799,
             'geo_latitude' => 34.2799, 
+            'duration' => 1380,
         ); 
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -331,6 +333,7 @@ class ChatRoomTest extends TestCase {
             'title' => 'This is the test.',
             'geo_longitude' => -118.2799,
             'geo_latitude' => 34.2799, 
+            'duration' => 1380,
         ); 
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -398,6 +401,7 @@ class ChatRoomTest extends TestCase {
             'title' => 'This is the test.',
             'geo_longitude' => -118.2799,
             'geo_latitude' => 34.2799, 
+            'duration' => 1380,
         ); 
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -450,6 +454,8 @@ class ChatRoomTest extends TestCase {
             'title' => 'This is the test.',
             'geo_longitude' => -118.2799,
             'geo_latitude' => 34.2799, 
+            'user_id' => 1,
+            'duration' => 1440,
         ); 
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -460,21 +466,24 @@ class ChatRoomTest extends TestCase {
         $array2 = json_decode($response->getContent());
         $this->refreshApplication(); 
         //get the chatRoom
-        $response = $this->call('get', 'http://'.$this->domain.'/chat_rooms/'.$array2->chat_room_id, [], [], [], $this->transformHeadersToServerVars($server2)); 
+        $response = $this->call('get', 'http://'.$this->domain.'/chat_rooms/'.$array2->chat_room_id, [], [], [], $this->transformHeadersToServerVars($server2));  
         $array3 = json_decode($response->getContent()); 
         $this->seeJson([
-                'chat_room_id' => $array3->chat_room_id,
-                'title' => $array3->title,
-                'user_id' => $array3->user_id, 
+                'chat_room_id' => 1,
+                'title' => 'This is the test.',
+                'user_id' => 1, 
                 'geolocation' => array(
-                    'latitude' => $array3->geolocation->latitude,
-                    'longitude' => $array3->geolocation->longitude,
+                    'latitude' => 34.2799,
+                    'longitude' => -118.2799,
                 ),
-                'last_message' => $array3->last_message,
-                'last_message_sender_id' => $array3->last_message_sender_id,
-                'last_message_type' => $array3->last_message_type,
-                'last_message_timestamp' => $array3->last_message_timestamp,  
+                'last_message' => null,
+                'last_message_sender_id' => null,
+                'last_message_type' => null,
+                'last_message_timestamp' => null,  
                 'created_at' => $array3->created_at,
+                'capacity' => 50,
+                'tag_ids' => null,
+                'description' => null
         ]);
         $result = false;
         if ($response->status() == '200') {
@@ -514,6 +523,7 @@ class ChatRoomTest extends TestCase {
             'title' => 'This is the test.',
             'geo_longitude' => -118.2799,
             'geo_latitude' => 34.2799, 
+            'duration' => 1440,
         ); 
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -565,6 +575,7 @@ class ChatRoomTest extends TestCase {
             'title' => 'This is the test.',
             'geo_longitude' => -118.2799,
             'geo_latitude' => 34.2799, 
+            'duration' => 1440,
         ); 
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -623,6 +634,7 @@ class ChatRoomTest extends TestCase {
                 'title' => 'This is the test'.$i,
                 'geo_longitude' => -118.2799,
                 'geo_latitude' => 34.2799, 
+                'duration' => 1440,
             );
         }
         //create the chatRooms.
@@ -640,6 +652,7 @@ class ChatRoomTest extends TestCase {
         //get the chatRoom of the page 1.
         $response_page1 = $this->call('get', 'http://'.$this->domain.'/chat_rooms/users/'.$array->user_id, $content, [], [], $this->transformHeadersToServerVars($server2));
         $array2 = json_decode($response_page1->getContent());  
+        print_r($array2);
         for ($i = 0; $i < 30; $i++) {
             $this->seeJson([  
                         'chat_room_id' => $array2[$i]->chat_room_id,
@@ -654,6 +667,9 @@ class ChatRoomTest extends TestCase {
                         'last_message_type' => $array2[$i]->last_message_type,
                         'last_message_timestamp' => $array2[$i]->last_message_timestamp,  
                         'created_at' => $array2[$i]->created_at,
+                        'capacity' => 50,
+                        'tag_ids' => $array2[$i]->tag_ids,
+                        'description' =>  $array2[$i]->description,
             ]);         
         }
         $this->refreshApplication();
@@ -678,6 +694,9 @@ class ChatRoomTest extends TestCase {
                         'last_message_type' => $array3[0]->last_message_type,
                         'last_message_timestamp' => $array3[0]->last_message_timestamp,  
                         'created_at' => $array3[0]->created_at,
+                        'capacity' => 50,
+                        'tag_ids' => $array3[0]->tag_ids,
+                        'description' =>  $array3[0]->description,
         ]); 
         $result = false;
         if ($response_page1->headers->get('page') == '1' && $response_page1->headers->get('total-pages') == '2' && $response_page1->status() == '200') {
@@ -848,6 +867,7 @@ class ChatRoomTest extends TestCase {
             'title' => 'This is the test.',
             'geo_longitude' => -118.2799,
             'geo_latitude' => 34.2799, 
+            'duration' => 1380,
         ); 
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -1211,6 +1231,70 @@ class ChatRoomTest extends TestCase {
         $this->assertEquals(true, $result);
     }
 
+    // test the response when the capacity of the chat_room exceed the limit.
+    public function testSend6() { 
+        $this->markTestSkipped(); 
+        //register of the user.
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        for ($i = 1; $i < 52; $i++) { 
+            ${'parameters' . $i}  = array(
+            'email' => 'letsfae'.$i.'@126.com', 
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp'.$i,
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+            'login_count' => 0, 
+            );
+            $response = $this->call('post', 'http://'.$this->domain.'/users', ${'parameters' . $i}, [], [], $this->transformHeadersToServerVars($server));
+            $this->refreshApplication();
+        } 
+        $chatRoom = ChatRooms::create([
+                    'user_id' => 1,
+                    'title' => 'This is the test.',
+                    'geolocation' => new Point(34.2799, -118.2799), 
+                    'duration' => 1440
+        ]);
+        for ($i = 1; $i < 51; $i++) { 
+            $chatRoomUsers = ChatRoomUsers::create([
+                        'chat_room_id' => 1,
+                        'user_id' => $i,
+                        'unread_count' => 0
+            ]); 
+        } 
+        $parameters = array(
+            'email' => 'letsfae51@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp2',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent());
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        ); 
+        // send the message
+        $parameters3 = array(
+            'message' => 'send message',
+            'type' => 'text',  
+        ); 
+        $response1 = $this->call('post', 'http://'.$this->domain.'/chat_rooms/1/message', $parameters3, [], [], $this->transformHeadersToServerVars($server2)); 
+        $array2 = json_decode($response1->getContent()); 
+        if ($response1->status() == '400' && $array2->message == 'this chat room has been filled to capacity') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);   
+    }
     // the correct response of the method of getUnread.
     public function testGetUnread() { 
         $this->markTestSkipped(); 
@@ -1239,6 +1323,7 @@ class ChatRoomTest extends TestCase {
                     'user_id' => 1,
                     'title' => 'The chatRoom one',
                     'geolocation' => new Point(34.2799, -118.2799), 
+                    'duration' => 1440
         ]);
         $chatRoomUsers = ChatRoomUsers::create([
                     'chat_room_id' => 1,
@@ -1271,6 +1356,9 @@ class ChatRoomTest extends TestCase {
         );
         //login of the user.
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $session1 = Sessions::where('user_id', '=', 3)->first();
+        $session1->location = new Point(34.2799,-118.2799);
+        $session1->save(); 
         $array = json_decode($login_response->getContent());
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -1288,24 +1376,27 @@ class ChatRoomTest extends TestCase {
         $chatRoomUsers->save();
         $this->refreshApplication();  
         //get unread.
-        $response2 = $this->call('get', 'http://'.$this->domain.'/chat_rooms/message/unread', [], [], [], $this->transformHeadersToServerVars($server2)); 
+        $response2 = $this->call('get', 'http://'.$this->domain.'/chat_rooms/message/unread', [], [], [], $this->transformHeadersToServerVars($server2));  
         $array2 = json_decode($response2->getContent());  
         $this->seeJson([  
-                    'chat_room_id' => $array2[0]->chat_room_id,
-                    'title' => $array2[0]->title,
-                    'user_id' => $array2[0]->user_id, 
+                    'chat_room_id' => 1,
+                    'title' => 'The chatRoom one',
+                    'user_id' => 1, 
                     'geolocation' => array(
-                    'latitude' => $array2[0]->geolocation->latitude,
-                    'longitude' => $array2[0]->geolocation->longitude,
+                    'latitude' => 34.2799,
+                    'longitude' => -118.2799,
                     ),
-                    'last_message' => $array2[0]->last_message,
-                    'last_message_sender_id' => $array2[0]->last_message_sender_id,
-                    'last_message_sender_name' => $array2[0]->last_message_sender_name,
-                    'last_message_type' => $array2[0]->last_message_type,
+                    'last_message' => 'send message',
+                    'last_message_sender_id' => 3,
+                    'last_message_sender_name' => 'faeapp3',
+                    'last_message_type' => 'text',
                     'last_message_timestamp' => $array2[0]->last_message_timestamp, 
-                    'unread_count' => $array2[0]->unread_count,
+                    'unread_count' => 1,
                     'created_at' => $array2[0]->created_at,
-                    'server_sent_timestamp' => $array2[0]->server_sent_timestamp
+                    'server_sent_timestamp' => $array2[0]->server_sent_timestamp,
+                    'capacity' => 50,
+                    'tag_ids' => null,
+                    'description' => null,
         ]);    
         $result = false; 
         if ($response2->status() == '200') {
@@ -1342,6 +1433,7 @@ class ChatRoomTest extends TestCase {
                     'user_id' => 1,
                     'title' => 'The chatRoom one',
                     'geolocation' => new Point(34.2799, -118.2799), 
+                    'duration' => 1440
         ]);
         $chatRoomUsers = ChatRoomUsers::create([
                     'chat_room_id' => 1,
@@ -1428,6 +1520,7 @@ class ChatRoomTest extends TestCase {
                     'user_id' => 1,
                     'title' => 'The chatRoom one',
                     'geolocation' => new Point(34.2799, -118.2799), 
+                    'duration' => 1440
         ]);
         $chatRoomUsers = ChatRoomUsers::create([
                     'chat_room_id' => 1,
@@ -1515,6 +1608,7 @@ class ChatRoomTest extends TestCase {
                     'user_id' => 1,
                     'title' => 'The chatRoom one',
                     'geolocation' => new Point(34.2799, -118.2799), 
+                    'duration' => 1440
         ]);
         $chatRoomUsers = ChatRoomUsers::create([
                     'chat_room_id' => 1,
@@ -1587,21 +1681,12 @@ class ChatRoomTest extends TestCase {
             'gender' => 'male',
             'birthday' => '1992-02-02',
             'login_count' => 0, 
-        ]);
-        $user2 = Users::create([
-            'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
-            'first_name' => 'kevin',
-            'last_name' => 'zhang',
-            'user_name' => 'faeapp2',
-            'gender' => 'male',
-            'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        ]); 
         $chatRoom = ChatRooms::create([
                     'user_id' => 1,
                     'title' => 'This is the test.',
                     'geolocation' => new Point(34.2799, -118.2799), 
+                    'duration' => 1440
         ]);
         $chatRoomUsers = ChatRoomUsers::create([
                     'chat_room_id' => 1,
@@ -1609,29 +1694,20 @@ class ChatRoomTest extends TestCase {
                     'unread_count' => 0
         ]); 
         $chatRoom = ChatRooms::create([
-                    'user_id' => 2,
+                    'user_id' => 1,
                     'title' => 'This is the test2.',
                     'geolocation' => new Point(34.2799, -118.2799), 
+                    'duration' => 1440
         ]);
         $chatRoomUsers = ChatRoomUsers::create([
                     'chat_room_id' => 2,
-                    'user_id' => 2,
+                    'user_id' => 1,
                     'unread_count' => 0
-        ]); 
-        $user3 = Users::create([
-            'email' => 'letsfae3@126.com',
-            'password' => bcrypt('letsfaego'),
-            'first_name' => 'kevin',
-            'last_name' => 'zhang',
-            'user_name' => 'faeapp3',
-            'gender' => 'male',
-            'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        ]);  
         $parameters = array(
-            'email' => 'letsfae3@126.com', 
+            'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
-            'user_name' => 'faeapp3',
+            'user_name' => 'faeapp',
         );
         $server = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -1659,7 +1735,7 @@ class ChatRoomTest extends TestCase {
         $response2 = $this->call('post', 'http://'.$this->domain.'/chat_rooms/2/message', $parameters4, [], [], $this->transformHeadersToServerVars($server2));  
         $this->refreshApplication();  
         $response3 = $this->call('get', 'http://'.$this->domain.'/chat_rooms', [], [], [], $this->transformHeadersToServerVars($server2));  
-        $array2 = json_decode($response3->getContent());  
+        $array2 = json_decode($response3->getContent());   
         for ($i = 0; $i < 2; $i++) {
             $this->seeJson([  
                         'chat_room_id' => $array2[$i]->chat_room_id,
@@ -1676,7 +1752,10 @@ class ChatRoomTest extends TestCase {
                         'last_message_timestamp' => $array2[$i]->last_message_timestamp,  
                         'unread_count' => $array2[$i]->unread_count,
                         'created_at' => $array2[$i]->created_at,
-                        'server_sent_timestamp' => $array2[$i]->server_sent_timestamp
+                        'server_sent_timestamp' => $array2[$i]->server_sent_timestamp,
+                        'capacity' => 50,
+                        'tag_ids' => null,
+                        'description' => null
             ]);    
         }   
         $result = false;
@@ -1704,6 +1783,7 @@ class ChatRoomTest extends TestCase {
                     'user_id' => 1,
                     'title' => 'This is the test.',
                     'geolocation' => new Point(34.2799, -118.2799), 
+                    'duration' => 1440
         ]);
         $chatRoomUsers = ChatRoomUsers::create([
                     'chat_room_id' => 1,
@@ -1778,6 +1858,7 @@ class ChatRoomTest extends TestCase {
                     'user_id' => 1,
                     'title' => 'This is the test.',
                     'geolocation' => new Point(34.2799, -118.2799), 
+                    'duration' => 1440
         ]);
         $chatRoomUsers = ChatRoomUsers::create([
                     'chat_room_id' => 1,
@@ -1846,6 +1927,7 @@ class ChatRoomTest extends TestCase {
                     'user_id' => 1,
                     'title' => 'This is the test.',
                     'geolocation' => new Point(34.2799, -118.2799), 
+                    'duration' => 1440
         ]);
         $chatRoomUsers = ChatRoomUsers::create([
                     'chat_room_id' => 1,
