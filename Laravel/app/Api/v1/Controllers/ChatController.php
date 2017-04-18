@@ -10,6 +10,7 @@ use Dingo\Api\Exception\DeleteResourceFailedException;
 use Davibennun\LaravelPushNotification\Facades\PushNotification;
 use Validator;
 use Config;
+use App\Name_cards;
 use App\Users;
 use App\Sessions;
 use App\Chats;
@@ -207,6 +208,7 @@ class ChatController extends Controller
             }
 
             $info[] = ['chat_id' => $chat->id, 'with_user_id' => $with_user_id, 'with_user_name' => $user->user_name, 
+                       'with_nick_name' => Name_cards::find($with_user_id)->nick_name,
                        'last_message' => $chat->last_message, 'last_message_sender_id' => $chat->last_message_sender_id, 
                        'last_message_sender_name' => $last_message_sender->user_name, 
                        'last_message_type' => $chat->last_message_type, 'last_message_timestamp' => $chat->last_message_timestamp, 
