@@ -185,6 +185,7 @@ class UserProfileController extends Controller
             $user_exts->show_gender = $this->request->show_gender;
         }
         $user_exts->save();
+        return $this->response->created();
     }
 
     private function updateProfileValidation(Request $request)
