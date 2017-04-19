@@ -251,6 +251,9 @@ class UsersTest extends TestCase {
                 'gender' => $array2->gender,
                 'birthday' => $array2->birthday,
                 'phone' => $array2->phone,
+                'phone_verified' => false,
+                'mini_avatar' => 0,
+                'last_login_at' => null,
         ]);
         $result = false;
         if ($response->status() == '200') {

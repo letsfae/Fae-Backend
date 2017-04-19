@@ -1140,7 +1140,209 @@ class PinOperationTest extends TestCase
         }
         $this->assertEquals(true, $result);
     }
+    // the correct response of the read.
+    public function testRead() { 
+        $this->markTestSkipped(); 
+        //register of the user.
+        $user = Users::create([
+            'email' => 'letsfae@126.com',
+            'password' => bcrypt('letsfaego'),
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+            'login_count' => 0, 
+        ]);
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent());
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        ); 
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'video';
+        $files->mine_type = 'video';
+        $files->size = 256;
+        $files->hash = 'test';
+        $files->directory = 'test';
+        $files->file_name_storage = 'test';
+        $files->file_name = 'test';
+        $files->reference_count = 0;
+        $files->save();
 
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'image';
+        $files->mine_type = 'image';
+        $files->size = 256;
+        $files->hash = 'test1';
+        $files->directory = 'test1';
+        $files->file_name_storage = 'test1';
+        $files->file_name = 'test1';
+        $files->reference_count = 0;
+        $files->save(); 
+
+        $media1 = Medias::create([
+            'user_id' => 1,
+            'description' => 'This is the test1',
+            'geolocation' => new Point(34.031958,-118.288125),  
+            'file_ids' => '1;2',
+            'duration' => 1440
+        ]); 
+        $response = $this->call('post', 'http://'.$this->domain.'/pins/media/1/read', [], [], [], $this->transformHeadersToServerVars($server2));
+        $result = false;
+        if ($response->status() == '201') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);  
+        $this->seeInDatabase('pin_operations', ['user_id' => 1, 'pin_id' => 1, 'type' => 'media', 'saved' => false, 'liked' => false, 'interacted' => false]); 
+    }
+    // the the response when the type is media but the media information does not exist.
+    public function testRead2() { 
+        $this->markTestSkipped(); 
+        //register of the user.
+        $user = Users::create([
+            'email' => 'letsfae@126.com',
+            'password' => bcrypt('letsfaego'),
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+            'login_count' => 0, 
+        ]);
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent());
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        ); 
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'video';
+        $files->mine_type = 'video';
+        $files->size = 256;
+        $files->hash = 'test';
+        $files->directory = 'test';
+        $files->file_name_storage = 'test';
+        $files->file_name = 'test';
+        $files->reference_count = 0;
+        $files->save();
+
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'image';
+        $files->mine_type = 'image';
+        $files->size = 256;
+        $files->hash = 'test1';
+        $files->directory = 'test1';
+        $files->file_name_storage = 'test1';
+        $files->file_name = 'test1';
+        $files->reference_count = 0;
+        $files->save(); 
+
+        $response = $this->call('post', 'http://'.$this->domain.'/pins/media/1/read', [], [], [], $this->transformHeadersToServerVars($server2)); 
+        $array2 = json_decode($response->getContent()); 
+        $result = false;
+        if ($response->status() == '422' && $array2->message == 'Bad request, No such pin exist!') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);
+    }
+    // test the response when the format of the pin_id is wrong.
+    public function testRead3() { 
+        $this->markTestSkipped(); 
+        //register of the user.
+        $user = Users::create([
+            'email' => 'letsfae@126.com',
+            'password' => bcrypt('letsfaego'),
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+            'login_count' => 0, 
+        ]);
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent());
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        ); 
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'video';
+        $files->mine_type = 'video';
+        $files->size = 256;
+        $files->hash = 'test';
+        $files->directory = 'test';
+        $files->file_name_storage = 'test';
+        $files->file_name = 'test';
+        $files->reference_count = 0;
+        $files->save();
+
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'image';
+        $files->mine_type = 'image';
+        $files->size = 256;
+        $files->hash = 'test1';
+        $files->directory = 'test1';
+        $files->file_name_storage = 'test1';
+        $files->file_name = 'test1';
+        $files->reference_count = 0;
+        $files->save(); 
+
+        $media1 = Medias::create([
+            'user_id' => 1,
+            'description' => 'This is the test1',
+            'geolocation' => new Point(34.031958,-118.288125),  
+            'file_ids' => '1;2',
+            'duration' => 1440
+        ]); 
+        $response = $this->call('post', 'http://'.$this->domain.'/pins/media/fae/read', [], [], [], $this->transformHeadersToServerVars($server2));
+        $result = false;  
+        $array2 = json_decode($response->getContent()); 
+        if ($response->status() == '400' && $array2->message == 'wrong type or id format') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);
+    }
     // test the correct response of the comment.
     public function testComment() { 
         $this->markTestSkipped(); 

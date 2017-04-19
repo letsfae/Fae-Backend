@@ -5,6 +5,9 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Comments;
 use App\Users;
+use App\Name_cards;
+use App\User_exts;
+use App\Chats;
 
 class signUpTest extends TestCase {
     /**
@@ -44,6 +47,15 @@ class signUpTest extends TestCase {
             'Fae-Client-Version' => 'ios-0.0.1',
         );
         $response = $this->call('post', 'http://'.$this->domain.'/users', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $this->seeInDatabase('users', ['email' => 'letsfae@126.com', 'user_name' => 'faeapp', 'first_name' => 'kevin', 'last_name' => 'zhang', 'gender' => 'male', 'birthday' => '1992-02-02']);
+        $this->seeInDatabase('user_exts', ['user_id' => 1]);
+        $this->seeInDatabase('name_cards', ['user_id' => 1]);
+        $this->seeInDatabase('chats', ['user_a_id' => 1, 'user_b_id' => 1, 'last_message' => 'Hey there! Welcome to Fae Map! Super happy to see you here. We’re here to
+                               enhance your experience on Fae Map and make your time more fun. Let us know
+                               of any problems you encounter or what we can do to make your experience better. 
+                               We’ll be hitting you up with surprises, recommendations, favorite places, cool 
+                               deals, and tons of fun stuff. Feel free to chat with us here anytime about 
+                               anything. Let’s Fae!', 'last_message_type' => 'text', 'last_message_sender_id' => 1, 'user_b_unread_count' => 1]);
         $result = false;
         if ($response->status() == '201') {
             $result = true;

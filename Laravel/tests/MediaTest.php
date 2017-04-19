@@ -111,7 +111,7 @@ class MediaTest extends TestCase {
             'interaction_radius' => 100,
             'anonymous' => 'true'
         );
-        $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
+        $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));    
         $array2 = json_decode($response->getContent()); 
         $this->seeJson([
                 'media_id' => 1,
@@ -631,6 +631,7 @@ class MediaTest extends TestCase {
             'description' => 'this is a test',
             'geo_latitude' => '-89.99',
             'geo_longitude' => '-118.2799',
+            'duration' => 1440, 
         );
         $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent()); 
@@ -727,6 +728,7 @@ class MediaTest extends TestCase {
             'description' => 'this is a test',
             'geo_latitude' => '-89.99',
             'geo_longitude' => '-118.2799',
+            'duration' => 1440, 
         );
         $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent()); 
@@ -826,6 +828,7 @@ class MediaTest extends TestCase {
             'description' => 'this is a test',
             'geo_latitude' => '-89.99',
             'geo_longitude' => '-118.2799',
+            'duration' => 1440, 
         );
         $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent()); 
@@ -908,6 +911,7 @@ class MediaTest extends TestCase {
             'description' => 'this is a test',
             'geo_latitude' => '-89.99',
             'geo_longitude' => '-118.2799',
+            'duration' => 1440, 
         );
         $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent()); 
@@ -1004,6 +1008,7 @@ class MediaTest extends TestCase {
             'description' => 'this is a test',
             'geo_latitude' => '-89.99',
             'geo_longitude' => '-118.2799',
+            'duration' => 1440, 
         );
         $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent()); 
@@ -1115,6 +1120,7 @@ class MediaTest extends TestCase {
             'description' => 'this is a test',
             'geo_latitude' => '-89.99',
             'geo_longitude' => '-118.2799',
+            'duration' => 1440, 
         );
         $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent()); 
@@ -1214,7 +1220,7 @@ class MediaTest extends TestCase {
             'description' => 'this is a test',
             'geo_latitude' => '-89.99',
             'geo_longitude' => '-118.2799',
-             'duration' => 1440, 
+            'duration' => 1440, 
         );
         $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent()); 
@@ -1342,6 +1348,7 @@ class MediaTest extends TestCase {
             'description' => 'this is a test',
             'geo_latitude' => '-89.99',
             'geo_longitude' => '-118.2799',
+            'duration' => 1440, 
         );
         $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent()); 
@@ -1435,6 +1442,7 @@ class MediaTest extends TestCase {
             'description' => 'this is a test',
             'geo_latitude' => '-89.99',
             'geo_longitude' => '-118.2799',
+            'duration' => 1440, 
         );
         $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent()); 
@@ -1528,12 +1536,19 @@ class MediaTest extends TestCase {
             'description' => 'this is a test',
             'geo_latitude' => '-89.99',
             'geo_longitude' => '-118.2799',
+            'duration' => 1440, 
         );
         $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent()); 
         $this->refreshApplication(); 
         $response2 = $this->call('delete', 'http://'.$this->domain.'/medias/1', [], [], [], $this->transformHeadersToServerVars($server2));  
         $array3 = json_decode($response2->getContent());  
+        $this->notSeeInDatabase('medias', ['user_id' => 1, 'description' => 'this is a test', 'tag_ids' => '1;2', 'file_ids' => '1;2', 'geolocation' => '0101000020E6100000A089B0E1E9915DC0401361C3D3234140', 'duration' => 1440, 'interaction_radius' => 100,  'anonymous' => true]);
+        $this->notSeeInDatabase('tags', ['user_id' => 1, 'title' => 'fae', 'color' => '#fff000', 'reference_count' => 1]);
+        $this->notSeeInDatabase('tags', ['user_id' => 1, 'title' => 'fae1', 'color' => '#fff000', 'reference_count' => 1]);
+        $this->notSeeInDatabase('files', ['user_id' => 1, 'type' => 'video', 'mine_type' => 'video', 'size' => 256, 'reference_count' => 1]);
+        $this->notSeeInDatabase('files', ['user_id' => 1, 'type' => 'image', 'mine_type' => 'image', 'size' => 256, 'reference_count' => 1]);
+        $this->notSeeInDatabase('pin_helper', ['type' => 'media', 'pin_id' => 1, 'geolocation' => '0101000020E6100000A089B0E1E9915DC0401361C3D3234140', 'duration' => 1440, 'anonymous' => true, 'user_id' => 1]);
         $this->assertResponseStatus(204);
     }
 
@@ -1616,6 +1631,7 @@ class MediaTest extends TestCase {
             'description' => 'this is a test',
             'geo_latitude' => '-89.99',
             'geo_longitude' => '-118.2799',
+            'duration' => 1440, 
         );
         $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent()); 
@@ -1709,6 +1725,7 @@ class MediaTest extends TestCase {
             'description' => 'this is a test',
             'geo_latitude' => '-89.99',
             'geo_longitude' => '-118.2799',
+            'duration' => 1440, 
         );
         $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent()); 
@@ -1850,7 +1867,8 @@ class MediaTest extends TestCase {
             'description' => 'This is the test2.',
             'geolocation' => '0101000020E6100000A089B0E1E9915DC08FC2F5285C7F56C0', 
             'tag_ids' => '1;2',
-            'file_ids' => '1;2'
+            'file_ids' => '1;2',
+            'duration' => 1440, 
         ]); 
 
         $medias = Medias::create([
@@ -1858,7 +1876,8 @@ class MediaTest extends TestCase {
             'description' => 'This is the test2.',
             'geolocation' => '0101000020E6100000A089B0E1E9915DC08FC2F5285C7F56C0', 
             'tag_ids' => '3;4',
-            'file_ids' => '3;4' 
+            'file_ids' => '3;4',
+            'duration' => 1440,  
         ]);
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -2161,7 +2180,8 @@ class MediaTest extends TestCase {
                 'description' => 'this is the test'.$i,
                 'geo_latitude' => '-89.99',
                 'geo_longitude' => '-118.2799',
-                ); 
+                'duration' => 1440, 
+            ); 
         }
         //create the medias.
         for ($i = 0; $i < 31; $i++) {
@@ -2268,7 +2288,8 @@ class MediaTest extends TestCase {
                 'description' => 'this is the test'.$i,
                 'geo_latitude' => '-89.99',
                 'geo_longitude' => '-118.2799',
-                ); 
+                'duration' => 1440, 
+            ); 
         }
         //create the medias.
         for ($i = 0; $i < 31; $i++) {
@@ -2375,7 +2396,8 @@ class MediaTest extends TestCase {
                 'description' => 'this is the test'.$i,
                 'geo_latitude' => '-89.99',
                 'geo_longitude' => '-118.2799',
-                ); 
+                'duration' => 1440, 
+            ); 
         }
         //create the medias.
         for ($i = 0; $i < 31; $i++) {
