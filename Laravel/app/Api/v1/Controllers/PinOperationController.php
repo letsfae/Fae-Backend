@@ -503,6 +503,10 @@ class PinOperationController extends Controller {
         return $this->response->created(null, $content);
     }
 
+    public function updateComment($pin_comment_id) {
+        
+    }
+
     public function uncomment($pin_comment_id)
     {
         if(!is_numeric($pin_id))

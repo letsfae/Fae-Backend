@@ -46,7 +46,7 @@ Status: 204
 
 `POST /pins/:type/:pin_id/save`
 
-其中type可为`media`、`comment`。
+其中type可为`media`、`comment`、`place`。
 
 ### auth
 
@@ -60,7 +60,7 @@ Status: 201
 
 `DELETE /pins/:type/:pin_id/save`
 
-其中type可为`media`、`comment`。
+其中type可为`media`、`comment`、`place`。
 
 ### auth
 
@@ -70,7 +70,7 @@ yes
 
 Status: 204
 
-## Feeling
+## Feeling :white_check_mark:
 
 `POST /pins/:type/:pin_id/feeling`
 
@@ -90,7 +90,7 @@ yes
 
 Status: 201
 
-## Remove Feeling
+## Remove Feeling :white_check_mark:
 
 `DELETE /pins/:type/:pin_id/feeling`
 
@@ -129,6 +129,22 @@ Status: 201
 		"pin_comment_id": @number
 	}
 
+## update comment 更新评论
+
+`POST /pins/comments/:pin_comment_id`
+
+### auth
+
+yes
+
+### parameters
+
+同发布pin comment，但所有参数均为可选。
+
+### response
+
+Status: 201
+
 ## Uncomment :white_check_mark:
 
 `DELETE /pins/comments/:pin_comment_id`
@@ -147,8 +163,6 @@ Status: 204
 
 `GET /pins/saved`
 
-其中type可为`media`、`comment`。
-
 ### auth
 
 yes
@@ -160,6 +174,9 @@ yes
 | start_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为1970-01-01 00:00:00 |
 | end_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为当前日期和时间 |
 | page | number | 页数，默认为第1页（头30条） |
+| is_place | bool | 是否获取place，默认为false |
+
+如果is_place为true，则返回结果均为saved place，否则为其他类型的pin。
 
 ### response
 
@@ -183,7 +200,8 @@ Status: 200
 		{...}
 	]
 
-其中pin_object中为具体的pin内容（同该pin的get pin返回）。
+type可为`media`、`comment`。 
+pin_object中为具体的pin内容（同该pin的get pin返回）。
 
 ## 获取my pin :white_check_mark:
 
@@ -329,7 +347,7 @@ yes
 
 Status: 204
 
-## 获取用户自身pin的相关统计
+## 获取用户自身pin的相关统计 :white_check_mark:
 
 `GET /pins/statistics`
 
@@ -344,8 +362,9 @@ Status: 200
 	{
 		"user_id": @number,
 		"count": {
-			"created_pin": @number,
-			"saved_pin": @number
+			"created_pin": @number, 不包括place
+			"saved_pin": @number, 不包括place
+			"saved_place": @number
 		}
 	}
 
