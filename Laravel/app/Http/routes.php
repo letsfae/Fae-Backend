@@ -105,6 +105,13 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->get('/chats/users/{user_a_id}/{user_b_id}', 'App\Api\v1\Controllers\ChatController@getChatIdFromUserId');
     $api->get('/chats/{user_a_id}/{user_b_id}', 'App\Api\v1\Controllers\ChatController@getMessageByUserId');
     $api->get('/chats/{chat_id}', 'App\Api\v1\Controllers\ChatController@getMessageByChatId');
+    // chats v2
+    $api->post('/chats_v2', 'App\Api\v1\Controllers\ChatV2Controller@send');
+    $api->get('/chats_v2/unread', 'App\Api\v1\Controllers\ChatV2Controller@getUnread');
+    $api->delete('/chats_v2/{chat_id}', 'App\Api\v1\Controllers\ChatV2Controller@delete');
+    $api->get('/chats_v2/users/{user_a_id}/{user_b_id}', 'App\Api\v1\Controllers\ChatV2Controller@getChatIdFromUserId');
+    $api->get('/chats_v2/{user_a_id}/{user_b_id}', 'App\Api\v1\Controllers\ChatV2Controller@getMessageByUserId');
+    $api->get('/chats_v2/{chat_id}', 'App\Api\v1\Controllers\ChatV2Controller@getMessageByChatId');
     // chat rooms
     $api->post('/chat_rooms', 'App\Api\v1\Controllers\ChatRoomController@create');
     $api->post('/chat_rooms/{chat_room_id}', 'App\Api\v1\Controllers\ChatRoomController@update');
