@@ -227,21 +227,39 @@ class ChatRoomController extends Controller implements PinInterface
         $info = array();
         foreach($chat_rooms as $chat_room)
         {
+            $chat_room_users = DB::select("SELECT user_id 
+                                           FROM chat_room_users
+                                           WHERE chat_room_id = :chat_room_id",
+                                           array('chat_room_id' => $chat_room->id));
+            $members = array();
+            foreach ($chat_room_users as $chat_room_user) {
+                $members[] = $chat_room_user->user_id;
+            }
             $tag_ids = is_null($chat_room->tag_ids) ? null : explode(';', $chat_room->tag_ids);
-            $info[] = array('chat_room_id' => $chat_room->id, 'title' => $chat_room->title, 
-            'user_id' => $chat_room->user_id, 
-            'nick_name' => Name_cards::find($chat_room->user_id)->nick_name,
-            'geolocation' => ['latitude' => $chat_room->geolocation->getLat(), 
-            'longitude' => $chat_room->geolocation->getLng()], 'last_message' => $chat_room->last_message, 
-            'last_message_sender_id' => $chat_room->last_message_sender_id, 'last_message_type' => $chat_room->last_message_type, 
-            'last_message_timestamp' => $chat_room->last_message_timestamp, 
-            'created_at' => $chat_room->created_at->format('Y-m-d H:i:s'), 'capacity' => $chat_room->capacity,
-            'tag_ids' => $tag_ids, 'description' => $chat_room->description);
+            $info[] = array(
+                'chat_room_id' => $chat_room->id, 
+                'title' => $chat_room->title, 
+                'user_id' => $chat_room->user_id, 
+                'nick_name' => Name_cards::find($chat_room->user_id)->nick_name,
+                'geolocation' => ['latitude' => $chat_room->geolocation->getLat(), 
+                'longitude' => $chat_room->geolocation->getLng()], 
+                'last_message' => $chat_room->last_message, 
+                'last_message_sender_id' => $chat_room->last_message_sender_id, 
+                'last_message_type' => $chat_room->last_message_type, 
+                'last_message_timestamp' => $chat_room->last_message_timestamp, 
+                'created_at' => $chat_room->created_at->format('Y-m-d H:i:s'), 
+                'capacity' => $chat_room->capacity,
+                'tag_ids' => $tag_ids, 
+                'description' => $chat_room->description,
+                'members' => $members
+            );
         }
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
     }
 
-    public function delete($chat_room_id) {}
+    public function delete($chat_room_id) {
+
+    }
 
     public static function getPinObject($chat_room_id, $user_id) {
         $chat_room = ChatRooms::find($chat_room_id);
@@ -249,11 +267,19 @@ class ChatRoomController extends Controller implements PinInterface
         {
             return null;
         }
+        $chat_room_users = DB::select("SELECT user_id 
+                               FROM chat_room_users
+                               WHERE chat_room_id = :chat_room_id",
+                               array('chat_room_id' => $chat_room_id));
+        $members = array();
+        foreach ($chat_room_users as $chat_room_user) {
+            $members[] = $chat_room_user->user_id;
+        }
         return array(
             'chat_room_id' => $chat_room->id, 
-            'nick_name' => Name_cards::find($chat_room->user_id)->nick_name,
             'title' => $chat_room->title, 
             'user_id' => $chat_room->user_id,
+            'nick_name' => Name_cards::find($chat_room->user_id)->nick_name,
             'geolocation' => ['latitude' => $chat_room->geolocation->getLat(), 
             'longitude' => $chat_room->geolocation->getLng()], 
             'last_message' => $chat_room->last_message, 
@@ -263,7 +289,8 @@ class ChatRoomController extends Controller implements PinInterface
             'created_at' => $chat_room->created_at->format('Y-m-d H:i:s'), 
             'capacity' => $chat_room->capacity,
             'tag_ids' => is_null($chat_room->tag_ids) ? null : explode(';', $chat_room->tag_ids), 
-            'description' => $chat_room->description
+            'description' => $chat_room->description,
+            'members' => $members
         );
     }
 

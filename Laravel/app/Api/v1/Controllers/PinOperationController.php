@@ -781,6 +781,7 @@ class PinOperationController extends Controller {
         }
         
         $saved_pin_list = Pin_operations::where('user_id', $user_id)
+                                        ->where('saved', true)
                                         ->where('saved_timestamp','>=', $start_time)
                                         ->where('saved_timestamp','<=', $end_time)
                                         ->orderBy('saved_timestamp', 'desc')
@@ -1025,7 +1026,10 @@ class PinOperationController extends Controller {
         }
     }
     
-    public function pinStatistics() { // for a certain user
-
+    public function pinStatistics() {
+        $count = array();
+        $count['created_pin'] = PinHelper::where('user_id', $this->request->self_user_id)->count();
+        $count['saved_pin'] = Pin_operations::where('user_id', $this->request->self_user_id)->where('saved', true)->count();
+        return $this->response->array(array('user_id' => $this->request->self_user_id, 'count' => $count));
     }
 }
