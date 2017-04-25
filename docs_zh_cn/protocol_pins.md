@@ -200,7 +200,6 @@ Status: 200
 		{...}
 	]
 
-type可为`media`、`comment`。 
 pin_object中为具体的pin内容（同该pin的get pin返回）。
 
 ## 获取my pin :white_check_mark:
@@ -362,9 +361,11 @@ Status: 200
 	{
 		"user_id": @number,
 		"count": {
-			"created_pin": @number, 不包括place
-			"saved_pin": @number, 不包括place
-			"saved_place": @number
+			"created_comment_pin": @number,
+			"created_media_pin": @number,
+			"saved_comment_pin": @number,
+			"saved_media_pin": @number,
+			"saved_place_pin": @number
 		}
 	}
 
