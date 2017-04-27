@@ -189,7 +189,7 @@ class PinOperationController extends Controller {
                     'status_code' => '404'
                 ], 404);
         }
-        if($obj_pin_operation->feeling == null)
+        if($obj_pin_operation->feeling == -1)
         {
             return response()->json([
                 'message' => 'Bad request, you have not post feeling of this pin yet!',
@@ -449,7 +449,7 @@ class PinOperationController extends Controller {
             ], 400);
         }
         $validator = Validator::make($this->request->all(), [
-            'content' => 'required|string|max:100',
+            'content' => 'required|string',
             'anonymous' => 'filled|in:true,false'
         ]);
         if($validator->fails())
@@ -509,10 +509,10 @@ class PinOperationController extends Controller {
 
     public function uncomment($pin_comment_id)
     {
-        if(!is_numeric($pin_id))
+        if(!is_numeric($pin_comment_id))
         {
             return response()->json([
-                    'message' => 'pin_id is not integer',
+                    'message' => 'pin_comment_id is not integer',
                     'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
                     'status_code' => '400'
                 ], 400);

@@ -19,7 +19,7 @@ class CreatePinCommentsTable extends Migration
             $table->integer('pin_id')->unsigned();
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
-            $table->string('content',100)->nullable();
+            $table->text('content')->nullable();
             $table->integer('vote_up_count')->default(0);
             $table->integer('vote_down_count')->default(0);
             $table->timestamps();
