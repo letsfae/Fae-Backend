@@ -39,7 +39,7 @@ class PlaceController extends Controller implements PinInterface {
             return null;
         }
 
-        $categories = explode(', ', $place->categories);
+        $categories = explode(',', $place->categories);
 
         return array(
             'place_id' => $place->id, 
