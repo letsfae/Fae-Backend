@@ -72,6 +72,17 @@ return response()->json([
                 'status_code' => '400'
             ], 400);
 
+return response()->json([
+                'message' => 'Bad request, you have not voted yet!',
+                'error_code' => ErrorCodeUtility::NOT_VOTED,
+                'status_code' => '400'
+            ], 400);
+
+return response()->json([
+                'message' => 'Bad request, you can not block yourself!',
+                'error_code' => ErrorCodeUtility::BLOCK_SELF,
+                'status_code' => '400'
+            ], 400);
 
 
 

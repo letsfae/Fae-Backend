@@ -18,6 +18,7 @@
 | 400-13 | 已vote down |
 | 400-14 | 未vote |
 | 400-15 | 未发过表情 |
+| 400-16 | 不允许拉黑自己 |
 
 ## 401 Unauthorized
 | Error Code | Description |

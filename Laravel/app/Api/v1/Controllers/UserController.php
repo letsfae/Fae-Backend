@@ -63,7 +63,7 @@ class UserController extends Controller
         $fb = Firebase::initialize('https://faeapp-5ea31.firebaseio.com', 'LiYqgdzrv8Y1s2lRN7iziHy4Z5UCgvUlJJhHcZRe');
         $dateTime = new DateTime();
         $fb->push('Message-dev/1-'.$user->id, 
-                    array('message' => 'Hey there! Welcome to Fae Map! Super happy to see you here. We’re here to enhance your experience on Fae Map and make your time more fun. Let us know of any problems you encounter or what we can do to make your experience better. We’ll be hitting you up with surprises, recommendations, favorite places, cool deals, and tons of fun stuff. Feel free to chat with us here anytime about anything. Let’s Fae!',
+                    array('message' => 'Hey there! Welcome to the Early Bird Version of Fae Map!',
                           'type' => 'text',
                           'senderId' => '1',
                           'senderName' => 'Fae Map Crew',
@@ -73,16 +73,21 @@ class UserController extends Controller
                           'status' => 'Delivered',
                           'date' => $dateTime->format('Ymdhis'))
                   );
-
+        $fb->push('Message-dev/1-'.$user->id, 
+                    array('message' => 'We’re here to enhance your experience and ensure you have a great time on our platform. Kindly let us know if you encounter any problems or what we can do to make your experience better. Let’s Fae!',
+                          'type' => 'text',
+                          'senderId' => '1',
+                          'senderName' => 'Fae Map Crew',
+                          'messageId' => uniqid(),
+                          'hasTimeStamp' => true,
+                          'index' => 2,
+                          'status' => 'Delivered',
+                          'date' => $dateTime->format('Ymdhis'))
+                  );
         $chat = new Chats;
         $chat->user_a_id = 1;
         $chat->user_b_id = $user->id;
-        $chat->last_message = 'Hey there! Welcome to Fae Map! Super happy to see you here. We’re here to
-                               enhance your experience on Fae Map and make your time more fun. Let us know
-                               of any problems you encounter or what we can do to make your experience better. 
-                               We’ll be hitting you up with surprises, recommendations, favorite places, cool 
-                               deals, and tons of fun stuff. Feel free to chat with us here anytime about 
-                               anything. Let’s Fae!';
+        $chat->last_message = 'We’re here to enhance your experience and ensure you have a great time on our platform. Kindly let us know if you encounter any problems or what we can do to make your experience better. Let’s Fae!';
         $chat->last_message_type = 'text';
         $chat->last_message_sender_id = 1;
         $chat->updateTimestamp();

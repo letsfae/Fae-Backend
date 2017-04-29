@@ -14,7 +14,7 @@ class CreatePinOperationsTable extends Migration
     {
         Schema::create('pin_operations', function (Blueprint $table) {
             $table->increments('id');
-            $table->enum('type',['media','comment']);
+            $table->enum('type',['media','comment','place']);
             $table->integer('pin_id')->unsigned();
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
