@@ -35,12 +35,16 @@ class AuthenticationController extends Controller {
         }
         $password = $this->request->password;
         if (!empty($user_name) && empty($email)){
-            $user_table = Users::where('user_name', $user_name)->first();
+            $user_table = Users::where('user_name', 'ilike',$user_name)->first();
             $email = $user_table->email;
         }
         $users = Users::where('email', '=', $email)->first();
         if ($users == null) {
-            throw new AccessDeniedHttpException('Bad request, No such users exist!');
+            return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         //forbid user when login time over 3;
         if ($users->login_count >= 6){
