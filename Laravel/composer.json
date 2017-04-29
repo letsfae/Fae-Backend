@@ -12,7 +12,8 @@
         "davibennun/laravel-push-notification": "dev-laravel5",
         "aloha/twilio": "^2.1",
         "intervention/image": "2.*",
-        "eelkevdbos/firebase-php": "dev-master"
+        "eelkevdbos/firebase-php": "dev-master",
+        "predis/predis":"~1.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

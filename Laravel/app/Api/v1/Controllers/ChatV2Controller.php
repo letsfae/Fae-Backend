@@ -2,6 +2,7 @@
 namespace App\Api\v1\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Redis;
 use Dingo\Api\Routing\Helpers;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
@@ -16,7 +17,6 @@ use App\Sessions;
 use App\Chats;
 use App\Api\v1\Utilities\ErrorCodeUtility;
 use DateTime;
-use Firebase\Firebase;
 
 class ChatV2Controller extends Controller 
 {
@@ -29,6 +29,7 @@ class ChatV2Controller extends Controller
 
     public function send() 
     {
+
         $this->sendValidation($this->request);
         $sender_id = $this->request->self_user_id;
         $receiver_id = $this->request->receiver_id;
@@ -70,10 +71,8 @@ class ChatV2Controller extends Controller
             $chat->user_b_unread_count++;
         }
         $chat->save();
-        $fb = Firebase::initialize('https://faeapp-5ea31.firebaseio.com', 'LiYqgdzrv8Y1s2lRN7iziHy4Z5UCgvUlJJhHcZRe');
-        $fb->push('Message-dev/'.$user_a_id.'-'.$user_b_id, 
-                    $this->request->toArray()
-                  );
+
+        Redis::RPUSH($receiver_id.':'.$chat->id,  json_encode($this->request->toArray()));
 
         if(Config::get('app.pushback')==true) {
             $sessions = Sessions::where('user_id', $receiver_id)->get();
@@ -141,82 +140,6 @@ class ChatV2Controller extends Controller
         return $this->response->array($messages);
     }
 
-    public function markRead() 
-    {
-        $validator = Validator::make($this->request->all(), [
-            'chat_id' => 'required|integer|exists:chats,id',
-        ]);
-        if($validator->fails())
-        {
-            throw new StoreResourceFailedException('Could not mark unread message.',$validator->errors());
-        }
-
-        $chat = Chats::find($this->request->chat_id);
-        if(is_null($chat))
-        {
-            return response()->json([
-                    'message' => 'chat not found',
-                    'error_code' => ErrorCodeUtility::CHAT_NOT_FOUND,
-                    'status_code' => '404'
-                ], 404);
-        }
-        if($this->request->self_user_id == $chat->user_a_id)
-        {
-            $chat->user_a_unread_count = 0;
-            $chat->save();
-        }
-        else if($this->request->self_user_id == $chat->user_b_id)
-        {
-            $chat->user_b_unread_count = 0;
-            $chat->save();
-        }
-        else
-        {
-            return response()->json([
-                    'message' => 'user not in this chat',
-                    'error_code' => ErrorCodeUtility::USER_NOT_IN_CHAT,
-                    'status_code' => '403'
-                ], 403);
-        }
-        return $this->response->created();
-    }
-
-    public function getHistory()
-    {
-        $chats = Chats::where('user_a_id', $this->request->self_user_id)->orWhere('user_b_id', $this->request->self_user_id)
-                        ->orderBy('last_message_timestamp', 'desc')
-                        ->get();
-        $info = array();
-        foreach($chats as $chat)
-        {
-            $with_user_id = ($this->request->self_user_id == $chat->user_a_id) ? $chat->user_b_id:$chat->user_a_id;
-            $unread_count = ($this->request->self_user_id == $chat->user_a_id) ? $chat->user_a_unread_count:$chat->user_b_unread_count;
-            $user = Users::find($with_user_id);
-            if(is_null($user))
-            {
-                return $this->response->errorNotFound();
-            }
-            $time = date("Y-m-d H:i:s");
-            $last_message_sender = Users::find($chat->last_message_sender_id);
-            if(is_null($last_message_sender))
-            {
-                return response()->json([
-                    'message' => 'user not found',
-                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
-                    'status_code' => '404'
-                ], 404);
-            }
-
-            $info[] = ['chat_id' => $chat->id, 'with_user_id' => $with_user_id, 'with_user_name' => $user->user_name, 
-                       'with_nick_name' => Name_cards::find($with_user_id)->nick_name,
-                       'last_message' => $chat->last_message, 'last_message_sender_id' => $chat->last_message_sender_id, 
-                       'last_message_sender_name' => $last_message_sender->user_name, 
-                       'last_message_type' => $chat->last_message_type, 'last_message_timestamp' => $chat->last_message_timestamp, 
-                       'unread_count' => $unread_count, 'server_sent_timestamp' => $time];
-        }
-        return $this->response->array($info);
-    }
-
     public function delete($chat_id) 
     {
         if(!is_numeric($chat_id)) 
@@ -240,6 +163,9 @@ class ChatV2Controller extends Controller
         {
             throw new UnauthorizedHttpException(null, 'Bad request, you have no right to delete this chat');
         }
+        
+        Redis::DEL($chat->user_b_id.':'.$chat->id);
+        Redis::DEL($chat->user_a_id.':'.$chat->id);
         $chat->delete();
         return $this->response->noContent();
     }
@@ -293,8 +219,17 @@ class ChatV2Controller extends Controller
         }
         $first = min($user_a_id,$user_b_id);
         $second = max($user_a_id,$user_b_id);
-        $fb = Firebase::initialize('https://faeapp-5ea31.firebaseio.com', 'LiYqgdzrv8Y1s2lRN7iziHy4Z5UCgvUlJJhHcZRe');
-        return $this->response->array($fb->get('Message-dev/'.$first.'-'.$second));
+        $chat = Chats::where('user_a_id', $first)->where('user_b_id', $second)->first();
+        if(is_null($chat))
+        {
+            return response()->json([
+                    'message' => 'chat not found',
+                    'error_code' => ErrorCodeUtility::CHAT_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
+        }
+        $message = Redis::LPOP($this->request->self_user_id.':'.$chat->id);
+        return $this->response->array(json_decode($message, true));
     }
 
     public function getMessageByChatId($chat_id) {
@@ -322,8 +257,8 @@ class ChatV2Controller extends Controller
                     'status_code' => '403'
                 ], 403);
         }
-        $fb = Firebase::initialize('https://faeapp-5ea31.firebaseio.com', 'LiYqgdzrv8Y1s2lRN7iziHy4Z5UCgvUlJJhHcZRe');
-        return $this->response->array($fb->get('Message-dev/'.$chat->user_a_id.'-'.$chat->user_b_id));
+        $message = Redis::LPOP($this->request->self_user_id.':'.$chat_id);
+        return $this->response->array($arr = json_decode($message, true));
     }
 
     private function sendValidation(Request $request)
