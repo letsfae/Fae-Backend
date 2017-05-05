@@ -24,6 +24,7 @@ class UsersTableSeeder extends Seeder
         $user_exts->save();
         $nameCard = new Name_cards;
         $nameCard->user_id = 1;
+        $nameCard->nick_name = 'Fae Map Crew';
         $nameCard->save();
         for($i = 1; $i < 100; $i++)
         {
@@ -37,6 +38,7 @@ class UsersTableSeeder extends Seeder
             $user_exts->save();
             $nameCard = new Name_cards;
             $nameCard->user_id = $i + 1;
+            $nameCard->nick_name = 'fae'.$i;
             $nameCard->save();
         }
     }
