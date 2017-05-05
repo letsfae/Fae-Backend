@@ -466,14 +466,21 @@ class ChatRoomController extends Controller implements PinInterface
         foreach ($chat_room_users as $chat_room_user)
         {
             $chat_room = $chat_room_user->belongsToChatRoom()->first();
-            $last_message_sender = Users::find($chat_room->last_message_sender_id);
-            if(is_null($last_message_sender))
+            if(is_null($chat_room->last_message_sender_id)) 
             {
-                return response()->json([
-                    'message' => 'last message sender not found',
-                    'error_code' => ErrorCodeUtility::LAST_MESSAGE_SENDER_NOT_FOUND,
-                    'status_code' => '404'
-                ], 404);
+                $last_message_sender = (object)array('user_name' => 'null');
+            }
+            else 
+            {
+                $last_message_sender = Users::find($chat_room->last_message_sender_id);
+                if(is_null($last_message_sender))
+                {
+                    return response()->json([
+                        'message' => 'last message sender not found',
+                        'error_code' => ErrorCodeUtility::LAST_MESSAGE_SENDER_NOT_FOUND,
+                        'status_code' => '404'
+                    ], 404);
+                }
             }
             $tag_ids = is_null($chat_room->tag_ids) ? null : explode(';', $chat_room->tag_ids);
             $info[] = array('chat_room_id' => $chat_room->id, 'title' => $chat_room->title, 'user_id' => $chat_room->user_id,
