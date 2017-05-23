@@ -363,9 +363,10 @@ Status: 200
 		"count": {
 			"created_comment_pin": @number,
 			"created_media_pin": @number,
+			"created_location": @number,
 			"saved_comment_pin": @number,
 			"saved_media_pin": @number,
-			"saved_place_pin": @number
+			"saved_place_pin": @number,
 		}
 	}
 
