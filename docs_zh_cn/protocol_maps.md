@@ -785,3 +785,113 @@ Status: 200
 	        "zip_code": @string
 		}
 	}
+
+## 发布location
+
+`POST /locations`
+
+注： location仅个人可见。
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| content | text | 内容 |
+| geo_latitude | number | 纬度 |
+| geo_longitude | number | 经度 |
+
+### response
+
+Status: 201
+
+	{
+		"location_id": @number
+	}
+
+## 更新comment
+
+`POST /locations/:location_id`
+
+### auth
+
+yes
+
+### parameters
+
+同发布location，但所有参数均为可选。
+
+### response
+
+Status: 201
+
+## 获取location		
+
+`GET /locations/:location_id`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	{
+		"location_id": @number,
+		"content": @string,
+		"geolocation": {
+			"latitude": @number,
+			"longitude": @number
+		},
+		"created_at": @string,
+	}
+
+## 获取该用户的所有location
+
+`GET /locations`
+
+### auth
+
+yes
+
+### filters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| start_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为1970-01-01 00:00:00 |
+| end_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为当前日期和时间 |
+| page | number | 页数，默认为第1页（头30条） |
+
+过滤参数均为可选。
+
+### response
+
+Status: 200
+
+	page: @number
+	total_pages: @number
+
+	-----
+
+	[
+		{...},
+		{...}
+	]
+
+具体数组内对象同“获取location”所得到的对象。
+
+## 删除location
+
+`DELETE /locations/:location_id`
+
+### auth
+
+yes
+
+### response
+
+Status: 204

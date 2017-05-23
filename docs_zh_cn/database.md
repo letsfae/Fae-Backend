@@ -160,6 +160,13 @@
 - file_ids ;分割
 - created_at
 
+## locations
+- id PK
+- user_id FK
+- content_text string
+- created_at
+- geolocation point
+
 ## chat_rooms
 - id PK
 - user_id FK 创建者

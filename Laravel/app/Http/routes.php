@@ -154,6 +154,12 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->post('/feedback', 'App\Api\v1\Controllers\FeedbackController@sendFeedback');
     // places
     $api->get('/pins/places/{place_id}', 'App\Api\v1\Controllers\PlaceController@getOne');
+    // locations
+    $api->post('/locations', 'App\Api\v1\Controllers\LocationController@create');
+    $api->post('/locations/{location_id}', 'App\Api\v1\Controllers\LocationController@update');
+    $api->get('/locations/{location_id}', 'App\Api\v1\Controllers\LocationController@getOne');
+    $api->delete('/locations/{location_id}', 'App\Api\v1\Controllers\LocationController@delete');
+    $api->get('/locations', 'App\Api\v1\Controllers\LocationController@getFromCurrentUser');
 });
 
 /**
