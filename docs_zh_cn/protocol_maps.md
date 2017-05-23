@@ -812,7 +812,7 @@ Status: 201
 		"location_id": @number
 	}
 
-## 更新comment
+## 更新location
 
 `POST /locations/:location_id`
 
