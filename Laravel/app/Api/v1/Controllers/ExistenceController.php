@@ -39,22 +39,13 @@ class ExistenceController extends Controller {
     public function userName($user_name) {
         $input = array('user_name' => $user_name);
         $validator = Validator::make($input, [
-            'user_name' => 'required|max:50',
+            'user_name' => 'required|regex:/^[a-zA-Z0-9]*[_\-.]?[a-zA-Z0-9]*$/|min:3|max:20',
         ]);
         if($validator->fails())
         {            
             throw new AccessDeniedHttpException('Bad request, Please verify your user_name format!');
         }
-
-        $user_name = strtolower($user_name);
-        
-        $user = Users::where('user_name', '=', $user_name)->first();
-        $existence = True;
-        if ($user == null) {
-            $existence = False;
-        }
-        $result = array('existence' => $existence);
+        $result = array('existence' => Users::whereRaw('LOWER(user_name) = ?', [strtolower($this->request->user_name)])->exists());
         return $this->response->array($result);
-
     }
 }

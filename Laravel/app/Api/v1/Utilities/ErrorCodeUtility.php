@@ -64,6 +64,7 @@ class ErrorCodeUtility
 	const PIN_NOT_FOUND = '404-13';
 	const VERIFICATION_NOT_FOUND = '404-14';
 	const NAME_CARD_NOT_FOUND = '404-15';
+	const LOCATIONS_NOT_FOUND = '404-16';
 
     //405 Method Not Allowed
     /*

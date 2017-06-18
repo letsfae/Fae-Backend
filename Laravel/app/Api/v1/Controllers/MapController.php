@@ -14,6 +14,7 @@ use App\Medias;
 use App\User_exts;
 use App\Users;
 use App\Places;
+use App\Locations;
 use App\Api\v1\Controllers\PlaceController;
 use App\Api\v1\Controllers\PinOperationController;
 use Validator;
@@ -120,6 +121,22 @@ class MapController extends Controller
                 $info[] = PlaceController::getPinObject($place->id, $this->request->self_user_id);    
             }
         }
+        else if($this->request->type == 'location')
+        {
+            $locations = DB::select(
+                        "SELECT * FROM locations
+                        WHERE user_id = :user_id
+                        AND st_dwithin(geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true)
+                        ORDER BY ST_Distance(geolocation, ST_SetSRID(ST_Point(:longitude, :latitude),4326))
+                        LIMIT :max_count;",
+                        array('user_id' => $this->request->self_user_id, 
+                              'longitude' => $longitude, 'latitude' => $latitude,
+                              'radius' => $radius, 'max_count' => $max_count));
+            foreach ($locations as $location) 
+            {
+                $info[] = LocationController::getPinObject($location->id, $this->request->self_user_id);    
+            }
+        }
         else
         {
             $types = explode(',', $this->request->type);
@@ -129,10 +146,18 @@ class MapController extends Controller
                 switch($t)
                 {
                     case 'user':
-                        throw new UpdateResourceFailedException('Could not get map. Wrong types.');
+                        return response()->json([
+                            'message' => 'wrong type',
+                            'error_code' => ErrorCodeUtility::WRONG_TYPE,
+                            'status_code' => '400'
+                            ], 400);
                         break;
                     case 'place':
-                        throw new UpdateResourceFailedException('Could not get map. Wrong types.');
+                        return response()->json([
+                            'message' => 'wrong type',
+                            'error_code' => ErrorCodeUtility::WRONG_TYPE,
+                            'status_code' => '400'
+                            ], 400);
                         break;
                     case 'comment':
                         $type[] = "'comment'";
@@ -144,7 +169,11 @@ class MapController extends Controller
                         $type[] = "'chat_room'";
                         break;
                     default:
-                        throw new UpdateResourceFailedException('Could not get map. Wrong types.');
+                        return response()->json([
+                            'message' => 'wrong type',
+                            'error_code' => ErrorCodeUtility::WRONG_TYPE,
+                            'status_code' => '400'
+                            ], 400);
                 }
             }
             
@@ -186,7 +215,7 @@ class MapController extends Controller
                                     AND p3.user_id = :user_id)\n";
                 }   
             }
-            $sql_select .= "ORDER BY p1.created_at
+            $sql_select .= "ORDER BY p1.created_at DESC
                             LIMIT :max_count;";
             if($this->request->has('is_saved') || $this->request->has('is_liked') || $this->request->has('is_read'))
             {
@@ -205,7 +234,7 @@ class MapController extends Controller
                                 'type' => $pin_helper->type,
                                 'created_at' => $pin_helper->created_at,
                                 'pin_object' => PinUtility::getPinObject($pin_helper->type, $pin_helper->pin_id, 
-                                    $this->request->self_user_id));
+                                $this->request->self_user_id));
             }
         }
         return $this->response->array($info);   
@@ -218,7 +247,7 @@ class MapController extends Controller
             'geo_latitude' => 'required|numeric|between:-90,90',
             'radius' => 'filled|integer|min:0',
             'type' => 'required|string',
-            'max_count' => 'filled|integer|between:0,100',
+            'max_count' => 'filled|integer|between:0,1000',
             'in_duration' => 'filled|in:true,false',
             'user_updated_in' => 'filled|integer|min:1',
             'is_saved' => 'filled|in:true,false',

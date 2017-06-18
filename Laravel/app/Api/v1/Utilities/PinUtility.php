@@ -17,6 +17,8 @@ class PinUtility
         	return ChatRoomController::getPinObject($pin_id, $user_id);
         } else if ($type == 'place') {
             return PlaceController::getPinObject($pin_id, $user_id);
+        } else if ($type == 'location') {
+            return LocationController::getPinObject($pin_id, $user_id);
         }
         return null;
     }

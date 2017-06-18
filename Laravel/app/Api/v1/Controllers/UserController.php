@@ -36,7 +36,7 @@ class UserController extends Controller
     public function signUp() 
     {
         UserController::signUpValidation($this->request);
-        if(Users::where('user_name', 'ilike', $this->request->user_name)->exists())
+        if(Users::whereRaw('LOWER(user_name) = ?', [strtolower($this->request->user_name)])->exists())
         {
             return response()->json([
                     'message' => 'user name already exists',
@@ -288,7 +288,7 @@ class UserController extends Controller
         }
         $validator = Validator::make($input, [
             'email' => 'required|unique:users,email|max:50|email',
-            'user_name' => 'required|regex:/^[a-zA-Z0-9]{3,20}[_\-.]?$/',
+            'user_name' => 'required|regex:/^[a-zA-Z0-9]*[_\-.]?[a-zA-Z0-9]*$/|min:3|max:20',
             'password' => 'required|between:8,16',
             'first_name' => 'required|string|max:50',
             'last_name' => 'required|string|max:50',
@@ -309,7 +309,7 @@ class UserController extends Controller
             'gender' => 'filled|required_without_all:last_name,first_name,birthday,user_name,mini_avatar|in:male,female',
             'birthday' => 'filled|required_without_all:last_name,gender,first_name,user_name,mini_avatar|
                            date_format:Y-m-d|before:tomorrow|after:1900-00-00',
-            'user_name' => 'filled|required_without_all:last_name,gender,birthday,first_name,mini_avatar|regex:/^[a-zA-Z0-9_]{3,20}$/',
+            'user_name' => 'filled|required_without_all:last_name,gender,birthday,first_name,mini_avatar|regex:/^[a-zA-Z0-9]*[_\-.]?[a-zA-Z0-9]*$/|min:3|max:20',
             'mini_avatar' => 'filled|required_without_all:last_name,gender,birthday,user_name,first_name|integer|between:0,100',
         ]);
         if($validator->fails())

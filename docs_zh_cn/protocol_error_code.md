@@ -47,7 +47,7 @@
 | 404-4 | Tag不存在 |
 | 404-5 | Chat Room不存在 |
 | 404-6 | Session不存在 |
-| 404-7 | Location不存在 |
+| 404-7 | Location(坐标)不存在 |
 | 404-8 | Chat Room User不存在 |
 | 404-9 | Comment不存在 |
 | 404-10 | Media不存在 |
@@ -56,6 +56,7 @@
 | 404-13 | PIN不存在 |
 | 404-14 | Verification不存在 |
 | 404-15 | Name Card不存在 |
+| 404-16 | Location(PIN)不存在 |
 
 ## 405 Method Not Allowed
 | Error Code | Description |
