@@ -123,6 +123,16 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->post('/chat_rooms/{chat_room_id}/message/read', 'App\Api\v1\Controllers\ChatRoomController@markRead');
     $api->get('/chat_rooms', 'App\Api\v1\Controllers\ChatRoomController@getHistory');
     $api->get('/chat_rooms/{chat_room_id}/users', 'App\Api\v1\Controllers\ChatRoomController@getUserList');
+    // chat rooms v2
+    $api->post('/chat_rooms_v2', 'App\Api\v1\Controllers\ChatRoomV2Controller@create');
+    $api->post('/chat_rooms_v2/{chat_room_id}', 'App\Api\v1\Controllers\ChatRoomV2Controller@update');
+    $api->get('/chat_rooms_v2/{chat_room_id}', 'App\Api\v1\Controllers\ChatRoomV2Controller@getOne');
+    $api->get('/chat_rooms_v2/users/{user_id}', 'App\Api\v1\Controllers\ChatRoomV2Controller@getFromUser');
+    $api->post('/chat_rooms_v2/{chat_room_id}/message', 'App\Api\v1\Controllers\ChatRoomV2Controller@send');
+    $api->get('/chat_rooms_v2/message/unread', 'App\Api\v1\Controllers\ChatRoomV2Controller@getUnread');
+    $api->post('/chat_rooms_v2/{chat_room_id}/message/read', 'App\Api\v1\Controllers\ChatRoomV2Controller@markRead');
+    $api->get('/chat_rooms_v2/{chat_room_id}', 'App\Api\v1\Controllers\ChatRoomV2Controller@getMessage');
+    $api->get('/chat_rooms_v2/{chat_room_id}/users', 'App\Api\v1\Controllers\ChatRoomV2Controller@getUserList');
     // tags
     $api->post('/tags', 'App\Api\v1\Controllers\TagController@create');
     $api->get('/tags', 'App\Api\v1\Controllers\TagController@getArray');
@@ -154,12 +164,6 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->post('/feedback', 'App\Api\v1\Controllers\FeedbackController@sendFeedback');
     // places
     $api->get('/pins/places/{place_id}', 'App\Api\v1\Controllers\PlaceController@getOne');
-    // locations
-    $api->post('/locations', 'App\Api\v1\Controllers\LocationController@create');
-    $api->post('/locations/{location_id}', 'App\Api\v1\Controllers\LocationController@update');
-    $api->get('/locations/{location_id}', 'App\Api\v1\Controllers\LocationController@getOne');
-    $api->delete('/locations/{location_id}', 'App\Api\v1\Controllers\LocationController@delete');
-    $api->get('/locations', 'App\Api\v1\Controllers\LocationController@getFromCurrentUser');
 });
 
 /**
