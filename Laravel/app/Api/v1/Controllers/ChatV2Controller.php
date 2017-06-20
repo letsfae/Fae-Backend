@@ -29,7 +29,6 @@ class ChatV2Controller extends Controller
 
     public function send() 
     {
-
         $this->sendValidation($this->request);
         $sender_id = $this->request->self_user_id;
         $receiver_id = $this->request->receiver_id;
