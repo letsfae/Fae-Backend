@@ -20,8 +20,8 @@ class ETagMiddleware {
             
             // Generate Etag
             $etag = md5($response->getContent());
-            if($request->headers->has('ETag')){
-                $requestEtag = $request->header('ETag');
+            if($request->headers->has('If-None-Match')){
+                $requestEtag = $request->header('If-None-Match');
                 
                 // Check to see if Etag has changed
                 if($requestEtag && $requestEtag == $etag) {
