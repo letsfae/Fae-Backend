@@ -248,6 +248,11 @@
 - requested_user_id FK 被请求用户 reference on users
 - created_at
 
+## follows
+- id PK
+- user_id FK
+- followee_id FK user关注的用户的id
+
 ## blocks
 - id PK
 - user_id FK

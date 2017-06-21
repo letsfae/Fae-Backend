@@ -93,6 +93,12 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->post('/friends/accept', 'App\Api\v1\Controllers\FriendController@acceptRequest');
     $api->post('/friends/ignore', 'App\Api\v1\Controllers\FriendController@ignoreRequest');
     $api->delete('/friends/{user_id}', 'App\Api\v1\Controllers\FriendController@deleteFriend');
+    $api->get('/friends', 'App\Api\v1\Controllers\FriendController@getFriendsList');
+    // follows
+    $api->post('/follows', 'App\Api\v1\Controllers\FollowController@follow');
+    $api->get('/follows/{user_id}/followee', 'App\Api\v1\Controllers\FollowController@getFollowee');
+    $api->get('/follows/{user_id}/follower', 'App\Api\v1\Controllers\FollowController@getFollower');
+    $api->delete('/follows/{followee_id}', 'App\Api\v1\Controllers\FollowController@unfollow');
     // blocks
     $api->post('/blocks', 'App\Api\v1\Controllers\BlockController@add');
     $api->delete('/blocks/{user_id}', 'App\Api\v1\Controllers\BlockController@delete');
