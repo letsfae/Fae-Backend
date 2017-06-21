@@ -285,4 +285,8 @@ class FriendController extends Controller {
         
         return $this->response->array($result);
     }
+
+    public function getFriendsList() {
+        
+    }
 }
