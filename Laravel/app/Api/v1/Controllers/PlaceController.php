@@ -47,6 +47,7 @@ class PlaceController extends Controller implements PinInterface {
             'categories' => $categories,
             'geolocation' => ['latitude' => $place->geolocation->getLat(), 
             'longitude' => $place->geolocation->getLng()], 
+            'city' => $place->city,
             'country' => $place->country, 
             'state' => $place->state,
             'address' => $place->address, 

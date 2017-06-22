@@ -10,7 +10,7 @@ class Places extends Model
 {
 	use PostgisTrait;
 
-    protected $connection = 'yelp';
+    protected $connection = 'foursquare';
     protected $table = 'places';
     public $timestamps = false;
     protected $postgisFields = [
