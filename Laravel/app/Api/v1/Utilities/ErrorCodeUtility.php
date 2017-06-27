@@ -22,6 +22,9 @@ class ErrorCodeUtility
     const NOT_VOTED = '400-14';
     const NO_FEELING = '400-15';
     const BLOCK_SELF = '400-16';
+    const FOLLOW_SELF = '400-17';
+    const FOLLOWED_ALREADY = '400-18';
+    const NOT_FOLLOWED = '400-19';
 
     //401 Unauthorized
     /*

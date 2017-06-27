@@ -84,6 +84,24 @@ return response()->json([
                 'status_code' => '400'
             ], 400);
 
+return response()->json([
+                'message' => 'Bad request, you can not follow yourself!',
+                'error_code' => ErrorCodeUtility::FOLLOW_SELF,
+                'status_code' => '400'
+            ], 400);
+
+return response()->json([
+                'message' => 'Bad request, you have already followed this user!',
+                'error_code' => ErrorCodeUtility::FOLLOWED_ALREADY,
+                'status_code' => '400'
+            ], 400);
+
+return response()->json([
+                'message' => 'Bad request, you have not followed this user yet!',
+                'error_code' => ErrorCodeUtility::NOT_FOLLOWED,
+                'status_code' => '400'
+            ], 400);
+
 
 
 
