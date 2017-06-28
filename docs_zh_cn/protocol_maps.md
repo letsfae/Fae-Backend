@@ -89,8 +89,13 @@ Status: 200
 	{
 		"type": "user",
 		"user_id": @number,
+		"user_name": @string (if show_user_name is true, else null),
+		"user_nick_name": @string,
+		"user_age": @number (if show_age is true, else null),
+		"user_gender": @string (if show_gender is true, else null),
 		"mini_avatar": @number,
 		"location_updated_at": @string,
+		"short_intro": @string,
 		"geolocation": [
 			{
 				"latitude": @number,

@@ -86,7 +86,10 @@ Status: 200
 		{
 			"friend_request_id": @number,
 			"request_user_id": @number,
-			"request_user_name": @string,
+			"request_user_name": @string (if show_user_name is true, else null),
+			"request_user_nick_name": @string,
+			"request_user_age": @number (if show_age is true, else null),
+			"request_user_gender": @string (if show_gender is true, else null),
 			"request_email": @string,
 			"created_at": @string
 		},
@@ -108,7 +111,10 @@ yes
 	[
 		{
 			"friend_id": @number,
-			"friend_user_name": @string
+			"friend_user_name": @string (if show_user_name is true, else null),
+			"friend_user_nick_name": @string,
+			"friend_user_age": @number (if show_age is true, else null),
+			"friend_user_gender": @string (if show_gender is true, else null),
 		},
 		...
 	]
@@ -144,7 +150,11 @@ yes
 	[
 		{
 			"follower_id": @number,
-			"follower_user_name": @string
+			"follower_user_name": @string,
+			"follower_user_name": @string (if show_user_name is true, else null),
+			"follower_user_nick_name": @string,
+			"follower_user_age": @number (if show_age is true, else null),
+			"follower_user_gender": @string (if show_gender is true, else null),
 		},
 		...
 	]
@@ -162,7 +172,11 @@ yes
 	[
 		{
 			"followee_id": @number,
-			"followee_user_name": @string
+			"followee_user_name": @string,
+			"followee_user_name": @string (if show_user_name is true, else null),
+			"followee_user_nick_name": @string,
+			"followee_user_age": @number (if show_age is true, else null),
+			"followee_user_gender": @string (if show_gender is true, else null),
 		},
 		...
 	]
