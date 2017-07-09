@@ -309,9 +309,9 @@ class CommentController extends Controller implements PinInterface
     private function updateValidation(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'geo_longitude' => 'filled|required_with:geo_latitude|required_without:content,duration,interaction_radius,anonymous|
+            'geo_longitude' => 'filled|required_with:geo_latitude|required_without_all:content,duration,interaction_radius,anonymous|
                                 numeric|between:-180,180',
-            'geo_latitude' => 'filled|required_with:geo_longitude|required_without:content,duration,interaction_radius,anonymous|
+            'geo_latitude' => 'filled|required_with:geo_longitude|required_without_all:content,duration,interaction_radius,anonymous|
                                 numeric|between:-90,90',
             'content' => 'filled|required_without_all:geo_longitude,geo_latitude,duration,interaction_radius,anonymous|string|max:500',
             'duration' => 'filled|required_without_all:geo_longitude,geo_latitude,content,interaction_radius,anonymous|int|min:0',

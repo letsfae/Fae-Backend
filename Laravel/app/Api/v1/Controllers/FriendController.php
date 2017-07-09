@@ -18,6 +18,9 @@ use App\Friends;
 use App\Friend_requests;
 use App\Sessions;
 use App\Blocks;
+use App\User_exts;
+use App\Name_cards;
+use App\Api\v1\utilities\TimeUtility;
 use App\Api\v1\Utilities\ErrorCodeUtility;
 
 class FriendController extends Controller {
@@ -272,12 +275,31 @@ class FriendController extends Controller {
         foreach($friend_requests as $key=>$value){
             //find user
             $request_user = Users::where('id', $value->user_id)->first();
+            if(is_null($request_user))
+            {
+                return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
+            }
+            $nameCard = Name_cards::find($value->user_id);
+            $user_exts = User_exts::find($value->user_id);
             /*if ($request_user == null) {
                 throw new StoreResourceFailedException('Bad request, No such users exist!');
             }*/
+            $birthDate = $request_user->birthday;
+            $birthDate = explode("-", $birthDate);
+            $age = (date("md", date("U", mktime(0, 0, 0, $birthDate[1], $birthDate[2], $birthDate[0]))) > date("md")
+                    ? ((date("Y") - $birthDate[0]) - 1)
+                    : (date("Y") - $birthDate[0]));
             $content = array('friend_request_id' => $value->id, 
                              'request_user_id' => $value->user_id, 
-                             'request_user_name' => $request_user->user_name,
+                             'request_user_name' => $user_exts->show_user_name ? 
+                                                    $request_user->user_name : null,
+                             'request_user_nick_name' => $nameCard->nick_name,
+                             'request_user_age' => $nameCard->show_age ? $age : null,
+                             'request_user_gender' => $nameCard->show_gender ? $request_user->gender : null,
                              'request_email' => $request_user->email,
                              'created_at' => $value->created_at->format('Y-m-d H:i:s'));
             array_push($result, $content);
@@ -287,6 +309,32 @@ class FriendController extends Controller {
     }
 
     public function getFriendsList() {
-        
+        $friends = Friends::where('user_id', $this->request->self_user_id)->get();
+        $info = array();
+        foreach ($friends as $friend) 
+        {
+            $user = Users::find($friend->friend_id);
+            if(is_null($user))
+            {
+                return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
+            }
+            $nameCard = Name_cards::find($friend->friend_id);
+            $user_exts = User_exts::find($friend->friend_id);
+            $birthDate = $user->birthday;
+            $birthDate = explode("-", $birthDate);
+            $age = (date("md", date("U", mktime(0, 0, 0, $birthDate[1], $birthDate[2], $birthDate[0]))) > date("md")
+                    ? ((date("Y") - $birthDate[0]) - 1)
+                    : (date("Y") - $birthDate[0]));
+            $info[] = array('friend_id' => $friend->friend_id,
+                            'friend_user_name' => $user_exts->show_user_name ? $user->user_name : null,
+                            'friend_user_nick_name' => $nameCard->nick_name,
+                            'friend_user_age' => $nameCard->show_age ? $age : null,
+                            'friend_user_gender' => $nameCard->show_gender ? $user->gender : null);
+        }
+        return $this->response->array($info);
     }
 }

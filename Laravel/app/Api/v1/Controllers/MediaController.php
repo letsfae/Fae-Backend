@@ -309,7 +309,7 @@ class MediaController extends Controller implements PinInterface
             $user_pin_operations = PinOperationController::getOperations('media', $media->id, $this->request->self_user_id);
             $info[] = array('media_id' => $media->id, 
                 'user_id' => $media->user_id,
-                'nick_name' => Name_cards::find($commented_pin->user_id)->nick_name,
+                'nick_name' => Name_cards::find($media->user_id)->nick_name,
                 'file_ids' => explode(';', $media->file_ids), 
                 'tag_ids' => explode(';', $media->tag_ids), 
                 'description' => $media->description, 
@@ -374,23 +374,14 @@ class MediaController extends Controller implements PinInterface
     private function updateValidation(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'geo_longitude' => 'filled|required_with:geo_latitude|required_without_all:file_ids,tag_ids,
-                                description,duration,interaction_radius,anonymous|numeric|between:-180,180',
-            'geo_latitude' => 'filled|required_with:geo_longitude|required_without_all:file_ids,tag_ids,
-                                description,duration,interaction_radius,anonymous|numeric|between:-90,90',
-            'file_ids' => 'filled|required_without_all:tag_ids,description,geo_longitude,geo_latitude,
-                            duration,interaction_radius,anonymous|regex:/^(\d+\;){0,5}\d+$/',
-            'tag_ids' => array('filled', 'required_without_all:file_ids,description,geo_longitude,geo_latitude,
-                            duration,interaction_radius,anonymous', 'regex:/^(((\d+\;){0,49}\d+)|(null))$/'),
-            'description' => 'filled|required_without_all:tag_ids,file_ids,geo_longitude,geo_latitude,
-                              duration,interaction_radius,anonymous|string',
-            'duration' => 'filled|required_without_all:tag_ids,file_ids,geo_longitude,geo_latitude,description,
-                           interaction_radius,anonymous|int|min:0',
-            'interaction_radius' => 'filled|required_without_all:tag_ids,file_ids,geo_longitude,geo_latitude,
-                                     duration,description,anonymous|int|min:0',
-            'anonymous' => 'filled|required_without_all:tag_ids,file_ids,geo_longitude,geo_latitude,
-                            duration,description,interaction_radius|in:true,false'
-
+            'geo_longitude' => 'filled|required_with:geo_latitude|required_without_all:file_ids,tag_ids,description,duration,interaction_radius,anonymous|numeric|between:-180,180',
+            'geo_latitude' => 'filled|required_with:geo_longitude|required_without_all:file_ids,tag_ids,description,duration,interaction_radius,anonymous|numeric|between:-90,90',
+            'file_ids' => 'filled|required_without_all:tag_ids,description,geo_longitude,geo_latitude,duration,interaction_radius,anonymous|regex:/^(\d+\;){0,5}\d+$/',
+            'tag_ids' => array('filled', 'required_without_all:file_ids,description,geo_longitude,geo_latitude,duration,interaction_radius,anonymous', 'regex:/^(((\d+\;){0,49}\d+)|(null))$/'),
+            'description' => 'filled|required_without_all:tag_ids,file_ids,geo_longitude,geo_latitude,duration,interaction_radius,anonymous|string',
+            'duration' => 'filled|required_without_all:tag_ids,file_ids,geo_longitude,geo_latitude,description,interaction_radius,anonymous|int|min:0',
+            'interaction_radius' => 'filled|required_without_all:tag_ids,file_ids,geo_longitude,geo_latitude,duration,description,anonymous|int|min:0',
+            'anonymous' => 'filled|required_without_all:tag_ids,file_ids,geo_longitude,geo_latitude,duration,description,interaction_radius|in:true,false'
         ]);
         if($validator->fails())
         {
