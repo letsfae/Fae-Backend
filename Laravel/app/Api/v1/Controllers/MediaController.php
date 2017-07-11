@@ -15,12 +15,15 @@ use App\Files;
 use App\Tags;
 use App\Users;
 use App\PinHelper;
+use App\Name_cards;
 use App\Api\v1\Controllers\PinOperationController;
 use Phaza\LaravelPostgis\Eloquent\PostgisTrait;
 use Phaza\LaravelPostgis\Geometries\Point;
 use Phaza\LaravelPostgis\Geometries\Geometry;
 use App\Api\v1\Controllers\TagController;
 use App\Api\v1\Controllers\FileController;
+use App\Api\v1\Utilities\ErrorCodeUtility;
+use App\Api\v1\Utilities\PinUtility;
 
 class MediaController extends Controller implements PinInterface
 {
@@ -44,12 +47,20 @@ class MediaController extends Controller implements PinInterface
             }
             else
             {
-                return $this->errorNotFound('tags not exist');
+                return response()->json([
+                    'message' => 'tags not found',
+                    'error_code' => ErrorCodeUtility::TAG_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
             }
         }
         if(!FileController::existsByString($this->request->file_ids))
         {
-            return $this->errorNotFound('files not exist');
+            return response()->json([
+                    'message' => 'files not found',
+                    'error_code' => ErrorCodeUtility::FILE_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         FileController::refByString($this->request->file_ids);
         $media->file_ids = $this->request->file_ids;
@@ -85,17 +96,29 @@ class MediaController extends Controller implements PinInterface
     {
         if(!is_numeric($media_id))
         {
-            return $this->response->errorBadRequest();
+            return response()->json([
+                    'message' => 'media_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
         $this->updateValidation($this->request);
         $media = Medias::find($media_id);
         if(is_null($media))
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'media not found',
+                    'error_code' => ErrorCodeUtility::MEDIA_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         if($media->user_id != $this->request->self_user_id)
         {
-            throw new AccessDeniedHttpException('You can not update this media');
+            return response()->json([
+                    'message' => 'You can not update this media',
+                    'error_code' => ErrorCodeUtility::NOT_OWNER_OF_PIN,
+                    'status_code' => '403'
+                ], 403);
         }
         if($this->request->has('file_ids'))
         { 
@@ -106,7 +129,11 @@ class MediaController extends Controller implements PinInterface
             }
             else
             {
-                return $this->errorNotFound();
+                return response()->json([
+                    'message' => 'file not found',
+                    'error_code' => ErrorCodeUtility::FILE_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
             }
         }
         if($this->request->has('tag_ids'))
@@ -123,7 +150,11 @@ class MediaController extends Controller implements PinInterface
             }
             else
             {
-                return $this->errorNotFound();
+                return response()->json([
+                    'message' => 'tag not found',
+                    'error_code' => ErrorCodeUtility::TAG_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
             }
         }
         if($this->request->has('description'))
@@ -163,40 +194,49 @@ class MediaController extends Controller implements PinInterface
     {
         if(!is_numeric($media_id))
         {
-            return $this->response->errorBadRequest();
+            return response()->json([
+                    'message' => 'media_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
-        $media = Medias::find($media_id);
-        if(is_null($media))
-        {
-            return $this->response->errorNotFound();
+        $media = $this->getPinObject($media_id, $this->request->self_user_id);
+        if(is_null($media)) {
+            return response()->json([
+                    'message' => 'media not found',
+                    'error_code' => ErrorCodeUtility::MEDIA_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
-        $file_ids = is_null($media->file_ids) ? null : explode(';', $media->file_ids);
-        $tag_ids = is_null($media->tag_ids) ? null : explode(';', $media->tag_ids);
-        $user_pin_operations = PinOperationController::getOperations('media', $media_id, $this->request->self_user_id);
-        return $this->response->array(array('media_id' => $media->id, 
-            'user_id' => ($media->anonymous && $media->user_id != $this->request->self_user_id) ? null : $media->user_id, 
-            'anonymous' => $media->anonymous, 'file_ids' => $file_ids, 'tag_ids' => $tag_ids, 
-            'description' => $media->description, 'geolocation' => ['latitude' => $media->geolocation->getLat(), 
-            'longitude' => $media->geolocation->getLng()], 'liked_count' => $media->liked_count, 
-            'saved_count' => $media->saved_count, 'comment_count' => $media->comment_count,
-            'created_at' => $media->created_at->format('Y-m-d H:i:s'),
-            'user_pin_operations' => $user_pin_operations));
+        return $this->response->array($media);
     }
 
     public function delete($media_id)
     {
         if(!is_numeric($media_id))
         {
-            return $this->response->errorBadRequest();
+            return response()->json([
+                    'message' => 'media_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
         $media = Medias::find($media_id);
         if(is_null($media))
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'media not found',
+                    'error_code' => ErrorCodeUtility::MEDIA_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         if($media->user_id != $this->request->self_user_id)
         {
-            throw new AccessDeniedHttpException('You can not delete this media');
+            return response()->json([
+                    'message' => 'You can not delete this media',
+                    'error_code' => ErrorCodeUtility::NOT_OWNER_OF_PIN,
+                    'status_code' => '403'
+                ], 403);
         }
         FileController::derefByString($media->file_ids);
         TagController::derefByString($media->tag_ids, $media->id, 'media');
@@ -212,11 +252,19 @@ class MediaController extends Controller implements PinInterface
     {
         if(!is_numeric($user_id))
         {
-            return $this->response->errorBadRequest('id should be integer');
+            return response()->json([
+                    'message' => 'user_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
         if (is_null(Users::find($user_id)))
         {
-            return $this->response->errorNotFound('user does not exist');
+            return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         $this->getFromUserValidation($this->request);
         $start_time = $this->request->has('start_time') ? $this->request->start_time : '1970-01-01 00:00:00';
@@ -260,16 +308,49 @@ class MediaController extends Controller implements PinInterface
         {
             $user_pin_operations = PinOperationController::getOperations('media', $media->id, $this->request->self_user_id);
             $info[] = array('media_id' => $media->id, 
-                'user_id' => $media->user_id, 
+                'user_id' => $media->user_id,
+                'nick_name' => Name_cards::find(1)->nick_name,
                 'file_ids' => explode(';', $media->file_ids), 
-                'tag_ids' => explode(';', $media->tag_ids), 'description' => $media->description, 
+                'tag_ids' => explode(';', $media->tag_ids), 
+                'description' => $media->description, 
                 'geolocation'=>['latitude'=>$media->geolocation->getLat(), 'longitude'=>$media->geolocation->getLng()], 
                 'liked_count' => $media->liked_count, 
-                'saved_count' => $media->saved_count, 'comment_count' => $media->comment_count,
+                'saved_count' => $media->saved_count, 
+                'comment_count' => $media->comment_count,
+                'feeling_count' => PinUtility::decodeFeelings($media->feeling_count),
                 'created_at' => $media->created_at->format('Y-m-d H:i:s'),
                 'user_pin_operations' => $user_pin_operations);   
         }
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
+    }
+
+    public static function getPinObject($media_id, $user_id) {
+        $media = Medias::find($media_id);
+        if(is_null($media))
+        {
+            return null;
+        }
+        $file_ids = is_null($media->file_ids) ? null : explode(';', $media->file_ids);
+        $tag_ids = is_null($media->tag_ids) ? null : explode(';', $media->tag_ids);
+        $user_pin_operations = PinOperationController::getOperations('media', $media_id, $user_id);
+        return array(
+            'media_id' => $media->id, 
+            'user_id' => ($media->anonymous && $media->user_id != $user_id) ? null : $media->user_id, 
+            'nick_name' => ($media->anonymous && $media->user_id != $user_id) ? 
+                            null : Name_cards::find($media->user_id)->nick_name,
+            'anonymous' => $media->anonymous, 
+            'file_ids' => $file_ids, 
+            'tag_ids' => $tag_ids, 
+            'description' => $media->description, 
+            'geolocation' => ['latitude' => $media->geolocation->getLat(), 
+            'longitude' => $media->geolocation->getLng()], 
+            'liked_count' => $media->liked_count, 
+            'saved_count' => $media->saved_count, 
+            'comment_count' => $media->comment_count,
+            'feeling_count' => PinUtility::decodeFeelings($media->feeling_count),
+            'created_at' => $media->created_at->format('Y-m-d H:i:s'),
+            'user_pin_operations' => $user_pin_operations
+        );
     }
 
     private function createValidation(Request $request)
@@ -302,7 +383,7 @@ class MediaController extends Controller implements PinInterface
             'tag_ids' => array('filled', 'required_without_all:file_ids,description,geo_longitude,geo_latitude,
                             duration,interaction_radius,anonymous', 'regex:/^(((\d+\;){0,49}\d+)|(null))$/'),
             'description' => 'filled|required_without_all:tag_ids,file_ids,geo_longitude,geo_latitude,
-                              duration,interaction_radius,anonymous|string',
+                              duration,interaction_radius,anonymous|string', 
             'duration' => 'filled|required_without_all:tag_ids,file_ids,geo_longitude,geo_latitude,description,
                            interaction_radius,anonymous|int|min:0',
             'interaction_radius' => 'filled|required_without_all:tag_ids,file_ids,geo_longitude,geo_latitude,

@@ -40,16 +40,21 @@ class CommentTest extends TestCase {
     public function testCreated() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -94,16 +99,21 @@ class CommentTest extends TestCase {
     public function testCreated2() {
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+       $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -139,17 +149,21 @@ class CommentTest extends TestCase {
     // the correct response of the get comment with the comment_id.
     public function testGetOne() { 
         $this->markTestSkipped(); 
-        //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -167,46 +181,55 @@ class CommentTest extends TestCase {
             'Fae-Client-Version' => 'ios-0.0.1', 
             'Authorization' => 'FAE '.$array->debug_base64ed,
         );
-        //post like pin_operations
-        $comment = Comments::create([ 
-            'user_id' => 1,
-            'content' => 'this is the test.', 
-            'geolocation' => new Point(34.031958,-118.288125),  
+        //post like pin_operations 
+        $parameters2 = array(
+            'content' => 'This is the test.',
+            'geo_longitude' => -118.2799,
+            'geo_latitude' => 34.2799, 
             'duration' => '1440',
             'interaction_radius' => '100',
             'anonymous' => 'true',
-        ]);
+        ); 
+        //create the comment.
+        $response2 = $this->call('post', 'http://'.$this->domain.'/comments', $parameters2, [], [], $this->transformHeadersToServerVars($server2));  
+        $array2 = json_decode($response2->getContent());
+        $this->refreshApplication(); 
         $response_like = $this->call('post', 'http://'.$this->domain.'/pins/comment/1/like', [], [], [], $this->transformHeadersToServerVars($server2));
         $this->refreshApplication();
         //post save pin_operations
-        $response_save = $this->call('post', 'http://'.$this->domain.'/pins/comment/1/save', [], [], [], $this->transformHeadersToServerVars($server2));
+        $response_save = $this->call('post', 'http://'.$this->domain.'/pins/comment/1/save', [], [], [], $this->transformHeadersToServerVars($server2)); 
         $this->refreshApplication();
         $parameters1 = array(
             'content' => 'This is the pin comment test', 
         );  
         //post comment pin_operations
-        $response_comment = $this->call('post', 'http://'.$this->domain.'/pins/comment/1/comments', $parameters1, [], [], $this->transformHeadersToServerVars($server2));  
+        $response_comment = $this->call('post', 'http://'.$this->domain.'/pins/comment/1/comments', $parameters1, [], [], $this->transformHeadersToServerVars($server2));   
         $this->refreshApplication();  
-        //get the comment
-        $response = $this->call('get', 'http://'.$this->domain.'/comments/1', [], [], [], $this->transformHeadersToServerVars($server2)); 
-        $array2 = json_decode($response->getContent());  
+        // get the comment
+        $response = $this->call('get', 'http://'.$this->domain.'/comments/'.$array2->comment_id, [], [], [], $this->transformHeadersToServerVars($server2));   
+        $array2 = json_decode($response->getContent()); 
         $this->seeJson([
                 'comment_id' => 1,
                 'user_id' => 1,
-                'content' => 'this is the test.',
+                'nick_name' => null,
+                'anonymous' => true,
+                'content' => 'This is the test.',
                 'geolocation' => array(
-                    'latitude' => 34.031958,
-                    'longitude' => -118.288125,
+                    'latitude' => 34.2799,
+                    'longitude' => -118.2799,
                 ),
                 'liked_count' => 1,
                 'saved_count' => 1,
                 'comment_count' => 1,
+                'feeling_count' => [0,0,0,0,0,0,0,0,0,0,0],
                 'created_at' => $array2->created_at,
                 'user_pin_operations' => array(
                     'is_liked' => true,
                     'liked_timestamp' => $array2->user_pin_operations->liked_timestamp,
                     'is_saved' => true,
                     'saved_timestamp' => $array2->user_pin_operations->saved_timestamp,
+                    'feeling' => -1,
+                    'feeling_timestamp' => $array2->user_pin_operations->feeling_timestamp,
                     'is_read' => true,
                     'read_timestamp' => $array2->user_pin_operations->read_timestamp,
                 ),
@@ -222,16 +245,21 @@ class CommentTest extends TestCase {
     public function testGetOne2() {
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -252,28 +280,37 @@ class CommentTest extends TestCase {
         //the format of the comment_id is not valid.
         //get the comment.
         $response = $this->call('get', 'http://'.$this->domain.'/comments/letsfae', [], [], [], $this->transformHeadersToServerVars($server2)); 
-        $array2 = json_decode($response->getContent()); 
+        $this->seeJson([
+                 'message' => 'comment_id is not integer',
+                 'error_code' => '400-3',
+                 'status_code' => '400', 
+        ]); 
         $result = false;
-        if ($response->status() == '400' && $array2->message == 'Bad Request') {
+        if ($response->status() == '400') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);
     }
 
     // the comment with the given comment_id does not exist.
     public function testGetOne3() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -295,35 +332,47 @@ class CommentTest extends TestCase {
             'content' => 'This is the test.',
             'geo_longitude' => -118.2799,
             'geo_latitude' => 34.2799, 
+            'duration' => '1440',
+            'interaction_radius' => '100',
+            'anonymous' => 'true',
         ); 
         //create the comment.
-        $response2 = $this->call('post', 'http://'.$this->domain.'/comments', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
+        $response2 = $this->call('post', 'http://'.$this->domain.'/comments', $parameters2, [], [], $this->transformHeadersToServerVars($server2));  
         $array2 = json_decode($response2->getContent());
-        //test the comment with the comment_id -1 does not exist!
-        //get the comment
-        $response = $this->call('get', 'http://'.$this->domain.'/comments/-1'.$array2->comment_id, [], [], [], $this->transformHeadersToServerVars($server2)); 
-        $array3 = json_decode($response->getContent()); 
+        // test the comment with the comment_id -1 does not exist!
+        // get the comment
+        $response = $this->call('get', 'http://'.$this->domain.'/comments/-1', [], [], [], $this->transformHeadersToServerVars($server2)); 
+        $this->seeJson([
+                 'message' => 'comment not found',
+                 'error_code' => '404-9',
+                 'status_code' => '404', 
+        ]); 
         $result = false;
-        if ($response->status() == '404' && $array3->message == 'Not Found') {
+        if ($response->status() == '404') {
             $result = true;
         }
-        $this->assertEquals(true, $result);  
+        $this->assertEquals(true, $result); 
     }
 
     // the correct response of the method of getting all comments of the given user when user_pin_operations is null and the request user_id is not the same as the logged in user_id.
     public function testGetFromUser() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -375,23 +424,28 @@ class CommentTest extends TestCase {
             'start_time' => '2016-06-08 21:22:39',
             'end_time' => date("Y-m-d H:i:s"),
             'page' => 1,
-        );
-        $user2 = Users::create([
+        ); 
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $parameters2 = array(
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();  
+        $parameter3 = array(
             'email' => 'letsfae2@126.com', 
             'password' => 'letsfaego',
             'user_name' => 'faeapp2',
         );
-        $login_response2 = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters2, [], [], $this->transformHeadersToServerVars($server));
+        $login_response2 = $this->call('post', 'http://'.$this->domain.'/authentication', $parameter3, [], [], $this->transformHeadersToServerVars($server));
         $array_2 = json_decode($login_response2->getContent());
         $server3 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -401,12 +455,13 @@ class CommentTest extends TestCase {
         // print($array_2->user_id.'\n');
         // get the comments of the user with the user_id.
         // get the comments of the page 1.
-        $response_page1 = $this->call('get', 'http://'.$this->domain.'/comments/users/'.$array->user_id, $content, [], [], $this->transformHeadersToServerVars($server3));
-        $array_3 = json_decode($response_page1->getContent());    
+        $response_page1 = $this->call('get', 'http://'.$this->domain.'/comments/users/'.$array->user_id, $content, [], [], $this->transformHeadersToServerVars($server3)); 
+        $array_3 = json_decode($response_page1->getContent()); 
         for ($i = 0; $i < 30; $i++) {
             $this->seeJson([  
                         'comment_id' => $array_3[$i]->comment_id,
                         'user_id' => $array_3[$i]->user_id,
+                        'nick_name' => null,
                         'content' => $array_3[$i]->content,
                         'geolocation' => array(
                             'latitude' => $array_3[$i]->geolocation->latitude,
@@ -415,18 +470,19 @@ class CommentTest extends TestCase {
                         'liked_count' => 1,
                         'saved_count' => 1,
                         'comment_count' => 1,
-                        'created_at' => $array_3[$i]->created_at, 
+                        'feeling_count' => [0,0,0,0,0,0,0,0,0,0,0],
+                        'created_at' => $array_3[$i]->created_at,
                         'user_pin_operations' => array(
                             'is_liked' => false,
                             'liked_timestamp' => $array_3[$i]->user_pin_operations->liked_timestamp,
                             'is_saved' => false,
-                            'saved_timestamp' => $array_3[$i]->user_pin_operations->saved_timestamp,
+                            'saved_timestamp' => $array_3[$i]->user_pin_operations->saved_timestamp, 
                             'is_read' => false,
                             'read_timestamp' => $array_3[$i]->user_pin_operations->read_timestamp,
-                        ),
+                ),
             ]);
         }
-        $this->refreshApplication();
+        // $this->refreshApplication();
         $content2 = array(
             'start_time' => '2016-06-08 21:22:39',
             'end_time' => date("Y-m-d H:i:s"),
@@ -438,6 +494,7 @@ class CommentTest extends TestCase {
         $this->seeJson([  
             'comment_id' => $array_4[0]->comment_id,
             'user_id' => $array_4[0]->user_id,
+            'nick_name' => null,
             'content' => $array_4[0]->content,
             'geolocation' => array(
                 'latitude' => $array_4[0]->geolocation->latitude,
@@ -446,6 +503,7 @@ class CommentTest extends TestCase {
             'liked_count' => 1,
             'saved_count' => 1,
             'comment_count' => 1,
+            'feeling_count' => [0,0,0,0,0,0,0,0,0,0,0],
             'created_at' => $array_4[0]->created_at, 
             'user_pin_operations' => array(
                 'is_liked' => false,
@@ -468,16 +526,21 @@ class CommentTest extends TestCase {
     public function testGetFromUser2() { 
         $this->markTestSkipped();  
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -499,27 +562,37 @@ class CommentTest extends TestCase {
         //get the comment.
         $response = $this->call('get', 'http://'.$this->domain.'/comments/users/2', [], [], [], $this->transformHeadersToServerVars($server2)); 
         $array2 = json_decode($response->getContent()); 
-        $result = false; 
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
+        $this->seeJson([
+                 'message' => 'user not found',
+                 'error_code' => '404-3',
+                 'status_code' => '404', 
+        ]); 
+        $result = false;
+        if ($response->status() == '404') {
             $result = true;
         }
-        $this->assertEquals(true, $result);  
+        $this->assertEquals(true, $result);
     }
 
     //test whether the format of the user_id is right.
     public function testGetFromUser3() { 
         $this->markTestSkipped();  
         //register of the user.
-        $user = Users::create([
+       $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -540,9 +613,13 @@ class CommentTest extends TestCase {
         //the format of the user_id is not valid and the user does not exist.
         //get the comment.
         $response = $this->call('get', 'http://'.$this->domain.'/comments/users/letfae', [], [], [], $this->transformHeadersToServerVars($server2)); 
-        $array2 = json_decode($response->getContent()); 
+        $this->seeJson([
+                 'message' => 'user_id is not integer',
+                 'error_code' => '400-3',
+                 'status_code' => '400', 
+        ]); 
         $result = false;
-        if ($response->status() == '400' && $array2->message == 'Bad Request') {
+        if ($response->status() == '400') {
             $result = true;
         }
         $this->assertEquals(true, $result);
@@ -551,16 +628,21 @@ class CommentTest extends TestCase {
      public function testGetFromUser4() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -613,23 +695,28 @@ class CommentTest extends TestCase {
             'start_time' => '2016-06-08 21:22:39',
             'end_time' => date("Y-m-d H:i:s"),
             'page' => 1,
-        );
-        $user2 = Users::create([
+        ); 
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $parameters2 = array(
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();  
+        $parameters3 = array(
             'email' => 'letsfae2@126.com', 
             'password' => 'letsfaego',
             'user_name' => 'faeapp2',
         );
-        $login_response2 = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters2, [], [], $this->transformHeadersToServerVars($server));
+        $login_response2 = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters3, [], [], $this->transformHeadersToServerVars($server));
         $array_2 = json_decode($login_response2->getContent());
         $server3 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -653,16 +740,21 @@ class CommentTest extends TestCase {
     public function testGetFromUser5() { 
         $this->markTestSkipped();  
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -700,16 +792,21 @@ class CommentTest extends TestCase {
     public function testGetFromUser6() {  
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+       $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -742,8 +839,7 @@ class CommentTest extends TestCase {
             'page' => 2,//the page 2 does not exist!
         );
         $response = $this->call('get', 'http://'.$this->domain.'/comments/users/'.$array->user_id, $content, [], [], $this->transformHeadersToServerVars($server2)); 
-        $array2 = json_decode($response->getContent());
-        $result = false;
+        $array2 = json_decode($response->getContent()); 
         $this->seeJson([]);
         $result = false;
         if ($response->status() == '200') {
@@ -751,162 +847,172 @@ class CommentTest extends TestCase {
         }
         $this->assertEquals(true, $result);
     }
-    // the correct response of the method of getting all comments of the given user when user_pin_operations is not null.
-    public function testGetFromUser7() { 
-        $this->markTestSkipped(); 
-        //register of the user.
-        $user = Users::create([
-            'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
-            'first_name' => 'kevin',
-            'last_name' => 'zhang',
-            'user_name' => 'faeapp',
-            'gender' => 'male',
-            'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $parameters = array(
-            'email' => 'letsfae@126.com', 
-            'password' => 'letsfaego',
-            'user_name' => 'faeapp',
-        ); 
-        $server = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
-        );
-        //login of the user.
-        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
-        $array = json_decode($login_response->getContent());
-        $this->refreshApplication();
-        $server2 = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
-            'Authorization' => 'FAE '.$array->debug_base64ed,
-        );
-        $parameters = array();
-        $response = array();
-        for ($i = 0; $i < 31; $i++) {
-            $parameters[$i] = array(
-                'content' => 'This is the test'.$i,
-                'geo_longitude' => -118.2799,
-                'geo_latitude' => 34.2799, 
-                'duration' => '1440',
-                'interaction_radius' => '100', 
-            );
-        }
-        for ($i = 0; $i < 31; $i++) {
-            //create the comments. 
-            $response[$i] = $this->call('post', 'http://'.$this->domain.'/comments', $parameters[$i], [], [], $this->transformHeadersToServerVars($server2)); 
-            // sleep(1);
-            $this->refreshApplication();
-        } 
-        $this->refreshApplication();
-        $content = array(
-            'start_time' => '2016-06-08 21:22:39',
-            'end_time' => date("Y-m-d H:i:s"),
-            'page' => 1,
-        );
-        $user2 = Users::create([
-            'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
-            'first_name' => 'kevin',
-            'last_name' => 'zhang',
-            'user_name' => 'faeapp2',
-            'gender' => 'male',
-            'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $parameters2 = array(
-            'email' => 'letsfae2@126.com', 
-            'password' => 'letsfaego',
-            'user_name' => 'faeapp2',
-        );
-        $login_response2 = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters2, [], [], $this->transformHeadersToServerVars($server));
-        $array_2 = json_decode($login_response2->getContent());
-        $server3 = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1', 
-            'Authorization' => 'FAE '.$array_2->debug_base64ed,
-        );  
-        // get the comments of the user with the user_id.
-        // get the comments of the page 1.
-        $response_page1 = $this->call('get', 'http://'.$this->domain.'/comments/users/'.$array->user_id, $content, [], [], $this->transformHeadersToServerVars($server3));
-        $array_3 = json_decode($response_page1->getContent());    
-        for ($i = 0; $i < 30; $i++) {
-            $this->seeJson([  
-                        'comment_id' => $array_3[$i]->comment_id,
-                        'user_id' => $array_3[$i]->user_id,
-                        'content' => $array_3[$i]->content,
-                        'geolocation' => array(
-                            'latitude' => $array_3[$i]->geolocation->latitude,
-                            'longitude' => $array_3[$i]->geolocation->longitude,
-                        ),
-                        'liked_count' => 0,
-                        'saved_count' => 0,
-                        'comment_count' => 0,
-                        'created_at' => $array_3[$i]->created_at, 
-                        'user_pin_operations' => array(
-                            'is_liked' => false,
-                            'liked_timestamp' => $array_3[$i]->user_pin_operations->liked_timestamp,
-                            'is_saved' => false,
-                            'saved_timestamp' => $array_3[$i]->user_pin_operations->saved_timestamp,
-                            'is_read' => false,
-                            'read_timestamp' => $array_3[$i]->user_pin_operations->read_timestamp,
-                        ),
-            ]);
-        }
-        $this->refreshApplication();
-        $content2 = array(
-            'start_time' => '2016-06-08 21:22:39',
-            'end_time' => date("Y-m-d H:i:s"),
-            'page' => 2,
-        );
-        //get the comments of the page 2.
-        $response_page2 = $this->call('get', 'http://'.$this->domain.'/comments/users/'.$array->user_id, $content2, [], [], $this->transformHeadersToServerVars($server3)); 
-        $array_4 = json_decode($response_page2->getContent()); 
-        $this->seeJson([  
-            'comment_id' => $array_4[0]->comment_id,
-            'user_id' => $array_4[0]->user_id,
-            'content' => $array_4[0]->content,
-            'geolocation' => array(
-                'latitude' => $array_4[0]->geolocation->latitude,
-                'longitude' => $array_4[0]->geolocation->longitude,
-            ),
-            'liked_count' => 0,
-            'saved_count' => 0,
-            'comment_count' => 0,
-            'created_at' => $array_4[0]->created_at, 
-            'user_pin_operations' => array(
-                'is_liked' => false,
-                'liked_timestamp' => $array_4[0]->user_pin_operations->liked_timestamp,
-                'is_saved' => false,
-                'saved_timestamp' => $array_4[0]->user_pin_operations->saved_timestamp,
-                'is_read' => false,
-                'read_timestamp' => $array_4[0]->user_pin_operations->read_timestamp,
-            ),
-        ]);
-        $result = false;
-        if ($response_page1->headers->get('page') == '1' && $response_page1->headers->get('total-pages') == '2' && $response_page1->status() == '200') {
-            $result = true;
-        } 
-        $this->assertEquals(true, $result);
+    // // the correct response of the method of getting all comments of the given user when user_pin_operations is not null.
+    // public function testGetFromUser7() { 
+    //     $this->markTestSkipped(); 
+    //     //register of the user.
+    //     $parameter1 = array(
+    //         'email' => 'letsfae@126.com',
+    //         'password' => 'letsfaego',
+    //         'first_name' => 'kevin',
+    //         'last_name' => 'zhang',
+    //         'user_name' => 'faeapp',
+    //         'gender' => 'male',
+    //         'birthday' => '1992-02-02',
+    //     );
+    //     $server = array(
+    //         'Accept' => 'application/x.faeapp.v1+json', 
+    //         'Fae-Client-Version' => 'ios-0.0.1',
+    //     );
+    //     $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+    //     $this->refreshApplication(); 
+    //     $parameters = array(
+    //         'email' => 'letsfae@126.com', 
+    //         'password' => 'letsfaego',
+    //         'user_name' => 'faeapp',
+    //     ); 
+    //     $server = array(
+    //         'Accept' => 'application/x.faeapp.v1+json', 
+    //         'Fae-Client-Version' => 'ios-0.0.1', 
+    //     );
+    //     //login of the user.
+    //     $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+    //     $array = json_decode($login_response->getContent());
+    //     $this->refreshApplication();
+    //     $server2 = array(
+    //         'Accept' => 'application/x.faeapp.v1+json', 
+    //         'Fae-Client-Version' => 'ios-0.0.1', 
+    //         'Authorization' => 'FAE '.$array->debug_base64ed,
+    //     );
+    //     $parameters = array();
+    //     $response = array();
+    //     for ($i = 0; $i < 31; $i++) {
+    //         $parameters[$i] = array(
+    //             'content' => 'This is the test'.$i,
+    //             'geo_longitude' => -118.2799,
+    //             'geo_latitude' => 34.2799, 
+    //             'duration' => '1440',
+    //             'interaction_radius' => '100', 
+    //         );
+    //     }
+    //     for ($i = 0; $i < 31; $i++) {
+    //         //create the comments. 
+    //         $response[$i] = $this->call('post', 'http://'.$this->domain.'/comments', $parameters[$i], [], [], $this->transformHeadersToServerVars($server2)); 
+    //         // sleep(1);
+    //         $this->refreshApplication();
+    //     } 
+    //     $this->refreshApplication();
+    //     $content = array(
+    //         'start_time' => '2016-06-08 21:22:39',
+    //         'end_time' => date("Y-m-d H:i:s"),
+    //         'page' => 1,
+    //     );
+    //     $user2 = Users::create([
+    //         'email' => 'letsfae2@126.com',
+    //         'password' => bcrypt('letsfaego'),
+    //         'first_name' => 'kevin',
+    //         'last_name' => 'zhang',
+    //         'user_name' => 'faeapp2',
+    //         'gender' => 'male',
+    //         'birthday' => '1992-02-02',
+    //         'login_count' => 0, 
+    //     ]);
+    //     $parameters2 = array(
+    //         'email' => 'letsfae2@126.com', 
+    //         'password' => 'letsfaego',
+    //         'user_name' => 'faeapp2',
+    //     );
+    //     $login_response2 = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters2, [], [], $this->transformHeadersToServerVars($server));
+    //     $array_2 = json_decode($login_response2->getContent());
+    //     $server3 = array(
+    //         'Accept' => 'application/x.faeapp.v1+json', 
+    //         'Fae-Client-Version' => 'ios-0.0.1', 
+    //         'Authorization' => 'FAE '.$array_2->debug_base64ed,
+    //     );  
+    //     // get the comments of the user with the user_id.
+    //     // get the comments of the page 1.
+    //     $response_page1 = $this->call('get', 'http://'.$this->domain.'/comments/users/'.$array->user_id, $content, [], [], $this->transformHeadersToServerVars($server3));
+    //     $array_3 = json_decode($response_page1->getContent());    
+    //     for ($i = 0; $i < 30; $i++) {
+    //         $this->seeJson([  
+    //                     'comment_id' => $array_3[$i]->comment_id,
+    //                     'user_id' => $array_3[$i]->user_id,
+    //                     'content' => $array_3[$i]->content,
+    //                     'geolocation' => array(
+    //                         'latitude' => $array_3[$i]->geolocation->latitude,
+    //                         'longitude' => $array_3[$i]->geolocation->longitude,
+    //                     ),
+    //                     'liked_count' => 0,
+    //                     'saved_count' => 0,
+    //                     'comment_count' => 0,
+    //                     'created_at' => $array_3[$i]->created_at, 
+    //                     'user_pin_operations' => array(
+    //                         'is_liked' => false,
+    //                         'liked_timestamp' => $array_3[$i]->user_pin_operations->liked_timestamp,
+    //                         'is_saved' => false,
+    //                         'saved_timestamp' => $array_3[$i]->user_pin_operations->saved_timestamp,
+    //                         'is_read' => false,
+    //                         'read_timestamp' => $array_3[$i]->user_pin_operations->read_timestamp,
+    //                     ),
+    //         ]);
+    //     }
+    //     $this->refreshApplication();
+    //     $content2 = array(
+    //         'start_time' => '2016-06-08 21:22:39',
+    //         'end_time' => date("Y-m-d H:i:s"),
+    //         'page' => 2,
+    //     );
+    //     //get the comments of the page 2.
+    //     $response_page2 = $this->call('get', 'http://'.$this->domain.'/comments/users/'.$array->user_id, $content2, [], [], $this->transformHeadersToServerVars($server3)); 
+    //     $array_4 = json_decode($response_page2->getContent()); 
+    //     $this->seeJson([  
+    //         'comment_id' => $array_4[0]->comment_id,
+    //         'user_id' => $array_4[0]->user_id,
+    //         'content' => $array_4[0]->content,
+    //         'geolocation' => array(
+    //             'latitude' => $array_4[0]->geolocation->latitude,
+    //             'longitude' => $array_4[0]->geolocation->longitude,
+    //         ),
+    //         'liked_count' => 0,
+    //         'saved_count' => 0,
+    //         'comment_count' => 0,
+    //         'created_at' => $array_4[0]->created_at, 
+    //         'user_pin_operations' => array(
+    //             'is_liked' => false,
+    //             'liked_timestamp' => $array_4[0]->user_pin_operations->liked_timestamp,
+    //             'is_saved' => false,
+    //             'saved_timestamp' => $array_4[0]->user_pin_operations->saved_timestamp,
+    //             'is_read' => false,
+    //             'read_timestamp' => $array_4[0]->user_pin_operations->read_timestamp,
+    //         ),
+    //     ]);
+    //     $result = false;
+    //     if ($response_page1->headers->get('page') == '1' && $response_page1->headers->get('total-pages') == '2' && $response_page1->status() == '200') {
+    //         $result = true;
+    //     } 
+    //     $this->assertEquals(true, $result);
 
-    }
+    // }
 
     //test the correct response of deleting of the comment with the given comment_id.
     public function testDelete() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -924,6 +1030,10 @@ class CommentTest extends TestCase {
             'content' => 'This is the test.',
             'geo_longitude' => -118.2799,
             'geo_latitude' => 34.2799, 
+            'duration' => '1440',
+            'interaction_radius' => '100',
+            'anonymous' => 'true',
+            
         ); 
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -942,16 +1052,21 @@ class CommentTest extends TestCase {
     public function testDelete2() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -969,6 +1084,9 @@ class CommentTest extends TestCase {
             'content' => 'This is the test.',
             'geo_longitude' => -118.2799,
             'geo_latitude' => 34.2799, 
+            'duration' => '1440',
+            'interaction_radius' => '100',
+            'anonymous' => 'true',
         ); 
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -980,28 +1098,37 @@ class CommentTest extends TestCase {
         $this->refreshApplication();
         //the format of the comment_id is not valid.
         $response = $this->call('delete', 'http://'.$this->domain.'/comments/letsfae', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
-        $array3 = json_decode($response->getContent());
+        $this->seeJson([
+                 'message' => 'comment_id is not integer',
+                 'error_code' => '400-3',
+                 'status_code' => '400', 
+        ]); 
         $result = false;
-        if ($response->status() == '400' && $array3->message == 'Bad Request') {
+        if ($response->status() == '400') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);
     }
 
     //test the comment with the given comment_id does not exist.
     public function testDelete3() {  
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -1019,6 +1146,9 @@ class CommentTest extends TestCase {
             'content' => 'This is the test.',
             'geo_longitude' => -118.2799,
             'geo_latitude' => 34.2799, 
+            'duration' => '1440',
+            'interaction_radius' => '100',
+            'anonymous' => 'true',
         ); 
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -1030,38 +1160,52 @@ class CommentTest extends TestCase {
         $this->refreshApplication();
         //the comment with the given comment_id does not exist.
         $response = $this->call('delete', 'http://'.$this->domain.'/comments/-1', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
-        $array3 = json_decode($response->getContent());
+        $this->seeJson([
+                 'message' => 'comment not found',
+                 'error_code' => '404-9',
+                 'status_code' => '404', 
+        ]); 
         $result = false;
-        if ($response->status() == '404' && $array3->message == 'Not Found') {
+        if ($response->status() == '404') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);
     }
 
     //the user_id in comments is not the same as the self_user_id. 
     public function testDelete4() {  
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $user2 = Users::create([
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
-            'first_name' => 'kevin2',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -1079,6 +1223,9 @@ class CommentTest extends TestCase {
             'content' => 'This is the test.',
             'geo_longitude' => -118.2799,
             'geo_latitude' => 34.2799, 
+            'duration' => '1440',
+            'interaction_radius' => '100',
+            'anonymous' => 'true',
         ); 
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -1087,35 +1234,48 @@ class CommentTest extends TestCase {
         );
         $response2 = $this->call('post', 'http://'.$this->domain.'/comments', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
         $array2 = json_decode($response2->getContent());
+        $this->refreshApplication();  
         $comment = Comments::create([
             'user_id' => '2',
             'content' => 'This is the test2',
             'geolocation' => new Point(34.031961,-118.288125), 
+            'duration' => '1440',
+            'interaction_radius' => '100',
+            'anonymous' => 'true',
         ]);
         $this->refreshApplication(); 
         $response = $this->call('delete', 'http://'.$this->domain.'/comments/2', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
-        $array3 = json_decode($response->getContent()); 
+        $this->seeJson([
+                 'message' => 'You can not delete this comment',
+                 'error_code' => '403-2',
+                 'status_code' => '403', 
+        ]); 
         $result = false;
-        if ($response->status() == '403' && $array3->message == 'You can not delete this comment') {
+        if ($response->status() == '403') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);
     }
 
     //test the correct response of method of updateComment.
     public function testUpdate() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -1167,16 +1327,21 @@ class CommentTest extends TestCase {
     public function testUpdate2() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -1194,6 +1359,9 @@ class CommentTest extends TestCase {
             'content' => 'This is the test.',
             'geo_longitude' => -118.2799,
             'geo_latitude' => 34.2799, 
+            'duration' => 1440,
+            'interaction_radius' => 100,
+            'anonymous' => 'false',
         ); 
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -1208,9 +1376,13 @@ class CommentTest extends TestCase {
         ); 
         //wrong format of the comment_id.
         $response = $this->call('post', 'http://'.$this->domain.'/comments/fae', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
-        $array3 = json_decode($response->getContent()); 
+        $this->seeJson([
+                 'message' => 'comment_id is not integer',
+                 'error_code' => '400-3',
+                 'status_code' => '400', 
+        ]); 
         $result = false;
-        if ($response->status() == '400' && $array3->message == 'Bad Request') {
+        if ($response->status() == '400') {
             $result = true;
         }
         $this->assertEquals(true, $result);
@@ -1220,16 +1392,21 @@ class CommentTest extends TestCase {
     public function testUpdate3() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -1247,6 +1424,9 @@ class CommentTest extends TestCase {
             'content' => 'This is the test.',
             'geo_longitude' => -118.2799,
             'geo_latitude' => 34.2799, 
+            'duration' => 1440,
+            'interaction_radius' => 100,
+            'anonymous' => 'false',
         ); 
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -1275,16 +1455,21 @@ class CommentTest extends TestCase {
     public function testUpdate4() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -1302,6 +1487,9 @@ class CommentTest extends TestCase {
             'content' => 'This is the test.',
             'geo_longitude' => -118.2799,
             'geo_latitude' => 34.2799, 
+            'duration' => 1440,
+            'interaction_radius' => 100,
+            'anonymous' => 'false',
         ); 
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -1314,39 +1502,53 @@ class CommentTest extends TestCase {
         $parameters2 = array(
             'content' => 'This is the test2.', 
         );  
-        $response = $this->call('post', 'http://'.$this->domain.'/comments/2', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
-        $array3 = json_decode($response->getContent()); 
-        $result = false; 
-        if ($response->status() == '404' && $array3->message == 'Not Found') {
-            $result = true;
-        }
-        $this->assertEquals(true, $result); 
+        $response = $this->call('post', 'http://'.$this->domain.'/comments/2', $parameters2, [], [], $this->transformHeadersToServerVars($server2));  
+        $this->seeJson([
+                    'message' => 'comment not found',
+                    'error_code' => '404-9',
+                    'status_code' => '404', 
+            ]); 
+            $result = false;
+            if ($response->status() == '404') {
+                $result = true;
+            }
+            $this->assertEquals(true, $result); 
     }
 
     //test whether the user_id of the comment is the same as the user_id that the user logged in.
     public function testUpdate5() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $user2 = Users::create([
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
-            'first_name' => 'kevin2',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -1364,6 +1566,9 @@ class CommentTest extends TestCase {
             'content' => 'This is the test.',
             'geo_longitude' => -118.2799,
             'geo_latitude' => 34.2799, 
+            'duration' => 1440,
+            'interaction_radius' => 100,
+            'anonymous' => 'false',
         ); 
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -1383,8 +1588,13 @@ class CommentTest extends TestCase {
         ); 
         $response = $this->call('post', 'http://'.$this->domain.'/comments/1', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
         $array3 = json_decode($response->getContent()); 
-        $result = false; 
-        if ($response->status() == '403' && $array3->message == 'You can not update this comment') {
+        $this->seeJson([
+                    'message' => 'You can not update this comment',
+                    'error_code' => '403-2',
+                    'status_code' => '403', 
+        ]); 
+        $result = false;
+        if ($response->status() == '403') {
             $result = true;
         }
         $this->assertEquals(true, $result); 

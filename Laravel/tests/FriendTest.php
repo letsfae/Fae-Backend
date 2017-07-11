@@ -40,26 +40,36 @@ class FriendTest extends TestCase
     public function testRequestFriend() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $user2 = Users::create([
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -94,26 +104,36 @@ class FriendTest extends TestCase
     public function testRequestFriend2() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $user2 = Users::create([
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -148,16 +168,21 @@ class FriendTest extends TestCase
     public function testRequestFriend3() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]); 
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -180,9 +205,13 @@ class FriendTest extends TestCase
         ); 
         //create the chatRoom.
         $response = $this->call('post', 'http://'.$this->domain.'/friends/request', $parameters2, [], [], $this->transformHeadersToServerVars($server2));  
-        $array2 = json_decode($response->getContent());  
+        $this->seeJson([
+                 'message' => 'request user not found',
+                 'error_code' => '404-3',
+                 'status_code' => '404', 
+        ]); 
         $result = false;
-        if ($response->status() == '422' && $array2->message == 'Bad request, Request user incorrect!') {
+        if ($response->status() == '404') {
             $result = true;
         }
         $this->assertEquals(true, $result);  
@@ -191,26 +220,36 @@ class FriendTest extends TestCase
     public function testRequestFriend4() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+         $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]); 
-        $user2 = Users::create([
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -237,9 +276,13 @@ class FriendTest extends TestCase
         ); 
         //create the chatRoom.
         $response = $this->call('post', 'http://'.$this->domain.'/friends/request', $parameters2, [], [], $this->transformHeadersToServerVars($server2));  
-        $array2 = json_decode($response->getContent());  
+        $this->seeJson([
+                 'message' => 'Bad request, you have already blocked the user!',
+                 'error_code' => '400-6',
+                 'status_code' => '400', 
+        ]); 
         $result = false;
-        if ($response->status() == '422' && $array2->message == 'Bad request, you have already blocked the user!') {
+        if ($response->status() == '400') {
             $result = true;
         }
         $this->assertEquals(true, $result);  
@@ -248,26 +291,36 @@ class FriendTest extends TestCase
     public function testAcceptFriend() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+         $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $user2 = Users::create([
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameter = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -325,26 +378,36 @@ class FriendTest extends TestCase
     public function testAcceptFriend2() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+         $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $user2 = Users::create([
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameter = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -400,26 +463,36 @@ class FriendTest extends TestCase
     public function testAcceptFriend3() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+         $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $user2 = Users::create([
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameter = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -464,37 +537,51 @@ class FriendTest extends TestCase
             'friend_request_id' => 2,
         ); 
         $response2 = $this->call('post', 'http://'.$this->domain.'/friends/accept', $parameters3, [], [], $this->transformHeadersToServerVars($server2));  
-        $array2 = json_decode($response2->getContent()); 
+        $this->seeJson([
+                 'message' => 'friend request not found',
+                 'error_code' => '404-12',
+                 'status_code' => '404', 
+        ]); 
         $result = false;
-        if ($response2->status() == '422' && $array2->message == 'Bad request, No such friend request!') {
+        if ($response2->status() == '404') {
             $result = true;
         }
-        $this->assertEquals(true, $result);  
+        $this->assertEquals(true, $result);
     }
     // test the correct response of requested_user is blocked by the user.
     public function testAcceptFriend4() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+         $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $user2 = Users::create([
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameter = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -543,37 +630,51 @@ class FriendTest extends TestCase
             'friend_request_id' => 1,
         ); 
         $response2 = $this->call('post', 'http://'.$this->domain.'/friends/accept', $parameters3, [], [], $this->transformHeadersToServerVars($server2));  
-        $array2 = json_decode($response2->getContent()); 
+        $this->seeJson([
+                 'message' => 'Bad request, you have already blocked the user!',
+                 'error_code' => '400-6',
+                 'status_code' => '400', 
+        ]); 
         $result = false;
-        if ($response2->status() == '422' && $array2->message == 'Bad request, you have already blocked the user!') {
+        if ($response2->status() == '400') {
             $result = true;
         }
-        $this->assertEquals(true, $result);  
+        $this->assertEquals(true, $result);    
     }
     // the correct response of the ignoreFriend.
     public function testIgnoreFriend() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+         $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $user2 = Users::create([
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameter = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -629,26 +730,36 @@ class FriendTest extends TestCase
     public function testIgnoreFriend2() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $user2 = Users::create([
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameter = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -704,26 +815,36 @@ class FriendTest extends TestCase
     public function testIgnoreFriend3() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+         $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $user2 = Users::create([
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameter = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -768,37 +889,51 @@ class FriendTest extends TestCase
             'friend_request_id' => 2,
         ); 
         $response2 = $this->call('post', 'http://'.$this->domain.'/friends/ignore', $parameters3, [], [], $this->transformHeadersToServerVars($server2));  
-        $array2 = json_decode($response2->getContent()); 
+        $this->seeJson([
+                 'message' => 'friend request not found',
+                 'error_code' => '404-12',
+                 'status_code' => '404', 
+        ]); 
         $result = false;
-        if ($response2->status() == '422' && $array2->message == 'Bad request, No such friend request!') {
+        if ($response2->status() == '404') {
             $result = true;
         }
-        $this->assertEquals(true, $result);  
+        $this->assertEquals(true, $result);
     }
     // the correct response of the deleteFriend.
     public function testDeleteFriend() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+         $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $user2 = Users::create([
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameter = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -857,36 +992,51 @@ class FriendTest extends TestCase
     public function testGetAllRequest() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
-            'email' => 'letsfae1@126.com',
-            'password' => bcrypt('letsfaego'),
+         $parameter1 = array(
+            'email' => 'letsfae@126.com',
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
-            'user_name' => 'faeapp1',
+            'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $user2 = Users::create([
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $user3 = Users::create([
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameter2 = array(
             'email' => 'letsfae3@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp3',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameter = array(
             'email' => 'letsfae1@126.com', 
             'password' => 'letsfaego',

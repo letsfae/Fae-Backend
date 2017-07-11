@@ -12,6 +12,7 @@ use App\NameCardsSaved;
 use Validator;
 use Dingo\Api\Exception\UpdateResourceFailedException;
 use App\Api\v1\utilities\TimeUtility;
+use App\Api\v1\Utilities\ErrorCodeUtility;
 
 class UserNameCardController extends Controller
 {
@@ -27,7 +28,11 @@ class UserNameCardController extends Controller
         $nameCard = Name_cards::find($user_id);
         if(is_null($nameCard))
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'name card not found',
+                    'error_code' => ErrorCodeUtility::VERIFICATION_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         $user = $nameCard->hasOneUser()->first();
         $tags = array();
@@ -95,7 +100,11 @@ class UserNameCardController extends Controller
             {
                 if(is_null(Name_card_tags::find($tag)))
                 {
-                    return $this->response->errorBadRequest('tag doest not exist');
+                    return response()->json([
+                        'message' => 'tag not found',
+                        'error_code' => ErrorCodeUtility::TAG_NOT_FOUND,
+                        'status_code' => '404'
+                    ], 404);
                 }
             }   
             $nameCard->tag_ids = $this->request->tag_ids;
@@ -130,15 +139,27 @@ class UserNameCardController extends Controller
     {
         if(!is_numeric($user_id))
         {
-            return $this->response->errorBadRequest("user_id is not integer");
+            return response()->json([
+                    'message' => 'id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
         if(!Name_cards::where('user_id',$user_id)->exists())
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         if(NameCardsSaved::where('user_id', $this->request->self_user_id)->where('name_card_user_id', $user_id)->exists())
         {
-            return $this->response->errorBadRequest("You have already saved this name card!");
+            return response()->json([
+                'message' => 'Bad request, you have already saved this name card!',
+                'error_code' => ErrorCodeUtility::SAVED_ALREADY,
+                'status_code' => '400'
+            ], 400);
         }
         $name_card_saved = new NameCardsSaved();
         $name_card_saved->user_id = $this->request->self_user_id;
@@ -151,13 +172,21 @@ class UserNameCardController extends Controller
     {
         if(!is_numeric($user_id))
         {
-            return $this->response->errorBadRequest("user_id is not integer");
+            return response()->json([
+                    'message' => 'id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
         $name_card_saved = NameCardsSaved::where('user_id', $this->request->self_user_id)
                                          ->where('name_card_user_id', $user_id)->first();
         if(is_null($name_card_saved))
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                'message' => 'Bad request, you have not saved this name card yet!',
+                'error_code' => ErrorCodeUtility::NOT_SAVED,
+                'status_code' => '400'
+            ], 400);
         }
         $name_card_saved->delete();
         return $this->response->noContent();

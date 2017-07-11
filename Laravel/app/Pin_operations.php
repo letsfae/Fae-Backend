@@ -7,11 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class Pin_operations extends Model
 {
     protected $table = 'pin_operations';
-    public function updateReadTimestamp()
-    {
-        $this->read_timestamp = $this->freshTimestamp();
-        return $this->save();
-    }
     public function updateSavedTimestamp()
     {
         $this->saved_timestamp = $this->freshTimestamp();
@@ -21,6 +16,11 @@ class Pin_operations extends Model
     {
         $this->liked_timestamp = $this->freshTimestamp();
         return $this->save();
-    }
-    protected $fillable = array('user_id', 'pin_id', 'type', 'saved', 'liked');
+    } 
+    protected $fillable = array('user_id', 'pin_id', 'type', 'saved', 'liked','feeling'); 
+    public function updateFeelingTimestamp()
+    {
+        $this->feeling_timestamp = $this->freshTimestamp();
+        return $this->save();
+    } 
 }

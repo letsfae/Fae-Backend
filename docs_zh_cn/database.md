@@ -53,12 +53,25 @@
 - last_message text
 - last_message_timestamp
 - last_message_sender_id FK
-- last_message_type enum(text,image)
+- last_message_type enum(text,image,sticker,location,audio,customize)
 - user_a_unread_count integer default 0
 - user_b_unread_count integer default 0
 - created_at
 
 注意user_a_id < user_b_id
+
+## chats in firebase
+- id
+- alias_id `user_a_id` + `_` + `user_b_id`
+- user_a_id FK
+- user_b_id FK
+- message text
+- message_timestamp
+- message_sender_id
+- message_type
+- user_a_unread_count integer default 0
+- user_b_unread_count integer default 0
+- created_at
 
 ## name_cards
 - user_id FK 同user_ext表 外主键
@@ -110,6 +123,7 @@
 - liked_count
 - saved_count
 - comment_count
+- feeling_count
 - geolocation point
 - duration integer (unit in min)
 - interaction_
@@ -127,6 +141,7 @@
 - liked_count
 - saved_count
 - comment_count
+- feeling_count
 - duration integer (unit in min)
 - interaction_radius (unit in km) default 0
 - anonymous default false
@@ -178,6 +193,8 @@
 - liked_timestamp
 - saved boolean
 - saved_timestamp
+- feeling integer
+- feeling_timestamp
 - interacted boolean default false
 
 ## pin_comments
@@ -185,6 +202,7 @@
 - type enum(media,comment)
 - pin_id 必须是enum所列举的pin的id
 - user_id FK
+- anonymous default false
 - content text
 - created_at
 - vote_up_count

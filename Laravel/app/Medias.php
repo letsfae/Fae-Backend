@@ -20,5 +20,5 @@ class Medias extends Model
     {
     	return $this->belongsTo('App\Users','user_id','id');
     }
-    protected $fillable = array('user_id', 'description', 'geolocation', 'tag_ids', 'file_ids', 'duration', 'interaction_radius', 'anonymous');
+    protected $fillable = array('user_id', 'description', 'geolocation', 'tag_ids', 'file_ids', 'duration', 'interaction_radius', 'anonymous','saved_count','liked_count','comment_count','feeling_count');
 }

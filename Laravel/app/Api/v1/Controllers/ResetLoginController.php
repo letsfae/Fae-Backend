@@ -11,6 +11,7 @@ use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Dingo\Api\Exception\StoreResourceFailedException;
 use App\Users;
 use App\Verifications;
+use App\Api\v1\Utilities\ErrorCodeUtility;
 
 use Auth;
 use Mail;
@@ -44,7 +45,11 @@ class ResetLoginController extends Controller
         
         $user = Users::where('email','=',$input['email'])->get();
         if( is_null($user) || ( count($user)==0 ) ){
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         
         // generate code & store user_id and code to verification table
@@ -108,16 +113,28 @@ class ResetLoginController extends Controller
         // compare user_id and code with data in verification table
         $verification = Verifications::where('email','=', $input['email'])->where('type','=', 'resetpassword')->get();
         if( is_null($verification) || ( count($verification)==0 ) ){
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'verification not found',
+                    'error_code' => ErrorCodeUtility::VERIFICATION_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }else{
             if($verification[0]->code == $input['code']){
                 if ($verification[0]->created_at->diffInMinutes()>30) {
-                    return $this->response->errorNotFound();
+                    return response()->json([
+                        'message' => 'verification timeout',
+                        'error_code' => ErrorCodeUtility::VERIFICATION_TIMEOUT,
+                        'status_code' => '403'
+                    ], 403);
                 }
                 return $this->response->created();
                 //$verification[0]->delete();
             }else{
-                return $this->response->errorNotFound();
+                return response()->json([
+                    'message' => 'verification code is wrong',
+                    'error_code' => ErrorCodeUtility::VERIFICATION_WRONG_CODE,
+                    'status_code' => '403'
+                ], 403);
             }
         }
     }
@@ -143,11 +160,20 @@ class ResetLoginController extends Controller
         // compare user_id and code with data in verification table
         $verification = Verifications::where('email','=', $input['email'])->where('type','=', 'resetpassword')->get();
         if( is_null($verification) || ( count($verification)==0 ) ){
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'verification not found',
+                    'error_code' => ErrorCodeUtility::VERIFICATION_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }else{
             if($verification[0]->code == $input['code']){
-                if ($verification[0]->created_at->diffInMinutes()>30)
-                    return $this->response->errorNotFound();
+                if ($verification[0]->created_at->diffInMinutes()>30) {
+                    return response()->json([
+                        'message' => 'verification timeout',
+                        'error_code' => ErrorCodeUtility::VERIFICATION_TIMEOUT,
+                        'status_code' => '403'
+                    ], 403);
+                }
                 $verification[0]->delete();
                 
                 $user = Users::where('email','=',$input['email'])->get();
@@ -157,7 +183,11 @@ class ResetLoginController extends Controller
                 
                 return $this->response->created();
             }else{
-                return $this->response->errorNotFound();
+                return response()->json([
+                    'message' => 'verification code is wrong',
+                    'error_code' => ErrorCodeUtility::VERIFICATION_WRONG_CODE,
+                    'status_code' => '403'
+                ], 403);
             }
         }
     }

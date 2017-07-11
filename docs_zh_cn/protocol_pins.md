@@ -70,6 +70,40 @@ yes
 
 Status: 204
 
+## Feeling
+
+`POST /pins/:type/:pin_id/feeling`
+
+其中type可为`media`、`comment`。
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| feeling | integer(0-10) | feeling表情 |
+
+### response
+
+Status: 201
+
+## Remove Feeling
+
+`DELETE /pins/:type/:pin_id/feeling`
+
+其中type可为`media`、`comment`。
+
+### auth
+
+yes
+
+### response
+
+Status: 204
+
 ## comment 评论 :white_check_mark:
 
 `POST /pins/:type/:pin_id/comments`
@@ -82,9 +116,10 @@ yes
 
 ### parameters
 
-| Name | Description |
-| --- | --- |
-| content | 评论内容 |
+| Name | Type | Description |
+| --- | --- | --- |
+| content | text | 评论内容 |
+| anonymous (optinal) | boolean | 匿名，默认为false |
 
 ### response
 
@@ -139,11 +174,16 @@ Status: 200
 		{
 			"type": @string,
 			"pin_id": @number,
-			"created_at": @string
+			"created_at": @string,
+			"pin_object": {
+				...
+			}
 		},
 		{...},
 		{...}
 	]
+
+其中pin_object中为具体的pin内容（同该pin的get pin返回）。
 
 ## 获取my pin :white_check_mark:
 
@@ -174,11 +214,16 @@ Status: 200
 		{
 			"type": @string,
 			"pin_id": @number,
-			"created_at": @string
+			"created_at": @string,
+			"pin_object": {
+				...
+			}
 		},
 		{...},
 		{...}
 	]
+
+其中pin_object中为具体的pin内容（同该pin的get pin返回）。
 
 ## 获取user pin :white_check_mark:
 
@@ -236,7 +281,9 @@ Status: 200
 	[
 		{
 			"pin_comment_id": @number,
-			"user_id": @number,
+			"user_id": @number, 如果非自身创建的pin且anonymous为true，则user_id为null
+			"anonymous": @boolean,
+			"nick_name": @string,
 			"content": @string,
 			"created_at": @string,
 			"vote_up_count": @number,
@@ -281,3 +328,25 @@ yes
 ### response
 
 Status: 204
+
+## 获取用户自身pin的相关统计
+
+`GET /pins/statistics`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	{
+		"user_id": @number,
+		"count": {
+			"created_pin": @number,
+			"saved_pin": @number
+		}
+	}
+
+

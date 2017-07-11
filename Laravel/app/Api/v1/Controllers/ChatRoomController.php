@@ -18,9 +18,13 @@ use App\ChatRoomUsers;
 use Config; 
 use App\Users;
 use APP\Sessions;
+use App\Name_cards;
 use DB;
 use App\PinHelper;
 use App\Api\v1\Controllers\TagController;
+use App\Api\v1\Utilities\ErrorCodeUtility;
+use DateTime;
+use Firebase\Firebase;
 
 
 
@@ -62,7 +66,11 @@ class ChatRoomController extends Controller implements PinInterface
             }
             else
             {
-                return $this->errorNotFound('tags not exist');
+                return response()->json([
+                    'message' => 'tag not found',
+                    'error_code' => ErrorCodeUtility::TAG_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
             }
         }
         $chat_room->save();
@@ -88,17 +96,29 @@ class ChatRoomController extends Controller implements PinInterface
     {
         if(!is_numeric($chat_room_id))
         {
-            return $this->response->errorBadRequest();
+            return response()->json([
+                    'message' => 'chat_room_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
         $this->updateValidation($this->request);
         $chat_room = ChatRooms::find($chat_room_id);
         if(is_null($chat_room))
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'chat room not found',
+                    'error_code' => ErrorCodeUtility::CHAT_ROOM_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         if($chat_room->user_id != $this->request->self_user_id)
         {
-            throw new AccessDeniedHttpException('You can not update this chat room');
+            return response()->json([
+                    'message' => 'You can not update this chat room',
+                    'error_code' => ErrorCodeUtility::NOT_OWNER_OF_PIN,
+                    'status_code' => '403'
+                ], 403);
         }
         if($this->request->has('title'))
         {
@@ -143,8 +163,12 @@ class ChatRoomController extends Controller implements PinInterface
                 $chat_room->tag_ids = $this->request->tag_ids;
             }
             else
-            {
-                return $this->errorNotFound();
+            { 
+                return response()->json([
+                    'message' => 'tag not found',
+                    'error_code' => ErrorCodeUtility::TAG_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
             } 
         }
         $chat_room->save();
@@ -155,37 +179,41 @@ class ChatRoomController extends Controller implements PinInterface
     {
         if(!is_numeric($chat_room_id))
         {
-            return $this->response->errorBadRequest();
+            return response()->json([
+                    'message' => 'chat_room_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
-        $chat_room = ChatRooms::find($chat_room_id);
+        $chat_room = $this->getPinObject($chat_room_id, $this->request->self_user_id);
         if(is_null($chat_room))
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'chat room not found',
+                    'error_code' => ErrorCodeUtility::CHAT_ROOM_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
-        $tag_ids = is_null($chat_room->tag_ids) ? null : explode(';', $chat_room->tag_ids);
-        return $this->response->array(array('chat_room_id' => $chat_room->id, 
-            'title' => $chat_room->title, 'user_id' => $chat_room->user_id,
-            'geolocation' => ['latitude' => $chat_room->geolocation->getLat(), 'longitude' => $chat_room->geolocation->getLng()], 
-            'last_message' => $chat_room->last_message, 'last_message_sender_id' => $chat_room->last_message_sender_id,
-            'last_message_type' => $chat_room->last_message_type, 'last_message_timestamp' => $chat_room->last_message_timestamp, 
-            'created_at' => $chat_room->created_at->format('Y-m-d H:i:s'), 'capacity' => $chat_room->capacity,
-            'tag_ids' => $tag_ids, 'description' => $chat_room->description));
-    }
-
-    public function delete($chat_room_id)
-    {
-        // non use
+        return $this->response->array($chat_room);
     }
 
     public function getFromUser($user_id)
     {
         if(!is_numeric($user_id))
         {
-            return $this->response->errorBadRequest();
+            return response()->json([
+                    'message' => 'user_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
         if (is_null(Users::find($user_id)))
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'user_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
         $this->getFromUserValidation($this->request);
         $start_time = $this->request->has('start_time') ? $this->request->start_time : '1970-01-01 00:00:00';
@@ -205,7 +233,9 @@ class ChatRoomController extends Controller implements PinInterface
         {
             $tag_ids = is_null($chat_room->tag_ids) ? null : explode(';', $chat_room->tag_ids);
             $info[] = array('chat_room_id' => $chat_room->id, 'title' => $chat_room->title, 
-            'user_id' => $chat_room->user_id, 'geolocation' => ['latitude' => $chat_room->geolocation->getLat(), 
+            'user_id' => $chat_room->user_id, 
+            'nick_name' => Name_cards::find($chat_room->user_id)->nick_name,
+            'geolocation' => ['latitude' => $chat_room->geolocation->getLat(), 
             'longitude' => $chat_room->geolocation->getLng()], 'last_message' => $chat_room->last_message, 
             'last_message_sender_id' => $chat_room->last_message_sender_id, 'last_message_type' => $chat_room->last_message_type, 
             'last_message_timestamp' => $chat_room->last_message_timestamp, 
@@ -215,17 +245,51 @@ class ChatRoomController extends Controller implements PinInterface
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
     }
 
+    public function delete($chat_room_id) {}
+
+    public static function getPinObject($chat_room_id, $user_id) {
+        $chat_room = ChatRooms::find($chat_room_id);
+        if(is_null($chat_room))
+        {
+            return null;
+        }
+        return array(
+            'chat_room_id' => $chat_room->id, 
+            'nick_name' => Name_cards::find($chat_room->user_id)->nick_name,
+            'title' => $chat_room->title, 
+            'user_id' => $chat_room->user_id,
+            'geolocation' => ['latitude' => $chat_room->geolocation->getLat(), 
+            'longitude' => $chat_room->geolocation->getLng()], 
+            'last_message' => $chat_room->last_message, 
+            'last_message_sender_id' => $chat_room->last_message_sender_id,
+            'last_message_type' => $chat_room->last_message_type, 
+            'last_message_timestamp' => $chat_room->last_message_timestamp, 
+            'created_at' => $chat_room->created_at->format('Y-m-d H:i:s'), 
+            'capacity' => $chat_room->capacity,
+            'tag_ids' => is_null($chat_room->tag_ids) ? null : explode(';', $chat_room->tag_ids), 
+            'description' => $chat_room->description
+        );
+    }
+
     public function send($chat_room_id)
     {
         if(!is_numeric($chat_room_id))
         {
-            return $this->response->errorBadRequest();
+            return response()->json([
+                    'message' => 'chat_room_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
         $this->sendValidation($this->request);
         $chat_room = ChatRooms::find($chat_room_id);
         if(is_null($chat_room))
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'chat room not found',
+                    'error_code' => ErrorCodeUtility::CHAT_ROOM_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         $chat_room_user = ChatRoomUsers::where('chat_room_id', $chat_room_id)->where('user_id', $this->request->self_user_id)->first(); 
         if(is_null($chat_room_user))
@@ -233,20 +297,48 @@ class ChatRoomController extends Controller implements PinInterface
             $count = ChatRoomUsers::where('chat_room_id', $chat_room_id)->count();
             if($count >= $chat_room->capacity)
             {
-                return $this->response->errorBadRequest('this chat room has been filled to capacity');
+                return response()->json([
+                    'message' => 'this chat room has been filled to capacity',
+                    'error_code' => ErrorCodeUtility::CHAT_ROOM_FULLFILLED,
+                    'status_code' => '400'
+                ], 400);
             }
-            $session = Sessions::find($this->request->self_session_id);
-            if(is_null($session) || !$session->is_mobile || $session->location == null)
-            { 
-                return $this->response->errorNotFound();
+            $session = Sessions::find($this->request->self_session_id); 
+            if(is_null($session))
+            {
+                return response()->json([
+                    'message' => 'session not found',
+                    'error_code' => ErrorCodeUtility::SESSION_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
+            }
+            if(!$session->is_mobile)
+            {
+                return response()->json([
+                    'message' => 'current client is not mobile',
+                    'error_code' => ErrorCodeUtility::NOT_MOBILE,
+                    'status_code' => '400'
+                ], 400);
+            }
+            if($session->location == null)
+            {
+                return response()->json([
+                    'message' => 'location not found',
+                    'error_code' => ErrorCodeUtility::LOCATION_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404); 
             }
             $distance = DB::select("SELECT ST_Distance_Spheroid(ST_SetSRID(ST_Point(:longitude1, :latitude1),4326), 
                 ST_SetSRID(ST_Point(:longitude2, :latitude2),4326), 'SPHEROID[\"WGS 84\",6378137,298.257223563]')",
                 array('longitude1' => $session->location->getLng(), 'latitude1' => $session->location->getLat(),
                       'longitude2' => $chat_room->geolocation->getLng(), 'latitude2' => $chat_room->geolocation->getLat()));
-            if($distance[0]->st_distance_spheroid > ($chat_room->interaction_radius))
-            { 
-                return $this->response->errorBadRequest('too far away');
+            if($distance[0]->st_distance_spheroid > ($chat_room->interaction_radius)) 
+            {
+                return response()->json([
+                    'message' => 'too far away',
+                    'error_code' => ErrorCodeUtility::TOO_FAR_AWAY,
+                    'status_code' => '403'
+                ], 403);
             } 
             $new_chat_room_user = new ChatRoomUsers();
             $new_chat_room_user->chat_room_id = $chat_room_id;
@@ -255,7 +347,11 @@ class ChatRoomController extends Controller implements PinInterface
         }
         else if(!is_null($chat_room_user) && $chat_room_user->unread_count > 0)
         {
-            return $this->response->errorBadRequest('Please mark unread messages before sending new messages!');
+            return response()->json([
+                'message' => 'Please mark unread messages before sending new messages!',
+                'error_code' => ErrorCodeUtility::UNMARKED_MESSAGE,
+                'status_code' => '400'
+            ], 400);
         }
 
         $chat_room->last_message_sender_id = $this->request->self_user_id;
@@ -263,6 +359,11 @@ class ChatRoomController extends Controller implements PinInterface
         $chat_room->last_message_type = $this->request->type;
         $chat_room->updateTimestamp();
         $chat_room->save();
+
+        $fb = Firebase::initialize('https://faeapp-5ea31.firebaseio.com', 'LiYqgdzrv8Y1s2lRN7iziHy4Z5UCgvUlJJhHcZRe');
+        $fb->push('Message-dev/chat_room-'.$chat_room->id, 
+                    $this->request->toArray()
+                  );
         
         $chat_room_users = ChatRoomUsers::where('chat_room_id', $chat_room_id)->where('user_id', '!=', $this->request->self_user_id)->get();
         foreach ($chat_room_users as $chat_room_user)
@@ -284,7 +385,11 @@ class ChatRoomController extends Controller implements PinInterface
             $last_message_sender  = Users::find($chat_room->last_message_sender_id);
             if(is_null($last_message_sender))
             {
-                return $this->errorNotFound();
+                return response()->json([
+                    'message' => 'last message sender not found',
+                    'error_code' => ErrorCodeUtility::LAST_MESSAGE_SENDER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
             }
             $tag_ids = is_null($chat_room->tag_ids) ? null : explode(';', $chat_room->tag_ids);
             $info[] = array('chat_room_id' => $chat_room->id, 'title' => $chat_room->title, 'user_id' => $chat_room->user_id,
@@ -309,12 +414,20 @@ class ChatRoomController extends Controller implements PinInterface
     {
         if(!is_numeric($chat_room_id))
         {
-            return $this->response->errorBadRequest();
+            return response()->json([
+                    'message' => 'chat_room_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
         $chat_room_user = ChatRoomUsers::where('chat_room_id', $chat_room_id)->where('user_id', $this->request->self_user_id)->first();
         if(is_null($chat_room_user))
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'chat room user not found',
+                    'error_code' => ErrorCodeUtility::CHAT_ROOM_USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         $chat_room_user->unread_count = 0;
         $chat_room_user->save();
@@ -333,7 +446,11 @@ class ChatRoomController extends Controller implements PinInterface
             $last_message_sender = Users::find($chat_room->last_message_sender_id);
             if(is_null($last_message_sender))
             {
-                return $this->errorNotFound();
+                return response()->json([
+                    'message' => 'last message sender not found',
+                    'error_code' => ErrorCodeUtility::LAST_MESSAGE_SENDER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
             }
             $tag_ids = is_null($chat_room->tag_ids) ? null : explode(';', $chat_room->tag_ids);
             $info[] = array('chat_room_id' => $chat_room->id, 'title' => $chat_room->title, 'user_id' => $chat_room->user_id,
@@ -358,12 +475,20 @@ class ChatRoomController extends Controller implements PinInterface
     {
         if(!is_numeric($chat_room_id))
         {
-            return $this->response->errorBadRequest();
+            return response()->json([
+                    'message' => 'chat_room_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
         $chat_room = ChatRooms::find($chat_room_id);
         if(is_null($chat_room))
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'chat room not found',
+                    'error_code' => ErrorCodeUtility::CHAT_ROOM_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         $chat_room_users = $chat_room->hasManyChatRoomUsers()->get();
         $info = array();

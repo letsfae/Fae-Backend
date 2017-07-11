@@ -123,53 +123,10 @@ class UsersTest extends TestCase {
             $result = true;
         }
         $this->assertEquals(true, $result);
-    }
-
-    //test whether input parameters exist.
-    public function testUpdateAccount2() { 
-        $this->markTestSkipped();  
-        //register of the user.
-        $user = Users::create([
-            'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
-            'first_name' => 'kevin',
-            'last_name' => 'zhang',
-            'user_name' => 'faeapp',
-            'gender' => 'male',
-            'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $parameters = array(
-            'email' => 'letsfae@126.com', 
-            'password' => 'letsfaego',
-            'user_name' => 'faeapp',
-        );
-        $server = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-        );
-        //login of the user.
-        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
-        $array = json_decode($login_response->getContent());
-        $server2 = array(
-            'Accept' => 'application/x.faeapp.v1+json', 
-            'Fae-Client-Version' => 'ios-0.0.1',
-            'Authorization' => 'FAE '.$array->debug_base64ed,
-        );
-        $parameters2 = array(
-           //no input.
-        ); 
-        $response = $this->call('post', 'http://'.$this->domain.'/users/account', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
-        $array2 = json_decode($response->getContent());
-        $result = false;
-        if ($response->status() == '400' && $array2->message == 'Bad Request') {
-            $result = true;
-        }
-        $this->assertEquals(true, $result);
-    }
+    } 
 
     //test whether the user_name has existed.
-    public function testUpdateAccount3() { 
+    public function testUpdateAccount2() { 
         $this->markTestSkipped();  
         //register of the user.
         $user = Users::create([
@@ -204,8 +161,13 @@ class UsersTest extends TestCase {
         ); 
         $response = $this->call('post', 'http://'.$this->domain.'/users/account', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
         $array2 = json_decode($response->getContent());
+        $this->seeJson([
+                 'message' => 'user name already exists',
+                 'error_code' => '422-2',
+                 'status_code' => '422', 
+        ]); 
         $result = false;
-        if ($response->status() == '400' && $array2->message == 'user name already exists') {
+        if ($response->status() == '422') {
             $result = true;
         }
         $this->assertEquals(true, $result);
@@ -260,7 +222,7 @@ class UsersTest extends TestCase {
             $result = true;
         }
         $this->assertEquals(true, $result);
-    }   
+    }    
 
     //test correct response of the method of Updating password.
     public function testUpdatePassword() {  
@@ -391,9 +353,13 @@ class UsersTest extends TestCase {
         $users->login_count = 6; 
         $users->save();
         $response = $this->call('post', 'http://'.$this->domain.'/users/account/password', $parameters2, [], [], $this->transformHeadersToServerVars($server2));   
-        $array2 = json_decode($response->getContent());
+        $this->seeJson([
+                 'message' => 'Incorrect password, automatically lougout',
+                 'error_code' => '401-1',
+                 'status_code' => '401', 
+        ]); 
         $result = false;
-        if ($response->status() == '401' && $array2->message == 'Incorrect password, automatically lougout') {
+        if ($response->status() == '401') {
             $result = true;
         }
         $this->assertEquals(true, $result);
@@ -439,10 +405,11 @@ class UsersTest extends TestCase {
         $array2 = json_decode($response->getContent());
         $result = false; 
         $this->seeJson([
-                'message' => 'Incorrect password, you still have 2 chances',
-                'status_code' => 401,
-                'login_count' => $array2->login_count,
-        ]);
+                 'message' => 'Incorrect password, you still have 5 chances',
+                 'error_code' => '401-1',
+                 'status_code' => '401', 
+                 'login_count' => 1
+        ]); 
         $result = false;
         if ($response->status() == '401') {
             $result = true;
@@ -570,13 +537,12 @@ class UsersTest extends TestCase {
             'password' => 'letsfaegogo',
         ); 
         $response = $this->call('post', 'http://'.$this->domain.'/users/account/password/verify', $parameters2, [], [], $this->transformHeadersToServerVars($server2));   
-        $array2 = json_decode($response->getContent());
-        $result = false; 
         $this->seeJson([
-                'message' => 'Bad request, Password incorrect!',
-                'status_code' => 401,
-                'login_count' => $array2->login_count,
-        ]);
+                 'message' => 'Incorrect password, you still have 5 chances',
+                 'error_code' => '401-1',
+                 'status_code' => '401', 
+                 'login_count' => 1
+        ]); 
         $result = false;
         if ($response->status() == '401') {
             $result = true;
@@ -624,12 +590,16 @@ class UsersTest extends TestCase {
         $users->login_count = 6; 
         $users->save();
         $response = $this->call('post', 'http://'.$this->domain.'/users/account/password/verify', $parameters2, [], [], $this->transformHeadersToServerVars($server2));   
-        $array2 = json_decode($response->getContent());
+        $this->seeJson([
+                 'message' => 'Incorrect password, automatically lougout',
+                 'error_code' => '401-1',
+                 'status_code' => '401', 
+        ]); 
         $result = false;
-        if ($response->status() == '401' && $array2->message == 'Incorrect password, automatically lougout') {
+        if ($response->status() == '401') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);
     }
 
     //test correct response of the method of updating self status.
@@ -871,12 +841,16 @@ class UsersTest extends TestCase {
         ); 
         //the user_id does not exit.
         $response = $this->call('get', 'http://'.$this->domain.'/users/-1/status', [], [], [], $this->transformHeadersToServerVars($server2));   
-        $array2 = json_decode($response->getContent()); 
+        $this->seeJson([
+                 'message' => 'user not found',
+                 'error_code' => '404-3',
+                 'status_code' => '404', 
+        ]); 
         $result = false;
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
+        if ($response->status() == '404') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);
     }
 
     //test the response of other users with status 5.
@@ -1149,9 +1123,13 @@ class UsersTest extends TestCase {
             'email' => $this->testEmail,
         );
         $response = $this->call('post', 'http://'.$this->domain.'/users/account/email', $parameters2, [], [], $this->transformHeadersToServerVars($server2));   
-        $array2 = json_decode($response->getContent());  
+        $this->seeJson([
+                 'message' => 'email already exists',
+                 'error_code' => '422-3',
+                 'status_code' => '422', 
+        ]); 
         $result = false;
-        if ($response->status() == '403' && $array2->message == 'Email already in use, please use another one!') {
+        if ($response->status() == '422') {
             $result = true;
         }
         $this->assertEquals(true, $result);
@@ -1364,12 +1342,16 @@ class UsersTest extends TestCase {
             'code' => '555555'
         );
         $response = $this->call('post', 'http://'.$this->domain.'/users/account/email/verify', $parameters2, [], [], $this->transformHeadersToServerVars($server2));   
-        $array2 = json_decode($response->getContent());   
+        $this->seeJson([
+                 'message' => 'not found',
+                 'error_code' => '404-3',
+                 'status_code' => '404', 
+        ]); 
         $result = false;
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
+        if ($response->status() == '404') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);
     }
 
     //test what is the response when the data has created more than 30 minitues in the verifications table.
@@ -1476,12 +1458,16 @@ class UsersTest extends TestCase {
             'code' => '555556'
         );
         $response = $this->call('post', 'http://'.$this->domain.'/users/account/email/verify', $parameters2, [], [], $this->transformHeadersToServerVars($server2));   
-        $array2 = json_decode($response->getContent()); 
+        $this->seeJson([
+                 'message' => 'verification code is wrong',
+                 'error_code' => '403-5',
+                 'status_code' => '403', 
+        ]); 
         $result = false;
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
+        if ($response->status() == '403') {
             $result = true;
         }
-        $this->assertEquals(true, $result);  
+        $this->assertEquals(true, $result); 
     }
 
     //test correct response of the method of updating phone.
@@ -1631,12 +1617,16 @@ class UsersTest extends TestCase {
             'phone' => $this->testPhone,
         );
         $response = $this->call('post', 'http://'.$this->domain.'/users/account/phone', $parameters2, [], [], $this->transformHeadersToServerVars($server2));   
-        $array2 = json_decode($response->getContent());  
+        $this->seeJson([
+                 'message' => 'phone number already exists',
+                 'error_code' => '422-4',
+                 'status_code' => '422', 
+        ]); 
         $result = false;
-        if ($response->status() == '403' && $array2->message == 'Phone number already in use, please use another one!') {
+        if ($response->status() == '422') {
             $result = true;
         }
-        $this->assertEquals(true, $result);
+        $this->assertEquals(true, $result); 
     }
 
     //test how the database of verifications changed after the code existing more than 30 minitues.
@@ -1902,9 +1892,13 @@ class UsersTest extends TestCase {
             'code' => '555555'
         );
         $response = $this->call('post', 'http://'.$this->domain.'/users/account/phone/verify', $parameters2, [], [], $this->transformHeadersToServerVars($server2));   
-        $array2 = json_decode($response->getContent()); 
+        $this->seeJson([
+                 'message' => 'verification timeout',
+                 'error_code' => '403-4',
+                 'status_code' => '403', 
+        ]); 
         $result = false;
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
+        if ($response->status() == '403') {
             $result = true;
         }
         $this->assertEquals(true, $result);  
@@ -1958,11 +1952,15 @@ class UsersTest extends TestCase {
             'code' => '555556'
         );
         $response = $this->call('post', 'http://'.$this->domain.'/users/account/phone/verify', $parameters2, [], [], $this->transformHeadersToServerVars($server2));   
-        $array2 = json_decode($response->getContent()); 
+        $this->seeJson([
+                 'message' => 'verification code is wrong',
+                 'error_code' => '403-5',
+                 'status_code' => '403', 
+        ]); 
         $result = false;
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
+        if ($response->status() == '403') {
             $result = true;
         }
-        $this->assertEquals(true, $result);  
+        $this->assertEquals(true, $result);   
     }
 }

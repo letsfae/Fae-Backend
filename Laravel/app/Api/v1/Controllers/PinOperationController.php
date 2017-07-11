@@ -14,8 +14,11 @@ use App\Medias;
 use App\Pin_comments;
 use App\PinCommentOperations;
 use App\Sessions;
+use App\Name_cards;
 use App\Users;
 use DB;
+use App\Api\v1\Utilities\ErrorCodeUtility;
+use App\Api\v1\Utilities\PinUtility;
 
 class PinOperationController extends Controller {
     use Helpers;
@@ -25,20 +28,40 @@ class PinOperationController extends Controller {
     {
         $this->request = $request;
     }
-
-    public function save($type, $pin_id) { 
-        if(!is_numeric($pin_id) || ($type != 'media' && $type != 'comment'))
+ 
+    public function save($type, $pin_id) {
+        if(!is_numeric($pin_id)) 
         {
-            return $this->response->errorBadRequest('wrong type or id format');
+            return response()->json([
+                    'message' => 'pin_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
+        }
+        if($type != 'media' && $type != 'comment')
+        {
+            return response()->json([
+                'message' => 'wrong type, neither media nor comment',
+                'error_code' => ErrorCodeUtility::WRONG_TYPE,
+                'status_code' => '400'
+            ], 400);
         }
         $obj_pin_operation = $this->readOperation($type, $pin_id); 
-        if(is_null($obj_pin_operation))
-        { 
-            return $this->response->errorNotFound('no such pin exsits');
+        if(is_null($obj_pin_operation)) 
+        {
+            return response()->json([
+                    'message' => 'PIN not found',
+                    'error_code' => ErrorCodeUtility::PIN_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         if($obj_pin_operation->saved == true)
         {
-            return $this->response->errorBadRequest('already saved this pin'); 
+            return response()->json([
+                'message' => 'Bad request, you have already saved this pin!',
+                'error_code' => ErrorCodeUtility::SAVED_ALREADY,
+                'status_code' => '400'
+            ], 400); 
         }
         
         $obj_pin_operation->saved = true;
@@ -51,18 +74,38 @@ class PinOperationController extends Controller {
     }
 
     public function unsave($type, $pin_id) {
-        if(!is_numeric($pin_id) || ($type != 'media' && $type != 'comment'))
+        if(!is_numeric($pin_id))
         {
-            return $this->response->errorBadRequest('wrong type or id format');
+            return response()->json([
+                    'message' => 'pin_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
+        if($type != 'media' && $type != 'comment')
+        {
+            return response()->json([
+                'message' => 'wrong type, neither media nor comment',
+                'error_code' => ErrorCodeUtility::WRONG_TYPE,
+                'status_code' => '400'
+            ], 400);
+        }        
         $obj_pin_operation = $this->readOperation($type, $pin_id);
         if(is_null($obj_pin_operation))
         {
-            throw new StoreResourceFailedException('Bad request, No such pin exist!');
+            return response()->json([
+                    'message' => 'PIN not found',
+                    'error_code' => ErrorCodeUtility::PIN_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         if($obj_pin_operation->saved == false)
         {
-            throw new StoreResourceFailedException('The user has not saved this pin');
+            return response()->json([
+                'message' => 'Bad request, you have not saved this pin yet!',
+                'error_code' => ErrorCodeUtility::NOT_SAVED,
+                'status_code' => '400'
+            ], 400);
         }
         $obj_pin_operation->saved = false;
         $obj_pin_operation->updateSavedTimestamp();
@@ -73,11 +116,115 @@ class PinOperationController extends Controller {
         return $this->response->noContent();
     }
 
+
+    public function feeling($type, $pin_id) {
+        $this->feelingValidation($this->request);
+        if(!is_numeric($pin_id))
+        {
+            return response()->json([
+                    'message' => 'pin_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
+        }
+        if($type != 'media' && $type != 'comment')
+        {
+            return response()->json([
+                'message' => 'wrong type, neither media nor comment',
+                'error_code' => ErrorCodeUtility::WRONG_TYPE,
+                'status_code' => '400'
+            ], 400);
+        }
+        $obj_pin_operation = $this->readOperation($type, $pin_id);
+        if(is_null($obj_pin_operation))
+        {
+            return response()->json([
+                    'message' => 'PIN not found',
+                    'error_code' => ErrorCodeUtility::PIN_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
+        }
+        $obj = self::getObj($type, $pin_id);
+        if(is_null($obj)) 
+        {
+            return response()->json([
+                    'message' => 'PIN not found',
+                    'error_code' => ErrorCodeUtility::PIN_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
+        }
+        if($obj_pin_operation->feeling != -1) {
+             $obj->feeling_count = PinUtility::decreaseFeelingCount($obj->feeling_count, $obj_pin_operation->feeling);
+        }
+        $obj_pin_operation->feeling = $this->request->feeling;
+        $obj_pin_operation->updateFeelingTimestamp();
+        $obj_pin_operation->save();
+        $obj->feeling_count = PinUtility::increaseFeelingCount($obj->feeling_count, $this->request->feeling);
+        $obj->save();
+        return $this->response->created();
+    }
+
+    public function removeFeeling($type, $pin_id) {
+        if(!is_numeric($pin_id))
+        {
+            return response()->json([
+                    'message' => 'pin_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
+        }
+        if($type != 'media' && $type != 'comment')
+        {
+            return response()->json([
+                'message' => 'wrong type, neither media nor comment',
+                'error_code' => ErrorCodeUtility::WRONG_TYPE,
+                'status_code' => '400'
+            ], 400);
+        }        
+        $obj_pin_operation = $this->readOperation($type, $pin_id);
+        if(is_null($obj_pin_operation))
+        {
+            return response()->json([
+                    'message' => 'PIN not found',
+                    'error_code' => ErrorCodeUtility::PIN_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
+        }
+        if($obj_pin_operation->feeling == -1)
+        {
+            return response()->json([
+                'message' => 'Bad request, you have not post feeling of this pin yet!',
+                'error_code' => ErrorCodeUtility::NO_FEELING,
+                'status_code' => '400'
+            ], 400);
+        }
+        $feeling = $obj_pin_operation->feeling;
+        $obj_pin_operation->feeling = -1;
+        $obj_pin_operation->updateFeelingTimestamp();
+        $obj_pin_operation->save();
+        $obj = self::getObj($type, $pin_id);
+        $obj->feeling_count = PinUtility::decreaseFeelingCount($obj->feeling_count, $feeling);
+        $obj->save();
+        return $this->response->noContent();
+    }
+
     public static function getOperations($type, $pin_id, $user_id)
     {
         if(!is_numeric($pin_id) || !is_numeric($user_id))
         {
-            return $this->response->errorBadRequest('wrong type or id format');
+            return response()->json([
+                    'message' => 'pin_id or user_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
+        }
+        if($type != 'media' && $type != 'comment')
+        {
+            return response()->json([
+                'message' => 'wrong type, neither media nor comment',
+                'error_code' => ErrorCodeUtility::WRONG_TYPE,
+                'status_code' => '400'
+            ], 400);
         }
         $pin_operation = Pin_operations::where('pin_id', $pin_id)->where('user_id', $user_id)->
                          where('type', $type)->first(); 
@@ -89,19 +236,36 @@ class PinOperationController extends Controller {
         }
         return array('is_liked' => $pin_operation->liked, 'liked_timestamp' => $pin_operation->liked_timestamp, 
                      'is_saved' => $pin_operation->saved, 'saved_timestamp' => $pin_operation->saved_timestamp,
+                     'feeling' => $pin_operation->feeling, 'feeling_timestamp' => $pin_operation->feeling_timestamp,
                      'is_read'  => true, 'read_timestamp'  => $pin_operation->created_at->format('Y-m-d H:i:s'));
     }
 
     public function read($type, $pin_id)
     {
-        if(!is_numeric($pin_id) || ($type != 'media' && $type != 'comment'))
+        if(!is_numeric($pin_id))
         {
-            return $this->response->errorBadRequest('wrong type or id format');
+            return response()->json([
+                    'message' => 'pin_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
+        }
+        if($type != 'media' && $type != 'comment')
+        {
+            return response()->json([
+                'message' => 'wrong type, neither media nor comment',
+                'error_code' => ErrorCodeUtility::WRONG_TYPE,
+                'status_code' => '400'
+            ], 400);
         }
         $obj_pin_operation = $this->readOperation($type, $pin_id);
         if(is_null($obj_pin_operation))
         {
-            throw new StoreResourceFailedException('Bad request, No such pin exist!');
+            return response()->json([
+                    'message' => 'PIN not found',
+                    'error_code' => ErrorCodeUtility::PIN_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         return $this->response->created();
     }
@@ -137,6 +301,10 @@ class PinOperationController extends Controller {
                 
                 $newobj_pin_operation->saved = false;
                 $newobj_pin_operation->liked = false;
+
+                //$newobj_pin_operation->feeling = null;
+
+                $newobj_pin_operation->feeling = -1;
                 $newobj_pin_operation->interacted = false;
                 $newobj_pin_operation->save(); 
                 return $newobj_pin_operation;
@@ -149,33 +317,62 @@ class PinOperationController extends Controller {
         
     }
 
-    public function like($type, $pin_id)
-    {   
-        
-        if(!is_numeric($pin_id) || ($type != 'media' && $type != 'comment'))
+    public function like($type, $pin_id) 
+    {
+        if(!is_numeric($pin_id))
         {
-            return $this->response->errorBadRequest('wrong type or id format');
-        } 
+            return response()->json([
+                    'message' => 'pin_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
+        }
+        if($type != 'media' && $type != 'comment')
+        {
+            return response()->json([
+                'message' => 'wrong type, neither media nor comment',
+                'error_code' => ErrorCodeUtility::WRONG_TYPE,
+                'status_code' => '400'
+            ], 400);
+        }
         $obj_pin_operation = $this->readOperation($type, $pin_id);
         if(is_null($obj_pin_operation))
-        { 
-            return $this->response->errorBadRequest('no such pin exists');
+        {
+            return response()->json([
+                    'message' => 'PIN not found',
+                    'error_code' => ErrorCodeUtility::PIN_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404); 
         }
         if($obj_pin_operation->liked == true)
         {
-            return $this->response->errorBadRequest('already liked this pin');
+            return response()->json([
+                'message' => 'Bad request, you have already liked this pin!',
+                'error_code' => ErrorCodeUtility::LIKED_ALREADY,
+                'status_code' => '400'
+            ], 400);
         }
         if($obj_pin_operation->interacted == false)
         { 
             $inDistance = $this->checkDistance($this->request->self_user_id, $this->request->self_session_id, $type, $pin_id);
             if($inDistance === false)
             {
-                return $this->response->errorBadRequest('too far away');
+                return response()->json([
+                    'message' => 'too far away',
+                    'error_code' => ErrorCodeUtility::TOO_FAR_AWAY,
+                    'status_code' => '403'
+                ], 403);
             }
             if(is_null($inDistance))
             {
                 if($inDistance == null)
-                return $this->response->errorNotFound('no location information');
+                {
+                    return response()->json([
+                        'message' => 'location not found',
+                        'error_code' => ErrorCodeUtility::LOCATION_NOT_FOUND,
+                        'status_code' => '404'
+                    ], 404);
+                }
             }
         }
         $obj_pin_operation->liked = true;
@@ -190,18 +387,38 @@ class PinOperationController extends Controller {
 
     public function unlike($type, $pin_id)
     {
-        if(!is_numeric($pin_id) || ($type != 'media' && $type != 'comment'))
+        if(!is_numeric($pin_id))
         {
-            return $this->response->errorBadRequest('wrong type or id format');
+            return response()->json([
+                    'message' => 'pin_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
+        }
+        if($type != 'media' && $type != 'comment')
+        {
+            return response()->json([
+                'message' => 'wrong type, neither media nor comment',
+                'error_code' => ErrorCodeUtility::WRONG_TYPE,
+                'status_code' => '400'
+            ], 400);
         }
         $obj_pin_operation = $this->readOperation($type, $pin_id);
         if(is_null($obj_pin_operation))
         {
-            throw new StoreResourceFailedException('Bad request, No such pin exist!');
+            return response()->json([
+                    'message' => 'PIN not found',
+                    'error_code' => ErrorCodeUtility::PIN_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         if($obj_pin_operation->liked == false) 
         {
-            throw new StoreResourceFailedException('Bad request, never liked such pin!');
+            return response()->json([
+                'message' => 'Bad request, you have not liked this pin yet!',
+                'error_code' => ErrorCodeUtility::NOT_LIKED,
+                'status_code' => '400'
+            ], 400);
         }
         $obj_pin_operation->liked = false;
         $obj_pin_operation->updateLikeTimestamp();
@@ -218,12 +435,25 @@ class PinOperationController extends Controller {
 
     public function comment($type, $pin_id)
     {
-        if(!is_numeric($pin_id) || ($type != 'media' && $type != 'comment'))
+        if(!is_numeric($pin_id))
         {
-            return $this->response->errorBadRequest('wrong type or id format');
+            return response()->json([
+                    'message' => 'pin_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
+        }
+        if($type != 'media' && $type != 'comment')
+        {
+            return response()->json([
+                'message' => 'wrong type, neither media nor comment',
+                'error_code' => ErrorCodeUtility::WRONG_TYPE,
+                'status_code' => '400'
+            ], 400);
         }
         $validator = Validator::make($this->request->all(), [
-            'content' => 'required|string|max:100'
+            'content' => 'required|string|max:100',
+            'anonymous' => 'filled|in:true,false'
         ]);
         if($validator->fails())
         {
@@ -232,18 +462,30 @@ class PinOperationController extends Controller {
         $obj_pin_operation = $this->readOperation($type, $pin_id);
         if(is_null($obj_pin_operation))
         {
-            throw new StoreResourceFailedException('Bad request, No such pin exist!');
+            return response()->json([
+                    'message' => 'PIN not found',
+                    'error_code' => ErrorCodeUtility::PIN_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         if($obj_pin_operation->interacted == false)
         {
             $inDistance = $this->checkDistance($this->request->self_user_id, $this->request->self_session_id, $type, $pin_id);
             if($inDistance === false)
             {
-                return $this->response->errorBadRequest('too far away');
+                return response()->json([
+                    'message' => 'too far away',
+                    'error_code' => ErrorCodeUtility::TOO_FAR_AWAY,
+                    'status_code' => '403'
+                ], 403);
             }
             if($inDistance == null)
             {
-                return $this->response->errorNotFound('no location information');
+                return response()->json([
+                    'message' => 'location not found',
+                    'error_code' => ErrorCodeUtility::LOCATION_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
             }
         }
         $obj_pin_operation->interacted = true;
@@ -252,6 +494,9 @@ class PinOperationController extends Controller {
         $newobj_pin_comment->user_id = $this->request->self_user_id;
         $newobj_pin_comment->pin_id = $pin_id;
         $newobj_pin_comment->type = $type;
+        if($this->request->has('anonymous')) {
+            $newobj_pin_comment->anonymous = $this->request->anonymous == 'true' ? true : false;
+        }
         $newobj_pin_comment->content = $this->request->content;
         $newobj_pin_comment->save();
         $obj = self::getObj($type, $pin_id);
@@ -265,25 +510,41 @@ class PinOperationController extends Controller {
     {
         if(!is_numeric($pin_comment_id))
         {
-            return $this->response->errorBadRequest('wrong type or id format');
-        }
+            return response()->json([
+                    'message' => 'pin_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
+        } 
         $obj_pin_comment = Pin_comments::find($pin_comment_id);
         if (is_null($obj_pin_comment))
         {
-            throw new StoreResourceFailedException('Bad request, no such comment exists');
+            return response()->json([
+                    'message' => 'comment not found',
+                    'error_code' => ErrorCodeUtility::COMMENT_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         if($obj_pin_comment->user_id != $this->request->self_user_id)
         {
-            throw new StoreResourceFailedException('You can not delete this comment');
+            return response()->json([
+                    'message' => 'You can not delete this comment',
+                    'error_code' => ErrorCodeUtility::NOT_OWNER_OF_PIN,
+                    'status_code' => '403'
+                ], 403);
         }
         $type = $obj_pin_comment->type;
         $pin_id = $obj_pin_comment->pin_id;
         $op = self::UNCOMMENT;
-        $obj_pin_comment->delete();
+        $obj_pin_comment->delete(); 
         $obj_pin_operation = $this->readOperation($type, $pin_id);
         if(is_null($obj_pin_operation))
         {
-            return $this->request->errorNotFound();
+            return response()->json([
+                    'message' => 'PIN not found',
+                    'error_code' => ErrorCodeUtility::PIN_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         $obj_pin_operation->interacted = $this->checkInteracted($type, $pin_id, $op);
         $obj_pin_operation->save();
@@ -295,14 +556,30 @@ class PinOperationController extends Controller {
 
     public function getPinAttribute($type, $pin_id)
     {
-        if(!is_numeric($pin_id) || ($type != 'media' && $type != 'comment'))
+        if(!is_numeric($pin_id))
         {
-            return $this->response->errorBadRequest();
+            return response()->json([
+                    'message' => 'pin_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
+        }
+        if($type != 'media' && $type != 'comment')
+        {
+            return response()->json([
+                'message' => 'wrong type, neither media nor comment',
+                'error_code' => ErrorCodeUtility::WRONG_TYPE,
+                'status_code' => '400'
+            ], 400);
         }
         $obj = self::getObj($type, $pin_id);
         if(is_null($obj))
         {
-            return errorNotFound('no such pin exists');
+            return response()->json([
+                    'message' => 'PIN not found',
+                    'error_code' => ErrorCodeUtility::PIN_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         $content = array('type' => $type,
                          'pin_id'=> $obj->id,
@@ -313,14 +590,30 @@ class PinOperationController extends Controller {
     }
 
     public function getPinCommentList($type, $pin_id) {
-        if(!is_numeric($pin_id) || ($type != 'media' && $type != 'comment'))
+        if(!is_numeric($pin_id))
         {
-            return $this->response->errorBadRequest('wrong type or id format');
+            return response()->json([
+                    'message' => 'pin_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
+        }
+        if($type != 'media' && $type != 'comment')
+        {
+            return response()->json([
+                'message' => 'wrong type, neither media nor comment',
+                'error_code' => ErrorCodeUtility::WRONG_TYPE,
+                'status_code' => '400'
+            ], 400);
         }
         $obj = self::getObj($type, $pin_id);
         if(is_null($obj))
         {
-            return $this->response->errorNotFound('no such pin exists');
+            return response()->json([
+                    'message' => 'PIN not found',
+                    'error_code' => ErrorCodeUtility::PIN_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         $validator = Validator::make($this->request->all(), [
             'start_time' => 'filled|date_format:Y-m-d H:i:s|before:tomorrow',
@@ -355,7 +648,11 @@ class PinOperationController extends Controller {
         {
             $pin_comment_operations = $this->getPinCommentOperations($commented_pin->id, $this->request->self_user_id);
             $info[] = array('pin_comment_id' => $commented_pin->id,
-                            'user_id' => $commented_pin->user_id,
+                            'user_id' => ($commented_pin->anonymous && $commented_pin->user_id != $this->request->self_user_id) ? 
+                            null : $commented_pin->user_id,
+                            'anonymous' => $commented_pin->anonymous,
+                            'nick_name' => ($commented_pin->anonymous && $commented_pin->user_id != $this->request->self_user_id) ? 
+                            null : Name_cards::find($commented_pin->user_id)->nick_name,
                             'content' => $commented_pin->content,
                             'pin_comment_operations' => $pin_comment_operations,
                             'vote_up_count' => $commented_pin->vote_up_count,
@@ -381,11 +678,19 @@ class PinOperationController extends Controller {
     {
         if(!is_numeric($user_id))
         {
-            return $this->response->errorBadRequest('wrong type or id format');
+            return response()->json([
+                    'message' => 'user_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
         if (is_null(Users::find($user_id)))
         {
-            return $this->response->errorNotFound('user does not exist');
+            return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         $validator = Validator::make($this->request->all(), [
             'start_time' => 'filled|date_format:Y-m-d H:i:s|before:tomorrow',
@@ -437,8 +742,10 @@ class PinOperationController extends Controller {
         foreach($user_pin_helper_list as $user_pin_helper)
         { 
             $info[] = array('pin_id' => $user_pin_helper->pin_id,
-                            'type' => $user_pin_helper->type,
-                            'created_at' => $user_pin_helper->created_at->format('Y-m-d H:i:s')); 
+                            'type' => $user_pin_helper->type, 
+                            'created_at' => $user_pin_helper->created_at->format('Y-m-d H:i:s'),
+                            'pin_object' => PinUtility::getPinObject($user_pin_helper->type, $user_pin_helper->pin_id, 
+                                $this->request->self_user_id)); 
         }
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
     }
@@ -476,7 +783,9 @@ class PinOperationController extends Controller {
         {
             $info[] = array('pin_id' => $saved_pin->pin_id,
                             'type' => $saved_pin->type,
-                            'created_at' => $saved_pin->saved_timestamp);
+                            'created_at' => $saved_pin->saved_timestamp,
+                            'pin_object' => PinUtility::getPinObject($saved_pin->type, $saved_pin->pin_id, 
+                            $this->request->self_user_id));
         }
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
     }
@@ -486,12 +795,20 @@ class PinOperationController extends Controller {
         $this->voteValidation($this->request);
         if(!is_numeric($pin_comment_id))
         {
-            return $this->response->errorBadRequest("id should be integer");
+            return response()->json([
+                    'message' => 'pin_comment_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
         $pin_comment = Pin_comments::find($pin_comment_id);
         if(is_null($pin_comment))
         {
-            return $this->response->errorNotFound("comment not exist");
+            return response()->json([
+                    'message' => 'comment not found',
+                    'error_code' => ErrorCodeUtility::COMMENT_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         $pin_comment_operation = PinCommentOperations::where('pin_comment_id', $pin_comment_id)
                                  ->where('user_id', $this->request->self_user_id)->first();
@@ -517,11 +834,19 @@ class PinOperationController extends Controller {
         {
             if($pin_comment_operation->vote == 1 && $vote == 1)
             {
-                return $this->response->errorBadRequest('already voted up');
+                return response()->json([
+                    'message' => 'Bad request, you have already voted up!',
+                    'error_code' => ErrorCodeUtility::VOTED_UP_ALREADY,
+                    'status_code' => '400'
+                ], 400);
             }
             else if($pin_comment_operation->vote == -1 && $vote == -1)
             {
-                return $this->response->errorBadRequest('already voted down');
+                return response()->json([
+                    'message' => 'Bad request, you have already voted down!',
+                    'error_code' => ErrorCodeUtility::VOTED_DOWN_ALREADY,
+                    'status_code' => '400'
+                ], 400);
             }
             else if($pin_comment_operation->vote == 1 && $vote == -1)
             {
@@ -545,18 +870,30 @@ class PinOperationController extends Controller {
     {
         if(!is_numeric($pin_comment_id))
         {
-            return $this->response->errorBadRequest("id should be integer");
+            return response()->json([
+                    'message' => 'pin_comment_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
         $pin_comment = Pin_comments::find($pin_comment_id);
         if(is_null($pin_comment))
         {
-            return $this->response->errorNotFound("comment not exist");
+            return response()->json([
+                    'message' => 'comment not found',
+                    'error_code' => ErrorCodeUtility::COMMENT_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         $pin_comment_operation = PinCommentOperations::where('pin_comment_id', $pin_comment_id)
                                  ->where('user_id', $this->request->self_user_id)->first();
         if(is_null($pin_comment_operation))
         {
-            return $this->response->errorBadRequest("never voted for this comment");
+            return response()->json([
+                'message' => 'Bad request, you have not voted yet!',
+                'error_code' => ErrorCodeUtility::NOT_VOTED,
+                'status_code' => '400'
+            ], 400);
         }
         if($pin_comment_operation->vote == 1)
         {
@@ -655,6 +992,17 @@ class PinOperationController extends Controller {
         }
     }
 
+    private function feelingValidation(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'feeling' => 'required|integer|min:0|max:10'
+        ]);
+        if($validator->fails())
+        {
+            throw new StoreResourceFailedException('Could not update feeling',$validator->errors());
+        }
+    }
+
     public static function deletePinOperations($type, $pin_id)
     {
         Pin_operations::where('type', $type)->where('pin_id', $pin_id)->delete();
@@ -669,9 +1017,8 @@ class PinOperationController extends Controller {
             $pin_comment->delete();
         }
     }
-
-    private function deletePinCommentOperations($pin_comment_id)
-    {
+    
+    public function pinStatistics() { // for a certain user
 
     }
 }

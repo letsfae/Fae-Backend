@@ -1,23 +1,33 @@
 <?php
-namespace App\Api\v1\ErrorCodeUtility;
-
+namespace App\Api\v1\Utilities;
 class ErrorCodeUtility
 {
-	public static const UNLIKE = 1;
-    public static const UNCOMMENT = 2;
-
     //400 Bad Request
     /* 
     	The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, too large size, invalid request message framing, or deceptive request routing)
     */
-
-    
+    const UNMARKED_MESSAGE = '400-1';
+    const SEND_TO_SELF = '400-2';
+    const INPUT_ID_NOT_NUMERIC = '400-3';
+    const CHAT_ROOM_FULLFILLED = '400-4';
+    const NOT_MOBILE = '400-5';
+    const BLOCKED_ALREADY = '400-6';
+    const WRONG_TYPE = '400-7';
+    const LIKED_ALREADY = '400-8';
+    const NOT_SAVED = '400-9';
+    const SAVED_ALREADY = '400-10';
+    const NOT_LIKED = '400-11';
+    const VOTED_UP_ALREADY = '400-12';
+    const VOTED_DOWN_ALREADY = '400-13';
+    const NOT_VOTED = '400-14';
+    const NO_FEELING = '400-15';
 
     //401 Unauthorized
     /*
     	Similar to 403 Forbidden, but specifically for use when authentication is required and has failed or has not yet been provided. The response must include a WWW-Authenticate header field containing a challenge applicable to the requested resource. See Basic access authentication and Digest access authentication.[33] 401 semantically means "unauthenticated",[34] i.e. the user does not have the necessary credentials.
 		Note: Some sites issue HTTP 401 when an IP address is banned from the website (usually the website domain) and that specific address is refused permission to access a website.
     */
+	const INCORRECT_PASSWORD = '401-1';
 
     //402 Payment Required
     /*
@@ -28,11 +38,31 @@ class ErrorCodeUtility
     /*
 		The request was a valid request, but the server is refusing to respond to it. The user might be logged in but does not have the necessary permissions for the resource.
     */
+	const USER_NOT_IN_CHAT = '403-1';
+	const NOT_OWNER_OF_PIN = '403-2';
+	const TOO_FAR_AWAY = '403-3';
+	const VERIFICATION_TIMEOUT = '403-4';
+	const VERIFICATION_WRONG_CODE = '403-5';
 
     //404 Not Found
     /*
 		The requested resource could not be found but may be available in the future. Subsequent requests by the client are permissible.
     */
+	const LAST_MESSAGE_SENDER_NOT_FOUND = '404-1';
+	const CHAT_NOT_FOUND = '404-2';
+	const USER_NOT_FOUND = '404-3';
+	const TAG_NOT_FOUND = '404-4';
+	const CHAT_ROOM_NOT_FOUND = '404-5';
+	const SESSION_NOT_FOUND = '404-6';
+	const LOCATION_NOT_FOUND = '404-7';
+	const CHAT_ROOM_USER_NOT_FOUND = '404-8';
+	const COMMENT_NOT_FOUND = '404-9';
+	const MEDIA_NOT_FOUND = '404-10';
+	const FILE_NOT_FOUND = '404-11';
+	const FRIEND_REQUEST_NOT_FOUND = '404-12';
+	const PIN_NOT_FOUND = '404-13';
+	const VERIFICATION_NOT_FOUND = '404-14';
+	const NAME_CARD_NOT_FOUND = '404-15';
 
     //405 Method Not Allowed
     /*
@@ -112,6 +142,10 @@ class ErrorCodeUtility
 	/*
 		The request was well-formed but was unable to be followed due to semantic errors.
 	*/
+	const USER_ALREADY_EXISTS = '422-1';
+	const USER_NAME_ALREADY_EXISTS = '422-2';
+	const EMAIL_ALREADY_EXISTS = '422-3';
+	const PHONE_ALREADY_EXISTS = '422-4';
 
 	//423 Locked (WebDAV; RFC 4918)
 	/*

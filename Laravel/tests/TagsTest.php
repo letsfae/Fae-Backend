@@ -321,9 +321,10 @@ class TagsTest extends TestCase {
             'page' => 'fae'
         );
         $response_page1 = $this->call('get', 'http://'.$this->domain.'/tags', $parameters1, [], [], $this->transformHeadersToServerVars($server2));   
+        var_dump($response_page1);
         $array2 = json_decode($response_page1->getContent()); 
         $result = false;
-        if ($response_page1->status() == '400' && $array2->message == 'Bad Request') {
+        if ($response_page1->status() == '422' && $array2->message = 'Could not get array.' && $array2->errors->page[0] == 'The page must be an integer.') {
             $result = true;
         }
         $this->assertEquals(true, $result);
@@ -441,10 +442,74 @@ class TagsTest extends TestCase {
             $response[$i] = $this->call('post', 'http://'.$this->domain.'/tags', $parameters[$i], [], [], $this->transformHeadersToServerVars($server2));   
             $this->refreshApplication();
         }   
-        $response = $this->call('get', 'http://'.$this->domain.'/tags/33', [], [], [], $this->transformHeadersToServerVars($server2));   
-        $array2 = json_decode($response->getContent());  
+        $response = $this->call('get', 'http://'.$this->domain.'/tags/33', [], [], [], $this->transformHeadersToServerVars($server2));$this->seeJson([
+                 'message' => 'tag not found',
+                 'error_code' => '404-4',
+                 'status_code' => '404', 
+        ]); 
         $result = false;
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
+        if ($response->status() == '404') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);
+    }
+    //test the response when the format of the tag_id is wrong.
+    public function testGetOne3() {
+        $this->markTestSkipped();
+        $parameter1 = array(
+            'email' => 'letsfae@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server1 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server1));
+        $array = json_decode($login_response->getContent());
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );   
+        $parameters = array();
+        $response = array();
+        $tag = array();
+        for ($i = 0; $i < 31; $i++) {
+            $parameters[$i] = array(
+                'title' => 'fae'.$i,
+                'color' => '#1f1f1F',  
+            ); 
+        }
+        //create the tags.
+        for ($i = 0; $i < 31; $i++) {
+            $response[$i] = $this->call('post', 'http://'.$this->domain.'/tags', $parameters[$i], [], [], $this->transformHeadersToServerVars($server2));   
+            $this->refreshApplication();
+        }   
+        $response = $this->call('get', 'http://'.$this->domain.'/tags/fae', [], [], [], $this->transformHeadersToServerVars($server2));
+        $this->seeJson([
+                 'message' => 'id is not integer',
+                 'error_code' => '400-3',
+                 'status_code' => '400', 
+        ]); 
+        $result = false;
+        if ($response->status() == '400') {
             $result = true;
         }
         $this->assertEquals(true, $result);
@@ -516,7 +581,7 @@ class TagsTest extends TestCase {
 
         $latitude = 34.031958;
         $longitude = -118.288125;
-        for ($i = 1; $i < 33; $i++) { 
+        for ($i = 1; $i < 32; $i++) { 
             ${'parameters' . $i} = array(
                 'file_ids' => '1;2',
                 'tag_ids' => '1',
@@ -532,19 +597,28 @@ class TagsTest extends TestCase {
         $parameters = array(
             'page' => 1,
         );
-        $response = $this->call('get', 'http://'.$this->domain.'/tags/1/pin', $parameters, [], [], $this->transformHeadersToServerVars($server2)); 
-        $array2 = json_decode($response->getContent());  
+        $response1= $this->call('get', 'http://'.$this->domain.'/tags/1/pin', $parameters, [], [], $this->transformHeadersToServerVars($server2)); 
+        $array2 = json_decode($response1->getContent());  
         for ($i = 0; $i < 30; $i++) {
             $this->seeJson([  
                     'pin_id' => $array2[$i]->pin_id,
                     'type' => 'media',
             ]);
         }
+        $this->refreshApplication();
+        $content = array( 
+            'page' => 2,
+        ); 
+        $response2 = $this->call('get', 'http://'.$this->domain.'/tags/1/pin', $content, [], [], $this->transformHeadersToServerVars($server2)); 
+        $array3 = json_decode($response2->getContent()); 
+        $this->seeJson([  
+                    'pin_id' => $array3[0]->pin_id,
+                    'type' => 'media',
+        ]);
         $result = false;
-        if ($response->status() == '200') {
+        if ($response1->headers->get('page') == '1' && $response1->headers->get('total-pages') == '2' && $response1->status() == '200') {
             $result = true;
-        }
-        $this->assertEquals(true, $result);
+        }  
     }
     //test the response when the format of the tag_id is wrong. 
     public function testGetAllPins2() {
@@ -630,9 +704,13 @@ class TagsTest extends TestCase {
             'page' => 1,
         );
         $response = $this->call('get', 'http://'.$this->domain.'/tags/fae/pin', $parameters, [], [], $this->transformHeadersToServerVars($server2)); 
-        $array2 = json_decode($response->getContent());  
+        $this->seeJson([
+                 'message' => 'id is not integer',
+                 'error_code' => '400-3',
+                 'status_code' => '400', 
+        ]); 
         $result = false;
-        if ($response->status() == '400' && $array2->message == 'id should be integer') {
+        if ($response->status() == '400') {
             $result = true;
         }
         $this->assertEquals(true, $result);
@@ -716,9 +794,13 @@ class TagsTest extends TestCase {
             'page' => 1,
         );
         $response = $this->call('get', 'http://'.$this->domain.'/tags/1/pin', $parameters, [], [], $this->transformHeadersToServerVars($server2)); 
-        $array2 = json_decode($response->getContent());  
+        $this->seeJson([
+                 'message' => 'tag not found',
+                 'error_code' => '404-4',
+                 'status_code' => '404', 
+        ]); 
         $result = false;
-        if ($response->status() == '404' && $array2->message = 'tag does not exist') {
+        if ($response->status() == '404') {
             $result = true;
         }
         $this->assertEquals(true, $result);

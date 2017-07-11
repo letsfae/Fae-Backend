@@ -94,11 +94,12 @@ class MapTest extends TestCase
         );
         //get the map data.  
         $response = $this->call('get', 'http://'.$this->domain.'/map', $parameters, [], [], $this->transformHeadersToServerVars($server2)); 
-        $array2 = json_decode($response->getContent());  
+        $array2 = json_decode($response->getContent());
         for ($i = 0; $i < 10; $i++) {
             $this->seeJson([  
                         'type' => 'user',
                         'user_id' => ($i + 1), 
+                        'mini_avatar' => 0,
                         'geolocation' => array(
                             array(
                             'latitude' => $array2[$i]->geolocation[0]->latitude,
@@ -123,8 +124,7 @@ class MapTest extends TestCase
                         ),
                         'created_at' => $array2[$i]->created_at, 
             ]);
-        } 
-        $this->seeJson([]);
+        }  
         $result = false;
         if ($response->status() == '200') {
             $result = true;
@@ -244,6 +244,7 @@ class MapTest extends TestCase
         $this->seeJson([  
                     'type' => 'user',
                     'user_id' => 1, 
+                    'mini_avatar' => 0,
                     'geolocation' => array(
                         array(
                         'latitude' => $array2[0]->geolocation[0]->latitude,
@@ -400,71 +401,94 @@ class MapTest extends TestCase
         );
         //get the map data. 
         $response = $this->call('get', 'http://'.$this->domain.'/map', $parameters, [], [], $this->transformHeadersToServerVars($server2));  
-        $array2 = json_decode($response->getContent());  
+        $array2 = json_decode($response->getContent()); 
         for ($i = 1; $i < 11; $i++) {
             $this->seeJson([  
-                        'type' => 'comment',
+                    'pin_id' => $i,
+                    'type' => 'comment',
+                    'created_at' => $array2[(-1+$i)]->created_at, 
+                    'pin_object' => array(
                         'comment_id' => $i,
                         'user_id' => 1, 
+                        'nick_name' => null,
+                        'anonymous' => false,
                         'content' => 'This is the test'.$i,
                         'geolocation' => array( 
-                            'latitude' => $array2[(-1+$i)]->geolocation->latitude,
-                            'longitude' => $array2[(-1+$i)]->geolocation->longitude,
+                            'latitude' => $array2[(-1+$i)]->pin_object->geolocation->latitude,
+                            'longitude' => $array2[(-1+$i)]->pin_object->geolocation->longitude,
                         ),
                         'liked_count' => 0,
                         'saved_count' => 0,
-                        'comment_count' => 0,
-                        'created_at' => $array2[(-1+$i)]->created_at, 
+                        'comment_count' => 0, 
+                        'feeling_count' => [0,0,0,0,0,0,0,0,0,0,0],
+                        'created_at' => $array2[(-1+$i)]->pin_object->created_at, 
                         'user_pin_operations' => array(
                             'is_liked' => false,
-                            'liked_timestamp' => $array2[(-1+$i)]->user_pin_operations->liked_timestamp,
+                            'liked_timestamp' => $array2[(-1+$i)]->pin_object->user_pin_operations->liked_timestamp,
                             'is_saved' => false,
-                            'saved_timestamp' => $array2[(-1+$i)]->user_pin_operations->saved_timestamp,
+                            'saved_timestamp' => $array2[(-1+$i)]->pin_object->user_pin_operations->saved_timestamp,
                             'is_read' => false,
-                            'read_timestamp' => $array2[(-1+$i)]->user_pin_operations->read_timestamp,
+                            'read_timestamp' => $array2[(-1+$i)]->pin_object->user_pin_operations->read_timestamp,
                         ),
+                    )
             ]); 
         } 
         for ($i = 1; $i < 11; $i++) {
             $this->seeJson([  
+                        'pin_id' => $i,
                         'type' => 'media',
-                        'media_id' => $i,
-                        'user_id' => 1, 
-                        'file_ids' => array('1','2'),
-                        'tag_ids' => array('1','2'),
-                        'description' => 'This is the test'.$i,
-                        'geolocation' => array( 
-                            'latitude' => $array2[(9+$i)]->geolocation->latitude,
-                            'longitude' => $array2[(9+$i)]->geolocation->longitude,
-                        ),
-                        'liked_count' => 0,
-                        'saved_count' => 0,
-                        'comment_count' => 0,
                         'created_at' => $array2[(9+$i)]->created_at, 
-                        'user_pin_operations' => array(
-                        'is_liked' => false,
-                        'liked_timestamp' => $array2[(9+$i)]->user_pin_operations->liked_timestamp,
-                        'is_saved' => false,
-                        'saved_timestamp' => $array2[(9+$i)]->user_pin_operations->saved_timestamp,
-                        'is_read' => false,
-                        'read_timestamp' => $array2[(9+$i)]->user_pin_operations->read_timestamp,
-                    ),
+                        'pin_object' => array(
+                            'media_id' => $i,
+                            'user_id' => 1, 
+                            'nick_name' => null,
+                            'anonymous' => false,
+                            'file_ids' => array('1','2'),
+                            'tag_ids' => array('1','2'),
+                            'description' => 'This is the test'.$i,
+                            'geolocation' => array( 
+                                'latitude' => $array2[(9+$i)]->pin_object->geolocation->latitude,
+                                'longitude' => $array2[(9+$i)]->pin_object->geolocation->longitude,
+                            ),
+                            'liked_count' => 0,
+                            'saved_count' => 0,
+                            'comment_count' => 0,
+                            'feeling_count' => [0,0,0,0,0,0,0,0,0,0,0],
+                            'created_at' => $array2[(9+$i)]->pin_object->created_at, 
+                            'user_pin_operations' => array(
+                            'is_liked' => false,
+                            'liked_timestamp' => $array2[(9+$i)]->pin_object->user_pin_operations->liked_timestamp,
+                            'is_saved' => false,
+                            'saved_timestamp' => $array2[(9+$i)]->pin_object->user_pin_operations->saved_timestamp,
+                            'is_read' => false,
+                            'read_timestamp' => $array2[(9+$i)]->pin_object->user_pin_operations->read_timestamp,
+                        ),
+                    )
             ]); 
         }  
         for ($i = 1; $i < 11; $i++) {
             $this->seeJson([   
-                        'type' => 'chat_room', 
+                    'pin_id' => $i,
+                    'type' => 'chat_room', 
+                    'created_at' => $array2[(19+$i)]->created_at, 
+                    'pin_object' => array(
                         'chat_room_id' => $i,
+                        'nick_name' => null,
+                        'title' => 'This is the test'.$i,
                         'user_id' => 1,  
                         'geolocation' => array( 
-                            'latitude' => $array2[(19+$i)]->geolocation->latitude,
-                            'longitude' => $array2[(19+$i)]->geolocation->longitude,
+                            'latitude' => $array2[(19+$i)]->pin_object->geolocation->latitude,
+                            'longitude' => $array2[(19+$i)]->pin_object->geolocation->longitude,
                         ),
-                        'last_message' => $array2[(19+$i)]->last_message, 
-                        'last_message_sender_id' => $array2[(19+$i)]->last_message_sender_id, 
-                        'last_message_type' => $array2[(19+$i)]->last_message_type, 
-                        'last_message_timestamp' => $array2[(19+$i)]->last_message_timestamp, 
-                        'created_at' => $array2[(19+$i)]->created_at, 
+                        'last_message' => $array2[(19+$i)]->pin_object->last_message, 
+                        'last_message_sender_id' => $array2[(19+$i)]->pin_object->last_message_sender_id, 
+                        'last_message_type' => $array2[(19+$i)]->pin_object->last_message_type, 
+                        'last_message_timestamp' => $array2[(19+$i)]->pin_object->last_message_timestamp, 
+                        'created_at' => $array2[(19+$i)]->pin_object->created_at, 
+                        'capacity' => 50,
+                        'tag_ids' => null,
+                        'description' => null,
+                    )
             ]); 
         }
         $this->seeJson([]);
@@ -536,6 +560,7 @@ class MapTest extends TestCase
             $this->seeJson([  
                         'type' => 'user',
                         'user_id' => $i + 1, 
+                        'mini_avatar' => 0,
                         'geolocation' => array(
                             array(
                             'latitude' => $array2[$i]->geolocation[0]->latitude,
@@ -616,6 +641,7 @@ class MapTest extends TestCase
                 'user_id' => 1,
                 'content' => 'This is the test'.$i,
                 'geolocation' => new Point($latitude,$longitude), 
+                'duration' => '1440',
             ]); 
             $latitude = number_format($latitude + 0.000001, 6); 
         }
@@ -666,7 +692,8 @@ class MapTest extends TestCase
                 'description' => 'This is the test'.$i,
                 'geolocation' => new Point($latitude,$longitude), 
                 'tag_ids' => '1;2',
-                'file_ids' => '1;2'
+                'file_ids' => '1;2',
+                'duration' => '1440',
             ]);  
             $latitude = number_format($latitude + 0.000001, 6); 
         } 
@@ -677,7 +704,8 @@ class MapTest extends TestCase
             ${'chatRoom' . $i} = ChatRooms::create([
                 'user_id' => 1,
                 'title' => 'faeapp',
-                'geolocation' => new Point($latitude,$longitude),   
+                'geolocation' => new Point($latitude,$longitude),  
+                'duration' => '1440', 
             ]); 
             $latitude = number_format($latitude + 0.000001, 6); 
         }
@@ -753,6 +781,7 @@ class MapTest extends TestCase
                 'user_id' => 1,
                 'content' => 'This is the test'.$i,
                 'geolocation' => new Point($latitude,$longitude), 
+                'duration' => '1440',
             ]); 
             $latitude = number_format($latitude + 0.000001, 6); 
         }
@@ -803,7 +832,8 @@ class MapTest extends TestCase
                 'description' => 'This is the test'.$i,
                 'geolocation' => new Point($latitude,$longitude), 
                 'tag_ids' => '1;2',
-                'file_ids' => '1;2'
+                'file_ids' => '1;2',
+                'duration' => '1440',
             ]);  
             $latitude = number_format($latitude + 0.000001, 6); 
         } 
@@ -814,7 +844,8 @@ class MapTest extends TestCase
             ${'chatRoom' . $i} = ChatRooms::create([
                 'user_id' => 1,
                 'title' => 'faeapp',
-                'geolocation' => new Point($latitude,$longitude),   
+                'geolocation' => new Point($latitude,$longitude),  
+                'duration' => '1440', 
             ]); 
             $latitude = number_format($latitude + 0.000001, 6); 
         }
@@ -902,6 +933,7 @@ class MapTest extends TestCase
         $this->seeJson([  
                     'type' => 'user',
                     'user_id' => 1, 
+                    'mini_avatar' => 0,
                     'geolocation' => array(
                         array(
                         'latitude' => $array2[0]->geolocation[0]->latitude,
@@ -995,6 +1027,7 @@ class MapTest extends TestCase
             $this->seeJson([  
                         'type' => 'user',
                         'user_id' => ($i + 1), 
+                        'mini_avatar' => 0,
                         'geolocation' => array(
                             array(
                             'latitude' => $array2[$i]->geolocation[0]->latitude,
@@ -1027,6 +1060,99 @@ class MapTest extends TestCase
         }
         $this->assertEquals(true, $result);
     }
+    // the correct response of the method of getMap when the type is place.
+    // public function testGetMap10() { 
+        // $this->markTestSkipped(); 
+        //register of the user.
+        // $server = array(
+        //     'Accept' => 'application/x.faeapp.v1+json', 
+        //     'Fae-Client-Version' => 'ios-0.0.1',
+        // );
+        // for ($i = 1; $i < 11; $i++) { 
+        //     ${'parameters' . $i}  = array(
+        //     'email' => 'letsfae'.$i.'@126.com', 
+        //     'password' => 'letsfaego',
+        //     'first_name' => 'kevin',
+        //     'last_name' => 'zhang',
+        //     'user_name' => 'faeapp'.$i,
+        //     'gender' => 'male',
+        //     'birthday' => '1992-02-02',
+        //     'login_count' => 0, 
+        //     );
+        //     $response = $this->call('post', 'http://'.$this->domain.'/users', ${'parameters' . $i}, [], [], $this->transformHeadersToServerVars($server));
+        //     $this->refreshApplication();
+        // }
+        // for ($i = 1; $i < 11; $i++) { 
+        //     ${'parameter' . $i}  = array(
+        //     'email' => 'letsfae'.$i.'@126.com', 
+        //     'password' => 'letsfaego',
+        //     'user_name' => 'faeapp'.$i,
+        //     );
+        // } 
+        // //login of the user. 
+        // $latitude = 34.031958;
+        // $longitude = -118.288125;
+        // for ($i = 1; $i < 11; $i++) {
+        //     $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', ${'parameter' . $i}, [], [], $this->transformHeadersToServerVars($server));
+        //     $session1 = Sessions::where('user_id', '=', $i)->first();
+        //     $session1->location = new Point($latitude,$longitude);
+        //     $session1->save(); 
+        //     $latitude = number_format($latitude + 0.000001, 6); 
+        //     $this->refreshApplication();
+        // }  
+
+        // $array = json_decode($login_response->getContent());
+        // $server2 = array(
+        //     'Accept' => 'application/x.faeapp.v1+json', 
+        //     'Fae-Client-Version' => 'ios-0.0.1', 
+        //     'Authorization' => 'FAE '.$array->debug_base64ed,
+        // ); 
+
+        // $parameters = array(
+        //     'geo_latitude' => 34.031958,
+        //     'geo_longitude' => -118.288125, 
+        //     'type' => 'place',  
+        // );
+        // //get the map data.  
+        // $response = $this->call('get', 'http://'.$this->domain.'/map', $parameters, [], [], $this->transformHeadersToServerVars($server2)); 
+        // $array2 = json_decode($response->getContent());
+        // print_r($array2);
+        // for ($i = 0; $i < 10; $i++) {
+        //     $this->seeJson([  
+        //                 'type' => 'user',
+        //                 'user_id' => ($i + 1), 
+        //                 'mini_avatar' => 0,
+        //                 'geolocation' => array(
+        //                     array(
+        //                     'latitude' => $array2[$i]->geolocation[0]->latitude,
+        //                     'longitude' => $array2[$i]->geolocation[0]->longitude,
+        //                     ),
+        //                     array(
+        //                     'latitude' => $array2[$i]->geolocation[1]->latitude,
+        //                     'longitude' => $array2[$i]->geolocation[1]->longitude,
+        //                     ),
+        //                     array(
+        //                     'latitude' => $array2[$i]->geolocation[2]->latitude,
+        //                     'longitude' => $array2[$i]->geolocation[2]->longitude,
+        //                     ),
+        //                     array(
+        //                     'latitude' => $array2[$i]->geolocation[3]->latitude,
+        //                     'longitude' => $array2[$i]->geolocation[3]->longitude,
+        //                     ),
+        //                     array(
+        //                     'latitude' => $array2[$i]->geolocation[4]->latitude,
+        //                     'longitude' => $array2[$i]->geolocation[4]->longitude,
+        //                     ),
+        //                 ),
+        //                 'created_at' => $array2[$i]->created_at, 
+        //     ]);
+        // }  
+        // $result = false;
+        // if ($response->status() == '200') {
+        //     $result = true;
+        // }
+        // $this->assertEquals(true, $result);
+    // }
 
     //test correct response of the method of updateUserLocation. 
     public function testUpdateUserLocation() {
@@ -1159,8 +1285,10 @@ class MapTest extends TestCase
             'Fae-Client-Version' => 'ios-0.0.1',
         );
         //login of the user.
-        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server1));
-        $session1 = Sessions::where('user_id', '=', 1)->first(); 
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server1)); 
+        $session1 = Sessions::where('user_id', '=', 1)->first();
+        $session1->is_mobile = false;
+        $session1->save(); 
         $array = json_decode($login_response->getContent());   
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -1172,11 +1300,15 @@ class MapTest extends TestCase
             'geo_longitude' => -118.288125,
         );
         $response = $this->call('post', 'http://'.$this->domain.'/map/user', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
-        $array2 = json_decode($response->getContent()); 
+        $this->seeJson([
+                 'message' => 'current client is not mobile',
+                 'error_code' => '400-5',
+                 'status_code' => '400', 
+        ]); 
         $result = false;
-        if ($response->status() == '422' && $array2->message == 'current user is not active') {
+        if ($response->status() == '400') {
             $result = true;
         }
-        $this->assertEquals(true, $result);
+        $this->assertEquals(true, $result); 
     }
 }

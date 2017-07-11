@@ -45,6 +45,9 @@ class ExistenceController extends Controller {
         {            
             throw new AccessDeniedHttpException('Bad request, Please verify your user_name format!');
         }
+
+        $user_name = strtolower($user_name);
+        
         $user = Users::where('user_name', '=', $user_name)->first();
         $existence = True;
         if ($user == null) {

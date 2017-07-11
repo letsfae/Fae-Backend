@@ -197,11 +197,14 @@ class MediaTest extends TestCase {
             'duration' => '1440',
             'interaction_radius' => '100', 
         );
-        $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
-        var_dump($response);
-        $array2 = json_decode($response->getContent());  
+        $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));    
+        $this->seeJson([
+                 'message' => 'tags not found',
+                 'error_code' => '404-4',
+                 'status_code' => '404', 
+        ]); 
         $result = false;
-        if ($response->status() == '404' && $array2->message == 'tags not exist') {
+        if ($response->status() == '404') {
             $result = true;
         }
         $this->assertEquals(true, $result); 
@@ -358,12 +361,16 @@ class MediaTest extends TestCase {
             'interaction_radius' => 100
         );
         $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
-        $array2 = json_decode($response->getContent());  
+        $this->seeJson([
+                 'message' => 'files not found',
+                 'error_code' => '404-11',
+                 'status_code' => '404', 
+        ]); 
         $result = false;
-        if ($response->status() == '404' && $array2->message == 'files not exist') {
+        if ($response->status() == '404') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);  
     }
 
     //test the response when the request has no tag_ids.
@@ -641,9 +648,13 @@ class MediaTest extends TestCase {
         );
         //wrong format of the media_id.
         $response2 = $this->call('post', 'http://'.$this->domain.'/medias/fae', $parameters1, [], [], $this->transformHeadersToServerVars($server2));  
-        $array3 = json_decode($response2->getContent()); 
+        $this->seeJson([
+                 'message' => 'media_id is not integer',
+                 'error_code' => '400-3',
+                 'status_code' => '400', 
+        ]); 
         $result = false;
-        if ($response2->status() == '400' && $array3->message == 'Bad Request') {
+        if ($response2->status() == '400') {
             $result = true;
         }
         $this->assertEquals(true, $result);
@@ -830,7 +841,7 @@ class MediaTest extends TestCase {
             'geo_longitude' => '-118.2799',
             'duration' => 1440, 
         );
-        $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
+        $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));    
         $array2 = json_decode($response->getContent()); 
         $this->refreshApplication();
         $parameters1 = array( 
@@ -838,12 +849,16 @@ class MediaTest extends TestCase {
         );
         //The media_id does not exist.
         $response2 = $this->call('post', 'http://'.$this->domain.'/medias/-1', $parameters1, [], [], $this->transformHeadersToServerVars($server2));  
-        $array3 = json_decode($response2->getContent()); 
+        $this->seeJson([
+                 'message' => 'media not found',
+                 'error_code' => '404-10',
+                 'status_code' => '404', 
+        ]); 
         $result = false;
-        if ($response2->status() == '404' && $array3->message == 'Not Found') {
+        if ($response2->status() == '404') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);
     }
 
     //test the response when the tag information does not exist with the tag_ids.
@@ -900,6 +915,20 @@ class MediaTest extends TestCase {
         $files->reference_count = 0;
         $files->save(); 
 
+        $tags = new Tags;
+        $tags->title = 'fae';
+        $tags->color = '#fff000';
+        $tags->user_id = 1;  
+        $tags->reference_count = 0;
+        $tags->save();
+
+        $tags = new Tags;
+        $tags->title = 'fae1';
+        $tags->color = '#fff000';
+        $tags->user_id = 1;  
+        $tags->reference_count = 0;
+        $tags->save();
+
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
             'Fae-Client-Version' => 'ios-0.0.1',
@@ -913,7 +942,7 @@ class MediaTest extends TestCase {
             'geo_longitude' => '-118.2799',
             'duration' => 1440, 
         );
-        $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
+        $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));    
         $array2 = json_decode($response->getContent()); 
         $this->refreshApplication();
         $parameters1 = array( 
@@ -921,12 +950,16 @@ class MediaTest extends TestCase {
             'tag_ids' => '3',
         ); 
         $response2 = $this->call('post', 'http://'.$this->domain.'/medias/1', $parameters1, [], [], $this->transformHeadersToServerVars($server2));  
-        $array3 = json_decode($response2->getContent()); 
+        $this->seeJson([
+                 'message' => 'tag not found',
+                 'error_code' => '404-4',
+                 'status_code' => '404', 
+        ]); 
         $result = false;
-        if ($response2->status() == '404' && $array3->message == 'Not Found') {
+        if ($response2->status() == '404') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);
     }
 
     //test the response when the request of tag_ids is null.
@@ -1140,6 +1173,131 @@ class MediaTest extends TestCase {
         $this->seeInDatabase('tags', ['user_id' => 1, 'title' => 'fae2', 'color' => '#fff000', 'reference_count' => 1]);
         $this->seeInDatabase('tags', ['user_id' => 1, 'title' => 'fae3', 'color' => '#fff000', 'reference_count' => 1]);
     }
+    //test the response when the user id is not the .
+    public function testUpdate8() {
+        $this->markTestSkipped(); 
+        //register of the user.
+        $parameter1 = array(
+            'email' => 'letsfae@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameter2 = array(
+            'email' => 'letsfae2@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp2',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server)); 
+        $this->refreshApplication();  
+        $array = json_decode($login_response->getContent()); 
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'video';
+        $files->mine_type = 'video';
+        $files->size = 256;
+        $files->hash = 'test';
+        $files->directory = 'test';
+        $files->file_name_storage = 'test';
+        $files->file_name = 'test';
+        $files->reference_count = 0;
+        $files->save();
+
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'image';
+        $files->mine_type = 'image';
+        $files->size = 256;
+        $files->hash = 'test1';
+        $files->directory = 'test1';
+        $files->file_name_storage = 'test1';
+        $files->file_name = 'test1';
+        $files->reference_count = 0;
+        $files->save();
+
+        $tags = new Tags;
+        $tags->title = 'fae';
+        $tags->color = '#fff000';
+        $tags->user_id = 1;  
+        $tags->reference_count = 0;
+        $tags->save();
+
+        $tags = new Tags;
+        $tags->title = 'fae1';
+        $tags->color = '#fff000';
+        $tags->user_id = 1;  
+        $tags->reference_count = 0;
+        $tags->save();
+
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );   
+        $parameters = array(
+            'file_ids' => '1;2',
+            'tag_ids' => '1;2',
+            'description' => 'this is a test',
+            'geo_latitude' => 34.2799,
+            'geo_longitude' => -118.2799,
+            'duration' => 1440, 
+            'interaction_radius' => '100', 
+            'anonymous' => 'true'
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));   
+        $medias = Medias::where('id', 1)->first();
+        $medias->user_id = 2;
+        $medias->save();
+        $array2 = json_decode($response->getContent()); 
+        $this->refreshApplication();
+        $parameters1 = array( 
+            'description' => 'this is a test2', 
+            'geo_latitude' => 35.5799,
+            'geo_longitude' => -120.2799,
+            'duration' => 1440,
+            'interaction_radius' => '100',
+            'anonymous' => 'true'
+        );
+        $response2 = $this->call('post', 'http://'.$this->domain.'/medias/1', $parameters1, [], [], $this->transformHeadersToServerVars($server2));  
+        $this->seeJson([
+                    'message' => 'You can not update this media',
+                    'error_code' => '403-2',
+                    'status_code' => '403', 
+        ]); 
+        $result = false;
+        if ($response2->status() == '403') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result); 
+    }
 
     //test correct response of the method of getOneMedia.
     public function testGetOne() {
@@ -1237,14 +1395,15 @@ class MediaTest extends TestCase {
         $response_comment = $this->call('post', 'http://'.$this->domain.'/pins/media/1/comments', $parameters1, [], [], $this->transformHeadersToServerVars($server2));  
         $this->refreshApplication();  
         $response2 = $this->call('get', 'http://'.$this->domain.'/medias/1', [], [], [], $this->transformHeadersToServerVars($server2));
-        $array3 = json_decode($response2->getContent());  
+        $array3 = json_decode($response2->getContent()); 
         $this->seeJson([ 
                     'media_id' => 1,
                     'user_id' => 1,
+                    'nick_name' => null,
+                    'anonymous' => false,
                     'file_ids' => array('1','2'),
                     'tag_ids' => array('1','2'),
-                    'description' => 'this is a test',
-                    'anonymous' => false,
+                    'description' => 'this is a test', 
                     'geolocation' => array(
                         'latitude' => -89.99,
                         'longitude' => -118.2799,
@@ -1252,12 +1411,15 @@ class MediaTest extends TestCase {
                     'liked_count' => 1,
                     'saved_count' => 1,
                     'comment_count' => 1,
+                    'feeling_count' => [0,0,0,0,0,0,0,0,0,0,0],
                     'created_at' => $array3->created_at,
                     'user_pin_operations' => array(
                         'is_liked' => true,
                         'liked_timestamp' => $array3->user_pin_operations->liked_timestamp,
                         'is_saved' => true,
                         'saved_timestamp' => $array3->user_pin_operations->saved_timestamp,
+                        'feeling' => -1,
+                        'feeling_timestamp' => $array3->user_pin_operations->feeling_timestamp,
                         'is_read' => true,
                         'read_timestamp' => $array3->user_pin_operations->read_timestamp,
                     ), 
@@ -1355,12 +1517,16 @@ class MediaTest extends TestCase {
         $this->refreshApplication(); 
         //wrong format of the media_id.
         $response2 = $this->call('get', 'http://'.$this->domain.'/medias/fae', [], [], [], $this->transformHeadersToServerVars($server2));  
-        $array3 = json_decode($response2->getContent()); 
+        $this->seeJson([
+                    'message' => 'media_id is not integer',
+                    'error_code' => '400-3',
+                    'status_code' => '400', 
+        ]); 
         $result = false;
-        if ($response2->status() == '400' && $array3->message == 'Bad Request') {
+        if ($response2->status() == '400') {
             $result = true;
         }
-        $this->assertEquals(true, $result);
+        $this->assertEquals(true, $result); 
     }
 
     //test the response when the media information does not exist with the media_id.
@@ -1449,9 +1615,13 @@ class MediaTest extends TestCase {
         $this->refreshApplication(); 
         //The media_id does not exist.
         $response2 = $this->call('get', 'http://'.$this->domain.'/medias/-1', [], [], [], $this->transformHeadersToServerVars($server2));  
-        $array3 = json_decode($response2->getContent()); 
+        $this->seeJson([
+                    'message' => 'media not found',
+                    'error_code' => '404-10',
+                    'status_code' => '404', 
+        ]); 
         $result = false;
-        if ($response2->status() == '404' && $array3->message == 'Not Found') {
+        if ($response2->status() == '404') {
             $result = true;
         }
         $this->assertEquals(true, $result); 
@@ -1638,12 +1808,16 @@ class MediaTest extends TestCase {
         $this->refreshApplication(); 
         //wrong format of the media_id.
         $response2 = $this->call('delete', 'http://'.$this->domain.'/medias/fae', [], [], [], $this->transformHeadersToServerVars($server2));  
-        $array3 = json_decode($response2->getContent()); 
+        $this->seeJson([
+                    'message' => 'media_id is not integer',
+                    'error_code' => '400-3',
+                    'status_code' => '400', 
+        ]); 
         $result = false;
-        if ($response2->status() == '400' && $array3->message == 'Bad Request') {
+        if ($response2->status() == '400') {
             $result = true;
         }
-        $this->assertEquals(true, $result);
+        $this->assertEquals(true, $result); 
     }
 
     //test the response when the media information does not exist with the media_id.
@@ -1732,9 +1906,13 @@ class MediaTest extends TestCase {
         $this->refreshApplication(); 
         //The media_id does not exist.
         $response2 = $this->call('delete', 'http://'.$this->domain.'/medias/-1', [], [], [], $this->transformHeadersToServerVars($server2));  
-        $array3 = json_decode($response2->getContent()); 
+        $this->seeJson([
+                    'message' => 'media not found',
+                    'error_code' => '404-10',
+                    'status_code' => '404', 
+        ]); 
         $result = false;
-        if ($response2->status() == '404' && $array3->message == 'Not Found') {
+        if ($response2->status() == '404') {
             $result = true;
         }
         $this->assertEquals(true, $result); 
@@ -1885,12 +2063,16 @@ class MediaTest extends TestCase {
             'Authorization' => 'FAE '.$array->debug_base64ed,
         );   
         $response2 = $this->call('delete', 'http://'.$this->domain.'/medias/2', [], [], [], $this->transformHeadersToServerVars($server2));  
-        $array3 = json_decode($response2->getContent()); 
+        $this->seeJson([
+                    'message' => 'You can not delete this media',
+                    'error_code' => '403-2',
+                    'status_code' => '403', 
+        ]); 
         $result = false;
-        if ($response2->status() == '403' && $array3->message == 'You can not delete this media') {
+        if ($response2->status() == '403') {
             $result = true;
         }
-        $this->assertEquals(true, $result);
+        $this->assertEquals(true, $result); 
     }
 
     //test correct response of the method of getFromUser and the request user_id is not the same as the logged in user_id.
@@ -1984,7 +2166,7 @@ class MediaTest extends TestCase {
         //create the medias.
         for ($i = 0; $i < 31; $i++) {
             $response[$i] = $this->call('post', 'http://'.$this->domain.'/medias', $parameters[$i], [], [], $this->transformHeadersToServerVars($server2));   
-            // sleep(1);
+            sleep(1);
             $this->refreshApplication();
             $response_like = $this->call('post', 'http://'.$this->domain.'/pins/media/'.($i + 1).'/like', [], [], [], $this->transformHeadersToServerVars($server2));
             $this->refreshApplication();
@@ -2031,11 +2213,12 @@ class MediaTest extends TestCase {
          //get the medias of the user with the user_id.
         //get the medias of the page 1.
         $response_page1 = $this->call('get', 'http://'.$this->domain.'/medias/users/1', $content, [], [], $this->transformHeadersToServerVars($server3));
-        $array2 = json_decode($response_page1->getContent());   
+        $array2 = json_decode($response_page1->getContent()); 
         for ($i = 0; $i < 30; $i++) {
             $this->seeJson([ 
                     'media_id' => 30 - $i,
                     'user_id' => 1,
+                    'nick_name' => null,
                     'file_ids' => array('1','2'),
                     'tag_ids' => array('1','2'),
                     'description' => 'this is the test'.(30 - (++$i)), 
@@ -2046,6 +2229,7 @@ class MediaTest extends TestCase {
                     'liked_count' => 1, 
                     'saved_count' => 1, 
                     'comment_count' => 1,
+                    'feeling_count' => [0,0,0,0,0,0,0,0,0,0,0],
                     'created_at' => $array2[$i]->created_at,
                     'user_pin_operations' => array(
                         'is_liked' => false,
@@ -2069,6 +2253,7 @@ class MediaTest extends TestCase {
         $this->seeJson([ 
                     'media_id' => 1,
                     'user_id' => 1,
+                    'nick_name' => null,
                     'file_ids' => array('1','2'),
                     'tag_ids' => array('1','2'),
                     'description' => 'this is the test0', 
@@ -2079,6 +2264,7 @@ class MediaTest extends TestCase {
                     'liked_count' => 1, 
                     'saved_count' => 1, 
                     'comment_count' => 1,
+                    'feeling_count' => [0,0,0,0,0,0,0,0,0,0,0],
                     'created_at' => $array3[0]->created_at,
                     'user_pin_operations' => array(
                         'is_liked' => false,
@@ -2196,9 +2382,13 @@ class MediaTest extends TestCase {
         //wrong format of the user_id.
         //get the faevors of the page 1.
         $response_page1 = $this->call('get', 'http://'.$this->domain.'/medias/users/fae', $content, [], [], $this->transformHeadersToServerVars($server2));
-        $array2 = json_decode($response_page1->getContent()); 
+        $this->seeJson([
+                    'message' => 'user_id is not integer',
+                    'error_code' => '400-3',
+                    'status_code' => '400', 
+        ]); 
         $result = false;
-        if ($response_page1->status() == '400' && $array2->message == 'id should be integer') {
+        if ($response_page1->status() == '400') {
             $result = true;
         }
         $this->assertEquals(true, $result); 
@@ -2304,12 +2494,16 @@ class MediaTest extends TestCase {
         //The user_id does not exist.
         //get the faevors of the page 1.
         $response_page1 = $this->call('get', 'http://'.$this->domain.'/medias/users/-1', $content, [], [], $this->transformHeadersToServerVars($server2));
-        $array2 = json_decode($response_page1->getContent()); 
+        $this->seeJson([
+                    'message' => 'user not found',
+                    'error_code' => '404-3',
+                    'status_code' => '404', 
+        ]); 
         $result = false;
-        if ($response_page1->status() == '404' && $array2->message == 'user does not exist') {
+        if ($response_page1->status() == '404') {
             $result = true;
         }
-        $this->assertEquals(true, $result);
+        $this->assertEquals(true, $result); 
     }
 
     //test whenther the input format is right.

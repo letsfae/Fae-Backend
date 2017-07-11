@@ -29,7 +29,7 @@ class UserNameCardTest extends TestCase {
 
     //test correct response of the method of getNameCard.
     public function testGetNameCard() { 
-        // $this->markTestSkipped();   
+        $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -104,7 +104,7 @@ class UserNameCardTest extends TestCase {
 
     //test the response when the tag_ids is null.
     public function testGetNameCard2() { 
-        // $this->markTestSkipped();   
+        $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -156,7 +156,7 @@ class UserNameCardTest extends TestCase {
 
     //test the response when the namecard does not exist.
     public function testGetNameCard3() { 
-        // $this->markTestSkipped();   
+        $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -192,17 +192,21 @@ class UserNameCardTest extends TestCase {
         );   
         //the namecard with the given user_id does not exist.
         $response = $this->call('get', 'http://'.$this->domain.'/users/2/name_card', [], [], [], $this->transformHeadersToServerVars($server2));   
-        $array2 = json_decode($response->getContent());
+        $this->seeJson([
+                 'message' => 'name card not found',
+                 'error_code' => '404-14',
+                 'status_code' => '404', 
+        ]); 
         $result = false;
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
+        if ($response->status() == '404') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);   
     }
 
     //test the correct response of the method of getSelfNameCard.
     public function testGetSelfNameCard() { 
-        // $this->markTestSkipped();   
+        $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -254,7 +258,7 @@ class UserNameCardTest extends TestCase {
 
     //test the correct response of the method of getAllTags.
     public function testGetAllTags() { 
-        // $this->markTestSkipped();   
+        $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -315,7 +319,7 @@ class UserNameCardTest extends TestCase {
 
     //test the response when the database of Name_card_tags is null.
     public function testGetAllTags2() { 
-        // $this->markTestSkipped();   
+        $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -361,7 +365,7 @@ class UserNameCardTest extends TestCase {
 
     //test the correct response of the method of updateNameCard.
     public function testUpdateNameCard() { 
-        // $this->markTestSkipped();   
+        $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -421,7 +425,7 @@ class UserNameCardTest extends TestCase {
 
     //test the response when the input parameter are all null.
     public function testUpdateNameCard2() { 
-        // $this->markTestSkipped();   
+        $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -475,7 +479,7 @@ class UserNameCardTest extends TestCase {
 
     //test the response when the input of short_intro is empty and the other two parameters are null.
     public function testUpdateNameCard3() { 
-        // $this->markTestSkipped();   
+        $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -532,7 +536,7 @@ class UserNameCardTest extends TestCase {
 
     //test the response when the input of short_intro is empty and the format of nick_name is wrong.
     public function testUpdateNameCard4() { 
-        // $this->markTestSkipped();   
+        $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -591,7 +595,7 @@ class UserNameCardTest extends TestCase {
 
     //test the response when the tag with the tag_id is null in the database of Name_card_tags.
     public function testUpdateNameCard5() { 
-        // $this->markTestSkipped();   
+        $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -636,17 +640,21 @@ class UserNameCardTest extends TestCase {
             'tag_ids' => '1', 
         ); 
         $response = $this->call('post', 'http://'.$this->domain.'/users/name_card', $parameters2, [], [], $this->transformHeadersToServerVars($server2));   
-        $array2 = json_decode($response->getContent());  
+        $this->seeJson([
+                 'message' => 'tag not found',
+                 'error_code' => '404-4',
+                 'status_code' => '404', 
+        ]); 
         $result = false;
-        if ($response->status() == '400' && $array2->message == 'tag doest not exist') {
+        if ($response->status() == '404') {
             $result = true;
         }
-        $this->assertEquals(true, $result);
+        $this->assertEquals(true, $result); 
     }
 
     //test the response when the show_age and show_gender exist.
     public function testUpdateNameCard6() { 
-        // $this->markTestSkipped();   
+        $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -708,7 +716,7 @@ class UserNameCardTest extends TestCase {
 
     //test the correct response of the method of saveNameCard.
     public function testSaveNameCard() { 
-        // $this->markTestSkipped();   
+        $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -754,7 +762,7 @@ class UserNameCardTest extends TestCase {
 
     //test the response when the user_id format is not right.
     public function testSaveNameCard2() { 
-        // $this->markTestSkipped();   
+        $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -789,17 +797,21 @@ class UserNameCardTest extends TestCase {
             'Authorization' => 'FAE '.$array->debug_base64ed,
         );    
         $response = $this->call('post', 'http://'.$this->domain.'/users/fae/name_card/save', [], [], [], $this->transformHeadersToServerVars($server2));   
-        $array2 = json_decode($response->getContent()); 
+        $this->seeJson([
+                 'message' => 'id is not integer',
+                 'error_code' => '400-3',
+                 'status_code' => '400', 
+        ]); 
         $result = false;
-        if ($response->status() == '400' && $array2->message == 'user_id is not integer') {
+        if ($response->status() == '400') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);  
     }
 
     //test the response when the name_cards information does not exist with the given user_id.
     public function testSaveNameCard3() { 
-        // $this->markTestSkipped();   
+        $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -834,17 +846,21 @@ class UserNameCardTest extends TestCase {
             'Authorization' => 'FAE '.$array->debug_base64ed,
         );    
         $response = $this->call('post', 'http://'.$this->domain.'/users/2/name_card/save', [], [], [], $this->transformHeadersToServerVars($server2));   
-        $array2 = json_decode($response->getContent()); 
+        $this->seeJson([
+                 'message' => 'user not found',
+                 'error_code' => '404-3',
+                 'status_code' => '404', 
+        ]); 
         $result = false;
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
+        if ($response->status() == '404') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);
     }
 
     //test the response when the NameCardsSaved has exists with the given user_id. 
     public function testSaveNameCard4() { 
-        // $this->markTestSkipped();   
+        $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -882,17 +898,21 @@ class UserNameCardTest extends TestCase {
         $array2 = json_decode($response->getContent()); 
         $this->refreshApplication();
         $response2 = $this->call('post', 'http://'.$this->domain.'/users/1/name_card/save', [], [], [], $this->transformHeadersToServerVars($server2));   
+        $this->seeJson([
+                 'message' => 'Bad request, you have already saved this name card!',
+                 'error_code' => '400-10',
+                 'status_code' => '400', 
+        ]); 
         $result = false;
-        $array3 = json_decode($response2->getContent()); 
-        if ($response2->status() == '400' && $array3->message == 'You have already saved this name card!') {
+        if ($response->status() == '400') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);
     }
 
     //test the correct response of the method of unsaveNameCard.
     public function testUnsaveNameCard() { 
-        // $this->markTestSkipped();   
+        $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -935,7 +955,7 @@ class UserNameCardTest extends TestCase {
 
     //test the response when the user_id format is not right.
     public function testUnsaveNameCard2() { 
-        // $this->markTestSkipped();   
+        $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -972,17 +992,21 @@ class UserNameCardTest extends TestCase {
         $response2 = $this->call('post', 'http://'.$this->domain.'/users/1/name_card/save', [], [], [], $this->transformHeadersToServerVars($server2));   
         $this->refreshApplication();
         $response3 = $this->call('delete', 'http://'.$this->domain.'/users/fae/name_card/save', [], [], [], $this->transformHeadersToServerVars($server2));   
-        $array2 = json_decode($response3->getContent()); 
+        $this->seeJson([
+                 'message' => 'id is not integer',
+                 'error_code' => '400-3',
+                 'status_code' => '400', 
+        ]); 
         $result = false;
-        if ($response3->status() == '400' && $array2->message == 'user_id is not integer') {
+        if ($response->status() == '400') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);
     }
 
     //test the response when the name_card_saved does not exist with the given user_id.
     public function testUnsaveNameCard3() { 
-        // $this->markTestSkipped();   
+        $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',
@@ -1017,18 +1041,22 @@ class UserNameCardTest extends TestCase {
             'Authorization' => 'FAE '.$array->debug_base64ed,
         );     
         $response3 = $this->call('delete', 'http://'.$this->domain.'/users/2/name_card/save', [], [], [], $this->transformHeadersToServerVars($server2));   
-        $array2 = json_decode($response3->getContent()); 
+        $this->seeJson([
+                 'message' => 'Bad request, you have not saved this name card yet!',
+                 'error_code' => '400-9',
+                 'status_code' => '400', 
+        ]); 
         $result = false;
-        if ($response3->status() == '404' && $array2->message == 'Not Found') {
+        if ($response->status() == '400') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);
     }
 
 
     //test the correct response of the method of getSavedNameCardList.
     public function testGetSavedNameCardList() { 
-        // $this->markTestSkipped();   
+        $this->markTestSkipped();   
         $parameter1 = array(
             'email' => 'letsfae@126.com',
             'password' => 'letsfaego',

@@ -77,7 +77,7 @@ class resetLoginTest extends TestCase {
             'Accept' => 'application/x.faeapp.v1+json', 
             'Fae-Client-Version' => 'ios-0.0.1', 
         );
-        $response = $this->call('post', 'http://'.$this->domain.'/reset_login/code', $parameters2, [], [], $this->transformHeadersToServerVars($server2));
+        $response = $this->call('post', 'http://'.$this->domain.'/reset_login/code', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
         $verification = Verifications::where('email','=', $this->testEmail)->first();
         $result = false;
         if ($response->status() == '201') {
@@ -186,12 +186,16 @@ class resetLoginTest extends TestCase {
             'Fae-Client-Version' => 'ios-0.0.1', 
         );
         $response = $this->call('post', 'http://'.$this->domain.'/reset_login/code', $parameters2, [], [], $this->transformHeadersToServerVars($server2));
-        $array2 = json_decode($response->getContent()); 
+        $this->seeJson([
+                 'message' => 'user not found',
+                 'error_code' => '404-3',
+                 'status_code' => '404', 
+        ]); 
         $result = false;
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
+        if ($response->status() == '404') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);
     }
 
     //test how the database of verifications changed after the code existing more than 30 minitues.
@@ -456,12 +460,16 @@ class resetLoginTest extends TestCase {
             'code' => '555555'
         );
         $response = $this->call('post', 'http://'.$this->domain.'/reset_login/code/verify', $parameters2, [], [], $this->transformHeadersToServerVars($server2));
-        $array2 = json_decode($response->getContent()); 
+        $this->seeJson([
+                 'message' => 'verification not found',
+                 'error_code' => '404-14',
+                 'status_code' => '404', 
+        ]); 
         $result = false;
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
+        if ($response->status() == '404') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);
     }
 
     //test the response when the input code is not the same as the code in verifications table.
@@ -525,12 +533,16 @@ class resetLoginTest extends TestCase {
             'code' => '555556'
         );
         $response = $this->call('post', 'http://'.$this->domain.'/reset_login/code/verify', $parameters2, [], [], $this->transformHeadersToServerVars($server2));
-        $array2 = json_decode($response->getContent()); 
+        $this->seeJson([
+                 'message' => 'verification code is wrong',
+                 'error_code' => '403-5',
+                 'status_code' => '403', 
+        ]); 
         $result = false;
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
+        if ($response->status() == '403') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);
     }
 
     //test what is the response when the data has created more than 30 minitues in the verifications table.
@@ -588,19 +600,22 @@ class resetLoginTest extends TestCase {
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
             'Fae-Client-Version' => 'ios-0.0.1', 
-        ); 
-        //the code is not the same as the code in the database.
+        );  
         $parameters2 = array(
             'email' => $this->testEmail,
             'code' => '555555'
         );
-        $response = $this->call('post', 'http://'.$this->domain.'/reset_login/code/verify', $parameters2, [], [], $this->transformHeadersToServerVars($server2));
-        $array2 = json_decode($response->getContent()); 
+        $response = $this->call('post', 'http://'.$this->domain.'/reset_login/code/verify', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
+        $this->seeJson([
+                 'message' => 'verification timeout',
+                 'error_code' => '403-4',
+                 'status_code' => '403', 
+        ]); 
         $result = false;
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
+        if ($response->status() == '403') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);
     }
 
     //test correct response of the method of resetPassword.
@@ -800,12 +815,16 @@ class resetLoginTest extends TestCase {
             'password' => 'updateletsfaego'
         );
         $response = $this->call('post', 'http://'.$this->domain.'/reset_login/password', $parameters2, [], [], $this->transformHeadersToServerVars($server2));
-        $array2 = json_decode($response->getContent());
+        $this->seeJson([
+                 'message' => 'verification not found',
+                 'error_code' => '404-14',
+                 'status_code' => '404', 
+        ]); 
         $result = false;
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
+        if ($response->status() == '404') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);
     }
 
     //test the response when the input code is not the same as the code in verifications table.
@@ -870,12 +889,16 @@ class resetLoginTest extends TestCase {
             'password' => 'updateletsfaego'
         );
         $response = $this->call('post', 'http://'.$this->domain.'/reset_login/password', $parameters2, [], [], $this->transformHeadersToServerVars($server2));
-        $array2 = json_decode($response->getContent());
+        $this->seeJson([
+                 'message' => 'verification code is wrong',
+                 'error_code' => '403-5',
+                 'status_code' => '403', 
+        ]); 
         $result = false;
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
+        if ($response->status() == '403') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);
     }
 
     //test what is the response when the data has created more than 30 minitues in the verifications table.
@@ -940,9 +963,13 @@ class resetLoginTest extends TestCase {
             'password' => 'updateletsfaego'
         );
         $response = $this->call('post', 'http://'.$this->domain.'/reset_login/password', $parameters2, [], [], $this->transformHeadersToServerVars($server2));
-        $array2 = json_decode($response->getContent());
+        $this->seeJson([
+                 'message' => 'verification timeout',
+                 'error_code' => '403-4',
+                 'status_code' => '403', 
+        ]); 
         $result = false;
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
+        if ($response->status() == '403') {
             $result = true;
         }
         $this->assertEquals(true, $result); 

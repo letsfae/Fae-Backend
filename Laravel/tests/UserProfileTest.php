@@ -119,12 +119,16 @@ class UserProfileTest extends TestCase
             'Authorization' => 'FAE '.$array->debug_base64ed,
         );  
         $response = $this->call('get', 'http://'.$this->domain.'/users/2/profile', [], [], [], $this->transformHeadersToServerVars($server2)); 
-        $array2 = json_decode($response->getContent());  
+        $this->seeJson([
+                 'message' => 'user not found',
+                 'error_code' => '404-3',
+                 'status_code' => '404', 
+        ]); 
         $result = false;
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
+        if ($response->status() == '404') {
             $result = true;
         }
-        $this->assertEquals(true, $result);  
+        $this->assertEquals(true, $result); 
     }
 
     // test the response when the format of the given user_id is not right.
@@ -160,12 +164,60 @@ class UserProfileTest extends TestCase
             'Authorization' => 'FAE '.$array->debug_base64ed,
         );  
         $response = $this->call('get', 'http://'.$this->domain.'/users/fae/profile', [], [], [], $this->transformHeadersToServerVars($server2)); 
-        $array2 = json_decode($response->getContent());   
+        $this->seeJson([
+                 'message' => 'id is not integer',
+                 'error_code' => '400-3',
+                 'status_code' => '400', 
+        ]); 
         $result = false;
-        if ($response->status() == '400' && $array2->message == 'Bad Request') {
+        if ($response->status() == '400') {
             $result = true;
         }
-        $this->assertEquals(true, $result);  
+        $this->assertEquals(true, $result);
+    } 
+    // test the response when the user not found in user_exts.
+    public function testGetProfile4() { 
+        $this->markTestSkipped(); 
+        //register of the user.
+        $user = Users::create([
+            'email' => 'letsfae@126.com',
+            'password' => bcrypt('letsfaego'),
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+            'login_count' => 0, 
+            'mini_avatar' => 1
+        ]);
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent());
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );  
+        $response = $this->call('get', 'http://'.$this->domain.'/users/1/profile', [], [], [], $this->transformHeadersToServerVars($server2)); 
+        $this->seeJson([
+                 'message' => 'user not found',
+                 'error_code' => '404-3',
+                 'status_code' => '404', 
+        ]); 
+        $result = false;
+        if ($response->status() == '404') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);
     } 
     // the correct response of getSelfProfile.
     public function testGetSelfProfile() { 
@@ -321,6 +373,51 @@ class UserProfileTest extends TestCase
         }
         $this->assertEquals(true, $result);   
     }
+    // test the response when the user not found in user_exts.
+    public function testGetPrivacy2() { 
+        $this->markTestSkipped(); 
+        //register of the user. 
+        $user = Users::create([
+            'email' => 'letsfae@126.com',
+            'password' => bcrypt('letsfaego'),
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+            'login_count' => 0, 
+            'mini_avatar' => 1
+        ]); 
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent());
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );  
+        $this->refreshApplication();
+        $response = $this->call('get', 'http://'.$this->domain.'/users/profile/privacy', [], [], [], $this->transformHeadersToServerVars($server2));  
+        $this->seeJson([
+                 'message' => 'user not found',
+                 'error_code' => '404-3',
+                 'status_code' => '404', 
+        ]); 
+        $result = false;
+        if ($response->status() == '404') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);
+    }
     // the correct response of updatePrivacy.
     public function testUpdatePrivacy() { 
         $this->markTestSkipped(); 
@@ -359,7 +456,7 @@ class UserProfileTest extends TestCase
         );  
         $this->refreshApplication();
         $parameters = array(
-            'show_phone' => false,
+            'show_phone' => 'false',
         );
         $response = $this->call('post', 'http://'.$this->domain.'/users/profile/privacy', $parameters, [], [], $this->transformHeadersToServerVars($server2));  
         $array2 = json_decode($response->getContent()); 
@@ -368,5 +465,53 @@ class UserProfileTest extends TestCase
             $result = true;
         }
         $this->assertEquals(true, $result);   
+    }
+    // test the response when the user not found in user_exts.
+     public function testUpdatePrivacy2() { 
+        $this->markTestSkipped(); 
+        //register of the user. 
+        $user = Users::create([
+            'email' => 'letsfae@126.com',
+            'password' => bcrypt('letsfaego'),
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+            'login_count' => 0, 
+            'mini_avatar' => 1
+        ]); 
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent());
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );  
+        $this->refreshApplication();
+        $parameters = array(
+            'show_phone' => 'false',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users/profile/privacy', $parameters, [], [], $this->transformHeadersToServerVars($server2));  
+        $this->seeJson([
+                 'message' => 'user not found',
+                 'error_code' => '404-3',
+                 'status_code' => '404', 
+        ]); 
+        $result = false;
+        if ($response->status() == '404') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);  
     }
 }

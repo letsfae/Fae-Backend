@@ -13,12 +13,16 @@ use App\ChatRooms;
 use App\Medias;
 use App\User_exts;
 use App\Users;
+use App\Places;
+use App\Api\v1\Controllers\PlaceController;
 use App\Api\v1\Controllers\PinOperationController;
 use Validator;
 use DB;
 use Phaza\LaravelPostgis\Eloquent\PostgisTrait;
 use Phaza\LaravelPostgis\Geometries\Point;
 use Phaza\LaravelPostgis\Geometries\Geometry;
+use App\Api\v1\Utilities\ErrorCodeUtility;
+use App\Api\v1\Utilities\PinUtility;
 
 class MapController extends Controller
 {
@@ -68,7 +72,8 @@ class MapController extends Controller
                                               'radius' => $radius, 'max_count' => $max_count));
             }
             // $distance = DB::select("SELECT ST_Distance_Spheroid(ST_SetSRID(ST_Point(55, 56.1),4326), ST_SetSRID(ST_Point(56, 56),4326), 'SPHEROID[\"WGS 84\",6378137,298.257223563]')");
-            // echo $distance[0]->st_distance_spheroid; exit();                 
+            // echo $distance[0]->st_distance_spheroid; exit();
+            //bug here! 如果存在隐身用户，返回数量会少于max_count              
             foreach($sessions as $session)
             {
                 $user_exts = User_exts::find($session->user_id);
@@ -101,6 +106,20 @@ class MapController extends Controller
                            'created_at'=>$session->created_at];
             }
         }
+        else if($this->request->type == 'place')
+        {
+            $places = DB::connection('yelp')->select(
+                            "SELECT * FROM places
+                            WHERE st_dwithin(geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true)
+                            ORDER BY ST_Distance(geolocation, ST_SetSRID(ST_Point(:longitude, :latitude),4326))
+                            LIMIT :max_count;",
+                            array('longitude' => $longitude, 'latitude' => $latitude,
+                            'radius' => $radius, 'max_count' => $max_count));
+            foreach ($places as $place) 
+            {
+                $info[] = PlaceController::getPinObject($place->id, $this->request->self_user_id);    
+            }
+        }
         else
         {
             $types = explode(',', $this->request->type);
@@ -110,6 +129,9 @@ class MapController extends Controller
                 switch($t)
                 {
                     case 'user':
+                        throw new UpdateResourceFailedException('Could not get map. Wrong types.');
+                        break;
+                    case 'place':
                         throw new UpdateResourceFailedException('Could not get map. Wrong types.');
                         break;
                     case 'comment':
@@ -128,7 +150,7 @@ class MapController extends Controller
             
             $type_string = implode(",", $type);
 
-            $sql_select = "SELECT p1.pin_id, p1.type FROM pin_helper p1";
+            $sql_select = "SELECT p1.pin_id, p1.type, p1.created_at FROM pin_helper p1";
             if($this->request->has('is_saved') || $this->request->has('is_liked') || $this->request->has('is_read'))
             {
                 $sql_select .= ", pin_operations p2";
@@ -178,55 +200,12 @@ class MapController extends Controller
                                                              'radius' => $radius, 'max_count' => $max_count));
             }
             foreach ($pin_helpers as $pin_helper)
-            {
-                if($pin_helper->type == 'comment')
-                {
-                    $comment = Comments::find($pin_helper->pin_id);
-                    if(is_null($comment))
-                    {
-                        continue;
-                    }
-                    $info[] = ['type'=>'comment','comment_id' => $comment->id,'user_id' => $comment->user_id,
-                               'content' => $comment->content ,'geolocation'=>['latitude'=>$comment->geolocation->getLat(), 
-                               'longitude' => $comment->geolocation->getLng()],
-                               'liked_count' => $comment->liked_count, 
-                               'saved_count' => $comment->saved_count, 
-                               'comment_count' => $comment->comment_count,
-                               'created_at' => $comment->created_at->format('Y-m-d H:i:s'),
-                               'user_pin_operations' => PinOperationController::getOperations('comment', $pin_helper->pin_id, $this->request->self_user_id)];
-                }
-                else if($pin_helper->type == 'media')
-                {
-                    $media = Medias::find($pin_helper->pin_id);
-                    if(is_null($media))
-                    {
-                        continue;
-                    }
-                    $info[] = ['type'=>'media', 'media_id' => $media->id, 'user_id' => $media->user_id, 
-                               'file_ids' => explode(';', $media->file_ids), 'tag_ids' => explode(';', $media->tag_ids), 
-                               'description' => $media->description, 'geolocation'=>['latitude' => $media->geolocation->getLat(), 
-                               'longitude' => $media->geolocation->getLng()], 
-                               'liked_count' => $media->liked_count, 
-                               'saved_count' => $media->saved_count, 
-                               'comment_count' => $media->comment_count,
-                               'created_at' => $media->created_at->format('Y-m-d H:i:s'),
-                               'user_pin_operations' => PinOperationController::getOperations('media', $pin_helper->pin_id, $this->request->self_user_id)];
-                }
-                else if($pin_helper->type == 'chat_room')
-                {
-                    $chat_room = ChatRooms::find($pin_helper->pin_id);
-                    if(is_null($chat_room))
-                    { 
-                        continue; 
-                    }
-                    $info[] = ['type' => 'chat_room', 'chat_room_id' => $chat_room->id, 'title' => $chat_room->title, 
-                               'user_id' => $chat_room->user_id, 'geolocation' => ['latitude' => $chat_room->geolocation->getLat(), 
-                               'longitude' => $chat_room->geolocation->getLng()], 'last_message' => $chat_room->last_message, 
-                               'last_message_sender_id' => $chat_room->last_message_sender_id,
-                               'last_message_type' => $chat_room->last_message_type, 
-                               'last_message_timestamp' => $chat_room->last_message_timestamp,
-                               'created_at' => $chat_room->created_at->format('Y-m-d H:i:s'),];
-                }
+            { 
+                $info[] = array('pin_id' => $pin_helper->pin_id,
+                                'type' => $pin_helper->type,
+                                'created_at' => $pin_helper->created_at,
+                                'pin_object' => PinUtility::getPinObject($pin_helper->type, $pin_helper->pin_id, 
+                                    $this->request->self_user_id)); 
             }
         }
         return $this->response->array($info);   
@@ -258,7 +237,11 @@ class MapController extends Controller
         $session = Sessions::find($this->request->self_session_id);
         if(is_null($session))
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'session not found',
+                    'error_code' => ErrorCodeUtility::SESSION_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         if($session->is_mobile)
         {
@@ -269,7 +252,11 @@ class MapController extends Controller
         }
         else
         {
-            throw new UpdateResourceFailedException('current user is not active');
+            return response()->json([
+                    'message' => 'current client is not mobile',
+                    'error_code' => ErrorCodeUtility::NOT_MOBILE,
+                    'status_code' => '400'
+                ], 400);
         }
     }
 

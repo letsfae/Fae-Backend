@@ -11,6 +11,7 @@ use Dingo\Api\Exception\StoreResourceFailedException;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use App\Files;
+use App\Api\v1\Utilities\ErrorCodeUtility;
 
 class FileController extends Controller implements RefInterface {
     use Helpers;
@@ -86,7 +87,11 @@ class FileController extends Controller implements RefInterface {
     public function getAttribute($file_id) {
         $file_data = Files::find($file_id);
         if(is_null($file_data)){
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'file not found',
+                    'error_code' => ErrorCodeUtility::FILE_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         
         $content = array('file_id' => $file_id,
@@ -102,14 +107,22 @@ class FileController extends Controller implements RefInterface {
     public function getData($file_id) {
         $file_data = Files::find($file_id);
         if(is_null($file_data)){
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'file not found',
+                    'error_code' => ErrorCodeUtility::FILE_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         
         try {
 			$file = Storage::disk('local')->get('files/'.$file_data->directory.$file_data->file_name_storage);
             $mimetype = Storage::mimeType('files/'.$file_data->directory.$file_data->file_name_storage);
 		} catch(\Exception $e) {
-			return $this->response->errorNotFound();
+			return response()->json([
+                    'message' => 'file not found',
+                    'error_code' => ErrorCodeUtility::FILE_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
 		}
     
 		return response($file, 200)->header('Content-Type', $mimetype);

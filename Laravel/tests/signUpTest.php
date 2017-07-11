@@ -46,7 +46,7 @@ class signUpTest extends TestCase {
             'Accept' => 'application/x.faeapp.v1+json', 
             'Fae-Client-Version' => 'ios-0.0.1',
         );
-        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameters, [], [], $this->transformHeadersToServerVars($server)); 
         $this->seeInDatabase('users', ['email' => 'letsfae@126.com', 'user_name' => 'faeapp', 'first_name' => 'kevin', 'last_name' => 'zhang', 'gender' => 'male', 'birthday' => '1992-02-02']);
         $this->seeInDatabase('user_exts', ['user_id' => 1]);
         $this->seeInDatabase('name_cards', ['user_id' => 1]);
@@ -140,9 +140,13 @@ class signUpTest extends TestCase {
             'birthday' => '1992-02-02',
         ); 
         $response2 = $this->call('post', 'http://'.$this->domain.'/users', $parameters2, [], [], $this->transformHeadersToServerVars($server)); 
-        $array2 = json_decode($response2->getContent());
-        $result = false; 
-        if ($response2->status() == '400' && $array2->message == 'user name already exists') {
+        $this->seeJson([
+                 'message' => 'user name already exists',
+                 'error_code' => '422-2',
+                 'status_code' => '422', 
+        ]); 
+        $result = false;
+        if ($response2->status() == '422') {
             $result = true;
         }
         $this->assertEquals(true, $result);

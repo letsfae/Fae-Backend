@@ -9,4 +9,7 @@ interface PinInterface
     public function getOne($id);
     public function delete($id);
     public function getFromUser($user_id);
+
+    // inner method
+    public static function getPinObject($pin_id, $user_id);
 }

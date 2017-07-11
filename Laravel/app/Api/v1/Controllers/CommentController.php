@@ -15,10 +15,13 @@ use Dingo\Api\Routing\Helpers;
 use App\Comments;
 use App\Users;
 use App\PinHelper;
+use App\Name_cards;
 use App\Api\v1\Controllers\PinOperationController;
 use Auth;
 use App\Api\v1\Interfaces\PinInterface;
 use App\Api\v1\Controllers\RichTextController;
+use App\Api\v1\Utilities\ErrorCodeUtility;
+use App\Api\v1\Utilities\PinUtility;
 
 class CommentController extends Controller implements PinInterface
 {
@@ -71,17 +74,29 @@ class CommentController extends Controller implements PinInterface
     {
         if(!is_numeric($comment_id))
         {
-            return $this->response->errorBadRequest();
+            return response()->json([
+                    'message' => 'comment_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
         $this->updateValidation($this->request);
         $comment = Comments::find($comment_id);
         if(is_null($comment))
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'comment not found',
+                    'error_code' => ErrorCodeUtility::COMMENT_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         if($comment->user_id != $this->request->self_user_id)
         {
-            throw new AccessDeniedHttpException('You can not update this comment');
+            return response()->json([
+                    'message' => 'You can not update this comment',
+                    'error_code' => ErrorCodeUtility::NOT_OWNER_OF_PIN,
+                    'status_code' => '403'
+                ], 403);
         }
         if($this->request->has('content'))
         {
@@ -122,37 +137,50 @@ class CommentController extends Controller implements PinInterface
     {
         if(!is_numeric($comment_id))
         {
-            return $this->response->errorBadRequest();
+            return response()->json([
+                    'message' => 'comment_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
-        $comment = Comments::find($comment_id);
+        $comment = $this->getPinObject($comment_id, $this->request->self_user_id); 
         if(is_null($comment))
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'comment not found',
+                    'error_code' => ErrorCodeUtility::COMMENT_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
-        $user_pin_operations = PinOperationController::getOperations('comment', $comment_id, $this->request->self_user_id);
-        return $this->response->array(array('comment_id' => $comment->id, 
-                'user_id' => ($comment->anonymous && $comment->user_id != $this->request->self_user_id) ? null : $comment->user_id, 
-                'content' => $comment->content, 'geolocation' => array('latitude' => $comment->geolocation->getLat(), 
-                'longitude' => $comment->geolocation->getLng()), 'liked_count' => $comment->liked_count, 
-                'saved_count' => $comment->saved_count, 'comment_count' => $comment->comment_count,
-                'created_at' => $comment->created_at->format('Y-m-d H:i:s'),
-                'user_pin_operations' => $user_pin_operations));
+        return $this->response->array($comment);
     }
 
     public function delete($comment_id)
     {
         if(!is_numeric($comment_id))
         {
-            return $this->response->errorBadRequest();
+            return response()->json([
+                    'message' => 'comment_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
         $comment = Comments::find($comment_id);
         if(is_null($comment))
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'comment not found',
+                    'error_code' => ErrorCodeUtility::COMMENT_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         if($comment->user_id != $this->request->self_user_id)
         {
-            throw new AccessDeniedHttpException('You can not delete this comment');
+            return response()->json([
+                    'message' => 'You can not delete this comment',
+                    'error_code' => ErrorCodeUtility::NOT_OWNER_OF_PIN,
+                    'status_code' => '403'
+                ], 403);
         }
 
         // pin helper
@@ -170,11 +198,19 @@ class CommentController extends Controller implements PinInterface
     {
         if(!is_numeric($user_id))
         {
-            return $this->response->errorBadRequest();
+            return response()->json([
+                    'message' => 'user_id is not integer',
+                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'status_code' => '400'
+                ], 400);
         }
         if (is_null(Users::find($user_id)))
         {
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         $this->getUserValidation($this->request);
         $start_time = $this->request->has('start_time') ? $this->request->start_time:'1970-01-01 00:00:00';
@@ -220,14 +256,40 @@ class CommentController extends Controller implements PinInterface
             $user_pin_operations = PinOperationController::getOperations('comment', $comment->id, $this->request->self_user_id);
             $info[] = array('comment_id' => $comment->id, 
                     'user_id' => $comment->user_id,
+                    'nick_name' => Name_cards::find($comment->user_id)->nick_name,
                     'content' => $comment->content, 'geolocation' => array('latitude' => $comment->geolocation->getLat(), 
                     'longitude' => $comment->geolocation->getLng()), 'liked_count' => $comment->liked_count, 
                     'saved_count' => $comment->saved_count, 'comment_count' => $comment->comment_count,
+                    'feeling_count' => PinUtility::decodeFeelings($comment->feeling_count),
                     'created_at' => $comment->created_at->format('Y-m-d H:i:s'), 'user_pin_operations' => $user_pin_operations);    
         }
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
     }
 
+    public static function getPinObject($comment_id, $user_id) {
+        $comment = Comments::find($comment_id);
+        if(is_null($comment))
+        {
+            return null;
+        }
+        $user_pin_operations = PinOperationController::getOperations('comment', $comment_id, $user_id); 
+        return array(
+            'comment_id' => $comment->id, 
+            'user_id' => ($comment->anonymous && $comment->user_id != $user_id) ? null : $comment->user_id,
+            'nick_name' => ($comment->anonymous && $comment->user_id != $user_id) ? 
+                            null : Name_cards::find($comment->user_id)->nick_name,
+            'anonymous' => $comment->anonymous,
+            'content' => $comment->content, 
+            'geolocation' => array('latitude' => $comment->geolocation->getLat(), 
+            'longitude' => $comment->geolocation->getLng()), 
+            'liked_count' => $comment->liked_count, 
+            'saved_count' => $comment->saved_count, 
+            'comment_count' => $comment->comment_count,
+            'feeling_count' => PinUtility::decodeFeelings($comment->feeling_count),
+            'created_at' => $comment->created_at->format('Y-m-d H:i:s'),
+            'user_pin_operations' => $user_pin_operations
+        );
+    }
     private function createValidation(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -247,9 +309,9 @@ class CommentController extends Controller implements PinInterface
     private function updateValidation(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'geo_longitude' => 'filled|required_with:geo_latitude|required_without:content,duration,interaction_radius,anonymous|
+            'geo_longitude' => 'filled|required_with:geo_latitude|required_without_all:content,duration,interaction_radius,anonymous|
                                 numeric|between:-180,180',
-            'geo_latitude' => 'filled|required_with:geo_longitude|required_without:content,duration,interaction_radius,anonymous|
+            'geo_latitude' => 'filled|required_with:geo_longitude|required_without_all:content,duration,interaction_radius,anonymous|
                                 numeric|between:-90,90',
             'content' => 'filled|required_without_all:geo_longitude,geo_latitude,duration,interaction_radius,anonymous|string|max:500',
             'duration' => 'filled|required_without_all:geo_longitude,geo_latitude,content,interaction_radius,anonymous|int|min:0',

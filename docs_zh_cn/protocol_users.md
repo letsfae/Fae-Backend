@@ -28,7 +28,7 @@ no
 | birthday | string(YYYY-MM-DD) | 生日 |
 | gender | string('male','female') | 性别 |
 
-user_name格式要求为：仅可包含大小写字母、数字及下划线，长度3-20，对字母大小写不敏感（即显示区分大小写，但AAA与aAa视为相同用户名）。
+user_name格式要求为：仅可包含大小写字母、数字及`_`/`-`/`.`，长度3-20，对字母大小写不敏感（即显示区分大小写，但AAA与aAa视为相同用户名）。
 
 ### response
 
@@ -523,6 +523,7 @@ yes
 Status: 200
 
 	{
+		"user_name": @string,
 		"nick_name": @string,
 		"short_intro": @string,
 		"tags": [

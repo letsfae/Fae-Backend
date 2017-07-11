@@ -177,10 +177,15 @@ class AuthenticationTest extends TestCase {
             'Fae-Client-Version' => 'ios-0.0.1',  
         );
         $response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
-        // var_dump($response);
         $array = json_decode($response->getContent());
+        $this->seeJson([
+                 'message' => 'Bad request, Password incorrect!',
+                 'error_code' => '401-1',
+                 'status_code' => '401',
+                 'login_count' => 1
+        ]); 
         $result = false;
-        if ($response->status() == '403' && $array->message == 'Bad request, Password incorrect!' && $array->error_code == '403-1' && $array->status_code == '403' && $array->login_count == 1) {
+        if ($response->status() == '401') {
             $result = true;
         }
         $this->assertEquals(true, $result);
