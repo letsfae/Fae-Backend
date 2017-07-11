@@ -20,6 +20,7 @@ use App\Sessions;
 use App\Blocks;
 use App\Follows;
 use App\User_exts;
+use App\Name_cards;
 use App\Api\v1\Utilities\ErrorCodeUtility;
 
 class FollowController extends Controller
@@ -104,9 +105,27 @@ class FollowController extends Controller
         $info = array();
         foreach ($follows as $follow) 
         {
+            $user = Users::find($follow->followee_id);
+            if(is_null($user))
+            {
+                return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
+            }
+            $nameCard = Name_cards::find($follow->followee_id);
             $user_exts = User_exts::find($follow->followee_id);
-            $info[] = array('followee_id' => $follow->followee_id, 'followee_user_name' => $user_exts->show_user_name ? 
-                            Users::find($follow->followee_id)->user_name : null);    
+            $birthDate = $user->birthday;
+            $birthDate = explode("-", $birthDate);
+            $age = (date("md", date("U", mktime(0, 0, 0, $birthDate[1], $birthDate[2], $birthDate[0]))) > date("md")
+                    ? ((date("Y") - $birthDate[0]) - 1)
+                    : (date("Y") - $birthDate[0]));
+            $info[] = array('followee_id' => $follow->followee_id, 
+                            'followee_user_name' => $user_exts->show_user_name ? $user->user_name : null,
+                            'followee_user_nick_name' => $nameCard->nick_name,
+                            'followee_user_age' => $nameCard->show_age ? $age : null,
+                            'followee_user_gender' => $nameCard->show_gender ? $user->gender : null);
         }
         return $this->response->array($info);
     } 
@@ -124,10 +143,28 @@ class FollowController extends Controller
         $follows = Follows::where('followee_id', $user_id)->get();
         $info = array();
         foreach ($follows as $follow) 
-        {
+        { 
+            $user = Users::find($follow->user_id);
+            if(is_null($user))
+            {
+                return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
+            }
+            $nameCard = Name_cards::find($follow->user_id);
             $user_exts = User_exts::find($follow->user_id);
-            $info[] = array('follower_id' => $follow->user_id, 'follower_user_name' => $user_exts->show_user_name ? 
-                            Users::find($follow->user_id)->user_name : null);    
+            $birthDate = $user->birthday;
+            $birthDate = explode("-", $birthDate);
+            $age = (date("md", date("U", mktime(0, 0, 0, $birthDate[1], $birthDate[2], $birthDate[0]))) > date("md")
+                    ? ((date("Y") - $birthDate[0]) - 1)
+                    : (date("Y") - $birthDate[0]));
+            $info[] = array('follower_id' => $follow->user_id, 
+                            'follower_user_name' => $user_exts->show_user_name ? $user->user_name : null,
+                            'follower_user_nick_name' => $nameCard->nick_name,
+                            'follower_user_age' => $nameCard->show_age ? $age : null,
+                            'follower_user_gender' => $nameCard->show_gender ? $user->gender : null);
         }
         return $this->response->array($info);
     }

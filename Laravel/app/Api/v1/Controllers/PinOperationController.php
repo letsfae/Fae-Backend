@@ -18,6 +18,7 @@ use App\Name_cards;
 use App\Users;
 use App\Places;
 use App\Locations;
+use App\ChatRooms;
 use DB;
 use App\Api\v1\Utilities\ErrorCodeUtility;
 use App\Api\v1\Utilities\PinUtility;
@@ -1106,6 +1107,7 @@ class PinOperationController extends Controller {
         $count['created_comment_pin'] = PinHelper::where('user_id', $this->request->self_user_id)->where('type', 'comment')->count();
         $count['created_media_pin'] = PinHelper::where('user_id', $this->request->self_user_id)->where('type', 'media')->count();
         $count['created_location'] = Locations::where('user_id', $this->request->self_user_id)->count();
+        $count['created_chat_room'] = ChatRooms::where('user_id', $this->request->self_user_id)->count();
         $count['saved_comment_pin'] = Pin_operations::where('user_id', $this->request->self_user_id)
                                                     ->where('type', 'comment')
                                                     ->where('saved', true)
