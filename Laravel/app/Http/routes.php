@@ -92,6 +92,7 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->get('/friends/request', 'App\Api\v1\Controllers\FriendController@getAllRequests');
     $api->post('/friends/accept', 'App\Api\v1\Controllers\FriendController@acceptRequest');
     $api->post('/friends/ignore', 'App\Api\v1\Controllers\FriendController@ignoreRequest');
+    $api->post('/friends/withdraw', 'App\Api\v1\Controllers\FriendController@withdrawRequest');
     $api->delete('/friends/{user_id}', 'App\Api\v1\Controllers\FriendController@deleteFriend');
     $api->get('/friends', 'App\Api\v1\Controllers\FriendController@getFriendsList');
     // follows
