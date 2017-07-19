@@ -24,22 +24,27 @@ class FaeAuthorizationProvider extends Authorization
         $authStr = $request->headers->get('authorization');
         if(Str::startsWith(strtolower($authStr), 'fae '))
         {
-            list($user_id, $token, $session_id) = explode(':', base64_decode(substr($authStr, 4)));
-            // get user_id and token from session table with session_id
-            $session = Sessions::find($session_id);
-            if(! is_null($session))
+            try 
             {
-                if($user_id === strval($session->user_id) && $token === $session->token) 
+                list($user_id, $token, $session_id) = explode(':', base64_decode(substr($authStr, 4)));
+                // get user_id and token from session table with session_id
+                $session = Sessions::find($session_id);
+                if(! is_null($session))
                 {
-                    // overwrite
-                    $request->self_user_id = $user_id;
-                    $request->self_session_id = $session_id;
-                    $request->self_device_id = $session->device_id;
-                    return;
+                    if($user_id === strval($session->user_id) && $token === $session->token) 
+                    {
+                        // overwrite
+                        $request->self_user_id = $user_id;
+                        $request->self_session_id = $session_id;
+                        $request->self_device_id = $session->device_id;
+                        return;
+                    }
                 }
+            } catch(\Exception $e) {
+                throw new UnauthorizedHttpException('Invalid authentication header');
             }
         }
-        throw new UnauthorizedHttpException('Invalid token');
+        throw new UnauthorizedHttpException('Invalid authentication header');
     }
 
     public function getAuthorizationMethod()
