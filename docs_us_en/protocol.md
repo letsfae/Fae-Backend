@@ -138,4 +138,4 @@ All the format of the push back messages is json, and the word of type will be u
         "last_message_timestamp": @string,
         "last_message_type": @string,
         "unread_count": @number
-    }
+    } 

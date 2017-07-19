@@ -337,4 +337,8 @@ class FriendController extends Controller {
         }
         return $this->response->array($info);
     }
+
+    public function withdrawRequest() {
+        
+    }
 }

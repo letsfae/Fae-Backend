@@ -2,7 +2,7 @@
 
 联系人contacts级接口（总接口）包含三种关系，friends，follows及blocks。
 
-## 发起好友请求 :white_check_mark:
+## 发起好友请求
 
 `POST /friends/request`
 
@@ -15,6 +15,9 @@ yes
 | Name | Type | Description |
 | --- | --- | --- |
 | requested_user_id | number | 被请求用户id |
+| resend (optional) | boolean | 重发好友请求，默认为false |
+
+resend设为true后会向被请求方客户端重新推送好友请求。
 
 ### response
 
@@ -51,6 +54,26 @@ yes
 | Name | Type | Description |
 | --- | --- | --- |
 | friend_request_id | number | 好友请求id |
+
+### response
+
+Status: 201
+
+## 撤销好友请求
+
+`POST /friends/withdraw`
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| friend_request_id | number | 好友请求id |
+
+撤销后，对方不会收到撤销的push notification。
 
 ### response
 

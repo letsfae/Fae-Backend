@@ -32,7 +32,7 @@ class PinOperationController extends Controller {
         $this->request = $request;
     }
  
-    public function save($type, $pin_id) {
+    public function save($type, $pin_id) { 
         if(!is_numeric($pin_id)) 
         {
             return response()->json([
@@ -515,8 +515,7 @@ class PinOperationController extends Controller {
                     'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
                     'status_code' => '400'
                 ], 400); 
-        }  
-        }
+        }   
         $validator = Validator::make($this->request->all(), [
             'content' => 'filled|required_without:anonymous|string',
             'anonymous' => 'filled|required_without:content|in:true,false'

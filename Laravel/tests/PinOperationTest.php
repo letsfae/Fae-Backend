@@ -1042,7 +1042,7 @@ class PinOperationTest extends TestCase
             'Fae-Client-Version' => 'ios-0.0.1', 
         );
         //login of the user.
-        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server)); 
         $array = json_decode($login_response->getContent());
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -1080,7 +1080,7 @@ class PinOperationTest extends TestCase
             'file_ids' => '1;2',
             'duration' => 1440
         ]); 
-        $response = $this->call('post', 'http://'.$this->domain.'/pins/media/1/save', [], [], [], $this->transformHeadersToServerVars($server2)); 
+        $response = $this->call('post', 'http://'.$this->domain.'/pins/media/1/save', [], [], [], $this->transformHeadersToServerVars($server2));  
         $result = false;
         if ($response->status() == '201') {
             $result = true;
@@ -6660,5 +6660,606 @@ class PinOperationTest extends TestCase
             $result = true;
         }
         $this->assertEquals(true, $result);
+    }
+    // test the correct response of the update comment.
+    public function testUpdateComment() { 
+        $this->markTestSkipped(); 
+        //register of the user.
+        $parameter1 = array(
+            'email' => 'letsfae@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $array = json_decode($login_response->getContent());
+        $session = Sessions::find(1); 
+        //big difference of the geolocation radius;
+        $session->location = new Point(34.2799, -118.2799);
+        $session->save();
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        ); 
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'video';
+        $files->mine_type = 'video';
+        $files->size = 256;
+        $files->hash = 'test';
+        $files->directory = 'test';
+        $files->file_name_storage = 'test';
+        $files->file_name = 'test';
+        $files->reference_count = 0;
+        $files->save();
+
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'image';
+        $files->mine_type = 'image';
+        $files->size = 256;
+        $files->hash = 'test1';
+        $files->directory = 'test1';
+        $files->file_name_storage = 'test1';
+        $files->file_name = 'test1';
+        $files->reference_count = 0;
+        $files->save(); 
+
+        $media1 = Medias::create([
+            'user_id' => 1,
+            'description' => 'This is the test1',
+            'geolocation' => new Point(34.031958,-118.288125),  
+            'file_ids' => '1;2',
+            'duration' => 1440,
+            'interaction_radius' => 1
+        ]); 
+        $parameters = array(
+            'content' => 'this is the comment pin test.', 
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/pins/media/1/comments', $parameters, [], [], $this->transformHeadersToServerVars($server2)); 
+        $this->refreshApplication();  
+        $parameters2 = array(
+            'content' => 'this is the new comment pin test.', 
+        );
+        $response2 = $this->call('post', 'http://'.$this->domain.'/pins/comments/1', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
+        $result = false;
+        if ($response2->status() == '201') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);
+        $this->seeInDatabase('pin_comments', ['user_id' => 1, 'pin_id' => 1, 'type' => 'media', 'content' => 'this is the new comment pin test.']);
+    }
+
+    // test whether the input format is right or wrong.
+    public function testUpdateComment2() { 
+        $this->markTestSkipped(); 
+        //register of the user.
+        $parameter1 = array(
+            'email' => 'letsfae@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $array = json_decode($login_response->getContent());
+        $session = Sessions::find(1); 
+        //big difference of the geolocation radius;
+        $session->location = new Point(34.2799, -118.2799);
+        $session->save();
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        ); 
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'video';
+        $files->mine_type = 'video';
+        $files->size = 256;
+        $files->hash = 'test';
+        $files->directory = 'test';
+        $files->file_name_storage = 'test';
+        $files->file_name = 'test';
+        $files->reference_count = 0;
+        $files->save();
+
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'image';
+        $files->mine_type = 'image';
+        $files->size = 256;
+        $files->hash = 'test1';
+        $files->directory = 'test1';
+        $files->file_name_storage = 'test1';
+        $files->file_name = 'test1';
+        $files->reference_count = 0;
+        $files->save(); 
+
+        $media1 = Medias::create([
+            'user_id' => 1,
+            'description' => 'This is the test1',
+            'geolocation' => new Point(34.031958,-118.288125),  
+            'file_ids' => '1;2',
+            'duration' => 1440,
+            'interaction_radius' => 1
+        ]); 
+        $parameters = array(
+            'content' => 'this is the comment pin test.', 
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/pins/media/1/comments', $parameters, [], [], $this->transformHeadersToServerVars($server2)); 
+        $this->refreshApplication();  
+        $parameters2 = array( 
+
+        );
+        $response2 = $this->call('post', 'http://'.$this->domain.'/pins/comments/1', $parameters2, [], [], $this->transformHeadersToServerVars($server2));  
+        $array2 = json_decode($response2->getContent());    
+        $result = false;
+        if ($response2->status() == '422' && $array2->message == 'Could not update comment.' && $array2->errors->content[0] == 'The content field is required when anonymous is not present.') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);
+    }
+
+    // the the response when the pin_comment does not exist.
+    public function testUpdateComment3() { 
+        $this->markTestSkipped(); 
+        //register of the user.
+        $parameter1 = array(
+            'email' => 'letsfae@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $array = json_decode($login_response->getContent());
+        $session = Sessions::find(1); 
+        //big difference of the geolocation radius;
+        $session->location = new Point(34.2799, -118.2799);
+        $session->save();
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        ); 
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'video';
+        $files->mine_type = 'video';
+        $files->size = 256;
+        $files->hash = 'test';
+        $files->directory = 'test';
+        $files->file_name_storage = 'test';
+        $files->file_name = 'test';
+        $files->reference_count = 0;
+        $files->save();
+
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'image';
+        $files->mine_type = 'image';
+        $files->size = 256;
+        $files->hash = 'test1';
+        $files->directory = 'test1';
+        $files->file_name_storage = 'test1';
+        $files->file_name = 'test1';
+        $files->reference_count = 0;
+        $files->save(); 
+
+        $media1 = Medias::create([
+            'user_id' => 1,
+            'description' => 'This is the test1',
+            'geolocation' => new Point(34.031958,-118.288125),  
+            'file_ids' => '1;2',
+            'duration' => 1440,
+            'interaction_radius' => 1
+        ]);    
+        $parameters2 = array( 
+            'content' => 'this is the new comment pin test'
+        );
+        $response2 = $this->call('post', 'http://'.$this->domain.'/pins/comments/1', $parameters2, [], [], $this->transformHeadersToServerVars($server2));  
+        $this->seeJson([
+                 'message' => 'comment not found',
+                 'error_code' => '404-9',
+                 'status_code' => '404', 
+        ]); 
+        $result = false;
+        if ($response2->status() == '404') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result); 
+    } 
+    //test the response when the format of pin_comment_id is wrong.
+    public function testUpdateComment4() {  
+        $this->markTestSkipped(); 
+        //register of the user.
+        $parameter1 = array(
+            'email' => 'letsfae@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $array = json_decode($login_response->getContent());
+        $session = Sessions::find(1); 
+        //big difference of the geolocation radius;
+        $session->location = new Point(34.2799, -118.2799);
+        $session->save();
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        ); 
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'video';
+        $files->mine_type = 'video';
+        $files->size = 256;
+        $files->hash = 'test';
+        $files->directory = 'test';
+        $files->file_name_storage = 'test';
+        $files->file_name = 'test';
+        $files->reference_count = 0;
+        $files->save();
+
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'image';
+        $files->mine_type = 'image';
+        $files->size = 256;
+        $files->hash = 'test1';
+        $files->directory = 'test1';
+        $files->file_name_storage = 'test1';
+        $files->file_name = 'test1';
+        $files->reference_count = 0;
+        $files->save(); 
+
+        $media1 = Medias::create([
+            'user_id' => 1,
+            'description' => 'This is the test1',
+            'geolocation' => new Point(34.031958,-118.288125),  
+            'file_ids' => '1;2',
+            'duration' => 1440,
+            'interaction_radius' => 1
+        ]);    
+        $parameters = array(
+            'content' => 'this is the comment pin test.', 
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/pins/media/1/comments', $parameters, [], [], $this->transformHeadersToServerVars($server2)); 
+        $this->refreshApplication();  
+        $parameters2 = array( 
+            'content' => 'this is the new comment pin test'
+        );
+        $response2 = $this->call('post', 'http://'.$this->domain.'/pins/comments/fae', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
+        $this->seeJson([
+                 'message' => 'pin_comment_id is not integer',
+                 'error_code' => '400-3',
+                 'status_code' => '400', 
+        ]); 
+        $result = false;
+        if ($response2->status() == '400') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);
+    }
+    //test the response when the user_id is not the self_user_id.
+    public function testUpdateComment5() { 
+        $this->markTestSkipped(); 
+        //register of the user.
+        $parameter1 = array(
+            'email' => 'letsfae@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameter2 = array(
+            'email' => 'letsfae2@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp2',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $array = json_decode($login_response->getContent());
+        $session = Sessions::find(1); 
+        //big difference of the geolocation radius;
+        $session->location = new Point(34.2799, -118.2799);
+        $session->save();
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        ); 
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'video';
+        $files->mine_type = 'video';
+        $files->size = 256;
+        $files->hash = 'test';
+        $files->directory = 'test';
+        $files->file_name_storage = 'test';
+        $files->file_name = 'test';
+        $files->reference_count = 0;
+        $files->save();
+
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'image';
+        $files->mine_type = 'image';
+        $files->size = 256;
+        $files->hash = 'test1';
+        $files->directory = 'test1';
+        $files->file_name_storage = 'test1';
+        $files->file_name = 'test1';
+        $files->reference_count = 0;
+        $files->save(); 
+
+        $media1 = Medias::create([
+            'user_id' => 1,
+            'description' => 'This is the test1',
+            'geolocation' => new Point(34.031958,-118.288125),  
+            'file_ids' => '1;2',
+            'duration' => 1440,
+            'interaction_radius' => 1
+        ]);    
+        $parameters = array(
+            'content' => 'this is the comment pin test.', 
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/pins/media/1/comments', $parameters, [], [], $this->transformHeadersToServerVars($server2)); 
+        $this->refreshApplication();  
+        $parameters = array(
+            'email' => 'letsfae2@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp2',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response2 = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array2 = json_decode($login_response2->getContent()); 
+        $server3 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array2->debug_base64ed,
+        ); 
+        $this->refreshApplication(); 
+        $parameters2 = array( 
+            'content' => 'this is the new comment pin test'
+        );
+        $response2 = $this->call('post', 'http://'.$this->domain.'/pins/comments/1', $parameters2, [], [], $this->transformHeadersToServerVars($server3)); 
+        $this->seeJson([
+                 'message' => 'You can not update this comment',
+                 'error_code' => '403-2',
+                 'status_code' => '403', 
+        ]); 
+        $result = false;
+        if ($response2->status() == '403') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);
+    }
+    // test the correct response of the pinStatistics.
+    public function testPinStatistics() { 
+        $this->markTestSkipped(); 
+        //register of the user.
+        $parameter1 = array(
+            'email' => 'letsfae@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $array = json_decode($login_response->getContent());
+        $session = Sessions::find(1); 
+        //big difference of the geolocation radius;
+        $session->location = new Point(34.2799, -118.2799);
+        $session->save();
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        ); 
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'video';
+        $files->mine_type = 'video';
+        $files->size = 256;
+        $files->hash = 'test';
+        $files->directory = 'test';
+        $files->file_name_storage = 'test';
+        $files->file_name = 'test';
+        $files->reference_count = 0;
+        $files->save();
+
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'image';
+        $files->mine_type = 'image';
+        $files->size = 256;
+        $files->hash = 'test1';
+        $files->directory = 'test1';
+        $files->file_name_storage = 'test1';
+        $files->file_name = 'test1';
+        $files->reference_count = 0;
+        $files->save(); 
+
+        $parameters = array(
+            'file_ids' => '1;2', 
+            'description' => 'this is a test',
+            'geo_latitude' => 34.2799,
+            'geo_longitude' => -118.2799,
+            'duration' => 1440,
+            'interaction_radius' => 100,
+            'anonymous' => 'true'
+        );
+        $media_response = $this->call('post', 'http://'.$this->domain.'/medias', $parameters, [], [], $this->transformHeadersToServerVars($server2));    
+        $this->refreshApplication(); 
+        $saved_media_response = $this->call('post', 'http://'.$this->domain.'/pins/media/1/save', [], [], [], $this->transformHeadersToServerVars($server2));  
+        $this->refreshApplication(); 
+        $parameters = array(
+            'content' => 'this is the comment pin test.', 
+        );
+        $pin_comment_response = $this->call('post', 'http://'.$this->domain.'/pins/media/1/comments', $parameters, [], [], $this->transformHeadersToServerVars($server2)); 
+        $this->refreshApplication(); 
+        $parameters2 = array(
+            'content' => 'This is the test.',
+            'geo_longitude' => '-118.2799',
+            'geo_latitude' => '34.2799', 
+            'duration' => '1440',
+            'interaction_radius' => '100',
+            'anonymous' => 'true',
+        ); 
+        //create the comment.
+        $comment_response = $this->call('post', 'http://'.$this->domain.'/comments', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
+        $this->refreshApplication();
+        $response = $this->call('get', 'http://'.$this->domain.'/pins/statistics', [], [], [], $this->transformHeadersToServerVars($server2)); 
+        $array2 = json_decode($response->getContent()); 
+        $result = false; 
+        if ($response->status() == '200') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result); 
+        $this->seeJson([
+            'user_id' => '1' ,
+            'count' => array(
+                'created_comment_pin' => 1,
+                'created_media_pin' => 1,
+                'created_location' => 0,
+                'created_chat_room' => 0,
+                'saved_comment_pin' => 0,
+                'saved_media_pin' => 1,
+                'saved_place_pin' => 0
+            )
+        ]); 
     }
 }
