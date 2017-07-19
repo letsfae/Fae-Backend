@@ -55,6 +55,7 @@ yes
 | is_unliked (optional) | bool | 同上 |
 | is_read (optional) | bool | 同上 |
 | is_unread (optional) | bool | 同上 |
+| categories (optional) | string | 用`;`分隔的class2的名字，仅针对place有效 |
 
 对于一直在更新的user点，可以每隔一段时间获取一次。
 
@@ -774,10 +775,16 @@ Status: 200
 	{
 		"place_id": @number,
 		"name": @string,
-		"categories": [
-			@string,
-			...
-		],
+		"categories": {
+			"class1": @string,
+			"class1_icon_id": @number,
+			"class2": @string,
+			"class2_icon_id": @number,
+			"class3": @string,
+			"class3_icon_id": @number,
+			"class4": @string,
+			"class4_icon_id": @number
+		},
 		"geolocation": {
 			"latitude": @number,
 			"longitude": @number
