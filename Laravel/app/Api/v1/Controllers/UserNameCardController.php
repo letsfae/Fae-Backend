@@ -44,7 +44,7 @@ class UserNameCardController extends Controller
                 $tags[] = array('tag_id' => $tag->id, 'title' => $tag->title, 'color' => $tag->color); 
             }
         }
-        $info = array('nick_name' => $nameCard->nick_name, 'short_intro' => $nameCard->short_intro,
+        $info = array('user_name' => $user->user_name,'nick_name' => $nameCard->nick_name, 'short_intro' => $nameCard->short_intro,
                 'tags' => $tags, 'show_gender' => $nameCard->show_gender, 'show_age' => $nameCard->show_age);
         if($nameCard->show_gender)
         {

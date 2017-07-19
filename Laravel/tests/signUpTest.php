@@ -50,12 +50,7 @@ class signUpTest extends TestCase {
         $this->seeInDatabase('users', ['email' => 'letsfae@126.com', 'user_name' => 'faeapp', 'first_name' => 'kevin', 'last_name' => 'zhang', 'gender' => 'male', 'birthday' => '1992-02-02']);
         $this->seeInDatabase('user_exts', ['user_id' => 1]);
         $this->seeInDatabase('name_cards', ['user_id' => 1]);
-        $this->seeInDatabase('chats', ['user_a_id' => 1, 'user_b_id' => 1, 'last_message' => 'Hey there! Welcome to Fae Map! Super happy to see you here. We’re here to
-                               enhance your experience on Fae Map and make your time more fun. Let us know
-                               of any problems you encounter or what we can do to make your experience better. 
-                               We’ll be hitting you up with surprises, recommendations, favorite places, cool 
-                               deals, and tons of fun stuff. Feel free to chat with us here anytime about 
-                               anything. Let’s Fae!', 'last_message_type' => 'text', 'last_message_sender_id' => 1, 'user_b_unread_count' => 1]);
+        $this->seeInDatabase('chats', ['user_a_id' => 1, 'user_b_id' => 1, 'last_message' => 'We’re here to enhance your experience and ensure you have a great time on our platform. Kindly let us know if you encounter any problems or what we can do to make your experience better. Let’s Fae!', 'last_message_type' => 'text', 'last_message_sender_id' => 1, 'user_b_unread_count' => 1]);
         $result = false;
         if ($response->status() == '201') {
             $result = true;

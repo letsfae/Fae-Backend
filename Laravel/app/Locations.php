@@ -6,15 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 use Phaza\LaravelPostgis\Eloquent\PostgisTrait;
 use Phaza\LaravelPostgis\Geometries\Point;
 
-class Places extends Model
+class Locations extends Model
 {
-	use PostgisTrait;
+    use PostgisTrait;
 
-    protected $connection = 'foursquare';
-    protected $table = 'places';
-    public $timestamps = false;
+    protected $table = 'locations';
+
     protected $postgisFields = [
         'geolocation' => Point::class,
     ];
-    
+
+    public function belongsToUser() 
+    {
+    	return $this->belongsTo('App\Users','user_id','id');
+    }
 }

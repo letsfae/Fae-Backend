@@ -885,6 +885,7 @@ class ChatTest extends TestCase {
                     'chat_id' => $i + 1,
                     'with_user_id' => 2,
                     'with_user_name' => 'faeapp2',
+                    'with_nick_name' => null,
                     'last_message' => $array2[0]->last_message,
                     'last_message_sender_id' => 1,
                     'last_message_sender_name' => 'faeapp',

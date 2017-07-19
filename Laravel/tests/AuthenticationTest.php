@@ -81,6 +81,7 @@ class AuthenticationTest extends TestCase {
             'Fae-Client-Version' => 'ios-0.0.1',  
         );
         $response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        var_dump($response);
         $array = json_decode($response->getContent());
         $result = false;
         if ($response->status() == '403' && $array->message == 'Bad request, Please verify your information!') {
@@ -113,12 +114,16 @@ class AuthenticationTest extends TestCase {
             'Fae-Client-Version' => 'ios-0.0.1',  
         );
         $response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
-        $array = json_decode($response->getContent());
+        $this->seeJson([
+                 'message' => 'user not found',
+                 'error_code' => '404-3',
+                 'status_code' => '404', 
+        ]); 
         $result = false;
-        if ($response->status() == '403' && $array->message == 'Bad request, No such users exist!') {
+        if ($response->status() == '404') {
             $result = true;
         }
-        $this->assertEquals(true, $result);
+        $this->assertEquals(true, $result); 
     }
 
     //to test whether the togin time is more than 6! 
@@ -330,7 +335,30 @@ class AuthenticationTest extends TestCase {
         $array = json_decode($response->getContent()); 
         $this->seeInDatabase('sessions', ['token' => $session->token, 'is_mobile' => true, 'device_id' => 'gu3v0KaU7jLS7SGdS2Rb', 'client_version' => 'ios-0.0.1']);
     }
-
+    // test the login when the user_name does not exist.
+    // public function testLogin9() { 
+    //     $this->markTestSkipped();  
+    //     $user = Users::create([
+    //         'email' => 'letsfae@126.com',
+    //         'password' => bcrypt('letsfaego'),
+    //         'first_name' => 'kevin',
+    //         'last_name' => 'zhang',
+    //         'user_name' => 'faeapp',
+    //         'gender' => 'male',
+    //         'birthday' => '1992-02-02',
+    //         'login_count' => 0, 
+    //     ]);
+    //     $parameters = array(  
+    //         'password' => 'letsfaego',
+    //         'user_name' => 'faeapp2',
+    //     );
+    //     $server = array(
+    //         'Accept' => 'application/x.faeapp.v1+json', 
+    //         'Fae-Client-Version' => 'ios-0.0.1', 
+    //     );
+    //     $response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server)); 
+    //     $array = json_decode($response->getContent()); 
+    // }
     public function testLogout() { 
         $this->markTestSkipped(); 
         $parameter = array(

@@ -12,8 +12,10 @@ use App\Comments;
 use App\ChatRooms;
 use App\Medias;
 use App\User_exts;
+use App\Name_cards;
 use App\Users;
 use App\Places;
+use App\Locations;
 use App\Api\v1\Controllers\PlaceController;
 use App\Api\v1\Controllers\PinOperationController;
 use Validator;
@@ -52,7 +54,7 @@ class MapController extends Controller
             $sessions = array();
             if($user_updated_in == 0)
             {
-                $sessions = DB::select("SELECT user_id,location,created_at
+                $sessions = DB::select("SELECT user_id,location,created_at,location_updated_at
                                         FROM sessions
                                         WHERE st_dwithin(location,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true)
                                         ORDER BY ST_Distance(location, ST_SetSRID(ST_Point(:longitude, :latitude),4326)), user_id
@@ -62,7 +64,7 @@ class MapController extends Controller
             }
             else
             {
-                $sessions = DB::select("SELECT user_id,location,created_at
+                $sessions = DB::select("SELECT user_id,location,created_at,location_updated_at
                                         FROM sessions
                                         WHERE st_dwithin(location,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true)
                                         AND CURRENT_TIMESTAMP - location_updated_at < ".strval($user_updated_in)." * INTERVAL '1 min' 
@@ -96,8 +98,21 @@ class MapController extends Controller
                 {
                     continue;
                 }
-                $info[] = ['type'=>'user', 'user_id' => $session->user_id, 
-                           'mini_avatar' => $user->mini_avatar, 'geolocation'=>[
+                $nameCard = Name_cards::find($session->user_id);
+                $birthDate = $user->birthday;
+                $birthDate = explode("-", $birthDate);
+                $age = (date("md", date("U", mktime(0, 0, 0, $birthDate[1], $birthDate[2], $birthDate[0]))) > date("md")
+                        ? ((date("Y") - $birthDate[0]) - 1)
+                        : (date("Y") - $birthDate[0]));
+                $info[] = ['type'=>'user', 'user_id' => $session->user_id,
+                           'user_name' => $user_exts->show_user_name ? $user->user_name : null,
+                           'user_nick_name' => $nameCard->nick_name,
+                           'user_age' => $nameCard->show_age ? $age : null,
+                           'user_gender' => $nameCard->show_gender ? $user->gender : null,
+                           'mini_avatar' => $user->mini_avatar, 
+                           'location_updated_at' => $session->location_updated_at,
+                           'short_intro' => $nameCard->short_intro,
+                           'geolocation'=>[
                            ['latitude'=>$locations[0]->getLat(),'longitude'=>$locations[0]->getLng()],
                            ['latitude'=>$locations[1]->getLat(),'longitude'=>$locations[1]->getLng()],
                            ['latitude'=>$locations[2]->getLat(),'longitude'=>$locations[2]->getLng()],
@@ -120,6 +135,22 @@ class MapController extends Controller
                 $info[] = PlaceController::getPinObject($place->id, $this->request->self_user_id);    
             }
         }
+        else if($this->request->type == 'location')
+        {
+            $locations = DB::select(
+                        "SELECT * FROM locations
+                        WHERE user_id = :user_id
+                        AND st_dwithin(geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true)
+                        ORDER BY ST_Distance(geolocation, ST_SetSRID(ST_Point(:longitude, :latitude),4326))
+                        LIMIT :max_count;",
+                        array('user_id' => $this->request->self_user_id, 
+                              'longitude' => $longitude, 'latitude' => $latitude,
+                              'radius' => $radius, 'max_count' => $max_count));
+            foreach ($locations as $location) 
+            {
+                $info[] = LocationController::getPinObject($location->id, $this->request->self_user_id);    
+            }
+        }
         else
         {
             $types = explode(',', $this->request->type);
@@ -129,10 +160,18 @@ class MapController extends Controller
                 switch($t)
                 {
                     case 'user':
-                        throw new UpdateResourceFailedException('Could not get map. Wrong types.');
+                        return response()->json([
+                            'message' => 'wrong type',
+                            'error_code' => ErrorCodeUtility::WRONG_TYPE,
+                            'status_code' => '400'
+                            ], 400);
                         break;
                     case 'place':
-                        throw new UpdateResourceFailedException('Could not get map. Wrong types.');
+                        return response()->json([
+                            'message' => 'wrong type',
+                            'error_code' => ErrorCodeUtility::WRONG_TYPE,
+                            'status_code' => '400'
+                            ], 400);
                         break;
                     case 'comment':
                         $type[] = "'comment'";
@@ -144,7 +183,11 @@ class MapController extends Controller
                         $type[] = "'chat_room'";  
                         break; 
                     default:
-                        throw new UpdateResourceFailedException('Could not get map. Wrong types.');
+                        return response()->json([
+                            'message' => 'wrong type',
+                            'error_code' => ErrorCodeUtility::WRONG_TYPE,
+                            'status_code' => '400'
+                            ], 400);
                 }
             }
             
@@ -186,7 +229,7 @@ class MapController extends Controller
                                     AND p3.user_id = :user_id)\n";
                 }   
             }
-            $sql_select .= "ORDER BY p1.created_at
+            $sql_select .= "ORDER BY p1.created_at DESC
                             LIMIT :max_count;";
             if($this->request->has('is_saved') || $this->request->has('is_liked') || $this->request->has('is_read'))
             {
@@ -205,7 +248,7 @@ class MapController extends Controller
                                 'type' => $pin_helper->type,
                                 'created_at' => $pin_helper->created_at,
                                 'pin_object' => PinUtility::getPinObject($pin_helper->type, $pin_helper->pin_id, 
-                                    $this->request->self_user_id)); 
+                                $this->request->self_user_id)); 
             }
         }
         return $this->response->array($info);   
@@ -218,7 +261,7 @@ class MapController extends Controller
             'geo_latitude' => 'required|numeric|between:-90,90',
             'radius' => 'filled|integer|min:0',
             'type' => 'required|string',
-            'max_count' => 'filled|integer|between:0,100',
+            'max_count' => 'filled|integer|between:0,1000',
             'in_duration' => 'filled|in:true,false',
             'user_updated_in' => 'filled|integer|min:1',
             'is_saved' => 'filled|in:true,false',

@@ -107,7 +107,7 @@ class PinOperationTest extends TestCase
             'file_ids' => '1;2',
             'duration' => 1440
         ]); 
-        $response = $this->call('post', 'http://'.$this->domain.'/pins/media/1/like', [], [], [], $this->transformHeadersToServerVars($server2));
+        $response = $this->call('post', 'http://'.$this->domain.'/pins/media/1/like', [], [], [], $this->transformHeadersToServerVars($server2)); 
         $result = false;
         if ($response->status() == '201') {
             $result = true;
@@ -1080,7 +1080,7 @@ class PinOperationTest extends TestCase
             'file_ids' => '1;2',
             'duration' => 1440
         ]); 
-        $response = $this->call('post', 'http://'.$this->domain.'/pins/media/1/save', [], [], [], $this->transformHeadersToServerVars($server2));
+        $response = $this->call('post', 'http://'.$this->domain.'/pins/media/1/save', [], [], [], $this->transformHeadersToServerVars($server2)); 
         $result = false;
         if ($response->status() == '201') {
             $result = true;
@@ -1395,9 +1395,9 @@ class PinOperationTest extends TestCase
             'file_ids' => '1;2',
             'duration' => 1440
         ]); 
-        $response = $this->call('post', 'http://'.$this->domain.'/pins/wrong/1/save', [], [], [], $this->transformHeadersToServerVars($server2)); 
+        $response = $this->call('post', 'http://'.$this->domain.'/pins/wrong/1/save', [], [], [], $this->transformHeadersToServerVars($server2));  
         $this->seeJson([
-                 'message' => 'wrong type, neither media nor comment',
+                 'message' => 'wrong type, must be media, comment, or place',
                  'error_code' => '400-7',
                  'status_code' => '400', 
         ]); 
@@ -1769,7 +1769,7 @@ class PinOperationTest extends TestCase
         $this->refreshApplication();
         $response = $this->call('delete', 'http://'.$this->domain.'/pins/wrong/1/save', [], [], [], $this->transformHeadersToServerVars($server2));
         $this->seeJson([
-                 'message' => 'wrong type, neither media nor comment',
+                 'message' => 'wrong type, must be media, comment, or place',
                  'error_code' => '400-7',
                  'status_code' => '400', 
         ]); 
@@ -2115,6 +2115,10 @@ class PinOperationTest extends TestCase
         //login of the user.
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
         $array = json_decode($login_response->getContent());
+        $session = Sessions::find(1); 
+        //big difference of the geolocation radius;
+        $session->location = new Point(34.2799, -118.2799);
+        $session->save();
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
             'Fae-Client-Version' => 'ios-0.0.1', 
@@ -2149,7 +2153,8 @@ class PinOperationTest extends TestCase
             'description' => 'This is the test1',
             'geolocation' => new Point(34.031958,-118.288125),  
             'file_ids' => '1;2',
-            'duration' => 1440
+            'duration' => 1440,
+            'interaction_radius' => 1
         ]); 
         $parameters = array(
             'content' => 'this is the comment pin test.', 
@@ -2904,7 +2909,7 @@ class PinOperationTest extends TestCase
         );  
         $response = $this->call('delete', 'http://'.$this->domain.'/pins/comments/fae', [], [], [], $this->transformHeadersToServerVars($server2));
         $this->seeJson([
-                 'message' => 'pin_id is not integer',
+                 'message' => 'pin_comment_id is not integer',
                  'error_code' => '400-3',
                  'status_code' => '400', 
         ]); 
@@ -4605,7 +4610,7 @@ class PinOperationTest extends TestCase
         $this->assertEquals(true, $result);
     }
  
-    // test the correct response of the getSavedPinList.
+    // test the correct response of the getSavedPinList when the type is not place.
     public function testGetSavedPinList() { 
         $this->markTestSkipped(); 
         //register of the user.
@@ -4778,6 +4783,275 @@ class PinOperationTest extends TestCase
         } 
         $this->assertEquals(true, $result);
     }
+    // test the response when the input format is wrong.
+    public function testGetSavedPinList2() { 
+        $this->markTestSkipped(); 
+        //register of the user.
+        $parameter1 = array(
+            'email' => 'letsfae@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();  
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent());
+        $this->refreshApplication();
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );   
+
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'video';
+        $files->mine_type = 'video';
+        $files->size = 256;
+        $files->hash = 'test';
+        $files->directory = 'test';
+        $files->file_name_storage = 'test';
+        $files->file_name = 'test';
+        $files->reference_count = 0;
+        $files->save();
+
+        $files = new Files;
+        $files->user_id = 1;
+        $files->type = 'image';
+        $files->mine_type = 'image';
+        $files->size = 256;
+        $files->hash = 'test1';
+        $files->directory = 'test1';
+        $files->file_name_storage = 'test1';
+        $files->file_name = 'test1';
+        $files->reference_count = 0;
+        $files->save();
+
+        $parameters = array();
+        $responses = array();
+        for ($i = 0; $i < 31; $i++) {
+            $parameters[$i] = array(
+                'file_ids' => '1;2', 
+                'description' => 'this is the test'.$i,
+                'geo_latitude' => '-89.99',
+                'geo_longitude' => '-118.2799',
+                'duration' => '1440',
+                'interaction_radius' => '100', 
+            ); 
+        }
+        //create the medias.
+        for ($i = 0; $i < 31; $i++) {
+            $responses[$i] = $this->call('post', 'http://'.$this->domain.'/medias', $parameters[$i], [], [],$this->transformHeadersToServerVars($server2));  
+            sleep(1); 
+            $this->refreshApplication(); 
+            $response = $this->call('post', 'http://'.$this->domain.'/pins/media/'.($i+1).'/save', [], [], [], $this->transformHeadersToServerVars($server2));
+            $this->refreshApplication();
+        }    
+        $content = array(
+            'start_time' => '2016-06-08 21:22',
+            'end_time' => date("Y-m-d H:i:s"),
+            'page' => 1,
+        );
+        //get the pinComments of the page 1.
+        $response_page1 = $this->call('get', 'http://'.$this->domain.'/pins/saved', $content, [], [], $this->transformHeadersToServerVars($server2));
+        $array2 = json_decode($response_page1->getContent()); 
+        $result = false;
+        if ($response->status() == '422' && $array2->message == 'Could not get user comments.' && $array2->errors->start_time[0] == 'The start time does not match the format Y-m-d H:i:s.') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result);
+    }
+    // test the correct response of the getSavedPinList when the type is place.
+    // public function testGetSavedPinList3() { 
+    //     $this->markTestSkipped(); 
+    //     //register of the user.
+    //     $parameter1 = array(
+    //         'email' => 'letsfae@126.com',
+    //         'password' => 'letsfaego',
+    //         'first_name' => 'kevin',
+    //         'last_name' => 'zhang',
+    //         'user_name' => 'faeapp',
+    //         'gender' => 'male',
+    //         'birthday' => '1992-02-02',
+    //     );
+    //     $server = array(
+    //         'Accept' => 'application/x.faeapp.v1+json', 
+    //         'Fae-Client-Version' => 'ios-0.0.1',
+    //     );
+    //     $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+    //     $this->refreshApplication();  
+    //     $parameters = array(
+    //         'email' => 'letsfae@126.com', 
+    //         'password' => 'letsfaego',
+    //         'user_name' => 'faeapp',
+    //     );
+    //     $server = array(
+    //         'Accept' => 'application/x.faeapp.v1+json', 
+    //         'Fae-Client-Version' => 'ios-0.0.1', 
+    //     );
+    //     //login of the user.
+    //     $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+    //     $array = json_decode($login_response->getContent());
+    //     $this->refreshApplication();
+    //     $server2 = array(
+    //         'Accept' => 'application/x.faeapp.v1+json', 
+    //         'Fae-Client-Version' => 'ios-0.0.1', 
+    //         'Authorization' => 'FAE '.$array->debug_base64ed,
+    //     );   
+
+    //     $files = new Files;
+    //     $files->user_id = 1;
+    //     $files->type = 'video';
+    //     $files->mine_type = 'video';
+    //     $files->size = 256;
+    //     $files->hash = 'test';
+    //     $files->directory = 'test';
+    //     $files->file_name_storage = 'test';
+    //     $files->file_name = 'test';
+    //     $files->reference_count = 0;
+    //     $files->save();
+
+    //     $files = new Files;
+    //     $files->user_id = 1;
+    //     $files->type = 'image';
+    //     $files->mine_type = 'image';
+    //     $files->size = 256;
+    //     $files->hash = 'test1';
+    //     $files->directory = 'test1';
+    //     $files->file_name_storage = 'test1';
+    //     $files->file_name = 'test1';
+    //     $files->reference_count = 0;
+    //     $files->save();
+
+    //     $parameters = array();
+    //     $responses = array();
+    //     for ($i = 0; $i < 31; $i++) {
+    //         $parameters[$i] = array(
+    //             'file_ids' => '1;2', 
+    //             'description' => 'this is the test'.$i,
+    //             'geo_latitude' => '-89.99',
+    //             'geo_longitude' => '-118.2799',
+    //             'duration' => '1440',
+    //             'interaction_radius' => '100', 
+    //         ); 
+    //     }
+    //     //create the medias.
+    //     for ($i = 0; $i < 31; $i++) {
+    //         $responses[$i] = $this->call('post', 'http://'.$this->domain.'/medias', $parameters[$i], [], [],$this->transformHeadersToServerVars($server2));  
+    //         sleep(1); 
+    //         $this->refreshApplication(); 
+    //         $response = $this->call('post', 'http://'.$this->domain.'/pins/media/'.($i+1).'/save', [], [], [], $this->transformHeadersToServerVars($server2));
+    //         $this->refreshApplication();
+    //     }    
+    //     $content = array(
+    //         'start_time' => '2016-06-08 21:22:39',
+    //         'end_time' => date("Y-m-d H:i:s"),
+    //         'page' => 1,
+    //     );
+    //     //get the pinComments of the page 1.
+    //     $response_page1 = $this->call('get', 'http://'.$this->domain.'/pins/saved', $content, [], [], $this->transformHeadersToServerVars($server2));
+    //     $array2 = json_decode($response_page1->getContent());  
+    //     for ($i = 0; $i < 30; $i++) {
+    //         $this->seeJson([  
+    //             'pin_id' => $array2[$i]->pin_id, 
+    //             'type' => 'media', 
+    //             'created_at' => $array2[$i]->created_at, 
+    //             'pin_object' => array(
+    //                 'media_id' => $array2[$i]->pin_object->media_id,
+    //                 'user_id' => 1, 
+    //                 'nick_name' => null,
+    //                 'anonymous' => false,
+    //                 'file_ids' =>  array('1','2'),
+    //                 'tag_ids' =>  null,
+    //                 'description' => 'this is the test'.(30 - $i),
+    //                 'geolocation' => array( 
+    //                     'latitude' => -89.99,
+    //                     'longitude' => -118.2799,
+    //                 ),
+    //                 'liked_count' => 0,
+    //                 'saved_count' => 1,
+    //                 'comment_count' => 0, 
+    //                 'feeling_count' => [0,0,0,0,0,0,0,0,0,0,0],
+    //                 'created_at' => $array2[$i]->pin_object->created_at, 
+    //                 'user_pin_operations' => array(
+    //                     'is_liked' => false,
+    //                     'liked_timestamp' => null,
+    //                     'is_saved' => true,
+    //                     'saved_timestamp' => $array2[$i]->pin_object->user_pin_operations->saved_timestamp,
+    //                     'feeling' => -1,
+    //                     'feeling_timestamp' => null,
+    //                     'is_read' => true,
+    //                     'read_timestamp' => $array2[$i]->pin_object->user_pin_operations->read_timestamp,
+    //                 ),
+    //             ),
+    //         ]);
+    //     }
+    //     $this->refreshApplication();
+    //     $content2 = array(
+    //         'start_time' => '2016-06-08 21:22:39',
+    //         'end_time' => date("Y-m-d H:i:s"),
+    //         'page' => 2,
+    //     );
+    //     // get the pinComments of the page 2.
+    //     $response_page2 = $this->call('get', 'http://'.$this->domain.'/pins/saved', $content2, [], [], $this->transformHeadersToServerVars($server2)); 
+    //     $array3 = json_decode($response_page2->getContent()); 
+    //     $this->seeJson([  
+    //         'pin_id' => $array3[0]->pin_id, 
+    //         'type' => 'media', 
+    //         'created_at' => $array3[0]->created_at, 
+    //         'pin_object' => array(
+    //             'media_id' => $array3[0]->pin_object->media_id,
+    //             'user_id' => 1, 
+    //             'nick_name' => null,
+    //             'anonymous' => false,
+    //             'file_ids' =>  array('1','2'),
+    //             'tag_ids' =>  null,
+    //             'description' => 'this is the test0',
+    //             'geolocation' => array( 
+    //                 'latitude' => -89.99,
+    //                 'longitude' => -118.2799,
+    //             ),
+    //             'liked_count' => 0,
+    //             'saved_count' => 1,
+    //             'comment_count' => 0, 
+    //             'feeling_count' => [0,0,0,0,0,0,0,0,0,0,0],
+    //             'created_at' => $array3[0]->pin_object->created_at, 
+    //             'user_pin_operations' => array(
+    //                 'is_liked' => false,
+    //                 'liked_timestamp' => null,
+    //                 'is_saved' => true,
+    //                 'saved_timestamp' => $array3[0]->pin_object->user_pin_operations->saved_timestamp,
+    //                 'feeling' => -1,
+    //                 'feeling_timestamp' => null,
+    //                 'is_read' => true,
+    //                 'read_timestamp' => $array3[0]->pin_object->user_pin_operations->read_timestamp,
+    //             ),
+    //         ),
+    //     ]);
+    //     $result = false;
+    //     if ($response_page1->headers->get('page') == '1' && $response_page1->headers->get('total-pages') == '2' && $response_page1->status() == '200') {
+    //         $result = true;
+    //     } 
+    //     $this->assertEquals(true, $result);
+    // }
 
     // test the correct response of the vote.
     public function testVote() { 

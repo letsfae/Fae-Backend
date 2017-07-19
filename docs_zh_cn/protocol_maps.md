@@ -45,7 +45,7 @@ yes
 | geo_latitude | number | 中心点纬度 |
 | geo_longitude | number | 中心点经度 |
 | radius (optional) | number | 半径，默认值为200m |
-| type | string(user or place or comment,media,chat_room) | 筛选类型，类型之间用逗号隔开 |
+| type | string(user or place or location or comment,media,chat_room) | 筛选类型，类型之间用逗号隔开 |
 | max_count (optional) | number | 返回节点最大数量，默认为30，最大为100 |
 | in_duration (optional) | boolean | 只显示在活跃时间内的pin，默认为false（对user,place无效） |
 | user_updated_in (optional) | number | 显示多久时间内更新过坐标的用户（仅针对user有效），单位min，默认不限制 |
@@ -58,7 +58,7 @@ yes
 
 对于一直在更新的user点，可以每隔一段时间获取一次。
 
-user及place类型节点只能单独获取。其他类型节点可同时获取（根据Pin创建时间降序排序）。
+user、place、location类型节点只能单独获取。其他类型节点可同时获取（根据Pin创建时间降序排序）。
 
 如果app退出到桌面，ios端将无法发送坐标，`user_updated_in`用于过滤超出活跃时间的但在线的用户。
 
@@ -89,8 +89,13 @@ Status: 200
 	{
 		"type": "user",
 		"user_id": @number,
+		"user_name": @string (if show_user_name is true, else null),
+		"user_nick_name": @string,
+		"user_age": @number (if show_age is true, else null),
+		"user_gender": @string (if show_gender is true, else null),
 		"mini_avatar": @number,
 		"location_updated_at": @string,
+		"short_intro": @string,
 		"geolocation": [
 			{
 				"latitude": @number,
@@ -785,3 +790,113 @@ Status: 200
 	        "zip_code": @string
 		}
 	}
+
+## 发布location
+
+`POST /locations`
+
+注： location仅个人可见。
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| content | text | 内容 |
+| geo_latitude | number | 纬度 |
+| geo_longitude | number | 经度 |
+
+### response
+
+Status: 201
+
+	{
+		"location_id": @number
+	}
+
+## 更新location
+
+`POST /locations/:location_id`
+
+### auth
+
+yes
+
+### parameters
+
+同发布location，但所有参数均为可选。
+
+### response
+
+Status: 201
+
+## 获取location		
+
+`GET /locations/:location_id`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	{
+		"location_id": @number,
+		"content": @string,
+		"geolocation": {
+			"latitude": @number,
+			"longitude": @number
+		},
+		"created_at": @string,
+	}
+
+## 获取该用户的所有location
+
+`GET /locations`
+
+### auth
+
+yes
+
+### filters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| start_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为1970-01-01 00:00:00 |
+| end_time | string(YYYY-MM-DD hh:mm:ss) | 时间范围，默认为当前日期和时间 |
+| page | number | 页数，默认为第1页（头30条） |
+
+过滤参数均为可选。
+
+### response
+
+Status: 200
+
+	page: @number
+	total_pages: @number
+
+	-----
+
+	[
+		{...},
+		{...}
+	]
+
+具体数组内对象同“获取location”所得到的对象。
+
+## 删除location
+
+`DELETE /locations/:location_id`
+
+### auth
+
+yes
+
+### response
+
+Status: 204

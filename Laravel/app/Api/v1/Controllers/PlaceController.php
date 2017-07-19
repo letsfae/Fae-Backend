@@ -39,7 +39,7 @@ class PlaceController extends Controller implements PinInterface {
             return null;
         }
 
-        $categories = explode(', ', $place->categories);
+        $categories = explode(',', $place->categories);
 
         return array(
             'place_id' => $place->id, 
@@ -47,6 +47,7 @@ class PlaceController extends Controller implements PinInterface {
             'categories' => $categories,
             'geolocation' => ['latitude' => $place->geolocation->getLat(), 
             'longitude' => $place->geolocation->getLng()], 
+            'city' => $place->city,
             'country' => $place->country, 
             'state' => $place->state,
             'address' => $place->address, 

@@ -993,11 +993,11 @@ class FriendTest extends TestCase
         $this->markTestSkipped(); 
         //register of the user.
          $parameter1 = array(
-            'email' => 'letsfae@126.com',
+            'email' => 'letsfae1@126.com',
             'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
-            'user_name' => 'faeapp',
+            'user_name' => 'faeapp1',
             'gender' => 'male',
             'birthday' => '1992-02-02',
         );
@@ -1100,13 +1100,15 @@ class FriendTest extends TestCase
             'Authorization' => 'FAE '.$array->debug_base64ed,
         );
         $response3 = $this->call('get', 'http://'.$this->domain.'/friends/request', [], [], [], $this->transformHeadersToServerVars($server3));  
-        $array3 = json_decode($response3->getContent());
-        print_r($array3);
+        $array3 = json_decode($response3->getContent()); 
         for ($i = 1; $i < 3; $i++) {
             $this->seeJson([   
                         'friend_request_id' => $i, 
                         'request_user_id' => $i,
                         'request_user_name' => 'faeapp'.$i,
+                        'request_user_nick_name' => null,
+                        'request_user_age' => null,
+                        'request_user_gender' => null,
                         'request_email' => 'letsfae'.$i.'@126.com',   
                         'created_at' => $array3[$i - 1]->created_at,
             ]); 
@@ -1116,5 +1118,5 @@ class FriendTest extends TestCase
             $result = true;
         }  
         $this->assertEquals(true, $result);     
-    }
+    } 
 }

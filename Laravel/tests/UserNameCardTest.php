@@ -82,6 +82,7 @@ class UserNameCardTest extends TestCase {
         $response = $this->call('get', 'http://'.$this->domain.'/users/1/name_card', [], [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent());  
         $this->seeJson([
+                'user_name' => 'faeapp',
                 'nick_name' => 'kevin',
                 'short_intro' => 'this is a test',
                 'tags' => array(
@@ -243,6 +244,7 @@ class UserNameCardTest extends TestCase {
         $response = $this->call('get', 'http://'.$this->domain.'/users/name_card', [], [], [], $this->transformHeadersToServerVars($server2));   
         $array2 = json_decode($response->getContent()); 
         $this->seeJson([
+                'user_name' => 'faeapp',
                 'nick_name' => null,
                 'short_intro' => null,
                 'tags' => [],

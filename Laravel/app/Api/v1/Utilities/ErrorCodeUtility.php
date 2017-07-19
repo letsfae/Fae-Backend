@@ -21,6 +21,10 @@ class ErrorCodeUtility
     const VOTED_DOWN_ALREADY = '400-13';
     const NOT_VOTED = '400-14';
     const NO_FEELING = '400-15';
+    const BLOCK_SELF = '400-16';
+    const FOLLOW_SELF = '400-17';
+    const FOLLOWED_ALREADY = '400-18';
+    const NOT_FOLLOWED = '400-19';
 
     //401 Unauthorized
     /*
@@ -63,6 +67,7 @@ class ErrorCodeUtility
 	const PIN_NOT_FOUND = '404-13';
 	const VERIFICATION_NOT_FOUND = '404-14';
 	const NAME_CARD_NOT_FOUND = '404-15';
+	const LOCATIONS_NOT_FOUND = '404-16';
 
     //405 Method Not Allowed
     /*

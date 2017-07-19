@@ -93,6 +93,12 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->post('/friends/accept', 'App\Api\v1\Controllers\FriendController@acceptRequest');
     $api->post('/friends/ignore', 'App\Api\v1\Controllers\FriendController@ignoreRequest');
     $api->delete('/friends/{user_id}', 'App\Api\v1\Controllers\FriendController@deleteFriend');
+    $api->get('/friends', 'App\Api\v1\Controllers\FriendController@getFriendsList');
+    // follows
+    $api->post('/follows', 'App\Api\v1\Controllers\FollowController@follow');
+    $api->get('/follows/{user_id}/followee', 'App\Api\v1\Controllers\FollowController@getFollowee');
+    $api->get('/follows/{user_id}/follower', 'App\Api\v1\Controllers\FollowController@getFollower');
+    $api->delete('/follows/{followee_id}', 'App\Api\v1\Controllers\FollowController@unfollow');
     // blocks
     $api->post('/blocks', 'App\Api\v1\Controllers\BlockController@add');
     $api->delete('/blocks/{user_id}', 'App\Api\v1\Controllers\BlockController@delete');
@@ -105,6 +111,13 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->get('/chats/users/{user_a_id}/{user_b_id}', 'App\Api\v1\Controllers\ChatController@getChatIdFromUserId');
     $api->get('/chats/{user_a_id}/{user_b_id}', 'App\Api\v1\Controllers\ChatController@getMessageByUserId');
     $api->get('/chats/{chat_id}', 'App\Api\v1\Controllers\ChatController@getMessageByChatId');
+    // chats v2
+    $api->post('/chats_v2', 'App\Api\v1\Controllers\ChatV2Controller@send');
+    $api->get('/chats_v2/unread', 'App\Api\v1\Controllers\ChatV2Controller@getUnread');
+    $api->delete('/chats_v2/{chat_id}', 'App\Api\v1\Controllers\ChatV2Controller@delete');
+    $api->get('/chats_v2/users/{user_a_id}/{user_b_id}', 'App\Api\v1\Controllers\ChatV2Controller@getChatIdFromUserId');
+    $api->get('/chats_v2/{user_a_id}/{user_b_id}', 'App\Api\v1\Controllers\ChatV2Controller@getMessageByUserId');
+    $api->get('/chats_v2/{chat_id}', 'App\Api\v1\Controllers\ChatV2Controller@getMessageByChatId');
     // chat rooms
     $api->post('/chat_rooms', 'App\Api\v1\Controllers\ChatRoomController@create');
     $api->post('/chat_rooms/{chat_room_id}', 'App\Api\v1\Controllers\ChatRoomController@update');
@@ -116,6 +129,16 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->post('/chat_rooms/{chat_room_id}/message/read', 'App\Api\v1\Controllers\ChatRoomController@markRead');
     $api->get('/chat_rooms', 'App\Api\v1\Controllers\ChatRoomController@getHistory');
     $api->get('/chat_rooms/{chat_room_id}/users', 'App\Api\v1\Controllers\ChatRoomController@getUserList');
+    // chat rooms v2
+    $api->post('/chat_rooms_v2', 'App\Api\v1\Controllers\ChatRoomV2Controller@create');
+    $api->post('/chat_rooms_v2/{chat_room_id}', 'App\Api\v1\Controllers\ChatRoomV2Controller@update');
+    $api->get('/chat_rooms_v2/{chat_room_id}', 'App\Api\v1\Controllers\ChatRoomV2Controller@getOne');
+    $api->get('/chat_rooms_v2/users/{user_id}', 'App\Api\v1\Controllers\ChatRoomV2Controller@getFromUser');
+    $api->post('/chat_rooms_v2/{chat_room_id}/message', 'App\Api\v1\Controllers\ChatRoomV2Controller@send');
+    $api->get('/chat_rooms_v2/message/unread', 'App\Api\v1\Controllers\ChatRoomV2Controller@getUnread');
+    $api->post('/chat_rooms_v2/{chat_room_id}/message/read', 'App\Api\v1\Controllers\ChatRoomV2Controller@markRead');
+    // $api->get('/chat_rooms_v2/{chat_room_id}', 'App\Api\v1\Controllers\ChatRoomV2Controller@getMessage');
+    $api->get('/chat_rooms_v2/{chat_room_id}/users', 'App\Api\v1\Controllers\ChatRoomV2Controller@getUserList');
     // tags
     $api->post('/tags', 'App\Api\v1\Controllers\TagController@create');
     $api->get('/tags', 'App\Api\v1\Controllers\TagController@getArray');
@@ -126,6 +149,7 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->post('/pins/{type}/{pin_id}/like', 'App\Api\v1\Controllers\PinOperationController@like');
     $api->delete('/pins/{type}/{pin_id}/like', 'App\Api\v1\Controllers\PinOperationController@unlike');
     $api->post('/pins/{type}/{pin_id}/comments', 'App\Api\v1\Controllers\PinOperationController@comment');
+    $api->post('/pins/comments/{pin_comment_id}', 'App\Api\v1\Controllers\PinOperationController@updateComment');
     $api->delete('/pins/comments/{pin_comment_id}', 'App\Api\v1\Controllers\PinOperationController@uncomment');
     $api->post('/pins/{type}/{pin_id}/save', 'App\Api\v1\Controllers\PinOperationController@save');
     $api->delete('/pins/{type}/{pin_id}/save', 'App\Api\v1\Controllers\PinOperationController@unsave');
@@ -138,7 +162,7 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     $api->get('/pins/users/{user_id}', 'App\Api\v1\Controllers\PinOperationController@getUserPinList');
     $api->post('/pins/comments/{pin_comment_id}/vote', 'App\Api\v1\Controllers\PinOperationController@vote');
     $api->delete('/pins/comments/{pin_comment_id}/vote', 'App\Api\v1\Controllers\PinOperationController@cancelVote');
-    $api->delete('/pins/statistics', 'App\Api\v1\Controllers\PinOperationController@pinStatistics');
+    $api->get('/pins/statistics', 'App\Api\v1\Controllers\PinOperationController@pinStatistics');
     // richtext (hashtags and at)
     $api->get('/richtext/hashtag/{hashtag}', 'App\Api\v1\Controllers\RichTextController@searchHashtag');
     $api->get('/richtext/hashtag/{hashtag}/contains', 'App\Api\v1\Controllers\RichTextController@searchHashtagWithText');

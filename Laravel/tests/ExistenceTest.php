@@ -28,6 +28,7 @@ class ExistenceTest extends TestCase {
 
     //the correct response of the method of checking whether the email exists!
     public function testEmailExistence() { 
+        $this->markTestSkipped(); 
         $user = Users::create([
             'email' => 'letsfae@126.com',
             'password' => bcrypt('letsfaego'),
@@ -55,6 +56,7 @@ class ExistenceTest extends TestCase {
 
     //test whether the format of the email is right.
     public function testEmailExistence2() { 
+        $this->markTestSkipped(); 
         $user = Users::create([
             'email' => 'letsfae@126.com',
             'password' => bcrypt('letsfaego'),
@@ -80,6 +82,7 @@ class ExistenceTest extends TestCase {
 
     //the correct response of the method of checking whether the user_name exists!
     public function testUserNameExistence() { 
+        $this->markTestSkipped(); 
         $user = Users::create([
             'email' => 'letsfae@126.com',
             'password' => bcrypt('letsfaego'),
@@ -108,6 +111,7 @@ class ExistenceTest extends TestCase {
 
     //test whether the format of the user_name is right.
     public function testUserNameExistence2() { 
+        $this->markTestSkipped(); 
         $user = Users::create([
             'email' => 'letsfae@126.com',
             'password' => bcrypt('letsfaego'),

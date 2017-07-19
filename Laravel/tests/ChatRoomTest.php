@@ -39,16 +39,21 @@ class ChatRoomTest extends TestCase {
     public function testCreated() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -92,16 +97,21 @@ class ChatRoomTest extends TestCase {
     public function testCreated2() {
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -133,21 +143,83 @@ class ChatRoomTest extends TestCase {
         }
         $this->assertEquals(true, $result);   
     }
-
-    //test the correct response of method of updateChatRoom.
-    public function testUpdate() { 
+    // test the response when the tags not found.
+    public function testCreated3() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent());
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        ); 
+
+        $parameters2 = array(
+            'tag_ids' => '1;2',
+            'title' => 'This is the test.',
+            'geo_latitude' => 34.2799, 
+            'geo_longitude' => -118.2799,
+            'duration' => 1440,
+            'interaction_radius' => 100
+        ); 
+        //create the chatRoom.
+        $response = $this->call('post', 'http://'.$this->domain.'/chat_rooms', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
+        $this->seeJson([
+                    'message' => 'tag not found',
+                    'error_code' => '404-4',
+                    'status_code' => '404', 
+        ]); 
+        $result = false;
+        if ($response->status() == '404') {
+            $result = true;
+        }
+        $this->assertEquals(true, $result); 
+    }
+    //test the correct response of method of updateChatRoom.
+    public function testUpdate() { 
+        $this->markTestSkipped(); 
+        //register of the user.
+        $parameter1 = array(
+            'email' => 'letsfae@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -197,16 +269,21 @@ class ChatRoomTest extends TestCase {
     public function testUpdate2() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -239,28 +316,37 @@ class ChatRoomTest extends TestCase {
         );  
         //wrong format of the chat_room_id.
         $response2 = $this->call('post', 'http://'.$this->domain.'/chat_rooms/fae', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
-        $array3 = json_decode($response2->getContent());  
+        $this->seeJson([
+                    'message' => 'chat_room_id is not integer',
+                    'error_code' => '400-3',
+                    'status_code' => '400', 
+        ]); 
         $result = false;
-        if ($response2->status() == '400' && $array3->message == 'Bad Request') {
+        if ($response2->status() == '400') {
             $result = true;
         }
-        $this->assertEquals(true, $result);
+        $this->assertEquals(true, $result); 
     }
 
     //test whether the format of the input is valid. 
     public function testUpdate3() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -306,16 +392,21 @@ class ChatRoomTest extends TestCase {
     public function testUpdate4() { 
         $this->markTestSkipped();  
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -347,43 +438,134 @@ class ChatRoomTest extends TestCase {
             'title' => 'This is the test2.', 
         );  
         $response = $this->call('post', 'http://'.$this->domain.'/chat_rooms/2', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
-        $array3 = json_decode($response->getContent());  
-        $result = false; 
-        if ($response->status() == '404' && $array3->message == 'Not Found') {
+        $this->seeJson([
+                    'message' => 'chat room not found',
+                    'error_code' => '404-5',
+                    'status_code' => '404', 
+        ]); 
+        $result = false;
+        if ($response->status() == '404') {
             $result = true;
-        }
-        $this->assertEquals(true, $result); 
+        } 
     }
 
     //test whether the user_id of the chat_room is the same as the current user_id.
     public function testUpdate5() { 
         $this->markTestSkipped();  
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $user = Users::create([
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $chatroom = ChatRooms::create([
-            'user_id' => 2,
-            'title' => 'this is the test2',
-            'geolocation' => '0101000020E6100000A089B0E1E9915DC0401361C3D3234140'
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
+        $parameters = array(
+            'email' => 'letsfae2@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp2',
+        ); 
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $array = json_decode($login_response->getContent());  
+        $server1 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );
+        $parameter3 = array(
+            'title' => 'This is the test1.',
+            'geo_longitude' => -118.2799,
+            'geo_latitude' => 34.2799, 
+            'duration' => 1380,
+        );  
+        $response1 = $this->call('post', 'http://'.$this->domain.'/chat_rooms', $parameter3, [], [], $this->transformHeadersToServerVars($server1)); 
+        $this->refreshApplication(); 
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent()); 
+        $parameters1 = array(
+            'title' => 'This is the test.',
+            'geo_longitude' => -118.2799,
+            'geo_latitude' => 34.2799, 
+            'duration' => 1380,
+        ); 
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );
+        $response1 = $this->call('post', 'http://'.$this->domain.'/chat_rooms', $parameters1, [], [], $this->transformHeadersToServerVars($server2));  
+        $array2 = json_decode($response1->getContent());
+        $this->refreshApplication();  
+        $parameters2 = array(
+            'title' => 'This is the test2.', 
+            'geo_latitude' => 37.2899,
+            'geo_longitude' => -118.2799
+        );  
+        $response = $this->call('post', 'http://'.$this->domain.'/chat_rooms/1', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
+        $this->seeJson([
+                    'message' => 'You can not update this chat room',
+                    'error_code' => '403-2',
+                    'status_code' => '403', 
+        ]); 
+        $result = false;
+        if ($response->status() == '403') {
+            $result = true;
+        } 
+    }
+    //test the response when the tag not found.
+    public function testUpdate6() { 
+        $this->markTestSkipped(); 
+        //register of the user.
+        $parameter1 = array(
+            'email' => 'letsfae@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -408,35 +590,47 @@ class ChatRoomTest extends TestCase {
             'Fae-Client-Version' => 'ios-0.0.1', 
             'Authorization' => 'FAE '.$array->debug_base64ed,
         );
-        $response1 = $this->call('post', 'http://'.$this->domain.'/chat_rooms', $parameters1, [], [], $this->transformHeadersToServerVars($server2)); 
-        $array2 = json_decode($response1->getContent());
-        $this->refreshApplication();  
+        $response = $this->call('post', 'http://'.$this->domain.'/chat_rooms', $parameters1, [], [], $this->transformHeadersToServerVars($server2)); 
+        $array2 = json_decode($response->getContent());
+        $this->refreshApplication(); 
         $parameters2 = array(
-            'title' => 'This is the test2.', 
-        );  
-        $response = $this->call('post', 'http://'.$this->domain.'/chat_rooms/1', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
-        $array3 = json_decode($response->getContent());
-        $result = false; 
-        if ($response->status() == '403' && $array3->message == 'You can not update this chat room') {
+            'tag_ids' => '1;2',
+            'title' => 'This is the test2.',
+            'geo_latitude' => 35.5799,
+            'geo_longitude' => -120.2799,
+            'duration' => 1440,
+            'interaction_radius' => 100
+        ); 
+        $response2 = $this->call('post', 'http://'.$this->domain.'/chat_rooms/1', $parameters2, [], [], $this->transformHeadersToServerVars($server2));  
+        $this->seeJson([
+                    'message' => 'tag not found',
+                    'error_code' => '404-4',
+                    'status_code' => '404', 
+        ]); 
+        $result = false;
+        if ($response2->status() == '404') {
             $result = true;
-        }
-        $this->assertEquals(true, $result);
+        } 
     }
-
     // the correct response of the get chatRoom with the chat_room_id.
     public function testGetOne() {
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -463,15 +657,16 @@ class ChatRoomTest extends TestCase {
             'Authorization' => 'FAE '.$array->debug_base64ed,
         );
         $response = $this->call('post', 'http://'.$this->domain.'/chat_rooms', $parameters1, [], [], $this->transformHeadersToServerVars($server2)); 
-        $array2 = json_decode($response->getContent());
+        $array2 = json_decode($response->getContent()); 
         $this->refreshApplication(); 
         //get the chatRoom
-        $response = $this->call('get', 'http://'.$this->domain.'/chat_rooms/'.$array2->chat_room_id, [], [], [], $this->transformHeadersToServerVars($server2));  
-        $array3 = json_decode($response->getContent()); 
+        $response2 = $this->call('get', 'http://'.$this->domain.'/chat_rooms/'.$array2->chat_room_id, [], [], [], $this->transformHeadersToServerVars($server2)); 
+        $array3 = json_decode($response2->getContent()); 
         $this->seeJson([
                 'chat_room_id' => 1,
                 'title' => 'This is the test.',
                 'user_id' => 1, 
+                'nick_name' => null,
                 'geolocation' => array(
                     'latitude' => 34.2799,
                     'longitude' => -118.2799,
@@ -483,10 +678,11 @@ class ChatRoomTest extends TestCase {
                 'created_at' => $array3->created_at,
                 'capacity' => 50,
                 'tag_ids' => null,
-                'description' => null
+                'description' => null,
+                'members' => array(1)
         ]);
         $result = false;
-        if ($response->status() == '200') {
+        if ($response2->status() == '200') {
             $result = true;
         }
         $this->assertEquals(true, $result); 
@@ -496,16 +692,21 @@ class ChatRoomTest extends TestCase {
     public function testGetOne2() {
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -536,28 +737,36 @@ class ChatRoomTest extends TestCase {
         //the format of the chat_room_id is not valid.
         //get the chat_room.
         $response = $this->call('get', 'http://'.$this->domain.'/chat_rooms/letsfae', [], [], [], $this->transformHeadersToServerVars($server2)); 
-        $array2 = json_decode($response->getContent()); 
+        $this->seeJson([
+                    'message' => 'chat_room_id is not integer',
+                    'error_code' => '400-3',
+                    'status_code' => '400', 
+        ]); 
         $result = false;
-        if ($response->status() == '400' && $array2->message == 'Bad Request') {
+        if ($response->status() == '400') {
             $result = true;
-        }
-        $this->assertEquals(true, $result); 
+        } 
     }
 
     // the chat_room with the given chat_room_id does not exist.
     public function testGetOne3() {
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -587,29 +796,37 @@ class ChatRoomTest extends TestCase {
         $this->refreshApplication();  
         //test the chat_room with the chat_room -1 does not exist!
         //get the chat_room
-        $response = $this->call('get', 'http://'.$this->domain.'/chat_rooms/-1'.$array2->chat_room_id, [], [], [], $this->transformHeadersToServerVars($server2)); 
-        $array3 = json_decode($response->getContent()); 
+        $response2 = $this->call('get', 'http://'.$this->domain.'/chat_rooms/-1'.$array2->chat_room_id, [], [], [], $this->transformHeadersToServerVars($server2)); 
+        $this->seeJson([
+                    'message' => 'chat room not found',
+                    'error_code' => '404-5',
+                    'status_code' => '404', 
+        ]); 
         $result = false;
-        if ($response->status() == '404' && $array3->message == 'Not Found') {
+        if ($response2->status() == '404') {
             $result = true;
-        }
-        $this->assertEquals(true, $result);  
+        }   
     }
 
     // the correct response of the method of getting all chatRomms of the given user.
     public function testGetFromUser() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -652,7 +869,6 @@ class ChatRoomTest extends TestCase {
         //get the chatRoom of the page 1.
         $response_page1 = $this->call('get', 'http://'.$this->domain.'/chat_rooms/users/'.$array->user_id, $content, [], [], $this->transformHeadersToServerVars($server2));
         $array2 = json_decode($response_page1->getContent());  
-        print_r($array2);
         for ($i = 0; $i < 30; $i++) {
             $this->seeJson([  
                         'chat_room_id' => $array2[$i]->chat_room_id,
@@ -670,6 +886,7 @@ class ChatRoomTest extends TestCase {
                         'capacity' => 50,
                         'tag_ids' => $array2[$i]->tag_ids,
                         'description' =>  $array2[$i]->description,
+                        'members' => array(1),
             ]);         
         }
         $this->refreshApplication();
@@ -697,6 +914,7 @@ class ChatRoomTest extends TestCase {
                         'capacity' => 50,
                         'tag_ids' => $array3[0]->tag_ids,
                         'description' =>  $array3[0]->description,
+                        'members' => array(1),
         ]); 
         $result = false;
         if ($response_page1->headers->get('page') == '1' && $response_page1->headers->get('total-pages') == '2' && $response_page1->status() == '200') {
@@ -709,16 +927,21 @@ class ChatRoomTest extends TestCase {
     public function testGetFromUser2() { 
         $this->markTestSkipped();  
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -739,28 +962,36 @@ class ChatRoomTest extends TestCase {
         //the user does not exist.
         //get the chatRoom.
         $response = $this->call('get', 'http://'.$this->domain.'/chat_rooms/users/2', [], [], [], $this->transformHeadersToServerVars($server2)); 
-        $array2 = json_decode($response->getContent()); 
-        $result = false; 
-        if ($response->status() == '404' && $array2->message == 'Not Found') {
+        $this->seeJson([
+                    'message' => 'user not found',
+                    'error_code' => '404-5',
+                    'status_code' => '404', 
+        ]); 
+        $result = false;
+        if ($response->status() == '404') {
             $result = true;
-        }
-        $this->assertEquals(true, $result);  
+        }    
     }
 
     //test whether the format of the user_id is right.
     public function testGetFromUser3() { 
         $this->markTestSkipped();  
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -780,29 +1011,37 @@ class ChatRoomTest extends TestCase {
         );
         //the format of the user_id is not valid and the user does not exist.
         //get the chatroom.
-        $response = $this->call('get', 'http://'.$this->domain.'/chat_rooms/users/letfae', [], [], [], $this->transformHeadersToServerVars($server2)); 
-        $array2 = json_decode($response->getContent()); 
+        $response = $this->call('get', 'http://'.$this->domain.'/chat_rooms/users/letfae', [], [], [], $this->transformHeadersToServerVars($server2));  
+        $this->seeJson([
+                    'message' => 'user_id is not integer',
+                    'error_code' => '400-3',
+                    'status_code' => '400', 
+        ]); 
         $result = false;
-        if ($response->status() == '400' && $array2->message == 'Bad Request') {
+        if ($response->status() == '400') {
             $result = true;
-        }
-        $this->assertEquals(true, $result);
+        }    
     }
 
     //test whether the format of the input is valid.
     public function testGetFromUser4() { 
         $this->markTestSkipped();  
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -840,16 +1079,21 @@ class ChatRoomTest extends TestCase {
     public function testGetFromUser5() {  
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $parameters = array(
             'email' => 'letsfae@126.com', 
             'password' => 'letsfaego',
@@ -897,37 +1141,64 @@ class ChatRoomTest extends TestCase {
     public function testSend() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $chatRoom = ChatRooms::create([
-                    'user_id' => 1,
-                    'title' => 'This is the test.',
-                    'geolocation' => new Point(34.2799, -118.2799), 
-                    'duration' => 1440
-        ]);
-        $chatRoomUsers = ChatRoomUsers::create([
-                    'chat_room_id' => 1,
-                    'user_id' => 1,
-                    'unread_count' => 0
-        ]); 
-        $user2 = Users::create([
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent());
+        $this->refreshApplication(); 
+        $parameters2 = array(
+            'title' => 'This is the test.',
+            'geo_longitude' => -118.2799,
+            'geo_latitude' => 34.2799, 
+            'duration' => 1380,
+            'interaction_radius' => 1
+        ); 
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );
+        $response2 = $this->call('post', 'http://'.$this->domain.'/chat_rooms', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
+        //get the chatRoom.
+        $this->refreshApplication(); 
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
         $parameters = array(
             'email' => 'letsfae2@126.com', 
             'password' => 'letsfaego',
@@ -940,7 +1211,11 @@ class ChatRoomTest extends TestCase {
         //login of the user.
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
         $array = json_decode($login_response->getContent());
-        $server2 = array(
+        $session = Sessions::find(2); 
+        //big difference of the geolocation radius;
+        $session->location = new Point(34.2799, -118.2799);
+        $session->save();
+        $server3 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
             'Fae-Client-Version' => 'ios-0.0.1', 
             'Authorization' => 'FAE '.$array->debug_base64ed,
@@ -950,7 +1225,7 @@ class ChatRoomTest extends TestCase {
             'message' => 'send message',
             'type' => 'text',  
         ); 
-        $response1 = $this->call('post', 'http://'.$this->domain.'/chat_rooms/1/message', $parameters3, [], [], $this->transformHeadersToServerVars($server2)); 
+        $response1 = $this->call('post', 'http://'.$this->domain.'/chat_rooms/1/message', $parameters3, [], [], $this->transformHeadersToServerVars($server3)); 
         $result = false;
         if ($response1->status() == '201') {
             $result = true;
@@ -961,40 +1236,68 @@ class ChatRoomTest extends TestCase {
         $this->seeInDatabase('chat_room_users', ['chat_room_id' => 1, 'user_id' => 2, 'unread_count' => 0]);
     }
 
-    // test the response when the format of the chat_room_id is wrong.
+    // test the response when the format of the chat_room_id is not integer.
     public function testSend2() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $chatRoom = ChatRooms::create([
-                    'user_id' => 1,
-                    'title' => 'This is the test.',
-                    'geolocation' => new Point(34.2799, -118.2799), 
-        ]);
-        $chatRoomUsers = ChatRoomUsers::create([
-                    'chat_room_id' => 1,
-                    'user_id' => 1,
-                    'unread_count' => 0
-        ]); 
-        $user2 = Users::create([
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent());
+        $this->refreshApplication(); 
+        $parameters2 = array(
+            'title' => 'This is the test.',
+            'geo_longitude' => -118.2799,
+            'geo_latitude' => 34.2799, 
+            'duration' => 1380,
+            'interaction_radius' => 1
+        ); 
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );
+        $response2 = $this->call('post', 'http://'.$this->domain.'/chat_rooms', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
+        //get the chatRoom.
+        $this->refreshApplication(); 
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
         $parameters = array(
             'email' => 'letsfae2@126.com', 
             'password' => 'letsfaego',
@@ -1007,7 +1310,11 @@ class ChatRoomTest extends TestCase {
         //login of the user.
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
         $array = json_decode($login_response->getContent());
-        $server2 = array(
+        $session = Sessions::find(2); 
+        //big difference of the geolocation radius;
+        $session->location = new Point(34.2799, -118.2799);
+        $session->save();
+        $server3 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
             'Fae-Client-Version' => 'ios-0.0.1', 
             'Authorization' => 'FAE '.$array->debug_base64ed,
@@ -1017,50 +1324,80 @@ class ChatRoomTest extends TestCase {
             'message' => 'send message',
             'type' => 'text',  
         ); 
-        //wrong format of the chat_room_id.
-        $response1 = $this->call('post', 'http://'.$this->domain.'/chat_rooms/wrong_format/message', $parameters3, [], [], $this->transformHeadersToServerVars($server2)); 
-        $array2 = json_decode($response1->getContent());
+        $response1 = $this->call('post', 'http://'.$this->domain.'/chat_rooms/wrong_format/message', $parameters3, [], [], $this->transformHeadersToServerVars($server3));  
+        $this->seeJson([
+                    'message' => 'chat_room_id is not integer',
+                    'error_code' => '400-3',
+                    'status_code' => '400', 
+        ]); 
         $result = false;
-        if ($response1->status() == '400' && $array2->message == 'Bad Request') {
+        if ($response1->status() == '400') {
             $result = true;
-        }
-        $this->assertEquals(true, $result);
+        }    
     }
 
-    // test the response when the input format is wrong.
+     // test the response when the input format is wrong.
     public function testSend3() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $chatRoom = ChatRooms::create([
-                    'user_id' => 1,
-                    'title' => 'This is the test.',
-                    'geolocation' => new Point(34.2799, -118.2799), 
-        ]);
-        $chatRoomUsers = ChatRoomUsers::create([
-                    'chat_room_id' => 1,
-                    'user_id' => 1,
-                    'unread_count' => 0
-        ]); 
-        $user2 = Users::create([
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent());
+        $this->refreshApplication(); 
+        $parameters2 = array(
+            'title' => 'This is the test.',
+            'geo_longitude' => -118.2799,
+            'geo_latitude' => 34.2799, 
+            'duration' => 1380,
+            'interaction_radius' => 1
+        ); 
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );
+        $response2 = $this->call('post', 'http://'.$this->domain.'/chat_rooms', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
+        //get the chatRoom.
+        $this->refreshApplication(); 
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
         $parameters = array(
             'email' => 'letsfae2@126.com', 
             'password' => 'letsfaego',
@@ -1073,60 +1410,91 @@ class ChatRoomTest extends TestCase {
         //login of the user.
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
         $array = json_decode($login_response->getContent());
-        $server2 = array(
+        $session = Sessions::find(2); 
+        //big difference of the geolocation radius;
+        $session->location = new Point(34.2799, -118.2799);
+        $session->save();
+        $server3 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
             'Fae-Client-Version' => 'ios-0.0.1', 
             'Authorization' => 'FAE '.$array->debug_base64ed,
         ); 
         // send the message
-        // wrong format of the type.
         $parameters3 = array(
             'message' => 'send message',
-            'type' => 'video',  //no type of video
-        );  
-        $response1 = $this->call('post', 'http://'.$this->domain.'/chat_rooms/1/message', $parameters3, [], [], $this->transformHeadersToServerVars($server2)); 
+            'type' => 'video',  
+        ); 
+        $response1 = $this->call('post', 'http://'.$this->domain.'/chat_rooms/1/message', $parameters3, [], [], $this->transformHeadersToServerVars($server3)); 
         $array2 = json_decode($response1->getContent());
         $result = false;
         if ($response1->status() == '422' && $array2->message == 'Could not send message.' && $array2->errors->type[0] == 'The selected type is invalid.') {
             $result = true;
         }
-        $this->assertEquals(true, $result);
-    }
+        $this->assertEquals(true, $result); 
+    } 
 
-    // test the response when the chatRoom information does not exist with the given chat_room_id. 
+    // test the response when the chatRoom information does not exist with the given chat_room_id.
     public function testSend4() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $chatRoom = ChatRooms::create([
-                    'user_id' => 1,
-                    'title' => 'This is the test.',
-                    'geolocation' => new Point(34.2799, -118.2799), 
-        ]);
-        $chatRoomUsers = ChatRoomUsers::create([
-                    'chat_room_id' => 1,
-                    'user_id' => 1,
-                    'unread_count' => 0
-        ]); 
-        $user2 = Users::create([
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent());
+        $this->refreshApplication(); 
+        $parameters2 = array(
+            'title' => 'This is the test.',
+            'geo_longitude' => -118.2799,
+            'geo_latitude' => 34.2799, 
+            'duration' => 1380,
+            'interaction_radius' => 1
+        ); 
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );
+        $response2 = $this->call('post', 'http://'.$this->domain.'/chat_rooms', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
+        //get the chatRoom.
+        $this->refreshApplication(); 
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
         $parameters = array(
             'email' => 'letsfae2@126.com', 
             'password' => 'letsfaego',
@@ -1139,59 +1507,94 @@ class ChatRoomTest extends TestCase {
         //login of the user.
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
         $array = json_decode($login_response->getContent());
-        $server2 = array(
+        $session = Sessions::find(2); 
+        //big difference of the geolocation radius;
+        $session->location = new Point(34.2799, -118.2799);
+        $session->save();
+        $server3 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
             'Fae-Client-Version' => 'ios-0.0.1', 
             'Authorization' => 'FAE '.$array->debug_base64ed,
         ); 
-        // send the message 
+        // send the message
         $parameters3 = array(
-            'message' => 'send message', 
-            'type' => 'text',
-        );  
-        $response1 = $this->call('post', 'http://'.$this->domain.'/chat_rooms/2/message', $parameters3, [], [], $this->transformHeadersToServerVars($server2)); 
-        $array2 = json_decode($response1->getContent()); 
+            'message' => 'send message',
+            'type' => 'text',  
+        ); 
+        $response1 = $this->call('post', 'http://'.$this->domain.'/chat_rooms/2/message', $parameters3, [], [], $this->transformHeadersToServerVars($server3));  
+        $this->seeJson([
+                    'message' => 'chat room not found',
+                    'error_code' => '404-5',
+                    'status_code' => '404', 
+        ]); 
         $result = false;
-        if ($response1->status() == '404' && $array2->message == 'Not Found') {
+        if ($response1->status() == '404') {
             $result = true;
-        }
-        $this->assertEquals(true, $result); 
-    }
+        }    
+    }   
 
     // test the response when the unread_count of the user with self_user_id is bigger than 0;
     public function testSend5() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $chatRoom = ChatRooms::create([
-                    'user_id' => 1,
-                    'title' => 'This is the test.',
-                    'geolocation' => new Point(34.2799, -118.2799), 
-        ]);
-        $chatRoomUsers = ChatRoomUsers::create([
-                    'chat_room_id' => 1,
-                    'user_id' => 1,
-                    'unread_count' => 0
-        ]); 
-        $user2 = Users::create([
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent());
+        $this->refreshApplication(); 
+        $parameters2 = array(
+            'title' => 'This is the test.',
+            'geo_longitude' => -118.2799,
+            'geo_latitude' => 34.2799, 
+            'duration' => 1380,
+            'interaction_radius' => 1
+        ); 
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );
+        $response2 = $this->call('post', 'http://'.$this->domain.'/chat_rooms', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
+        //get the chatRoom.
+        $this->refreshApplication(); 
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
         $parameters = array(
             'email' => 'letsfae2@126.com', 
             'password' => 'letsfaego',
@@ -1204,33 +1607,37 @@ class ChatRoomTest extends TestCase {
         //login of the user.
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
         $array = json_decode($login_response->getContent());
-        $chatRoomUsers = ChatRoomUsers::create([
-                    'chat_room_id' => 1,
-                    'user_id' => 2,
-                    'unread_count' => 0
-        ]); 
-        $server2 = array(
+        $session = Sessions::find(2); 
+        //big difference of the geolocation radius;
+        $session->location = new Point(34.2799, -118.2799);
+        $session->save();
+        $server3 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
             'Fae-Client-Version' => 'ios-0.0.1', 
             'Authorization' => 'FAE '.$array->debug_base64ed,
         ); 
-        $chat_room_user = ChatRoomUsers::where('chat_room_id', 1)->where('user_id', 2)->first();
-        $chat_room_user->unread_count = 1;
-        $chat_room_user->save();
-        // send the message 
+        $chatRoomUsers = ChatRoomUsers::create([
+                    'chat_room_id' => 1,
+                    'user_id' => 2,
+                    'unread_count' => 1
+        ]);   
+        // send the message
         $parameters3 = array(
-            'message' => 'send message', 
-            'type' => 'text',
-        );  
-        $response1 = $this->call('post', 'http://'.$this->domain.'/chat_rooms/1/message', $parameters3, [], [], $this->transformHeadersToServerVars($server2)); 
-        $array2 = json_decode($response1->getContent()); 
+            'message' => 'send message',
+            'type' => 'text',  
+        ); 
+        $response1 = $this->call('post', 'http://'.$this->domain.'/chat_rooms/1/message', $parameters3, [], [], $this->transformHeadersToServerVars($server3));  
+        $this->seeJson([
+                    'message' => 'Please mark unread messages before sending new messages!',
+                    'error_code' => '400-1',
+                    'status_code' => '400', 
+        ]); 
         $result = false;
-        if ($response1->status() == '400' && $array2->message == 'Please mark unread messages before sending new messages!') {
+        if ($response1->status() == '400') {
             $result = true;
-        }
-        $this->assertEquals(true, $result);
-    }
-
+        }    
+    }   
+ 
     // test the response when the capacity of the chat_room exceed the limit.
     public function testSend6() { 
         $this->markTestSkipped(); 
@@ -1239,7 +1646,7 @@ class ChatRoomTest extends TestCase {
             'Accept' => 'application/x.faeapp.v1+json', 
             'Fae-Client-Version' => 'ios-0.0.1',
         );
-        for ($i = 1; $i < 52; $i++) { 
+        for ($i = 1; $i < 7; $i++) { 
             ${'parameters' . $i}  = array(
             'email' => 'letsfae'.$i.'@126.com', 
             'password' => 'letsfaego',
@@ -1253,13 +1660,35 @@ class ChatRoomTest extends TestCase {
             $response = $this->call('post', 'http://'.$this->domain.'/users', ${'parameters' . $i}, [], [], $this->transformHeadersToServerVars($server));
             $this->refreshApplication();
         } 
-        $chatRoom = ChatRooms::create([
-                    'user_id' => 1,
-                    'title' => 'This is the test.',
-                    'geolocation' => new Point(34.2799, -118.2799), 
-                    'duration' => 1440
-        ]);
-        for ($i = 1; $i < 51; $i++) { 
+        $parameters = array(
+            'email' => 'letsfae1@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp1',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
+        $array = json_decode($login_response->getContent());
+        $parameter = array(
+            'title' => 'This is the test.',
+            'geo_longitude' => -118.2799,
+            'geo_latitude' => 34.2799, 
+            'duration' => 1380,
+            'interaction_radius' => 1,
+            'capacity' => 5
+        ); 
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );
+        $response2 = $this->call('post', 'http://'.$this->domain.'/chat_rooms', $parameter, [], [], $this->transformHeadersToServerVars($server2));  
+        $this->refreshApplication();
+        for ($i = 2; $i < 6; $i++) { 
             $chatRoomUsers = ChatRoomUsers::create([
                         'chat_room_id' => 1,
                         'user_id' => $i,
@@ -1267,7 +1696,7 @@ class ChatRoomTest extends TestCase {
             ]); 
         } 
         $parameters = array(
-            'email' => 'letsfae51@126.com', 
+            'email' => 'letsfae6@126.com', 
             'password' => 'letsfaego',
             'user_name' => 'faeapp2',
         );
@@ -1277,6 +1706,10 @@ class ChatRoomTest extends TestCase {
         );
         //login of the user.
         $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $session = Sessions::find(6); 
+        //big difference of the geolocation radius;
+        $session->location = new Point(34.2799, -118.2799);
+        $session->save();
         $array = json_decode($login_response->getContent());
         $server2 = array(
             'Accept' => 'application/x.faeapp.v1+json', 
@@ -1289,36 +1722,345 @@ class ChatRoomTest extends TestCase {
             'type' => 'text',  
         ); 
         $response1 = $this->call('post', 'http://'.$this->domain.'/chat_rooms/1/message', $parameters3, [], [], $this->transformHeadersToServerVars($server2)); 
-        $array2 = json_decode($response1->getContent()); 
-        if ($response1->status() == '400' && $array2->message == 'this chat room has been filled to capacity') {
+        $this->seeJson([
+                    'message' => 'this chat room has been filled to capacity',
+                    'error_code' => '400-4',
+                    'status_code' => '400', 
+        ]); 
+        $result = false;
+        if ($response1->status() == '400') {
             $result = true;
-        }
-        $this->assertEquals(true, $result);   
-    }
-    // the correct response of the method of getUnread.
-    public function testGetUnread() { 
+        } 
+    } 
+
+    // test the response when the location not found.
+    public function testSend7() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $user2 = Users::create([
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent());
+        $this->refreshApplication(); 
+        $parameters2 = array(
+            'title' => 'This is the test.',
+            'geo_longitude' => -118.2799,
+            'geo_latitude' => 34.2799, 
+            'duration' => 1380,
+            'interaction_radius' => 1
+        ); 
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );
+        $response2 = $this->call('post', 'http://'.$this->domain.'/chat_rooms', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
+        //get the chatRoom.
+        $this->refreshApplication(); 
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
+        $parameters = array(
+            'email' => 'letsfae2@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp2',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent()); 
+        $server3 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        ); 
+        // send the message
+        $parameters3 = array(
+            'message' => 'send message',
+            'type' => 'text',  
+        ); 
+        $response1 = $this->call('post', 'http://'.$this->domain.'/chat_rooms/1/message', $parameters3, [], [], $this->transformHeadersToServerVars($server3)); 
+        $this->seeJson([
+                    'message' => 'location not found',
+                    'error_code' => '404-7',
+                    'status_code' => '404', 
+        ]); 
+        $result = false;
+        if ($response1->status() == '404') {
+            $result = true;
+        }  
+    }
+    // test the response when the current client is not mobile.
+    public function testSend8() { 
+        $this->markTestSkipped(); 
+        //register of the user.
+        $parameter1 = array(
+            'email' => 'letsfae@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent());
+        $this->refreshApplication(); 
+        $parameters2 = array(
+            'title' => 'This is the test.',
+            'geo_longitude' => -118.2799,
+            'geo_latitude' => 34.2799, 
+            'duration' => 1380,
+            'interaction_radius' => 1
+        ); 
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );
+        $response2 = $this->call('post', 'http://'.$this->domain.'/chat_rooms', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
+        //get the chatRoom.
+        $this->refreshApplication(); 
+        $parameter2 = array(
+            'email' => 'letsfae2@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp2',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
+        $parameters = array(
+            'email' => 'letsfae2@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp2',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent()); 
+        $server3 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        ); 
+        $session = Sessions::find(2); 
+        //big difference of the geolocation radius;
+        $session->is_mobile = false;
+        $session->save();
+        // send the message
+        $parameters3 = array(
+            'message' => 'send message',
+            'type' => 'text',  
+        ); 
+        $response1 = $this->call('post', 'http://'.$this->domain.'/chat_rooms/1/message', $parameters3, [], [], $this->transformHeadersToServerVars($server3)); 
+        $this->seeJson([
+                    'message' => 'current client is not mobile',
+                    'error_code' => '400-5',
+                    'status_code' => '400', 
+        ]); 
+        $result = false;
+        if ($response1->status() == '400') {
+            $result = true;
+        }  
+    }
+
+    // test the response when it is too far away.
+    public function testSend9() { 
+        $this->markTestSkipped(); 
+        //register of the user.
+        $parameter1 = array(
+            'email' => 'letsfae@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
+        $parameters = array(
+            'email' => 'letsfae@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent());
+        $this->refreshApplication(); 
+        $parameters2 = array(
+            'title' => 'This is the test.',
+            'geo_longitude' => -118.2799,
+            'geo_latitude' => 34.2799, 
+            'duration' => 1380,
+            'interaction_radius' => 1
+        ); 
+        $server2 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        );
+        $response2 = $this->call('post', 'http://'.$this->domain.'/chat_rooms', $parameters2, [], [], $this->transformHeadersToServerVars($server2)); 
+        //get the chatRoom.
+        $this->refreshApplication(); 
+        $parameter2 = array(
+            'email' => 'letsfae2@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp2',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
+        $parameters = array(
+            'email' => 'letsfae2@126.com', 
+            'password' => 'letsfaego',
+            'user_name' => 'faeapp2',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+        );
+        //login of the user.
+        $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', $parameters, [], [], $this->transformHeadersToServerVars($server));
+        $array = json_decode($login_response->getContent()); 
+        $server3 = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1', 
+            'Authorization' => 'FAE '.$array->debug_base64ed,
+        ); 
+        $session = Sessions::find(2); 
+        //big difference of the geolocation radius;
+        $session->location = new Point(24.2799, -128.2799);
+        $session->save();
+        // send the message
+        $parameters3 = array(
+            'message' => 'send message',
+            'type' => 'text',  
+        ); 
+        $response1 = $this->call('post', 'http://'.$this->domain.'/chat_rooms/1/message', $parameters3, [], [], $this->transformHeadersToServerVars($server3)); 
+        $this->seeJson([
+                    'message' => 'too far away',
+                    'error_code' => '403-3',
+                    'status_code' => '403', 
+        ]); 
+        $result = false;
+        if ($response1->status() == '403') {
+            $result = true;
+        }  
+    }
+    // the correct response of the method of getUnread.
+    public function testGetUnread() { 
+        $this->markTestSkipped(); 
+        //register of the user.
+        $parameter1 = array(
+            'email' => 'letsfae@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
+        $parameter2 = array(
+            'email' => 'letsfae2@126.com',
+            'password' => 'letsfaego',
+            'first_name' => 'kevin',
+            'last_name' => 'zhang',
+            'user_name' => 'faeapp2',
+            'gender' => 'male',
+            'birthday' => '1992-02-02',
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
         $chatRoom = ChatRooms::create([
                     'user_id' => 1,
                     'title' => 'The chatRoom one',
@@ -1334,17 +2076,22 @@ class ChatRoomTest extends TestCase {
                     'chat_room_id' => 1,
                     'user_id' => 2,
                     'unread_count' => 0
-        ]); 
-        $user3 = Users::create([
+        ]);  
+        $parameter3 = array(
             'email' => 'letsfae3@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp3',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter3, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
         $parameters = array(
             'email' => 'letsfae3@126.com', 
             'password' => 'letsfaego',
@@ -1409,26 +2156,36 @@ class ChatRoomTest extends TestCase {
     public function testMarkRead() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $user2 = Users::create([
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
         $chatRoom = ChatRooms::create([
                     'user_id' => 1,
                     'title' => 'The chatRoom one',
@@ -1445,16 +2202,21 @@ class ChatRoomTest extends TestCase {
                     'user_id' => 2,
                     'unread_count' => 0
         ]); 
-        $user3 = Users::create([
+        $parameter3= array(
             'email' => 'letsfae3@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp3',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter3, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
         $parameters = array(
             'email' => 'letsfae3@126.com', 
             'password' => 'letsfaego',
@@ -1496,26 +2258,36 @@ class ChatRoomTest extends TestCase {
     public function testMarkRead2() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $user2 = Users::create([
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
         $chatRoom = ChatRooms::create([
                     'user_id' => 1,
                     'title' => 'The chatRoom one',
@@ -1531,17 +2303,22 @@ class ChatRoomTest extends TestCase {
                     'chat_room_id' => 1,
                     'user_id' => 2,
                     'unread_count' => 0
-        ]); 
-        $user3 = Users::create([
+        ]);  
+        $parameter3 = array(
             'email' => 'letsfae3@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp3',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter3, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
         $parameters = array(
             'email' => 'letsfae3@126.com', 
             'password' => 'letsfaego',
@@ -1584,26 +2361,36 @@ class ChatRoomTest extends TestCase {
     public function testMarkRead3() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
-        $user2 = Users::create([
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
         $chatRoom = ChatRooms::create([
                     'user_id' => 1,
                     'title' => 'The chatRoom one',
@@ -1619,17 +2406,22 @@ class ChatRoomTest extends TestCase {
                     'chat_room_id' => 1,
                     'user_id' => 2,
                     'unread_count' => 0
-        ]); 
-        $user3 = Users::create([
+        ]);  
+        $parameter3 = array(
             'email' => 'letsfae3@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp3',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter3, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
         $parameters = array(
             'email' => 'letsfae3@126.com', 
             'password' => 'letsfaego',
@@ -1672,16 +2464,21 @@ class ChatRoomTest extends TestCase {
     public function testGetHistory() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]); 
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $chatRoom = ChatRooms::create([
                     'user_id' => 1,
                     'title' => 'This is the test.',
@@ -1769,16 +2566,21 @@ class ChatRoomTest extends TestCase {
     public function testGetUserList() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]); 
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $chatRoom = ChatRooms::create([
                     'user_id' => 1,
                     'title' => 'This is the test.',
@@ -1789,17 +2591,22 @@ class ChatRoomTest extends TestCase {
                     'chat_room_id' => 1,
                     'user_id' => 1,
                     'unread_count' => 0
-        ]); 
-        $user2 = Users::create([
+        ]);  
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
         $parameters = array(
             'email' => 'letsfae2@126.com', 
             'password' => 'letsfaego',
@@ -1844,16 +2651,21 @@ class ChatRoomTest extends TestCase {
     public function testGetUserList2() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+       $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]); 
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $chatRoom = ChatRooms::create([
                     'user_id' => 1,
                     'title' => 'This is the test.',
@@ -1864,17 +2676,22 @@ class ChatRoomTest extends TestCase {
                     'chat_room_id' => 1,
                     'user_id' => 1,
                     'unread_count' => 0
-        ]); 
-        $user2 = Users::create([
+        ]);  
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
         $parameters = array(
             'email' => 'letsfae2@126.com', 
             'password' => 'letsfaego',
@@ -1913,16 +2730,21 @@ class ChatRoomTest extends TestCase {
     public function testGetUserList3() { 
         $this->markTestSkipped(); 
         //register of the user.
-        $user = Users::create([
+        $parameter1 = array(
             'email' => 'letsfae@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]); 
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter1, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication(); 
         $chatRoom = ChatRooms::create([
                     'user_id' => 1,
                     'title' => 'This is the test.',
@@ -1933,17 +2755,22 @@ class ChatRoomTest extends TestCase {
                     'chat_room_id' => 1,
                     'user_id' => 1,
                     'unread_count' => 0
-        ]); 
-        $user2 = Users::create([
+        ]);  
+        $parameter2 = array(
             'email' => 'letsfae2@126.com',
-            'password' => bcrypt('letsfaego'),
+            'password' => 'letsfaego',
             'first_name' => 'kevin',
             'last_name' => 'zhang',
             'user_name' => 'faeapp2',
             'gender' => 'male',
             'birthday' => '1992-02-02',
-            'login_count' => 0, 
-        ]);
+        );
+        $server = array(
+            'Accept' => 'application/x.faeapp.v1+json', 
+            'Fae-Client-Version' => 'ios-0.0.1',
+        );
+        $response = $this->call('post', 'http://'.$this->domain.'/users', $parameter2, [], [], $this->transformHeadersToServerVars($server));
+        $this->refreshApplication();
         $parameters = array(
             'email' => 'letsfae2@126.com', 
             'password' => 'letsfaego',

@@ -17,6 +17,7 @@ use App\Friend_requests;
 use App\Sessions;
 use App\Blocks;
 use App\Api\v1\Controllers\FriendController;
+use App\Api\v1\Utilities\ErrorCodeUtility;
 
 class BlockController extends Controller {
     use Helpers;
@@ -33,19 +34,36 @@ class BlockController extends Controller {
         if($validator->fails()){
             throw new StoreResourceFailedException('Could not request block.',$validator->errors());
         }
-        
+
+        if($this->request->self_user_id == $this->request->user_id) {
+            return response()->json([
+                'message' => 'Bad request, you can not block yourself!',
+                'error_code' => ErrorCodeUtility::BLOCK_SELF,
+                'status_code' => '400'
+            ], 400);
+        }
+
         //find both users
         $self_user_id = $this->request->self_user_id;
         $self_user = Users::where('id', $self_user_id)->first();
         if ($self_user == null) {
-            throw new StoreResourceFailedException('Bad request, No such users exist!');
+            return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         
         $requested_user_id = $this->request->user_id;
         $requested_user = Users::where('id', $requested_user_id)->first();
         if ($requested_user == null) {
-            throw new StoreResourceFailedException('Bad request, Request user incorrect!');
+            return response()->json([
+                    'message' => 'request user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
+
         
         //find the request if exist
         $curr_block = Blocks::where('user_id', $self_user_id)->where('block_id', $requested_user_id)->first();
@@ -67,6 +85,7 @@ class BlockController extends Controller {
 	            $curr_friend->delete();
 	        }
         }
+        return $this->response->created();
     }
 
     public function delete($user_id) {
@@ -74,17 +93,26 @@ class BlockController extends Controller {
         $self_user_id = $this->request->self_user_id;
         $self_user = Users::where('id', $self_user_id)->first();
         if ($self_user == null) {
-            throw new StoreResourceFailedException('Bad request, No such users exist!');
+            return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
         
         $blocked_user = Users::where('id', $user_id)->first();
         if ($blocked_user == null) {
-            throw new StoreResourceFailedException('Bad request, Blocked user incorrect!');
+            return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
 
     	$curr_block = Blocks::where('user_id', $self_user_id)->where('block_id', $user_id)->first();
         if ($curr_block != null) {
             $curr_block->delete();
         }
+        return $this->response->noContent();
     }
 }

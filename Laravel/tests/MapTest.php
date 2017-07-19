@@ -99,7 +99,13 @@ class MapTest extends TestCase
             $this->seeJson([  
                         'type' => 'user',
                         'user_id' => ($i + 1), 
+                        'user_name' => 'faeapp'.($i+1),
+                        'user_nick_name' => null,
+                        'user_age' => null,
+                        'user_gender' => null,
                         'mini_avatar' => 0,
+                        'location_updated_at' => null,
+                        'short_intro' => null,
                         'geolocation' => array(
                             array(
                             'latitude' => $array2[$i]->geolocation[0]->latitude,
@@ -244,6 +250,13 @@ class MapTest extends TestCase
         $this->seeJson([  
                     'type' => 'user',
                     'user_id' => 1, 
+                    'user_name' => 'faeapp1',
+                    'user_nick_name' => null,
+                    'user_age' => null,
+                    'user_gender' => null,
+                    'mini_avatar' => 0,
+                    'location_updated_at' => null,
+                    'short_intro' => null,
                     'mini_avatar' => 0,
                     'geolocation' => array(
                         array(
@@ -560,6 +573,13 @@ class MapTest extends TestCase
             $this->seeJson([  
                         'type' => 'user',
                         'user_id' => $i + 1, 
+                        'user_name' => 'faeapp'.($i+1),
+                        'user_nick_name' => null,
+                        'user_age' => null,
+                        'user_gender' => null,
+                        'mini_avatar' => 0,
+                        'location_updated_at' => null,
+                        'short_intro' => null,
                         'mini_avatar' => 0,
                         'geolocation' => array(
                             array(
@@ -725,13 +745,17 @@ class MapTest extends TestCase
             'max_count' => 10
         );
         //get the map data. 
-        $response = $this->call('get', 'http://'.$this->domain.'/map', $parameters, [], [], $this->transformHeadersToServerVars($server2));
-        $array2 = json_decode($response->getContent());  
+        $response = $this->call('get', 'http://'.$this->domain.'/map', $parameters, [], [], $this->transformHeadersToServerVars($server2)); 
+        $this->seeJson([
+                 'message' => 'wrong type',
+                 'error_code' => '400-7',
+                 'status_code' => '400', 
+        ]); 
         $result = false;
-        if ($response->status() == '422' && $array2->message == 'Could not get map. Wrong types.') {
+        if ($response->status() == '400') {
             $result = true;
         }
-        $this->assertEquals(true, $result); 
+        $this->assertEquals(true, $result);
     }
 
     //test the response when the type are user,commment,media,chat_room.
@@ -932,7 +956,14 @@ class MapTest extends TestCase
         $array2 = json_decode($response->getContent());   
         $this->seeJson([  
                     'type' => 'user',
-                    'user_id' => 1, 
+                    'user_id' => 1,  
+                    'user_name' => 'faeapp1',
+                    'user_nick_name' => null,
+                    'user_age' => null,
+                    'user_gender' => null,
+                    'mini_avatar' => 0,
+                    'location_updated_at' => null,
+                    'short_intro' => null,
                     'mini_avatar' => 0,
                     'geolocation' => array(
                         array(
@@ -1026,7 +1057,14 @@ class MapTest extends TestCase
         for ($i = 0; $i < 10; $i++) {
             $this->seeJson([  
                         'type' => 'user',
-                        'user_id' => ($i + 1), 
+                        'user_id' => ($i + 1),  
+                        'user_name' => 'faeapp'.($i+1),
+                        'user_nick_name' => null,
+                        'user_age' => null,
+                        'user_gender' => null,
+                        'mini_avatar' => 0,
+                        'location_updated_at' => null,
+                        'short_intro' => null,
                         'mini_avatar' => 0,
                         'geolocation' => array(
                             array(
@@ -1061,6 +1099,99 @@ class MapTest extends TestCase
         $this->assertEquals(true, $result);
     }
     // the correct response of the method of getMap when the type is place.
+    // public function testGetMap10() { 
+        // $this->markTestSkipped(); 
+        //register of the user.
+        // $server = array(
+        //     'Accept' => 'application/x.faeapp.v1+json', 
+        //     'Fae-Client-Version' => 'ios-0.0.1',
+        // );
+        // for ($i = 1; $i < 11; $i++) { 
+        //     ${'parameters' . $i}  = array(
+        //     'email' => 'letsfae'.$i.'@126.com', 
+        //     'password' => 'letsfaego',
+        //     'first_name' => 'kevin',
+        //     'last_name' => 'zhang',
+        //     'user_name' => 'faeapp'.$i,
+        //     'gender' => 'male',
+        //     'birthday' => '1992-02-02',
+        //     'login_count' => 0, 
+        //     );
+        //     $response = $this->call('post', 'http://'.$this->domain.'/users', ${'parameters' . $i}, [], [], $this->transformHeadersToServerVars($server));
+        //     $this->refreshApplication();
+        // }
+        // for ($i = 1; $i < 11; $i++) { 
+        //     ${'parameter' . $i}  = array(
+        //     'email' => 'letsfae'.$i.'@126.com', 
+        //     'password' => 'letsfaego',
+        //     'user_name' => 'faeapp'.$i,
+        //     );
+        // } 
+        // //login of the user. 
+        // $latitude = 34.031958;
+        // $longitude = -118.288125;
+        // for ($i = 1; $i < 11; $i++) {
+        //     $login_response = $this->call('post', 'http://'.$this->domain.'/authentication', ${'parameter' . $i}, [], [], $this->transformHeadersToServerVars($server));
+        //     $session1 = Sessions::where('user_id', '=', $i)->first();
+        //     $session1->location = new Point($latitude,$longitude);
+        //     $session1->save(); 
+        //     $latitude = number_format($latitude + 0.000001, 6); 
+        //     $this->refreshApplication();
+        // }  
+
+        // $array = json_decode($login_response->getContent());
+        // $server2 = array(
+        //     'Accept' => 'application/x.faeapp.v1+json', 
+        //     'Fae-Client-Version' => 'ios-0.0.1', 
+        //     'Authorization' => 'FAE '.$array->debug_base64ed,
+        // ); 
+
+        // $parameters = array(
+        //     'geo_latitude' => 34.031958,
+        //     'geo_longitude' => -118.288125, 
+        //     'type' => 'place',  
+        // );
+        // //get the map data.  
+        // $response = $this->call('get', 'http://'.$this->domain.'/map', $parameters, [], [], $this->transformHeadersToServerVars($server2)); 
+        // $array2 = json_decode($response->getContent());
+        // print_r($array2);
+        // for ($i = 0; $i < 10; $i++) {
+        //     $this->seeJson([  
+        //                 'type' => 'user',
+        //                 'user_id' => ($i + 1), 
+        //                 'mini_avatar' => 0,
+        //                 'geolocation' => array(
+        //                     array(
+        //                     'latitude' => $array2[$i]->geolocation[0]->latitude,
+        //                     'longitude' => $array2[$i]->geolocation[0]->longitude,
+        //                     ),
+        //                     array(
+        //                     'latitude' => $array2[$i]->geolocation[1]->latitude,
+        //                     'longitude' => $array2[$i]->geolocation[1]->longitude,
+        //                     ),
+        //                     array(
+        //                     'latitude' => $array2[$i]->geolocation[2]->latitude,
+        //                     'longitude' => $array2[$i]->geolocation[2]->longitude,
+        //                     ),
+        //                     array(
+        //                     'latitude' => $array2[$i]->geolocation[3]->latitude,
+        //                     'longitude' => $array2[$i]->geolocation[3]->longitude,
+        //                     ),
+        //                     array(
+        //                     'latitude' => $array2[$i]->geolocation[4]->latitude,
+        //                     'longitude' => $array2[$i]->geolocation[4]->longitude,
+        //                     ),
+        //                 ),
+        //                 'created_at' => $array2[$i]->created_at, 
+        //     ]);
+        // }  
+        // $result = false;
+        // if ($response->status() == '200') {
+        //     $result = true;
+        // }
+        // $this->assertEquals(true, $result);
+    // }
+    // the correct response of the method of getMap when the type is location.
     // public function testGetMap10() { 
         // $this->markTestSkipped(); 
         //register of the user.

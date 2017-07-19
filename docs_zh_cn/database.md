@@ -160,6 +160,13 @@
 - file_ids ;分割
 - created_at
 
+## locations
+- id PK
+- user_id FK
+- content_text string
+- created_at
+- geolocation point
+
 ## chat_rooms
 - id PK
 - user_id FK 创建者
@@ -240,6 +247,11 @@
 - user_id FK 请求用户 reference on users
 - requested_user_id FK 被请求用户 reference on users
 - created_at
+
+## follows
+- id PK
+- user_id FK
+- followee_id FK user关注的用户的id
 
 ## blocks
 - id PK
