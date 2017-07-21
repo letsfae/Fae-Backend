@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | 1 | Fae Map Crew | 新用户注册成功后会收到该用户发出的欢迎消息 (ref #51) |
 
-## 注册 Sign up :white_check_mark:
+## 注册 sign up :white_check_mark:
 
 `POST /users`
 

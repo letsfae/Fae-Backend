@@ -6,7 +6,7 @@ Keep 1-99 as the special user id。
 | --- | --- | --- |
 | 1 | Fae Map Crew | New users signing up successfully will receive the welcome message from the user (ref #51) |
 
-## Sign up :white_check_mark:
+## sign up :white_check_mark:
 
 `POST /users`
 
@@ -32,7 +32,7 @@ The format of user_name is: only the uppercase and lowercase letters, numbers an
 
 Status: 201
 
-## Log in :white_check_mark:
+## login :white_check_mark:
 
 `POST /authentication`
 
@@ -506,7 +506,7 @@ When the user status is offline/invisible, the user pin in the map also will not
 
 Status: 201
 
-## get the NameCard of a user :white_check_mark:
+## get the namecard of a user :white_check_mark:
 
 `GET /users/:user_id/name_card`
 
@@ -537,13 +537,13 @@ Status: 200
 		"age": @string 同account中的设置(通过birthday计算得来)，当且仅当show_age为true时才具有该字段
 	}
 
-## get self NameCard :white_check_mark:
+## get self namecard :white_check_mark:
 
 `GET /users/name_card`
 
 Others are the same as getting the NameCard of a specific user. 
 
-## get the tags of all the nameCards :white_check_mark:
+## get the tags of all the namecards :white_check_mark:
 
 `GET /users/name_card/tags`
 
@@ -567,7 +567,7 @@ Status: 200
 		{...}
 	]
 
-## Update NameCard :white_check_mark:
+## update namecard :white_check_mark:
 
 `POST /users/name_card`
 
@@ -591,7 +591,7 @@ At least one field above required.
 
 Status: 201
 
-## Save NameCard :white_check_mark:
+## save namecard :white_check_mark:
 
 `POST /users/:user_id/name_card/save`
 
@@ -603,7 +603,7 @@ yes
 
 Status: 201
 
-## Cancel Save NameCard :white_check_mark:
+## cancel saved namecard :white_check_mark:
 
 `DELETE /users/:user_id/name_card/save`
 
