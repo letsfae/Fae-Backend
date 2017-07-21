@@ -1,5 +1,11 @@
 # User and Authentication 
 
+Keep 1-99 as the special user id。
+
+| user_id | user_name | description |
+| --- | --- | --- |
+| 1 | Fae Map Crew | New users signing up successfully will receive the welcome message from the user (ref #51) |
+
 ## Sign up :white_check_mark:
 
 `POST /users`
@@ -20,13 +26,13 @@ no
 | birthday | string(YYYY-MM-DD) | birthday |
 | gender | string("male", "female") | gender |
 
-The format of user_name is: start with character and only the uppercase and lowercase letters, numbers and underscores are permitted, and the length should be 6-30.
+The format of user_name is: only the uppercase and lowercase letters, numbers and `_`/`-`/`.` are permitted, and the length should be 3-20, ignoring the case sensetivity (showing uppercase and lowercase are different, but AAA and aAa are the same user name). 
 
 ### response
 
 Status: 201
 
-## log in :white_check_mark:
+## Log in :white_check_mark:
 
 `POST /authentication`
 
@@ -44,15 +50,15 @@ no
 | device_id(optional) | string(1~150) | device id，the default value is null |
 | is_mobile(optional) | boolean | whether it is mobile, the default value is false |
 
-Only one of user_name or email need to be chosen (or relationship , the other filed is not needed). If both exist, take the email as the standard. 
+Only one of user_name or email need to be chosen (or relationship , the other filed is not needed). If both exist, only the email is valid. 
 
 The device_id is used to do the pushback notification to the server. If does not exist, it will not push notification. 
 
-If is_mobile is true, the other acoount that has been used to log in another mobile equipment (non mobile equipment will not be influenced). 
+If is_mobile is true, another mobile equipment that has been used to log in the same account will be forced to log out (non mobile equipment will not be influenced). 
 
-If differnt user accounts are used to log in with the same device_id, the previous users will be forced to log out. 
+If differnt user accounts are used to log in with the same device_id, the previous one will be forced to log out. 
 
-When the errors are caused three times after login, the users account will be forbidden to login forever and in order to relieve the prohibition, reset_login interface need to be called.  
+When the errors are caused six times after login, the users account will be forbidden to login forever and in order to relieve the prohibition, reset_login interface need to be called.  
 
 ### response
 
@@ -61,7 +67,8 @@ Status: 201
 	{
 		"user_id": @number
 		"token": @string
-		"session_id": @number
+		"session_id": @number,
+		"last_login_at": @string
 	}
 
 return login_count when error caused.
@@ -191,7 +198,8 @@ Status: 200
 		"birthday": @string,
 		"phone": @string(xxx-xxx-xxxx),
 		"phone_verified": @boolean,
-		"mini_avatar": @number the mini_avatar showed in the map. the default value is 0 if it is not set
+		"mini_avatar": @number the mini_avatar showed in the map. the default value is 0 if it is not set,
+		"last_login_at": @string
 	}
 
 ## update account :white_check_mark:
@@ -213,9 +221,9 @@ yes
 | user_name | string(30) | user_name（the interface might be called individually and set) |
 | mini_avatar | integer | the mini_avatar showed in the map |
 
-All the fileds are optional, but at least one field is included. All these interfaces have no special operation (If it has special operation, specific interface is needed, such as updating password). 
+All the fileds are optional, but at least one field is included. All these interfaces have no special operations (If it has special operation, specific interface is needed, such as updating password). 
 
-Please pay attention that the format of the user_name is: start with character and only the uppercase and lowercase letters, numbers and underscores are permitted, and the length should be 6-30.
+Please pay attention that the format of the user_name is the same as the sign up.
 
 ### response
 
@@ -235,7 +243,7 @@ yes
 | --- | --- | --- |
 | password | string(8-16) | password|
  
-When the errors are caused three times after login, the users account will be locked and will log out (Auth void automatically). The reset_login interface need to be called when try to unlock.  
+When the errors are caused six times after login, the users account will be locked and will log out (Auth void automatically). The reset_login interface need to be called when try to unlock.  
 
 ### response
 
@@ -342,7 +350,13 @@ yes
 
 Status: 201
 
-## get self profile (pending)
+----------
+
+Pay attention to the difference of the profile interface and the account interface: the account interface can only be set/get by the user itself, mainly responsible for the maintaince of the basic user information and password; the profile interface can be set/get by the user itself and get by other users, the profile interface can set not only the fields of account interface, but also act as the access authority to the account interface. 
+
+----------
+
+## get self profile :white_check_mark:
 
 `GET /users/profile`
 
@@ -355,16 +369,23 @@ yes
 Status: 200
 
 	{
-		"xxx": @xxx
+		"user_id": @number,
+		"user_name": @string,
+		"mini_avatar": @number，
+		"birthday": @string,
+		"email": @boolean,
+		"phone": @boolean,
+		"gender": @boolean,
+		"last_login_at": @string
 	}
 
-## get profile of other users (pending)
+## get profile :white_check_mark:
 
 `GET /users/:user_id/profile`
 
 Others are the same as get self profile。
 
-Please pay attention: only the public field that the user set is obtained. 
+Please pay attention: only the public fields that the user set is obtained. 
 
 ## update self profile (pending)
 
@@ -386,7 +407,7 @@ All the field are optional, but at least one field is included.
 
 Status: 201
 
-## get self profile privacy (pending)
+## get self profile privacy
 
 `GET /users/profile/privacy`
 
@@ -399,10 +420,14 @@ yes
 Status: 200
 
 	{
-		"xxx": @xxx
+		"show_user_name": @boolean,
+		"show_email": @boolean,
+		"show_phone": @boolean,
+		"show_birthday": @boolean,
+		"show_gender": @boolean
 	}
 
-## update self profile privacy (pending)
+## update self profile privacy
 
 `POST /users/profile/privacy`
 
@@ -414,9 +439,15 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| xxx | boolean | xxx |
+| show_user_name | boolean | show user_name |
+| show_email | boolean | show email |
+| show_phone | boolean | show phone |
+| show_birthday | boolean | show birthday |
+| show_gender | boolean | show gender |
 
 All the field are optional, but at least one field is included. 
+
+The default value for all the fields are true.
 
 ### response
 
@@ -444,7 +475,7 @@ The user status is shared in different equipments.
 
 The user status is not reserved by the server: that is when the user logged in using the first equipment, its status is set to online. When the last equipment logged out, its status is set to offline.  
 
-## get status of other users :white_check_mark:
+## get status :white_check_mark:
 
 `GET /users/:user_id/status`
 
@@ -468,12 +499,14 @@ yes
 | message | string(100) | short status (can be empty) |
 
 All the field are optional, but at least one field is included. 
+ 
+When the user status is offline/invisible, the user pin in the map also will not show.
 
 ### response
 
 Status: 201
 
-## get the NameCard of a specific user :white_check_mark:
+## get the NameCard of a user :white_check_mark:
 
 `GET /users/:user_id/name_card`
 
@@ -486,6 +519,7 @@ yes
 Status: 200
 
 	{
+		"user_name": @string,
 		"nick_name": @string,
 		"short_intro": @string,
 		"tags": [
@@ -497,7 +531,10 @@ Status: 200
 			{...},
 			{...}
 		],
-		"gender": @string same as the set in account 
+		"show_gender": @boolean,
+		"show_age": @boolean,
+		"gender": @string 同account中的设置，当且仅当show_gender为true时才具有该字段
+		"age": @string 同account中的设置(通过birthday计算得来)，当且仅当show_age为true时才具有该字段
 	}
 
 ## get self NameCard :white_check_mark:
@@ -506,7 +543,7 @@ Status: 200
 
 Others are the same as getting the NameCard of a specific user. 
 
-## get the tags that all the NameCard belonged to :white_check_mark:
+## get the tags of all the nameCards :white_check_mark:
 
 `GET /users/name_card/tags`
 
@@ -530,7 +567,7 @@ Status: 200
 		{...}
 	]
 
-## update NameCard :white_check_mark:
+## Update NameCard :white_check_mark:
 
 `POST /users/name_card`
 
@@ -545,9 +582,56 @@ yes
 | nick_name | string(50) | nick name |
 | short_intro | string(200) | short introduction (can be empty) |
 | tag_ids | number | all the ids of the tag, seperated by semicolon, and at most three tags |
+| show_age | boolean | show age |
+| show_gender | boolean | show gender |
 
-At least one field above need to be included. 
+At least one field above required. 
 
 ### response
 
 Status: 201
+
+## Save NameCard :white_check_mark:
+
+`POST /users/:user_id/name_card/save`
+
+### auth
+
+yes
+
+### response
+
+Status: 201
+
+## Cancel Save NameCard :white_check_mark:
+
+`DELETE /users/:user_id/name_card/save`
+
+### auth
+
+yes
+
+### response
+
+Status: 204
+
+## get saved namecard :white_check_mark:
+
+`GET /users/name_card/saved`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	[
+		{
+			"name_card_user_id": @number,
+			"created_at": @string
+		},
+		{...},
+		{...}
+	]

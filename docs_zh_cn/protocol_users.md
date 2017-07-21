@@ -202,7 +202,7 @@ Status: 200
 		"birthday": @string,
 		"phone": @string(xxx-xxx-xxxx),
 		"phone_verified": @boolean,
-		"mini_avatar": @number, 地图上显示的用户小头像，未设置则默认为0
+		"mini_avatar": @number, 地图上显示的用户小头像，未设置则默认为0,
 		"last_login_at": @string
 	}
 

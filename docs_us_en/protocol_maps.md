@@ -2,6 +2,11 @@
 
 Paging data should be returned to the response header. 
 
+interaction_radius:
+
+- duration is the active time of the pin. Nothing showed in the map when over the active time, but can be looked up from the mapboard. The back end team can implement it by `in_duration` of the get map. 
+- interaction_radius, only the user in the range can join the interaction of the pin. The defination of the interaction is: like, commnet, vote, reply. 
+
 ## update the current coordination of the user itself :white_check_mark:
 
 `POST /map/user`

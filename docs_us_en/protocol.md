@@ -65,19 +65,27 @@ To the client of Fae:
 
 If there is any error, the http header status code will be 4XX or 5XX. There will be json response in the body as follows. (Specified errors will be written in the errors field). 
 
-    {
-        "status_code": @number,
+```
+    {                          
+       "status_code": @number, 
         "message": @string,
-        "errors": {}
+        "error_code": @string
     }
+```
+
+For the detailed protocols, please refer to [Error Code](protocol_error_code.md).
 
 # API function 
 
 - [User and Authentication](protocol_users.md)
 - [Map and Other Pins](protocol_maps.md)
-- [Friends and Chats](protocol_chats.md)
+- [Users' operation to the pin](protocol_pins.md)
+- [Contacts](protocol_contacts.md)
+- [Chats](protocol_chats.md)
 - [Files](protocol_files.md)
-- Others（as follows）
+- [Richtext](protocol_richtext.md)
+- [Pushback](protocol_pushback.md)
+- [Others](protocol_others.md)
 
 ## synchronization message :white_check_mark:
 
