@@ -718,7 +718,7 @@ Status: 200
 			@number
 		],
 		"description": @string,
-		"members": [ 群聊用户id
+		"members": [ group chat user id
 			@number,
 			...
 		]
