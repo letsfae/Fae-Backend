@@ -1,103 +1,4 @@
-# Friends and Chats Interface 
-
-
-## post friends request 
-
-`POST /friends/request`
-
-### auth
-
-yes
-
-### parameters
-
-| Name | Type | Description |
-| --- | --- | --- |
-| requested_user_id | number | requested user id |
-
-### response
-
-Status: 201
-
-## accept friend request
-
-`POST /friends/accept`
-
-### auth
-
-yes
-
-### parameters
-
-| Name | Type | Description |
-| --- | --- | --- |
-| friend_request_id | number | friend reqeust id |
-
-### response
-
-Status: 201
-
-## ignore friend request 
-
-`POST /friends/ignore`
-
-### auth
-
-yes
-
-### parameters
-
-| Name | Type | Description |
-| --- | --- | --- |
-| friend_request_id | number | friend request id |
-
-### response
-
-Status: 201
-
-## delete friend 
-
-`DELETE /friends/:user_id`
-
-### auth
-
-yes
-
-### response
-
-Status: 204
-
-## get all the friend requests
-
-`GET /friends/request`
-
-If the amount of friend_request that we get from the sync interface is not 0, we can call this interface to get all the friend requests.  
-
-### auth
-
-yes
-
-### response
-
-Status: 200
-
-	[
-		{
-			"friend_request_id": @number,
-			"request_user_id": @number,
-			"request_user_name": @string,
-			"request_email": @string,
-			"created_at": @string
-		},
-		...		
-	]
-
-the user_name and email are superfluous in order to show easily. 
-
-## get the friend list
-
-...
-
+# Chats Interface 
 
 ----------
 
@@ -121,7 +22,7 @@ yes
 | --- | --- | --- |
 | receiver_id | number | receiver user id |
 | message | string | message content |
-| type | string('text','image') | distinct the content type  |
+| type | string('text','image','sticker','location','audio','customize') | distinct the content type  |
 
 ### response
 
@@ -150,15 +51,63 @@ Status: 200
 			"chat_id": @number,
 			"last_message": @string,
 			"last_message_sender_id": @number,
+			"last_message_sender_name": @string,
 			"last_message_timestamp": @string,
 			"last_message_type": @string,
-			"unread_count": @number
+			"unread_count": @number,
+			"server_sent_timestamp":@string
 		},
 		{...},
 		{...}
 	]
 
+Sort the result in descending order according to the last_message_timestamp
 The amount of unread messages can be got from the unread_count, and then self-destruct can be implemented (get the latest n messages according to the unread_count). 
+
+## get messages of the two users (according to the chat_id)
+
+`GET /chats/:chat_id`
+
+### filters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| count | number | get this amount of chat messages |
+| offset | number | get chat message from the specific one，the base is 1 |
+
+The chat messages are returned according to the timestamp in descending order.
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	[
+		{
+			"chat_id": @number,
+			"message": @string,
+			"message_sender_id": @number,
+			"message_sender_name": @string,
+			"message_timestamp": @string,
+			"message_type": @string,
+			"server_sent_timestamp":@string
+		},
+		{...},
+		{...}
+	]
+
+## get messages of the two users (according to the user_id)
+
+`GET /chats/:user_a_id/:user_b_id`
+
+The order of the a and b is not sensitive. 
+
+Others are the same as the interface of `get messages of the two users (according to the chat_id)`.
+
+This interface is looked as the merge operation of the interfaces of `get chat_id according to the two users' user_id` and `get messages of the two users (according to the chat_id)`.
 
 ## mark read :white_check_mark:
 
@@ -197,22 +146,28 @@ Status: 200
 	[
 		{
 			"chat_id": @number,
-			"with_user_id": @number chat with the user of the user id,
+			"with_user_id": @number 与该id用户聊天,
+			"with_user_name": @string,
+			"with_nick_name": @string,
 			"last_message": @string,
 			"last_message_sender_id": @number,
+			"last_message_sender_name": @string,
 			"last_message_type": @string,
 			"last_message_timestamp": @string,
-			"unread_count": @number
+			"unread_count": @number,
+			"server_sent_timestamp":@string
 		},
 		{...},
 		{...}
 	]
 
+The result is sorted in the descending order of the last_message_timestamp.
+
 ## delete chat :white_check_mark:
 
 `DELETE /chats/:chat_id`
 
-This interface is used to delete the chat. After any side of the chatting objects doing the delete operation, the chat messages will be deleted forever and the unread messages will also not be saved any more. 
+This interface is used to delete the chat room. After any side of the chatting objects doing the delete operation, the chat messages will be deleted forever and the unread messages will also not be saved any more. 
 
 ### auth
 
@@ -222,6 +177,23 @@ yes
 
 Status: 204
 
+## get chat_id according to the two users' user_id :white_check_mark:
+
+`GET /chats/users/:user_a_id/:user_b_id`
+
+The order of the a and b is not sensitive.
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	{
+		"chat_id": @number
+	}
 
 ----------
 
@@ -229,7 +201,7 @@ The chat could only be done in the created ChatRoom.
 
 ----------
 
-## send message in the ChatRoom 
+## send message in the ChatRoom :white_check_mark:
 
 `POST /chat_rooms/:chat_room_id/message`
 
@@ -244,15 +216,15 @@ yes
 | Name | Type | Description |
 | --- | --- | --- |
 | message | string | specific content |
-| type | string('text','image') | distinguish the type of the content |
+| type | string('text','image','sticker','location','audio') | distinguish the type of the content |
 
 ### response
 
 Status: 201
 
-## get all the ChatRooms including the unread messages
+## get all the ChatRooms including the unread messages :white_check_mark:
 
-`GET /chat_rooms/unread`
+`GET /chat_rooms/message/unread`
 
 ### auth
 
@@ -273,17 +245,20 @@ Status: 200
 			},
 			"last_message": @string,
 			"last_message_sender_id": @number,
+			"last_message_sender_name": @string,
 			"last_message_type": @string,
 			"last_message_timestamp": @string,
 			"unread_count": @number
-			"created_at": @string
+			"created_at": @string,
+			"server_sent_timestamp":@string
 		},
 		{...},
 		{...}
 	]
 
+The result is sorted in the descending order of the last_message_timestamp.
 
-## mark ChatRooms with all the read messages
+## mark chatrooms with all the is_read messages :white_check_mark:
 
 `POST /chat_rooms/:chat_room_id/read`
 
@@ -297,7 +272,7 @@ yes
 
 Status: 201
 
-## get all the ChatRooms that the user participated in (not "create") 
+## get all the ChatRooms that the user participated in (not "create") :white_check_mark:
 
 `GET /chat_rooms`
 
@@ -315,23 +290,27 @@ Status: 200
 		{
 			"chat_room_id": @number,
 			"title": @string,
-			"user_id": @number 创建者id
+			"user_id": @number, creator id
 			"geolocation": {
 				"latitude": @number,
 				"longitude": @number
 			},
 			"last_message": @string,
 			"last_message_sender_id": @number,
+			"last_message_sender_name": @string,
 			"last_message_type": @string,
 			"last_message_timestamp": @string,
 			"unread_count": @number
-			"created_at": @string
+			"created_at": @string,
+			"server_sent_timestamp": @string
 		},
 		{...},
 		{...}
 	]
 
-## get all the users in the ChatRoom. 
+The result is sorted in the descending order of the last_message_timestamp.
+
+## get all the users in the ChatRoom :white_check_mark:
 
 `GET /chat_rooms/:chat_room_id/users`
 
@@ -352,3 +331,150 @@ Status: 200
 		{...},
 		{...}
 	]
+
+# Chats Interface (New)
+
+In the new chats interface, as long as the unread messages are got, they will be deleted from the back end, so the front end should be responsible for the store of he messages. The mark read interface is integrated and the get history interface is removed. 
+
+attention: Considering the compatible problems that are caused during the moving of the interfaces of the front end and the back end, postfix `_v2` is added to the new interface temporarily. After the testing of the interface, all the old chats interfaces will be deleted and postfix `_v2` will be deleted too. 
+
+----------
+
+The process of calling the chats interface: from sync get the unread message->from get unread get unread array->[get unread message from a chat_id]->send / go back to unread array to deal with the rest of the messages.
+
+----------
+ 
+## send chat message
+
+`POST /chats_v2`
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| receiver_id | number | receiver id |
+| message | string | message content |
+| type | string('text','image','sticker','location','audio','customize') | distinguish the type of the content |
+
+The message content of the type of customize can be defined by itself.
+
+### response
+
+Status: 201
+
+	{
+		"chat_id": @number
+	}
+
+The chat_id is the chat room id for the two chat objects. To the server, A chatting with B and B chatting with A is in the same chat room. 
+
+## get unread message
+
+`GET /chats_v2/unread`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	[
+		{
+			"chat_id": @number,
+			"last_message": @string,
+			"last_message_sender_id": @number,
+			"last_message_sender_name": @string,
+			"last_message_timestamp": @string,
+			"last_message_type": @string,
+			"unread_count": @number,
+			"server_sent_timestamp":@string
+		},
+		{...},
+		{...}
+	]
+
+The result is sorted in the descending order of the last_message_timestamp.
+
+## get messages of the two users (according to the chat_id)
+
+`GET /chats_v2/:chat_id`
+
+This interface is used to return all the messages between the two chat users.
+
+Each time calling the interface will get at most 50 picies of data (only used to prevent the large flow for each request). If the unread_count in the response header is not 0 after the request, continuous request need to be made in order to get all the unread data. 
+
+Sort the return data in the ascending order (the old message will arrrive at the earliest time).
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+	
+	unread_count: @number, The amount of the unread messages still left after the calling of this interface
+
+	-----
+
+	[
+		{
+			"chat_id": @number,
+			"message": @string,
+			"message_sender_id": @number,
+			"message_sender_name": @string,
+			"message_timestamp": @string,
+			"message_type": @string,
+			"server_sent_timestamp":@string
+		},
+		{...},
+		{...}
+	]
+
+## get messages of the two users (according to the user_id)）
+
+`GET /chats_v2/:user_a_id/:user_b_id`
+
+The order of the a and b is not sensitive. 
+
+Others are the same as the interface of `get messages of the two users (according to the chat_id)`.
+
+This interface is looked as the merge operation of the interfaces of `get chat_id according to the two users' user_id` and `get messages of the two users (according to the chat_id)`.
+
+## delete chat
+
+`DELETE /chats_v2/:chat_id`
+
+This interface is used to delete the chat room. After any side of the chatting objects doing the delete operation, the chat messages will be deleted forever and the unread messages will also not be saved any more.
+
+### auth
+
+yes
+
+### response
+
+Status: 204
+
+## get chat_id according to the two users
+
+`GET /chats_v2/users/:user_a_id/:user_b_id`
+ 
+The order of the a and b is not sensitive. 
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	{
+		"chat_id": @number
+	}

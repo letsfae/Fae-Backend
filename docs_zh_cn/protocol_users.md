@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | 1 | Fae Map Crew | 新用户注册成功后会收到该用户发出的欢迎消息 (ref #51) |
 
-## 注册 Sign up :white_check_mark:
+## 注册 sign up :white_check_mark:
 
 `POST /users`
 
@@ -202,7 +202,7 @@ Status: 200
 		"birthday": @string,
 		"phone": @string(xxx-xxx-xxxx),
 		"phone_verified": @boolean,
-		"mini_avatar": @number, 地图上显示的用户小头像，未设置则默认为0
+		"mini_avatar": @number, 地图上显示的用户小头像，未设置则默认为0,
 		"last_login_at": @string
 	}
 

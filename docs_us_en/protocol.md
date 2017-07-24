@@ -65,77 +65,24 @@ To the client of Fae:
 
 If there is any error, the http header status code will be 4XX or 5XX. There will be json response in the body as follows. (Specified errors will be written in the errors field). 
 
-    {
-        "status_code": @number,
-        "message": @string,
-        "errors": {}
-    }
+```
+	{                          
+	   "status_code": @number, 
+		"message": @string,
+		"error_code": @string
+	}
+```
+
+For the detailed protocols, please refer to [Error Code](protocol_error_code.md).
 
 # API function 
 
 - [User and Authentication](protocol_users.md)
 - [Map and Other Pins](protocol_maps.md)
-- [Friends and Chats](protocol_chats.md)
+- [Users' operation to the pin](protocol_pins.md)
+- [Contacts](protocol_contacts.md)
+- [Chats](protocol_chats.md)
 - [Files](protocol_files.md)
-- Others（as follows）
-
-## synchronization message :white_check_mark:
-
-`GET /sync`
-
-Used to get the amount of synchronization messages (that is whether there are new messages). Used to decide whether the connection has been made (decide whether the user is in the status of login when opening the app again). 
-
-### auth
-
-yes
-
-### response
-
-Status: 200
-
-    {
-        "friend_request": @number the amount of friend_request messages,
-        "chat": @number the amount of unread messages 
-    }
-
-# push back interface 
-
-When related event happens, the server will push back the message actively (only push to the device with the `is_mobile` is true). If the client does not register for the device_id, then it can not receive the push back messages, but the unread messages can be looked up actively according to the sync interface (or call other interface and decide the current status acoording to the error response). 
-
-All the format of the push back messages is json, and the word of type will be used to mark the specified push back type. 
-
-## authentication other device :white_check_mark:
-
-    {
-        "type": "authentication_other_device",
-        "device_id": @number the device id of another device (this field could be empty),
-        "fae_client_version": @string the client version of another device,
-        "auth": @boolean If it is true, then the login status is valid for the users, or it means that the user has logged out (the auth is not valid at this time). 
-    }
-
-## friends new request
-
-    {
-        "type": "friends_new_request",
-        "request_user_id": @number request user
-    }
-
-## friends request response
-
-    {
-        "type": "friends_request_reponse",
-        "requested_user_id": @number requested user,
-        "result": @string("accept","ignore")
-    }
-
-## new message :white_check_mark:
-
-    {
-        "type": "chat_new_message",
-        "chat_id": @number,
-        "last_message": @string,
-        "last_message_sender_id": @number,
-        "last_message_timestamp": @string,
-        "last_message_type": @string,
-        "unread_count": @number
-    }
+- [Richtext](protocol_richtext.md)
+- [Pushback](protocol_pushback.md)
+- [Others](protocol_others.md)

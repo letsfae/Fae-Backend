@@ -1,10 +1,19 @@
 # Files Interface
 
-Unless otherwise specified, the type of the parameters is the form-data when uploading. Please pay attention that the Content-Type can not be setted. 
+Unless clearly specified, the type of the parameters is the form-data when uploading. Please pay attention that the Content-Type can not be set. 
 
-# Files Universal Interface 
+#　file cache
 
-After uploading the file using the universal interface, the file will be deleted forever, if it is not called for a period of time (maybe some kind of pin using the file). 
+Part of the standard of the HTTP protocol is used to the file cache. This part is applied to all the get file data interface. in the response header:  
+
+- `Etag:XXX`：file fingerprint produced by server.
+- `Cache-Control: max-age=XXX`：used to designate the cache time. 
+
+After the request from the front end, Etag need to be recorded, and launch the file request to the server after the overtime of the Cashe-Control. `If-None-Match:XXX` field and file fingerprint which content is the Etag need to be carried in the header. If the file is not updated, the server will return `304 Not Modified`, and then the front end will update a chache cycle (continue cache a period time of max-age) , or return the file data. 
+
+# universal file interface 
+
+After uploading the file using the universal file interface, the file will be deleted forever, if it is not called for a period of time (maybe some kind of pin using the file). 
 
 ## uploading file :white_check_mark:
 
@@ -23,7 +32,7 @@ yes
 | description (optional) | semantic file description |
 | custom_tag (optional) | labelled file description |
 
-The file size should less than 10MB. 
+The file size should less than 30MB. 
 
 ### response
 
@@ -69,7 +78,7 @@ Status: 200
 		"custom_tag": @string
 	}
 
-# file specified interface
+# specialized file interface
 
 ## set self avatar :white_check_mark:
 
@@ -105,13 +114,28 @@ Status: 200
 
 Picture data of the body, and the `Content-Type` is `image/jpeg`.
 
+## get thumbnail avatar :white_check_mark:
+
+`GET /files/users/avatar/:size`
+
+size is 0, 1, 2.
+0 is original image; 1 is the width is 500px, height adaptive; 2 is 200px, height adaptive.
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
 ## get avatar of other users :white_check_mark:
 
 `GET /files/users/:user_id/avatar`
 
 Others are the same as get self avatar.
 
-## set the background picture of the NameCard :white_check_mark:
+## set namecard cover :white_check_mark:
 
 `POST /files/users/name_card_cover`
 
@@ -131,7 +155,7 @@ The type of the picture must be jpeg.
 
 Status: 201
 
-## get the background picture of the NameCard :white_check_mark:
+## get the namecard cover :white_check_mark:
 
 `GET /files/users/name_card_cover`
 
@@ -145,13 +169,13 @@ Status: 200
 
 Picture data of the body, and the `Content-Type` is `image/jpeg`. 
 
-## get the background picture of the other users. :white_check_mark:
+## get namecard cover of other users. :white_check_mark:
 
 `GET /files/users/:user_id/name_card_cover`
 
-Others are the same as the backgoround picture of NameCard. 
+Others are the same as the get namecard cover. 
 
-## set the picture of the NameCard :white_check_mark:
+## set namecard photo :white_check_mark:
 
 `POST /files/users/name_card_photo`
 
@@ -174,7 +198,7 @@ The size of the picture should less than 4MB.
 
 Status: 201
 
-## delete the picture of the NameCard :white_check_mark:
+## delete namecard photo :white_check_mark:
 
 `DELETE /files/users/name_card_photo/:position`
 
@@ -186,7 +210,7 @@ yes
 
 Status: 204
 
-## get the picture of the NameCard in specified position :white_check_mark:
+## get namecard photo in a specified position :white_check_mark:
 
 `GET /files/users/:user_id/name_card_photo/:position`
 
@@ -200,7 +224,7 @@ Status: 200
 
 The picture data of the body. 
 
-## get the picture of the self NameCard in specified position :white_check_mark:
+## get self namecard photo in a specified position :white_check_mark:
 
 `GET /files/users/name_card_photo/:position`
 
@@ -208,4 +232,51 @@ The picture data of the body.
 
 yes
 
-Others are the same as the get the picture of the NameCard in specified position. 
+Others are the same as the get namecard photo in a specified position.
+
+## set chat room cover_image
+
+`POST /files/chat_rooms/cover_image`
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Description |
+| --- | --- |
+| chat_room_id | chat room id |
+| cover_image | picture content |
+
+### response
+
+Status: 201
+
+## get chat room cover_image
+
+`GET /files/chat_rooms/:chat_room_id/cover_image`
+
+### auth
+
+no
+
+### response
+
+Status: 200
+
+The picture data of the body. 
+
+## get place image :white_check_mark:
+
+`GET /files/places/:place_id/image`
+
+### auth
+
+no
+
+### response
+
+Status: 200
+
+The picture data of the body. 
