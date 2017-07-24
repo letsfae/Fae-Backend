@@ -102,6 +102,32 @@ return response()->json([
                 'status_code' => '400'
             ], 400);
 
+return response()->json([
+                'message' => 'Bad request, you have already sent a request',
+                'error_code' => ErrorCodeUtility::REQUESTED_ALREADY,
+                'status_code' => '400'
+            ], 400);
+
+return response()->json([
+                'message' => 'Bad request, can not send friend request to your friend',
+                'error_code' => ErrorCodeUtility::FRIEND_ALREADY,
+                'status_code' => '400'
+            ], 400);
+
+if(Friend_requests::where('user_id', $requested_user_id)->where('requested_user_id', $self_user_id)->exist()) {
+            return response()->json([
+                'message' => 'Bad request, this user has already sent you a friend request',
+                'error_code' => ErrorCodeUtility::RESPONSE_BEFORE_SEND_A_REQUEST,
+                'status_code' => '400'
+            ], 400);
+        }
+if($self_user_id == $requested_user_id) {
+            return response()->json([
+                'message' => 'Bad request, you can not send friend request to yourself',
+                'error_code' => ErrorCodeUtility::FRIEND_REQUEST_SELF,
+                'status_code' => '400'
+            ], 400);
+        }
 
 
 

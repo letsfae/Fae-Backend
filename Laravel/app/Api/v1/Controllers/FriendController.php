@@ -9,6 +9,7 @@ use Auth;
 use Validator;
 
 use Dingo\Api\Exception\StoreResourceFailedException;
+use Dingo\Api\Exception\UpdateResourceFailedException;
 use Davibennun\LaravelPushNotification\Facades\PushNotification;
 
 use Config;
@@ -34,23 +35,14 @@ class FriendController extends Controller {
         //validation
         $validator = Validator::make($this->request->all(), [
             'requested_user_id' => 'required|numeric',
+            'resend' => 'filled|in:true,false'
         ]);
         if($validator->fails()){
             throw new StoreResourceFailedException('Could not request friend.',$validator->errors());
         }
         
-        //find both users
-        $self_user_id = $this->request->self_user_id;
-        $self_user = Users::where('id', $self_user_id)->first();
-        if ($self_user == null) {
-            return response()->json([
-                    'message' => 'user not found',
-                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
-                    'status_code' => '404'
-                ], 404);
-        }
-        
         $requested_user_id = $this->request->requested_user_id;
+        $self_user_id = $this->request->self_user_id;
         $requested_user = Users::where('id', $requested_user_id)->first();
         if ($requested_user == null) {
             return response()->json([
@@ -59,12 +51,20 @@ class FriendController extends Controller {
                     'status_code' => '404'
                 ], 404);
         }
+
+        if($self_user_id == $requested_user_id) {
+            return response()->json([
+                'message' => 'Bad request, you can not send friend request to yourself',
+                'error_code' => ErrorCodeUtility::FRIEND_REQUEST_SELF,
+                'status_code' => '400'
+            ], 400);
+        }
         
         //if blocked, then this friendship cannot be set
         $curr_block = Blocks::where('user_id', $self_user_id)->where('block_id', $requested_user_id)->first();
         if ($curr_block != null) {
             return response()->json([
-                'message' => 'Bad request, you have already blocked the user!',
+                'message' => 'Bad request, you have already blocked this user!',
                 'error_code' => ErrorCodeUtility::BLOCKED_ALREADY,
                 'status_code' => '400'
             ], 400);
@@ -73,8 +73,24 @@ class FriendController extends Controller {
         $curr_block = Blocks::where('user_id', $requested_user_id)->where('block_id', $self_user_id)->first();
         if ($curr_block != null) {
             return response()->json([
-                'message' => 'Bad request, you have already blocked the user!',
+                'message' => 'Bad request, you have already been blocked by the user!',
                 'error_code' => ErrorCodeUtility::BLOCKED_ALREADY,
+                'status_code' => '400'
+            ], 400);
+        }
+
+        if(Friends::where('user_id', $this->request->self_user_id)->where('friend_id', $requested_user_id)->exists()) {
+            return response()->json([
+                'message' => 'Bad request, can not send friend request to your friend',
+                'error_code' => ErrorCodeUtility::FRIEND_ALREADY,
+                'status_code' => '400'
+            ], 400);
+        }
+
+        if(Friend_requests::where('user_id', $requested_user_id)->where('requested_user_id', $self_user_id)->exists()) {
+            return response()->json([
+                'message' => 'Bad request, this user has already sent you a friend request',
+                'error_code' => ErrorCodeUtility::RESPONSE_BEFORE_SEND_A_REQUEST,
                 'status_code' => '400'
             ], 400);
         }
@@ -87,6 +103,12 @@ class FriendController extends Controller {
             $new_friend_requests->user_id = $self_user_id;
             $new_friend_requests->requested_user_id = $requested_user_id;
             $new_friend_requests->save();
+        } else if(!$this->request->has('resend') || ($this->request->has('resend') && $this->request->resend == 'false')) {
+            return response()->json([
+                'message' => 'Bad request, you have already sent a request',
+                'error_code' => ErrorCodeUtility::REQUESTED_ALREADY,
+                'status_code' => '400'
+            ], 400);
         }
         
         //push back notification to requested user
@@ -96,7 +118,7 @@ class FriendController extends Controller {
                 if ($value->is_mobile && !empty($value->device_id)){
                     $message = PushNotification::Message('Other user requesting friend',array(
                         'custom' => array('custom data' => array(
-                            'requested_user_id' => $requested_user_id
+                            'requested_user_id' => $this->request->self_user_id
                         ))
                     ));
 
@@ -339,6 +361,28 @@ class FriendController extends Controller {
     }
 
     public function withdrawRequest() {
-        
+        $validator = Validator::make($this->request->all(), [
+            'friend_request_id' => 'required|numeric',
+        ]);
+        if($validator->fails()){
+            throw new UpdateResourceFailedException('Could not accept friend request.',$validator->errors());
+        }
+        $curr_request = Friend_requests::where('id', $this->request->friend_request_id)->first();
+        if ($curr_request == null) {
+            return response()->json([
+                    'message' => 'friend request not found',
+                    'error_code' => ErrorCodeUtility::FRIEND_REQUEST_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
+        }
+        if($curr_request->user_id != $this->request->self_user_id) {
+            return response()->json([
+                    'message' => 'Can not withdraw the request because you are not the creator of this request, ',
+                    'error_code' => ErrorCodeUtility::NOT_REQUESTER_OF_REQUEST,
+                    'status_code' => '403'
+                ], 403);
+        }
+        $curr_request->delete();
+        return $this->response->noContent();
     }
 }
