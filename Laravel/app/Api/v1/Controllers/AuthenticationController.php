@@ -36,6 +36,13 @@ class AuthenticationController extends Controller {
         $password = $this->request->password;
         if (!empty($user_name) && empty($email)){
             $user_table = Users::where('user_name', 'ilike',$user_name)->first();
+            if ($user_table == null) {
+                return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
+            }
             $email = $user_table->email;
         }
         $users = Users::where('email', '=', $email)->first();

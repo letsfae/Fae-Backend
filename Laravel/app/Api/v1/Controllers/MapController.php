@@ -123,13 +123,24 @@ class MapController extends Controller
         }
         else if($this->request->type == 'place')
         {
-            $places = DB::connection('yelp')->select(
+            if($this->request->has($categories)) {
+                $places = DB::connection('yelp')->select(
+                            "SELECT * FROM places
+                            WHERE class_two = :categories 
+                            AND st_dwithin(geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true)
+                            ORDER BY ST_Distance(geolocation, ST_SetSRID(ST_Point(:longitude, :latitude),4326))
+                            LIMIT :max_count;",
+                            array('categories' => $this->request->categories, 'longitude' => $longitude, 
+                                'latitude' => $latitude, 'radius' => $radius, 'max_count' => $max_count));
+            } else {
+                $places = DB::connection('yelp')->select(
                             "SELECT * FROM places
                             WHERE st_dwithin(geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true)
                             ORDER BY ST_Distance(geolocation, ST_SetSRID(ST_Point(:longitude, :latitude),4326))
                             LIMIT :max_count;",
                             array('longitude' => $longitude, 'latitude' => $latitude,
                             'radius' => $radius, 'max_count' => $max_count));
+            }
             foreach ($places as $place) 
             {
                 $info[] = PlaceController::getPinObject($place->id, $this->request->self_user_id);    
@@ -267,6 +278,7 @@ class MapController extends Controller
             'is_saved' => 'filled|in:true,false',
             'is_liked' => 'filled|in:true,false',
             'is_read' => 'filled|in:true,false',
+            'categories' => 'filled|string',
         ]);
         if($validator->fails())
         {

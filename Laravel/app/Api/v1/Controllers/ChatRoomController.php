@@ -551,22 +551,14 @@ class ChatRoomController extends Controller implements PinInterface
     private function updateValidation(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'title' => 'filled|required_without_all:geo_longitude,geo_latitude,duration,interaction_radius,
-                        description,tag_ids,capacity|string|max:100',
-            'geo_longitude' => 'filled|required_with:geo_latitude|required_without_all:title,duration,
-                                interaction_radius,description,tag_ids,capacity|numeric|between:-180,180',
-            'geo_latitude' => 'filled|required_with:geo_longitude|required_without_all:title,duration,interaction_radius,
-                               description,tag_ids,capacity|numeric|between:-90,90',
-            'duration' => 'filled|required_without_all:geo_longitude,geo_latitude,title,interaction_radius,
-                           description,tag_ids,capacity|int|min:0',
-            'interaction_radius' => 'filled|required_without_all:geo_longitude,geo_latitude,duration,
-                                     title,description,tag_ids,capacity|int|min:0',
-            'description' => 'filled|required_without_all:title,geo_longitude,geo_latitude,duration,interaction_radius,
-                              tag_ids,capacity|string',
-            'tag_ids' => array('filled', 'required_without_all:title,geo_longitude,geo_latitude,duration,interaction_radius,
-                                description,capacity', 'regex:/^(((\d+\;){0,49}\d+)|(null))$/'),
-            'capacity' => 'filled|required_without_all:title,geo_longitude,geo_latitude,duration,interaction_radius,
-                           description,tag_ids|int|min:5|max:100'
+            'title' => 'filled|required_without_all:geo_longitude,geo_latitude,duration,interaction_radius,description,tag_ids,capacity|string|max:100',
+            'geo_longitude' => 'filled|required_with:geo_latitude|required_without_all:title,duration,interaction_radius,description,tag_ids,capacity|numeric|between:-180,180',
+            'geo_latitude' => 'filled|required_with:geo_longitude|required_without_all:title,duration,interaction_radius,description,tag_ids,capacity|numeric|between:-90,90',
+            'duration' => 'filled|required_without_all:geo_longitude,geo_latitude,title,interaction_radius,description,tag_ids,capacity|int|min:0',
+            'interaction_radius' => 'filled|required_without_all:geo_longitude,geo_latitude,duration,title,description,tag_ids,capacity|int|min:0',
+            'description' => 'filled|required_without_all:title,geo_longitude,geo_latitude,duration,interaction_radius,tag_ids,capacity|string',
+            'tag_ids' => array('filled', 'required_without_all:title,geo_longitude,geo_latitude,duration,interaction_radius,description,capacity', 'regex:/^(((\d+\;){0,49}\d+)|(null))$/'),
+            'capacity' => 'filled|required_without_all:title,geo_longitude,geo_latitude,duration,interaction_radius,description,tag_ids|int|min:5|max:100'
         ]);
         if($validator->fails())
         {

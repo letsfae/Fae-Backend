@@ -200,36 +200,38 @@ class UserController extends Controller
 
     public function verifyPassword() 
     {
-        if($this->request->has('password'))
+        $validator = Validator::make($this->request->all(), [
+            'password' => 'required|string',
+        ]);
+        if($validator->fails()){
+            throw new StoreResourceFailedException('Could not verify password.',$validator->errors());
+        }
+        $user = Users::find($this->request->self_user_id);
+        $password_right = Hash::check($this->request->password, $user->password);
+        if (!$password_right)
         {
-            $user = Users::find($this->request->self_user_id);
-            $password_right = Hash::check($this->request->password, $user->password);
-            if (!$password_right)
+            $user->login_count++;
+            $user->save();
+            if($user->login_count >= 6)
             {
-                $user->login_count++;
-                $user->save();
-                if($user->login_count >= 6)
-                {
-                    $session = Sessions::find($this->request->self_session_id);
-                    $session->delete();
-                    return response()->json([
-                        'message' => 'Incorrect password, automatically lougout',
-                        'error_code' => ErrorCodeUtility::INCORRECT_PASSWORD,
-                        'status_code' => '401'
-                    ], 401);
-                }
+                $session = Sessions::find($this->request->self_session_id);
+                $session->delete();
                 return response()->json([
-                    'message' => 'Incorrect password, you still have '.(6-$user->login_count).' chances',
+                    'message' => 'Incorrect password, automatically lougout',
                     'error_code' => ErrorCodeUtility::INCORRECT_PASSWORD,
-                    'status_code' => '401',
-                    'login_count' => $user->login_count
+                    'status_code' => '401'
                 ], 401);
             }
-            $user->login_count = 0;
-            $user->save();
-            return $this->response->created();
+            return response()->json([
+                'message' => 'Incorrect password, you still have '.(6-$user->login_count).' chances',
+                'error_code' => ErrorCodeUtility::INCORRECT_PASSWORD,
+                'status_code' => '401',
+                'login_count' => $user->login_count
+            ], 401);
         }
-        return $this->response->errorNotFound();
+        $user->login_count = 0;
+        $user->save();
+        return $this->response->created();
     }
 
     public function updateSelfStatus() 
@@ -455,7 +457,11 @@ class UserController extends Controller
         // compare user_id and code with data in verification table
         $verification = Verifications::where('email','=', $input['email'])->where('type','=', 'email')->get();
         if( is_null($verification) || ( count($verification)==0 ) ){
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'name card not found',
+                    'error_code' => ErrorCodeUtility::VERIFICATION_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }else{
             if($verification[0]->code == $input['code']){
                 if ($verification[0]->created_at->diffInMinutes()>30)
@@ -555,7 +561,11 @@ class UserController extends Controller
         // compare user_id and code with data in verification table
         $verification = Verifications::where('phone','=', $input['phone'])->where('type','=', 'phone')->get();
         if( is_null($verification) || ( count($verification)==0 ) ){
-            return $this->response->errorNotFound();
+            return response()->json([
+                    'message' => 'name card not found',
+                    'error_code' => ErrorCodeUtility::VERIFICATION_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }else{
             if($verification[0]->code == $input['code']){
                 if ($verification[0]->created_at->diffInMinutes()>30){

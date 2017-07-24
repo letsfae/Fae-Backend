@@ -51,7 +51,15 @@ class PlaceController extends Controller implements PinInterface {
             'country' => $place->country, 
             'state' => $place->state,
             'address' => $place->address, 
-            'zip_code' => $place->zip_code
+            'zip_code' => $place->zip_code,
+            'class_one' => $place->class_one,
+            'class_one_idx' => $place->class_one_idx,
+            'class_two' => $place->class_two,
+            'class_two_idx' => $place->class_two_idx,
+            'class_three' => $place->class_three,
+            'class_three_idx' => $place->class_three_idx,
+            'class_four' => $place->class_four,
+            'class_four_idx' => $place->class_four_idx,
         );
      }
 

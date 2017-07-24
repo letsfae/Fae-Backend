@@ -25,6 +25,10 @@ class ErrorCodeUtility
     const FOLLOW_SELF = '400-17';
     const FOLLOWED_ALREADY = '400-18';
     const NOT_FOLLOWED = '400-19';
+    const REQUESTED_ALREADY = '400-20';
+    const FRIEND_ALREADY = '400-21';
+    const RESPONSE_BEFORE_SEND_A_REQUEST = '400-22';
+    const FRIEND_REQUEST_SELF = '400-23';
 
     //401 Unauthorized
     /*
@@ -47,6 +51,7 @@ class ErrorCodeUtility
 	const TOO_FAR_AWAY = '403-3';
 	const VERIFICATION_TIMEOUT = '403-4';
 	const VERIFICATION_WRONG_CODE = '403-5';
+	const NOT_REQUESTER_OF_REQUEST = '403-6';
 
     //404 Not Found
     /*
