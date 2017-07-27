@@ -177,32 +177,28 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
 /**
  * Files
  */
-$api->version('v1', function ($api) {
-    // * no auth due to the request of front-end
-    $api->get('/files/{file_id}/data', 'App\Api\v1\Controllers\FileController@getData');
-    $api->get('/files/users/{user_id}/avatar', 'App\Api\v1\Controllers\UserFileController@getAvatarMaxSize');
-    $api->get('/files/users/{user_id}/avatar/{size}', 'App\Api\v1\Controllers\UserFileController@getAvatar');
-    $api->get('/files/users/{user_id}/name_card_cover', 'App\Api\v1\Controllers\UserFileController@getNameCardCover');
-    $api->get('/files/users/{user_id}/name_card_photo/{position}', 'App\Api\v1\Controllers\UserFileController@getNameCardPhoto');
-    $api->get('/files/chat_rooms/{chat_room_id}/cover_image', 'App\Api\v1\Controllers\ChatRoomFileController@getChatRoomCoverImage');
-    $api->get('/files/places/{place_id}', 'App\Api\v1\Controllers\PlaceController@getImage');
-});
-
 $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], function ($api) {
     // general
     $api->post('/files', 'App\Api\v1\Controllers\FileController@upload');
     $api->get('/files/{file_id}/attribute', 'App\Api\v1\Controllers\FileController@getAttribute');
+    $api->get('/files/{file_id}/data', 'App\Api\v1\Controllers\FileController@getData');
     // avatar
     $api->post('/files/users/avatar', 'App\Api\v1\Controllers\UserFileController@setSelfAvatar');
     $api->get('/files/users/avatar', 'App\Api\v1\Controllers\UserFileController@getSelfAvatarMaxSize');
     $api->get('/files/users/avatar/{size}', 'App\Api\v1\Controllers\UserFileController@getSelfAvatar');
+    $api->get('/files/users/{user_id}/avatar', 'App\Api\v1\Controllers\UserFileController@getAvatarMaxSize');
+    $api->get('/files/users/{user_id}/avatar/{size}', 'App\Api\v1\Controllers\UserFileController@getAvatar');
     // name card cover
     $api->post('/files/users/name_card_cover', 'App\Api\v1\Controllers\UserFileController@setSelfNameCardCover');
     $api->get('/files/users/name_card_cover', 'App\Api\v1\Controllers\UserFileController@getSelfNameCardCover');
+    $api->get('/files/users/{user_id}/name_card_cover', 'App\Api\v1\Controllers\UserFileController@getNameCardCover');
     // name card photo
     $api->post('/files/users/name_card_photo', 'App\Api\v1\Controllers\UserFileController@updateNameCardPhoto');
     $api->delete('/files/users/name_card_photo/{position}', 'App\Api\v1\Controllers\UserFileController@deleteNameCardPhoto');
     $api->get('/files/users/name_card_photo/{position}', 'App\Api\v1\Controllers\UserFileController@getSelfNameCardPhoto');
+    $api->get('/files/users/{user_id}/name_card_photo/{position}', 'App\Api\v1\Controllers\UserFileController@getNameCardPhoto');
     // char room cover
     $api->post('/files/chat_rooms/cover_image', 'App\Api\v1\Controllers\ChatRoomFileController@setChatRoomCoverImage');
+    $api->get('/files/chat_rooms/{chat_room_id}/cover_image', 'App\Api\v1\Controllers\ChatRoomFileController@getChatRoomCoverImage');
+    $api->get('/files/places/{place_id}', 'App\Api\v1\Controllers\PlaceController@getImage');
 });
