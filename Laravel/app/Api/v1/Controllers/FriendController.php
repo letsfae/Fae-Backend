@@ -330,6 +330,10 @@ class FriendController extends Controller {
         return $this->response->array($result);
     }
 
+    public function getAllSentRequests() {
+        
+    }
+
     public function getFriendsList() {
         $friends = Friends::where('user_id', $this->request->self_user_id)->get();
         $info = array();

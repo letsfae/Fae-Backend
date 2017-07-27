@@ -2,7 +2,7 @@
 
 联系人contacts级接口（总接口）包含三种关系，friends，follows及blocks。
 
-## 发起好友请求
+## 发起好友请求 :white_check_mark:
 
 `POST /friends/request`
 
@@ -59,7 +59,7 @@ yes
 
 Status: 201
 
-## 撤销好友请求
+## 撤销好友请求 :white_check_mark:
 
 `POST /friends/withdraw`
 
@@ -121,7 +121,33 @@ Status: 200
 
 此处冗余了user_name及email，方便显示。
 
-## 获取好友列表
+## 获取所有已经发送的好友请求
+
+`GET /friends/request_sent`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	[
+		{
+			"friend_request_id": @number,
+			"requested_user_id": @number,
+			"requested_user_name": @string (if show_user_name is true, else null),
+			"requested_user_nick_name": @string,
+			"requested_user_age": @number (if show_age is true, else null),
+			"requested_user_gender": @string (if show_gender is true, else null),
+			"requested_email": @string,
+			"created_at": @string
+		},
+		...		
+	]
+
+## 获取好友列表 :white_check_mark:
 
 `GET /friends`
 
@@ -142,7 +168,7 @@ yes
 		...
 	]
 
-## 关注某人
+## 关注某人 :white_check_mark:
 
 `POST /follows`
 
@@ -160,7 +186,7 @@ yes
 
 Status: 201
 
-## 关注user的人（user被关注）
+## 关注user的人（user被关注） :white_check_mark:
 
 `GET /follows/:user_id/follower`
 
@@ -182,7 +208,7 @@ yes
 		...
 	]
 
-## user关注的人
+## user关注的人 :white_check_mark:
 
 `GET /follows/:user_id/followee`
 
@@ -204,7 +230,7 @@ yes
 		...
 	]
 
-## 取消关注某人
+## 取消关注某人 :white_check_mark:
 
 `DELETE /follows/:followee_id`
 

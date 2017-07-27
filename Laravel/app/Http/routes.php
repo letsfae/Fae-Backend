@@ -90,6 +90,7 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae']], functi
     // friends
     $api->post('/friends/request', 'App\Api\v1\Controllers\FriendController@requestFriend');
     $api->get('/friends/request', 'App\Api\v1\Controllers\FriendController@getAllRequests');
+    $api->get('/friends/request_sent', 'App\Api\v1\Controllers\FriendController@getAllSentRequests');
     $api->post('/friends/accept', 'App\Api\v1\Controllers\FriendController@acceptRequest');
     $api->post('/friends/ignore', 'App\Api\v1\Controllers\FriendController@ignoreRequest');
     $api->post('/friends/withdraw', 'App\Api\v1\Controllers\FriendController@withdrawRequest');
