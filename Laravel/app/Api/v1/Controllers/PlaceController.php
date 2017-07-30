@@ -44,22 +44,24 @@ class PlaceController extends Controller implements PinInterface {
         return array(
             'place_id' => $place->id, 
             'name' => $place->name,
-            'categories' => $categories,
-            'geolocation' => ['latitude' => $place->geolocation->getLat(), 
-            'longitude' => $place->geolocation->getLng()], 
-            'city' => $place->city,
-            'country' => $place->country, 
-            'state' => $place->state,
-            'address' => $place->address, 
-            'zip_code' => $place->zip_code,
-            'class_one' => $place->class_one,
-            'class_one_idx' => $place->class_one_idx,
-            'class_two' => $place->class_two,
-            'class_two_idx' => $place->class_two_idx,
-            'class_three' => $place->class_three,
-            'class_three_idx' => $place->class_three_idx,
-            'class_four' => $place->class_four,
-            'class_four_idx' => $place->class_four_idx,
+            'geolocation' => [
+                'latitude' => $place->geolocation->getLat(), 
+                'longitude' => $place->geolocation->getLng()], 
+            'location' => [
+                'city' => $place->city,
+                'country' => $place->country, 
+                'state' => $place->state,
+                'address' => $place->address, 
+                'zip_code' => $place->zip_code],
+            'categories' => [
+                'class1' => $place->class_one,
+                'class1_icon_id' => $place->class_one_idx,
+                'class2' => $place->class_two,
+                'class2_icon_id' => $place->class_two_idx,
+                'class3' => $place->class_three,
+                'class3_icon_id' => $place->class_three_idx,
+                'class4' => $place->class_four,
+                'class4_icon_id' => $place->class_four_idx]
         );
      }
 

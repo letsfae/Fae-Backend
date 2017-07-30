@@ -331,7 +331,36 @@ class FriendController extends Controller {
     }
 
     public function getAllSentRequests() {
-        
+        $friend_requests = Friend_requests::where('user_id', $this->request->self_user_id)->get();
+        $result = array();
+        foreach ($friend_requests as $friend_request) {
+            $requested_user = Users::where('id', $friend_request->user_id)->first();
+            if(is_null($requested_user))
+            {
+                return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
+            }
+            $nameCard = Name_cards::find($friend_request->requested_user_id);
+            $user_exts = User_exts::find($friend_request->requested_user_id);
+            $birthDate = $requested_user->birthday;
+            $birthDate = explode("-", $birthDate);
+            $age = (date("md", date("U", mktime(0, 0, 0, $birthDate[1], $birthDate[2], $birthDate[0]))) > date("md")
+                    ? ((date("Y") - $birthDate[0]) - 1)
+                    : (date("Y") - $birthDate[0]));
+            $content = array('friend_request_id' => $friend_request->id, 
+                             'requested_user_id' => $friend_request->requested_user_id, 
+                             'requested_user_name' => $user_exts->show_user_name ? $requested_user->user_name : null,
+                             'requested_user_nick_name' => $nameCard->nick_name,
+                             'requested_user_age' => $nameCard->show_age ? $age : null,
+                             'requested_user_gender' => $nameCard->show_gender ? $requested_user->gender : null,
+                             'requested_email' => $requested_user->email,
+                             'created_at' => $friend_request->created_at->format('Y-m-d H:i:s'));
+            array_push($result, $content);
+        }
+        return $this->response->array($result);
     }
 
     public function getFriendsList() {

@@ -57,9 +57,11 @@ class MapController extends Controller
                 $sessions = DB::select("SELECT user_id,location,created_at,location_updated_at
                                         FROM sessions
                                         WHERE st_dwithin(location,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true)
+                                        AND user_id != :user_id
                                         ORDER BY ST_Distance(location, ST_SetSRID(ST_Point(:longitude, :latitude),4326)), user_id
                                         LIMIT :max_count;", 
                                         array('longitude' => $longitude, 'latitude' => $latitude,
+                                              'user_id' => $this->request->self_user_id,
                                               'radius' => $radius, 'max_count' => $max_count));
             }
             else
