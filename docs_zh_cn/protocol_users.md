@@ -180,6 +180,38 @@ Status: 200
 		"existence": @boolean
 	}
 
+## 根据phone批量获取用户id
+
+`GET /existence/phone/_batch`
+
+仅返回phone存在的user_id。
+
+注意：此处使用GET时候请确保数据被编码在body中而非URL中（parameters而非filters），否则无法发送超过1MB的数据。Postman及一些库底层不支持针对Get的body数据，则无法测试，可使用curl作为替代方案。
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| phone | string(xxx-xxx-xxxx) | 通过;分隔的电话号码 |
+
+### response
+
+Status: 200
+
+	[
+		{
+			"phone": @string,
+			"user_id": @number
+		},
+		...
+	]
+
+phone并不惟一，即会有重复。
+
 ## 获取用户账户信息 get account :white_check_mark:
 
 `GET /users/account`

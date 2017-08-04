@@ -29,6 +29,7 @@ $api->version('v1', function ($api) {
     // existence
     $api->get('/existence/email/{email}', 'App\Api\v1\Controllers\ExistenceController@email');
     $api->get('/existence/user_name/{user_name}', 'App\Api\v1\Controllers\ExistenceController@userName');
+    $api->get('/existence/phone/_batch', 'App\Api\v1\Controllers\ExistenceController@getUserByPhoneBatched');
     
     // test
     $api->post('/test/push_notification', 'App\Api\v1\Controllers\TestController@sendPushNotification');

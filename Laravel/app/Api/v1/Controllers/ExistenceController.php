@@ -48,4 +48,8 @@ class ExistenceController extends Controller {
         $result = array('existence' => Users::whereRaw('LOWER(user_name) = ?', [strtolower($this->request->user_name)])->exists());
         return $this->response->array($result);
     }
+
+    public function getUserByPhoneBatched() {
+        
+    }
 }
