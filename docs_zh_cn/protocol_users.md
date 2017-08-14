@@ -196,7 +196,7 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| phone | string(xxx-xxx-xxxx) | 通过;分隔的电话号码 |
+| phone | string((国家号)电话) | 通过;分隔的电话号码 |
 
 ### response
 
@@ -232,7 +232,7 @@ Status: 200
 		"last_name": @string,
 		"gender": @string,
 		"birthday": @string,
-		"phone": @string(xxx-xxx-xxxx),
+		"phone": @string((国家号)电话),
 		"phone_verified": @boolean,
 		"mini_avatar": @number, 地图上显示的用户小头像，未设置则默认为0,
 		"last_login_at": @string
@@ -361,7 +361,7 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| phone | string(xxx-xxx-xxxx) | 新电话 |
+| phone | string((国家号)电话) | 新电话 |
 
 ### response
 
@@ -379,7 +379,7 @@ yes
 
 | Name | Type | Description |
 | --- | --- | --- |
-| phone | string(xxx-xxx-xxxx) | 新电话 |
+| phone | string((国家号)电话) | 新电话 |
 | code | string(6) | 6位验证数字，以字符串形式传递 |
 
 ### response
