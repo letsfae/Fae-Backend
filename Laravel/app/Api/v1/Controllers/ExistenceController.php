@@ -4,6 +4,7 @@ namespace App\Api\v1\Controllers;
 
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Dingo\Api\Exception\UpdateResourceFailedException;
 use Illuminate\Routing\Controller;
 use Dingo\Api\Routing\Helpers;
 use Auth;
@@ -50,6 +51,23 @@ class ExistenceController extends Controller {
     }
 
     public function getUserByPhoneBatched() {
-        
+        $validator = Validator::make($this->request->all(), [
+            'phone' => 'required|string|between:-180,180|regex:/^(\([0-9]+\)[0-9]+\;)*\([0-9]+\)[0-9]+$/'
+        ]);
+        if($validator->fails())
+        {
+            throw new UpdateResourceFailedException('Could not update user location.',$validator->errors());
+        }
+        $phones = explode(';', $this->request->phone);
+        $result = array();
+        foreach($phones as $phone)
+        {
+            $users = Users::where('phone', $phone)->get();
+            foreach($users as $user)
+            {
+                $result[] = array('phone' => $phone, 'user_id' => $user->id);
+            }
+        }
+        return $this->response->array($result);
     }
 }
