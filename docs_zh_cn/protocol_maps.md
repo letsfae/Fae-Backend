@@ -795,6 +795,23 @@ Status: 200
 	        "state": @string,
 	        "address": @string,
 	        "zip_code": @string
+		},
+		"liked_count": @number,
+		"saved_count": @number,
+		"comment_count": @number,
+		"feelings_count": [
+			@number,
+			...
+		],
+		"user_pin_operations": {
+			"is_read": @boolean, 对当前用户是否已读
+			"read_timestamp": @string,
+			"is_liked": @boolean, 对当前用户是否点赞
+			"liked_timestamp": @string,
+			"is_saved": @boolean 对当前用户是否收藏
+			"saved_timestamp": @string,
+			"feeling": @number,
+			"feeling_timestamp": @string,
 		}
 	}
 
