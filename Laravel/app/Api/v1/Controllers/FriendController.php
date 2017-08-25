@@ -334,7 +334,7 @@ class FriendController extends Controller {
         $friend_requests = Friend_requests::where('user_id', $this->request->self_user_id)->get();
         $result = array();
         foreach ($friend_requests as $friend_request) {
-            $requested_user = Users::where('id', $friend_request->user_id)->first();
+            $requested_user = Users::where('id', $friend_request->requested_user_id)->first();
             if(is_null($requested_user))
             {
                 return response()->json([

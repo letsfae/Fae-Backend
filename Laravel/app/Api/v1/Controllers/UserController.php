@@ -488,9 +488,8 @@ class UserController extends Controller
     public function updatePhone() {
         // validation
         $input = $this->request->all();
-        
         $validator = Validator::make($input, [
-            'phone' => 'required|max:20'
+            'phone' => 'required|max:20|regex:/^\([0-9]+\)[0-9]+$/'
         ]);
         
         if($validator->fails())
@@ -549,7 +548,7 @@ class UserController extends Controller
         $input = $this->request->all();
         
         $validator = Validator::make($input, [
-            'phone' => 'required|max:20',
+            'phone' => 'required|max:20|regex:/^\([0-9]+\)[0-9]+$/',
             'code' => 'required|string|max:6'
         ]);
         
