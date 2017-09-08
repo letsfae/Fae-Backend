@@ -25,6 +25,7 @@ use Phaza\LaravelPostgis\Geometries\Point;
 use Phaza\LaravelPostgis\Geometries\Geometry;
 use App\Api\v1\Utilities\ErrorCodeUtility;
 use App\Api\v1\Utilities\PinUtility;
+use Elasticsearch;
 
 class MapController extends Controller
 {
@@ -126,26 +127,108 @@ class MapController extends Controller
         else if($this->request->type == 'place')
         {
             if($this->request->has('categories')) {
-                $places = DB::connection('foursquare')->select(
-                            "SELECT * FROM places
-                            WHERE class_two = :categories 
-                            AND st_dwithin(geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true)
-                            ORDER BY ST_Distance(geolocation, ST_SetSRID(ST_Point(:longitude, :latitude),4326))
-                            LIMIT :max_count;",
-                            array('categories' => $this->request->categories, 'longitude' => $longitude, 
-                                'latitude' => $latitude, 'radius' => $radius, 'max_count' => $max_count));
+                 $data = [
+                    "body" => [
+                        "size" => $max_count,
+                        "query"=> [
+                            "filtered"=> [
+                                "query"=> [
+                                    "match" => [
+                                      "class_two" => $this->request->categories
+                                    ]
+                                ],
+                                "filter"=> [
+                                    "geo_distance"=> [
+                                        "distance" => $radius."m",
+                                        "distance_type" => "sloppy_arc", 
+                                        "places.location"=> [
+                                            "lat" =>  $latitude,
+                                            "lon" => $longitude
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ],
+                    "index" => "foursquare",
+                    "type" => "places"
+                ];
+
+                $raw_places = Elasticsearch::search($data)['hits']['hits'];
+
+                $places = array();
+                foreach ($raw_places as $place) {
+                    $places[] = $place['_source'];
+                }
+                // $places = DB::connection('foursquare')->select(
+                //             "SELECT * FROM places
+                //             WHERE class_two = :categories 
+                //             AND st_dwithin(geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true)
+                //             ORDER BY ST_Distance(geolocation, ST_SetSRID(ST_Point(:longitude, :latitude),4326))
+                //             LIMIT :max_count;",
+                //             array('categories' => $this->request->categories, 'longitude' => $longitude, 
+                //                 'latitude' => $latitude, 'radius' => $radius, 'max_count' => $max_count));
             } else {
-                $places = DB::connection('foursquare')->select(
-                            "SELECT * FROM places
-                            WHERE st_dwithin(geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true)
-                            ORDER BY ST_Distance(geolocation, ST_SetSRID(ST_Point(:longitude, :latitude),4326))
-                            LIMIT :max_count;",
-                            array('longitude' => $longitude, 'latitude' => $latitude,
-                            'radius' => $radius, 'max_count' => $max_count));
+                $data = [
+                    "body" => [
+                        "size" => $max_count,
+                        "query"=> [
+                            "filtered"=> [
+                                "filter"=> [
+                                    "geo_distance"=> [
+                                        "distance" => $radius."m",
+                                        "distance_type" => "sloppy_arc", 
+                                        "places.location"=> [
+                                            "lat" =>  $latitude,
+                                            "lon" => $longitude
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ],
+                    "index" => "foursquare",
+                    "type" => "places"
+                ];
+
+                $raw_places = Elasticsearch::search($data)['hits']['hits'];
+
+                $places = array();
+                foreach ($raw_places as $place) {
+                    $places[] = $place['_source'];
+                }
+                // $places = DB::connection('foursquare')->select(
+                //             "SELECT * FROM places
+                //             WHERE st_dwithin(geolocation,ST_SetSRID(ST_Point(:longitude, :latitude),4326),:radius,true)
+                //             ORDER BY ST_Distance(geolocation, ST_SetSRID(ST_Point(:longitude, :latitude),4326))
+                //             LIMIT :max_count;",
+                //             array('longitude' => $longitude, 'latitude' => $latitude,
+                //             'radius' => $radius, 'max_count' => $max_count));
             }
-            foreach ($places as $place) 
-            {
-                $info[] = PlaceController::getPinObject($place->id, $this->request->self_user_id);    
+            foreach ($places as $place) {
+                //$info[] = PlaceController::getPinObject($place['id'], $this->request->self_user_id);    
+                $info[] = array(
+                    'place_id' => $place["id"], 
+                    'name' => $place["name"],
+                    'geolocation' => [
+                        'latitude' => $place["location"]["lat"], 
+                        'longitude' => $place["location"]["lon"]], 
+                    'location' => [
+                        'city' => $place["city"],
+                        'country' => $place["country"], 
+                        'state' => $place["state"],
+                        'address' => $place["address"], 
+                        'zip_code' => $place["zip_code"]],
+                    'categories' => [
+                        'class1' => $place["class_one"],
+                        'class1_icon_id' => $place["class_one_idx"],
+                        'class2' => $place["class_two"],
+                        'class2_icon_id' => $place["class_two_idx"],
+                        'class3' => array_key_exists("class_three", $place) ? $place["class_three"] : '',
+                        'class3_icon_id' => array_key_exists("class_three_idx", $place) ? $place["class_three_idx"] : '',
+                        'class4' => array_key_exists("class_four", $place) ? $place["class_four"] : '',
+                        'class4_icon_id' => array_key_exists("class_four_idx", $place) ? $place["class_four_idx"] : '']
+                );
             }
         }
         else if($this->request->type == 'location')
