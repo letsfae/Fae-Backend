@@ -4,7 +4,7 @@
 
 `POST /pins/:type/:pin_id/read`
 
-其中type可为`media`、`comment`。
+其中type可为`media`、`comment`、`place`、`location`。
 
 ### auth
 
@@ -18,7 +18,7 @@ Status: 201
 
 `POST /pins/:type/:pin_id/like`
 
-其中type可为`media`、`comment`。
+其中type可为`media`、`comment`、`place`、`location`。
 
 ### auth
 
@@ -32,7 +32,7 @@ Status: 201
 
 `DELETE /pins/:type/:pin_id/like`
 
-其中type可为`media`、`comment`。
+其中type可为`media`、`comment`、`place`、`location`。
 
 ### auth
 
@@ -42,11 +42,11 @@ yes
 
 Status: 204
 
-## Save 保存 :white_check_mark:
+## Save 保存 （废除）
 
 `POST /pins/:type/:pin_id/save`
 
-其中type可为`media`、`comment`、`place`。
+其中type可为`media`、`comment`、`place`、`location`。
 
 ### auth
 
@@ -56,11 +56,45 @@ yes
 
 Status: 201
 
-## Unsave :white_check_mark:
+## Unsave （废除）
 
 `DELETE /pins/:type/:pin_id/save`
 
-其中type可为`media`、`comment`、`place`。
+其中type可为`media`、`comment`、`place`、`location`。
+
+### auth
+
+yes
+
+### response
+
+Status: 204
+
+## 创建memo
+
+`POST /pins/:type/:pin_id/memo`
+
+其中type可为`media`、`comment`、`place`、`location`。
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| content | text | memo内容 |
+
+### response
+
+Status: 201
+
+## 删除memo
+
+`DELETE /pins/:type/:pin_id/memo`
+
+其中type可为`media`、`comment`、`place`、`location`。
 
 ### auth
 
@@ -74,7 +108,7 @@ Status: 204
 
 `POST /pins/:type/:pin_id/feeling`
 
-其中type可为`media`、`comment`。
+其中type可为`media`、`comment`、`place`、`location`。
 
 ### auth
 
@@ -94,7 +128,7 @@ Status: 201
 
 `DELETE /pins/:type/:pin_id/feeling`
 
-其中type可为`media`、`comment`。
+其中type可为`media`、`comment`、`place`、`location`。
 
 ### auth
 
@@ -108,7 +142,7 @@ Status: 204
 
 `POST /pins/:type/:pin_id/comments`
 
-其中type可为`media`、`comment`。
+其中type可为`media`、`comment`、`place`、`location`。
 
 ### auth
 
@@ -149,7 +183,7 @@ Status: 201
 
 `DELETE /pins/comments/:pin_comment_id`
 
-其中type可为`media`、`comment`。
+其中type可为`media`、`comment`、`place`、`location`。
 
 ### auth
 
@@ -159,7 +193,7 @@ yes
 
 Status: 204
 
-## 获取saved pin :white_check_mark:
+## 获取saved pin
 
 `GET /pins/saved`
 
@@ -232,6 +266,7 @@ Status: 200
 			"type": @string,
 			"pin_id": @number,
 			"created_at": @string,
+			"collection_id": [@number], 存在哪些collection里面
 			"pin_object": {
 				...
 			}
@@ -371,3 +406,107 @@ Status: 200
 	}
 
 
+## 创建collection
+
+`POST /collections`
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| name | string | 名字 |
+| description | string | 描述 |
+| type | string('location','place') | 类型 |
+| is_private | boolean | 是否私有 |
+
+### response
+
+Status: 201
+
+	{
+		"collection_id": @number
+	}
+
+## 获取所有collection
+
+`GET /collections`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	[
+		{}, object的内容同获取一个collection
+		...
+	]
+
+## 更新collection
+
+`POST /collections/:collection_id`
+
+其余同创建collection。
+
+## 删除collection
+
+`DELETE /collections/:collection_id`
+
+### auth
+
+yes
+
+### response
+
+Status: 204
+
+## 获取一个collection
+
+`GET /collections/:collection_id`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	{
+		"collection_id": @number,
+		"name": @string,
+		"description": @string,
+		"type": @string,
+		"is_private": @bool,
+		"created_at": @string,
+	}
+
+## 收藏pin到collection
+
+`POST /collections/:collection_id/save/:type/:pin_id`
+
+### auth
+
+yes
+
+### response
+
+Status: 201
+
+## 从collection删除一个pin的收藏
+
+`DELETE /collections/:collection_id/save/:type/:pin_id`
+
+### auth
+
+yes
+
+### response
+
+Status: 204

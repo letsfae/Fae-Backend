@@ -154,8 +154,10 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae'], 'namesp
     $api->post('/pins/{type}/{pin_id}/comments', 'PinOperationController@comment');
     $api->post('/pins/comments/{pin_comment_id}', 'PinOperationController@updateComment');
     $api->delete('/pins/comments/{pin_comment_id}', 'PinOperationController@uncomment');
-    $api->post('/pins/{type}/{pin_id}/save', 'PinOperationController@save');
-    $api->delete('/pins/{type}/{pin_id}/save', 'PinOperationController@unsave');
+    // $api->post('/pins/{type}/{pin_id}/save', 'PinOperationController@save'); // deprecated
+    // $api->delete('/pins/{type}/{pin_id}/save', 'PinOperationController@unsave'); // deprecated
+    $api->post('/pins/{type}/{pin_id}/memo', 'PinOperationController@memo');
+    $api->delete('/pins/{type}/{pin_id}/memo', 'PinOperationController@unmemo');
     $api->post('/pins/{type}/{pin_id}/feeling', 'PinOperationController@feeling');
     $api->delete('/pins/{type}/{pin_id}/feeling', 'PinOperationController@removeFeeling');
     $api->get('/pins/{type}/{pin_id}/attribute', 'PinOperationController@getPinAttribute');
@@ -173,6 +175,14 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae'], 'namesp
     $api->post('/feedback', 'FeedbackController@sendFeedback');
     // places
     $api->get('/pins/places/{place_id}', 'PlaceController@getOne');
+    // collections
+    $api->post('/collections', 'CollectionController@createOne');
+    $api->get('/collections', 'CollectionController@getAll');
+    $api->post('/collections/{collection_id}', 'CollectionController@updateOne');
+    $api->delete('/collections/{collection_id}', 'CollectionController@deleteOne');
+    $api->get('/collections/{collection_id}', 'CollectionController@getOne');
+    $api->post('/collections/{collection_id}/save/{type}/{pin_id}', 'CollectionController@save');
+    $api->delete('/collections/{collection_id}/save/{type}/{pin_id}', 'CollectionController@unsave');
 });
 
 /**

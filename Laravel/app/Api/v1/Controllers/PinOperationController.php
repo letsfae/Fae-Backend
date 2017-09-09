@@ -1059,6 +1059,14 @@ class PinOperationController extends Controller {
         return true;
     }
 
+    public function memo($type, $pin_id) {
+
+    }
+
+    public function unmemo($type, $pin_id) {
+        
+    }
+
     private function voteValidation(Request $request)
     {
         $validator = Validator::make($request->all(), [

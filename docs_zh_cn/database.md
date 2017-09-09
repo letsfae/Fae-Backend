@@ -193,13 +193,15 @@
 
 ## pin_operations
 - id PK
-- type enum(media,comment)
+- type enum(media,comment,place,location)
 - pin_id 必须是enum所列举的pin的id
 - user_id FK
 - liked boolean
 - liked_timestamp
-- saved boolean
+- saved array (array of collection_id)
 - saved_timestamp
+- memo text
+- memo_timestamp
 - feeling integer
 - feeling_timestamp
 - interacted boolean default false
@@ -262,3 +264,20 @@
 - id PK
 - user_id
 - followee_id 被follow用户的id
+
+## collections
+- id PK
+- user_id
+- created_at
+- type enum(location,place,media,comment)
+- is_private boolean
+- name
+- description text
+
+## collection_of_pins
+- id PK
+- collection_id
+- pin_id
+- type
+- user_id
+- created_at
