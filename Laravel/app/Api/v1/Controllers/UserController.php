@@ -592,4 +592,8 @@ class UserController extends Controller
             }
         }
     }
+
+    public function getRelation($user_id) {
+        
+    }
 }

@@ -65,6 +65,8 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae'], 'namesp
     $api->post('/users/status', 'UserController@updateSelfStatus');
     $api->get('/users/status', 'UserController@getSelfStatus');
     $api->get('/users/{user_id}/status', 'UserController@getStatus');
+    // relation
+    $api->get('/users/relation/{user_id}', 'UserController@getRelation');
     // synchronization
     $api->get('/sync', 'SyncController@getSync');
     // map

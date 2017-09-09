@@ -542,6 +542,30 @@ yes
 
 Status: 201
 
+## 获取用户间关系
+
+`GET /users/relation/:user_id`
+
+获取user_id指定用户和本用户的关系。
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+	
+	{
+		"is_friend": @bool,
+		"friend_requested": @bool, 发送了好友请求
+		"friend_requested_by": @bool, 被好友请求
+		"blocked": @bool, 屏蔽了对方
+		"blocked_by": @bool, 被对方屏蔽
+		"followed": @bool, follow了对方
+		"followed_by": @bool 被对方follow，当前用户是followee
+	}
+
 ## 获取某个用户NameCard :white_check_mark:
 
 `GET /users/:user_id/name_card`
