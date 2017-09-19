@@ -42,39 +42,13 @@ yes
 
 Status: 204
 
-## Save 保存 （废除）
-
-`POST /pins/:type/:pin_id/save`
-
-其中type可为`media`、`comment`、`place`、`location`。
-
-### auth
-
-yes
-
-### response
-
-Status: 201
-
-## Unsave （废除）
-
-`DELETE /pins/:type/:pin_id/save`
-
-其中type可为`media`、`comment`、`place`、`location`。
-
-### auth
-
-yes
-
-### response
-
-Status: 204
-
 ## 创建memo
 
 `POST /pins/:type/:pin_id/memo`
 
 其中type可为`media`、`comment`、`place`、`location`。
+
+此接口可重复调用，之前的memo会覆盖。
 
 ### auth
 
@@ -266,7 +240,6 @@ Status: 200
 			"type": @string,
 			"pin_id": @number,
 			"created_at": @string,
-			"collection_id": [@number], 存在哪些collection里面
 			"pin_object": {
 				...
 			}
@@ -396,11 +369,7 @@ Status: 200
 	{
 		"user_id": @number,
 		"count": {
-			"created_comment_pin": @number,
-			"created_media_pin": @number,
-			"created_location": @number,
-			"saved_comment_pin": @number,
-			"saved_media_pin": @number,
+			"created_location_pin": @number,
 			"saved_place_pin": @number,
 		}
 	}

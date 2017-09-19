@@ -72,24 +72,24 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae'], 'namesp
     // map
     $api->get('/map', 'MapController@getMap');
     $api->post('/map/user', 'MapController@updateUserLocation');
-    // comment
-    $api->post('/comments', 'CommentController@create');
-    $api->post('/comments/{comment_id}', 'CommentController@update');
-    $api->get('/comments/{comment_id}', 'CommentController@getOne');
-    $api->delete('/comments/{comment_id}', 'CommentController@delete');
-    $api->get('/comments/users/{user_id}', 'CommentController@getFromUser');
-    // media
-    $api->post('/medias', 'MediaController@create');
-    $api->post('/medias/{media_id}', 'MediaController@update');
-    $api->get('/medias/{media_id}', 'MediaController@getOne');
-    $api->delete('/medias/{media_id}', 'MediaController@delete');
-    $api->get('/medias/users/{user_id}', 'MediaController@getFromUser');
-    // faevor
-    $api->post('/faevors', 'FaevorController@create');
-    $api->post('/faevors/{faevor_id}', 'FaevorController@update');
-    $api->get('/faevors/{faevor_id}', 'FaevorController@getOne');
-    $api->delete('/faevors/{faevor_id}', 'FaevorController@delete');
-    $api->get('/faevors/users/{user_id}', 'FaevorController@getFromUser');
+    // // comment
+    // $api->post('/comments', 'CommentController@create');
+    // $api->post('/comments/{comment_id}', 'CommentController@update');
+    // $api->get('/comments/{comment_id}', 'CommentController@getOne');
+    // $api->delete('/comments/{comment_id}', 'CommentController@delete');
+    // $api->get('/comments/users/{user_id}', 'CommentController@getFromUser');
+    // // media
+    // $api->post('/medias', 'MediaController@create');
+    // $api->post('/medias/{media_id}', 'MediaController@update');
+    // $api->get('/medias/{media_id}', 'MediaController@getOne');
+    // $api->delete('/medias/{media_id}', 'MediaController@delete');
+    // $api->get('/medias/users/{user_id}', 'MediaController@getFromUser');
+    // // faevor
+    // $api->post('/faevors', 'FaevorController@create');
+    // $api->post('/faevors/{faevor_id}', 'FaevorController@update');
+    // $api->get('/faevors/{faevor_id}', 'FaevorController@getOne');
+    // $api->delete('/faevors/{faevor_id}', 'FaevorController@delete');
+    // $api->get('/faevors/users/{user_id}', 'FaevorController@getFromUser');
     // friends
     $api->post('/friends/request', 'FriendController@requestFriend');
     $api->get('/friends/request', 'FriendController@getAllRequests');
