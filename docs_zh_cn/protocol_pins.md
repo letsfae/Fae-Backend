@@ -413,7 +413,7 @@ yes
 Status: 200
 
 	[
-		{}, object的内容同获取一个collection
+		{}, object的内容同获取一个collection（但不包含`pin_id`）
 		...
 	]
 
@@ -421,7 +421,7 @@ Status: 200
 
 `POST /collections/:collection_id`
 
-其余同创建collection。
+type不可修改，其余字段同创建collection（必须至少存在一个字段）。
 
 ## 删除collection
 
@@ -454,6 +454,7 @@ Status: 200
 		"type": @string,
 		"is_private": @bool,
 		"created_at": @string,
+		"pin_id": [@number] 该collection包含的该type下的pin_id
 	}
 
 ## 收藏pin到collection
