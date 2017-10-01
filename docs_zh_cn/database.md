@@ -279,5 +279,4 @@
 - collection_id
 - pin_id
 - type
-- user_id
 - created_at
