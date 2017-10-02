@@ -52,6 +52,7 @@ class ErrorCodeUtility
 	const VERIFICATION_TIMEOUT = '403-4';
 	const VERIFICATION_WRONG_CODE = '403-5';
 	const NOT_REQUESTER_OF_REQUEST = '403-6';
+	const NOT_OWNER_OF_COLLECTION = '403-7';
 
     //404 Not Found
     /*
@@ -73,6 +74,7 @@ class ErrorCodeUtility
 	const VERIFICATION_NOT_FOUND = '404-14';
 	const NAME_CARD_NOT_FOUND = '404-15';
 	const LOCATIONS_NOT_FOUND = '404-16';
+	const COLLECTION_NOT_FOUND = '404-17';
 
     //405 Method Not Allowed
     /*

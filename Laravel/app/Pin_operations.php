@@ -22,4 +22,10 @@ class Pin_operations extends Model
         $this->feeling_timestamp = $this->freshTimestamp();
         return $this->save();
     }
+
+    public function updateMemoTimestamp()
+    {
+        $this->memo_timestamp = $this->freshTimestamp();
+        return $this->save();
+    }
 }

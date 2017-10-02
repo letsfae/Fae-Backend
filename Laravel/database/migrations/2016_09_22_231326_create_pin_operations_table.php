@@ -14,16 +14,18 @@ class CreatePinOperationsTable extends Migration
     {
         Schema::create('pin_operations', function (Blueprint $table) {
             $table->increments('id');
-            $table->enum('type',['media','comment','place']);
+            $table->enum('type',['media','comment','place','location']);
             $table->integer('pin_id')->unsigned();
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
             $table->boolean('liked')->default(false);
             $table->timestamp('liked_timestamp')->nullable();
-            $table->boolean('saved')->default(false);
+            $table->string('saved')->nullable();
             $table->timestamp('saved_timestamp')->nullable();
             $table->integer('feeling')->default(-1);
             $table->timestamp('feeling_timestamp')->nullable();
+            $table->text('memo')->nullable();
+            $table->timestamp('memo_timestamp')->nullable();
             $table->boolean('interacted')->default(false);
             $table->timestamps();
         });

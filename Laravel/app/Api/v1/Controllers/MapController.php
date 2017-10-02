@@ -227,7 +227,8 @@ class MapController extends Controller
                         'class3' => array_key_exists("class_three", $place) ? $place["class_three"] : '',
                         'class3_icon_id' => array_key_exists("class_three_idx", $place) ? $place["class_three_idx"] : '',
                         'class4' => array_key_exists("class_four", $place) ? $place["class_four"] : '',
-                        'class4_icon_id' => array_key_exists("class_four_idx", $place) ? $place["class_four_idx"] : '']
+                        'class4_icon_id' => array_key_exists("class_four_idx", $place) ? $place["class_four_idx"] : ''],
+                    'saved_count' => $place["saved_count"]
                 );
             }
         }

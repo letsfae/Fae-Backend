@@ -177,6 +177,12 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae'], 'namesp
     $api->post('/feedback', 'FeedbackController@sendFeedback');
     // places
     $api->get('/pins/places/{place_id}', 'PlaceController@getOne');
+    // locations
+    $api->post('/locations', 'LocationController@create');
+    $api->post('/locations/{location_id}', 'LocationController@update');
+    $api->get('/locations/{location_id}', 'LocationController@getOne');
+    $api->delete('/locations/{location_id}', 'LocationController@delete');
+    $api->get('/locations', 'LocationController@getFromCurrentUser');
     // collections
     $api->post('/collections', 'CollectionController@createOne');
     $api->get('/collections', 'CollectionController@getAll');

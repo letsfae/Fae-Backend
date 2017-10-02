@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateLocationsTable extends Migration
+class CreateCollectionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,17 +12,14 @@ class CreateLocationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('locations', function(Blueprint $table)
-        {
+        Schema::create('collections', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
-            $table->text('content');
-            $table->point('geolocation');
-            $table->integer('saved_count')->default(0);
-            $table->integer('liked_count')->default(0);
-            $table->integer('comment_count')->default(0);
-            $table->string('feeling_count')->default('0,0,0,0,0,0,0,0,0,0,0');
+            $table->enum('type',['location','place','media','comment']);
+            $table->boolean('is_private');
+            $table->string('name');
+            $table->text('description');
             $table->timestamps();
         });
     }
@@ -34,6 +31,6 @@ class CreateLocationsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('locations');
+        Schema::drop('collections');
     }
 }

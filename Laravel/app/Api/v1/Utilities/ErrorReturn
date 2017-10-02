@@ -37,13 +37,13 @@ return response()->json([
             ], 400);
 
 return response()->json([
-                'message' => 'Bad request, you have already saved this pin!',
+                'message' => 'Bad request, you have already saved this pin in this collection!',
                 'error_code' => ErrorCodeUtility::SAVED_ALREADY,
                 'status_code' => '400'
             ], 400);
 
 return response()->json([
-                'message' => 'Bad request, you have not saved this pin yet!',
+                'message' => 'Bad request, you have not saved this pin in this collection yet!',
                 'error_code' => ErrorCodeUtility::NOT_SAVED,
                 'status_code' => '400'
             ], 400);
@@ -153,14 +153,22 @@ return response()->json([
                     'error_code' => ErrorCodeUtility::NOT_OWNER_OF_PIN,
                     'status_code' => '403'
                 ], 403);
+
 return response()->json([
                     'message' => 'verification timeout',
                     'error_code' => ErrorCodeUtility::VERIFICATION_TIMEOUT,
                     'status_code' => '403'
                 ], 403);
+                
 return response()->json([
                     'message' => 'verification code is wrong',
                     'error_code' => ErrorCodeUtility::VERIFICATION_WRONG_CODE,
+                    'status_code' => '403'
+                ], 403);
+
+return response()->json([
+                    'message' => 'You can not delete this collection',
+                    'error_code' => ErrorCodeUtility::NOT_OWNER_OF_COLLECTION,
                     'status_code' => '403'
                 ], 403);
 
@@ -263,6 +271,12 @@ return response()->json([
 return response()->json([
                     'message' => 'name card not found',
                     'error_code' => ErrorCodeUtility::VERIFICATION_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
+
+return response()->json([
+                    'message' => 'Collection not found',
+                    'error_code' => ErrorCodeUtility::COLLECTION_NOT_FOUND,
                     'status_code' => '404'
                 ], 404);
 

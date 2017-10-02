@@ -19,6 +19,8 @@ use App\Users;
 use App\Places;
 use App\Locations;
 use App\ChatRooms;
+use App\Collections;
+use App\Collection_of_pins;
 use DB;
 use App\Api\v1\Utilities\ErrorCodeUtility;
 use App\Api\v1\Utilities\PinUtility;
@@ -32,7 +34,7 @@ class PinOperationController extends Controller {
         $this->request = $request;
     }
 
-    public function save($type, $pin_id) {
+    public function save($collection_id, $type, $pin_id) {
         if(!is_numeric($pin_id))
         {
             return response()->json([
@@ -41,10 +43,10 @@ class PinOperationController extends Controller {
                     'status_code' => '400'
                 ], 400);
         }
-        if($type != 'media' && $type != 'comment' && $type != 'place')
+        if($type != 'media' && $type != 'comment' && $type != 'place' && $type != 'location')
         {
             return response()->json([
-                'message' => 'wrong type, must be media, comment, or place',
+                'message' => 'wrong type, must be location, media, comment, or place',
                 'error_code' => ErrorCodeUtility::WRONG_TYPE,
                 'status_code' => '400'
             ], 400);
@@ -58,24 +60,42 @@ class PinOperationController extends Controller {
                     'status_code' => '404'
                 ], 404);
         }
-        if($obj_pin_operation->saved == true)
-        {
+        $collection_of_pins = Collection_of_pins::where('collection_id', $collection_id)
+                                                ->where('type', $type)->where('pin_id', $pin_id)
+                                                ->first();
+        if(!is_null($collection_of_pins)) {
             return response()->json([
-                'message' => 'Bad request, you have already saved this pin!',
+                'message' => 'Bad request, you have already saved this pin in this collection!',
                 'error_code' => ErrorCodeUtility::SAVED_ALREADY,
                 'status_code' => '400'
             ], 400);
         }
-        $obj_pin_operation->saved = true;
+
+        $collection_of_pins = new Collection_of_pins();
+        $collection_of_pins->collection_id = $collection_id;
+        $collection_of_pins->type = $type;
+        $collection_of_pins->pin_id = $pin_id;
+        $collection_of_pins->save();
+
+        // if(is_null($obj_pin_operation->saved)) {
+        //     $obj_pin_operation->saved = $collection_id;
+        // } else {
+        //     $obj_pin_operation->saved .= ",".$collection_id;
+        // }
+
+        $obj_pin_operation->saved = PinUtility::AddIdToList($obj_pin_operation->saved, $collection_id);
         $obj_pin_operation->updateSavedTimestamp();
         $obj_pin_operation->save();
+
         $obj = self::getObj($type, $pin_id);
         $obj->saved_count++;
         $obj->save();
         return $this->response->created();
+
+
     }
 
-    public function unsave($type, $pin_id) {
+    public function unsave($collection_id, $type, $pin_id) {
         if(!is_numeric($pin_id))
         {
             return response()->json([
@@ -84,14 +104,14 @@ class PinOperationController extends Controller {
                     'status_code' => '400'
                 ], 400);
         }
-        if($type != 'media' && $type != 'comment' && $type != 'place')
+        if($type != 'media' && $type != 'comment' && $type != 'place' && $type != 'location')
         {
             return response()->json([
-                'message' => 'wrong type, must be media, comment, or place',
+                'message' => 'wrong type, must be location, media, comment, or place',
                 'error_code' => ErrorCodeUtility::WRONG_TYPE,
                 'status_code' => '400'
             ], 400);
-        }    
+        } 
         $obj_pin_operation = $this->readOperation($type, $pin_id);
         if(is_null($obj_pin_operation))
         {
@@ -101,17 +121,32 @@ class PinOperationController extends Controller {
                     'status_code' => '404'
                 ], 404);
         }
-        if($obj_pin_operation->saved == false)
-        {
+        $collection_of_pins = Collection_of_pins::where('collection_id', $collection_id)
+                                                ->where('type', $type)->where('pin_id', $pin_id)
+                                                ->first();
+        if(is_null($collection_of_pins)) {
             return response()->json([
-                'message' => 'Bad request, you have not saved this pin yet!',
+                'message' => 'Bad request, you have not saved this pin in this collection yet!',
                 'error_code' => ErrorCodeUtility::NOT_SAVED,
                 'status_code' => '400'
             ], 400);
         }
-        $obj_pin_operation->saved = false;
+
+        $collection_of_pins->delete();
+
+        // $saved_collections = array_map('intval', explode(',', $obj_pin_operation->saved));
+        // $new_saved_collections = array();
+        // foreach ($saved_collections as $saved_collection_id) {
+        //     if($saved_collection_id != $collection_id) {
+        //         $new_saved_collections[] = $saved_collection_id;
+        //     }
+        // }
+        // $obj_pin_operation->saved = implode(',', $new_saved_collections);
+
+        $obj_pin_operation->saved = PinUtility::deleteIdFromList($obj_pin_operation->saved, $collection_id);
         $obj_pin_operation->updateSavedTimestamp();
         $obj_pin_operation->save();
+        
         $obj = self::getObj($type, $pin_id);
         $obj->saved_count--;
         $obj->save();
@@ -211,28 +246,13 @@ class PinOperationController extends Controller {
 
     public static function getOperations($type, $pin_id, $user_id)
     {
-        if(!is_numeric($pin_id) || !is_numeric($user_id))
-        {
-            return response()->json([
-                    'message' => 'pin_id or user_id is not integer',
-                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
-                    'status_code' => '400'
-                ], 400);
-        }
-        if($type != 'media' && $type != 'comment')
-        {
-            return response()->json([
-                'message' => 'wrong type, neither media nor comment',
-                'error_code' => ErrorCodeUtility::WRONG_TYPE,
-                'status_code' => '400'
-            ], 400);
-        }
         $pin_operation = Pin_operations::where('pin_id', $pin_id)->where('user_id', $user_id)->
                          where('type', $type)->first();
         if($pin_operation == null)
         {
             return array('is_liked' => false, 'liked_timestamp' => null, 
                          'is_saved' => false, 'saved_timestamp' => null,
+                         'feeling' => null, 'feeling_timestamp' => null,
                          'is_read'  => false, 'read_timestamp'  => null);  
         }
         return array('is_liked' => $pin_operation->liked, 'liked_timestamp' => $pin_operation->liked_timestamp, 
@@ -292,6 +312,10 @@ class PinOperationController extends Controller {
             {
                 $obj = Places::find($pin_id);
             }
+            else if($type == 'location')
+            {
+                $obj = Locations::find($pin_id);
+            }
             if (is_null($obj))
             {
                 return null;
@@ -302,10 +326,7 @@ class PinOperationController extends Controller {
                 $newobj_pin_operation->user_id = $this->request->self_user_id;
                 $newobj_pin_operation->pin_id = $pin_id;
                 $newobj_pin_operation->type = $type;
-                $newobj_pin_operation->saved = false;
-                $newobj_pin_operation->liked = false;
-                $newobj_pin_operation->feeling = -1;
-                $newobj_pin_operation->interacted = false;
+                $newobj_pin_operation->saved = null;
                 $newobj_pin_operation->save();
                 return $newobj_pin_operation;
             }
@@ -808,12 +829,12 @@ class PinOperationController extends Controller {
         $start_time = $this->request->has('start_time') ? $this->request->start_time : '1970-01-01 00:00:00';
         $end_time = $this->request->has('end_time') ? $this->request->end_time : date("Y-m-d H:i:s");
         $page =  $this->request->has('page') ? $this->request->page : 1;
-        $is_place = $this->request->has('is_place') ? $this->request->is_place == 'true' ? true : false : false;
+        $is_place = $this->request->has('is_place') ? ($this->request->is_place == 'true' ? true : false) : false;
         if($is_place == true)
         {
             $total = Pin_operations::where('user_id', $user_id)
                                ->where('type', 'place')
-                               ->where('saved', true)
+                               ->whereNotNull('saved')
                                ->where('saved_timestamp','>=', $start_time)
                                ->where('saved_timestamp','<=', $end_time)
                                ->count();
@@ -822,7 +843,7 @@ class PinOperationController extends Controller {
         {
             $total = Pin_operations::where('user_id', $user_id)
                                ->where('type', '!=', 'place')
-                               ->where('saved', true)
+                               ->whereNotNull('saved')
                                ->where('saved_timestamp','>=', $start_time)
                                ->where('saved_timestamp','<=', $end_time)
                                ->count();
@@ -836,7 +857,7 @@ class PinOperationController extends Controller {
         {
             $saved_pin_list = Pin_operations::where('user_id', $user_id)
                                         ->where('type', 'place')
-                                        ->where('saved', true)
+                                        ->whereNotNull('saved')
                                         ->where('saved_timestamp','>=', $start_time)
                                         ->where('saved_timestamp','<=', $end_time)
                                         ->orderBy('saved_timestamp', 'desc')
@@ -846,7 +867,7 @@ class PinOperationController extends Controller {
         {
             $saved_pin_list = Pin_operations::where('user_id', $user_id)
                                         ->where('type', '!=', 'place')
-                                        ->where('saved', true)
+                                        ->whereNotNull('saved')
                                         ->where('saved_timestamp','>=', $start_time)
                                         ->where('saved_timestamp','<=', $end_time)
                                         ->orderBy('saved_timestamp', 'desc')
@@ -859,7 +880,8 @@ class PinOperationController extends Controller {
                             'type' => $saved_pin->type,
                             'created_at' => $saved_pin->saved_timestamp,
                             'pin_object' => PinUtility::getPinObject($saved_pin->type, $saved_pin->pin_id, 
-                            $this->request->self_user_id));
+                            $this->request->self_user_id),
+                            'saved_collections' => $saved_pin->saved);
         }
         return $this->response->array($info)->header('page', $page)->header('total_pages', $total_pages);
     }
@@ -1030,6 +1052,10 @@ class PinOperationController extends Controller {
         {
             $obj = Places::find($pin_id);
         }
+        else if ($type == 'location')
+        {
+            $obj = Locations::find($pin_id);
+        }
         return $obj;
     }
 
@@ -1060,11 +1086,44 @@ class PinOperationController extends Controller {
     }
 
     public function memo($type, $pin_id) {
-
+        $this->memoVlidation($this->request);
+        $obj_pin_operation = $this->readOperation($type, $pin_id);
+        if(is_null($obj_pin_operation))
+        {
+            return response()->json([
+                    'message' => 'PIN not found',
+                    'error_code' => ErrorCodeUtility::PIN_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
+        }
+        $obj_pin_operation->memo = $this->request->content;
+        $obj_pin_operation->save();
+        return $this->response->created();
     }
 
     public function unmemo($type, $pin_id) {
-        
+        $obj_pin_operation = $this->readOperation($type, $pin_id);
+        if(is_null($obj_pin_operation))
+        {
+            return response()->json([
+                    'message' => 'PIN not found',
+                    'error_code' => ErrorCodeUtility::PIN_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
+        }
+        $obj_pin_operation->memo = null;
+        $obj_pin_operation->save();
+        return $this->response->noContent();
+    }
+
+    public function memoVlidation(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'content' => 'required|string'
+        ]);
+        if($validator->fails())
+        {
+            throw new StoreResourceFailedException('Could not create this memo.',$validator->errors());
+        }
     }
 
     private function voteValidation(Request $request)
@@ -1118,17 +1177,20 @@ class PinOperationController extends Controller {
         $count['created_chat_room'] = ChatRooms::where('user_id', $this->request->self_user_id)->count();
         $count['saved_comment_pin'] = Pin_operations::where('user_id', $this->request->self_user_id)
                                                     ->where('type', 'comment')
-                                                    ->where('saved', true)
+                                                    ->whereNotNull('saved')
                                                     ->count();
         $count['saved_media_pin'] = Pin_operations::where('user_id', $this->request->self_user_id)
                                                   ->where('type', 'media')
-                                                  ->where('saved', true)
+                                                  ->whereNotNull('saved')
                                                   ->count();
         $count['saved_place_pin'] = Pin_operations::where('user_id', $this->request->self_user_id)
                                                   ->where('type', 'place')
-                                                  ->where('saved', true)
+                                                  ->whereNotNull('saved')
                                                   ->count();
-
+        $count['saved_location_pin'] = Pin_operations::where('user_id', $this->request->self_user_id)
+                                                  ->where('type', 'location')
+                                                  ->whereNotNull('saved')
+                                                  ->count();
         return $this->response->array(array('user_id' => $this->request->self_user_id, 'count' => $count));
     }
 

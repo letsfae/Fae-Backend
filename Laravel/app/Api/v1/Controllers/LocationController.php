@@ -11,9 +11,11 @@ use Dingo\Api\Exception\StoreResourceFailedException;
 use Dingo\Api\Exception\UpdateResourceFailedException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
+use App\Api\v1\Controllers\PinOperationController;
 use App\Users;
 use App\Locations;
 use App\PinHelper;
+use App\Collection_of_pins;
 use Phaza\LaravelPostgis\Eloquent\PostgisTrait;
 use Phaza\LaravelPostgis\Geometries\Point;
 use Phaza\LaravelPostgis\Geometries\Geometry;
@@ -99,14 +101,14 @@ class LocationController extends Controller implements PinInterface
                     'status_code' => '404'
                 ], 404);
         }
-        if($location == -1)
-        {
-            return response()->json([
-                    'message' => 'You can not access this location',
-                    'error_code' => ErrorCodeUtility::NOT_OWNER_OF_PIN,
-                    'status_code' => '403'
-                ], 403);
-        }
+        // if($location == -1)
+        // {
+        //     return response()->json([
+        //             'message' => 'You can not access this location',
+        //             'error_code' => ErrorCodeUtility::NOT_OWNER_OF_PIN,
+        //             'status_code' => '403'
+        //         ], 403);
+        // }
         return $this->response->array($location);
     }    
 
@@ -137,6 +139,10 @@ class LocationController extends Controller implements PinInterface
                     'status_code' => '403'
                 ], 403);
         }
+
+        PinOperationController::deletePinOperations('location', $location->id);
+        PinOperationController::deletePinComments('location', $location->id);
+        Collection_of_pins::where('type', 'location')->where('pin_id', $location->id)->delete();
         $location->delete();
         return $this->response->noContent();
     }
@@ -151,14 +157,14 @@ class LocationController extends Controller implements PinInterface
                     'status_code' => '400'
                 ], 400);
         }
-        if($user_id != $this->request->self_user_id)
-        {
-            return response()->json([
-                    'message' => 'You can not access these locations',
-                    'error_code' => ErrorCodeUtility::NOT_OWNER_OF_PIN,
-                    'status_code' => '403'
-                ], 403);
-        }
+        // if($user_id != $this->request->self_user_id)
+        // {
+        //     return response()->json([
+        //             'message' => 'You can not access these locations',
+        //             'error_code' => ErrorCodeUtility::NOT_OWNER_OF_PIN,
+        //             'status_code' => '403'
+        //         ], 403);
+        // }
         if (is_null(Users::find($user_id)))
         {
             return response()->json([
@@ -195,6 +201,8 @@ class LocationController extends Controller implements PinInterface
                 'content' => $location->content, 
                 'geolocation' => ['latitude' => $location->geolocation->getLat(), 
                 'longitude' => $location->geolocation->getLng()], 
+                'saved_count' => $location->saved_count,
+                'user_pin_operations' => PinOperationController::getOperations('location', $location->id, $user_id),
                 'created_at' => $location->created_at->format('Y-m-d H:i:s')
                 );   
         }
@@ -212,15 +220,17 @@ class LocationController extends Controller implements PinInterface
         {
             return null;
         }
-        else if($location->user_id != $user_id)
-        {
-            return -1;
-        }
+        // else if($location->user_id != $user_id)
+        // {
+        //     return -1;
+        // }
         return array(
             'location_id' => $location->id,
             'content' => $location->content, 
             'geolocation' => ['latitude' => $location->geolocation->getLat(), 
             'longitude' => $location->geolocation->getLng()], 
+            'saved_count' => $location->saved_count,
+            'user_pin_operations' => PinOperationController::getOperations('location', $location_id, $user_id),
             'created_at' => $location->created_at->format('Y-m-d H:i:s')
         );
     }
