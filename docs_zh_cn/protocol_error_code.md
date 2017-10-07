@@ -45,6 +45,8 @@
 | 403-4 | verification超时 |
 | 403-5 | 验证码错误 |
 | 403-6 | 不是好友请求发起者，无权撤销 |
+| 403-7 | 用户不是collection创建者，无权操作修改 |
+
 
 ## 404 Not Found
 | Error Code | Description |
@@ -65,6 +67,7 @@
 | 404-14 | Verification不存在 |
 | 404-15 | Name Card不存在 |
 | 404-16 | Location(PIN)不存在 |
+| 404-17 | Collection不存在 |
 
 ## 405 Method Not Allowed
 | Error Code | Description |

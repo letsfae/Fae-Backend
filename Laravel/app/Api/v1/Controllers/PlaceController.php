@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\File;
 use App\Api\v1\Interfaces\PinInterface;
 
 use App\Api\v1\Utilities\ErrorCodeUtility;
+use App\Api\v1\Controllers\PinOperationController;
 use App\Places;
 use DB;
 
@@ -62,7 +63,9 @@ class PlaceController extends Controller implements PinInterface {
                 'class3' => $place->class_three,
                 'class3_icon_id' => $place->class_three_idx,
                 'class4' => $place->class_four,
-                'class4_icon_id' => $place->class_four_idx]
+                'class4_icon_id' => $place->class_four_idx],
+            'saved_count' => $place->saved_count,
+            'user_pin_operations' => PinOperationController::getOperations('place', $$place->id, $user_id)
         );
      }
 

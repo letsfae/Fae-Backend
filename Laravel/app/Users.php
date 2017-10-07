@@ -22,11 +22,6 @@ class Users extends Model implements AuthenticatableContract
     	return $this->hasMany('App\Sessions','user_id','id');
     }
 
-    public function hasOneProfile() 
-    {
-    	return $this->hasOne('App\Profiles','user_id','id');
-    }
-
     public function hasManyMedias() 
     {
         return $this->hasMany('App\Medias','user_id','id');
@@ -44,6 +39,10 @@ class Users extends Model implements AuthenticatableContract
     public function hasOneExts() 
     {
         return $this->hasOne('App\User_exts','user_id','id');
+    }
+    public function hasManyCollections()
+    {
+        return $this->hasMany('App\Collections', 'user_id', 'id');
     }
     
     /**
