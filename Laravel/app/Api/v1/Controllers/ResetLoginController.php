@@ -77,7 +77,7 @@ class ResetLoginController extends Controller
         
         // send code to this email
         $email = "Hello!\n\n";
-        $email = $email."This is Fae Support. Below is the code for resetting your password. Please enter the code on your device and proceed to creating your new password. The code will be valid for 3 hours and when a new one is issued.\n";
+        $email = $email."This is Fae Support. Below is the code for resetting your password. Please enter the code on your device and proceed to creating your new password. The code is valid for 3 hours or when a new one is issued.\n";
         $email = $email."\n".$verification_code."\n\n";
         $email = $email."Have a wonderful day!\n";
         $email = $email."Fae Support\n\n";
