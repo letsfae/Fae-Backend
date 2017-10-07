@@ -171,7 +171,9 @@ return [
 
         Intervention\Image\ImageServiceProvider::class,
 
-        Cviebrock\LaravelElasticsearch\ServiceProvider::class
+        Cviebrock\LaravelElasticsearch\ServiceProvider::class,
+
+        Jenssegers\Mongodb\MongodbServiceProvider::class
 
     ],
 

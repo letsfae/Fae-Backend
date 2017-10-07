@@ -12,6 +12,7 @@ use App\Api\v1\Interfaces\PinInterface;
 
 use App\Api\v1\Utilities\ErrorCodeUtility;
 use App\Places;
+use DB;
 
 class PlaceController extends Controller implements PinInterface {
     use Helpers;

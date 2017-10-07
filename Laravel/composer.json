@@ -14,7 +14,8 @@
         "intervention/image": "2.*",
         "eelkevdbos/firebase-php": "dev-master",
         "predis/predis":"~1.0",
-        "cviebrock/laravel-elasticsearch": "^2.0"
+        "cviebrock/laravel-elasticsearch": "^2.0",
+        "jenssegers/mongodb": "^3.2"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
