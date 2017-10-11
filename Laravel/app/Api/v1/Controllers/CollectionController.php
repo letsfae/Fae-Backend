@@ -47,7 +47,7 @@ class CollectionController extends Controller {
         foreach ($collections as $collection) {
             $result[] = $this->collectionFormatting($collection);
         }
-        return array($result);
+        return $this->response->array($result);
     }
 
     public function updateOne($collection_id) {
@@ -116,7 +116,7 @@ class CollectionController extends Controller {
         $pins = DB::select("SELECT pin_id FROM collection_of_pins WHERE collection_id = :collection_id",
                             array('collection_id' => $collection_id));
         $result['pin_id'] = $pins;
-        return array($result);
+        return $this->response->array($result);
     }
 
     public function save($collection_id, $type, $pin_id) {
@@ -211,13 +211,13 @@ class CollectionController extends Controller {
         }
         return array("collection_id" => $collection->id, "name" => $collection->name, 
                      "description" => $collection->description, "type" => $collection->type,
-                     "is_private" => $collection->is_private, "created_at" => $collection->created_at);
+                     "is_private" => $collection->is_private, "created_at" => $collection->created_at->format('Y-m-d H:i:s'));
     }
 
     private function createOneValidation(Request $request) {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
-            'description' => 'required|string',
+            'description' => 'filled|string',
             'type' => 'required|in:location,place',
             'is_private' => 'required|in:true,false'
         ]);
@@ -237,5 +237,38 @@ class CollectionController extends Controller {
         {
             throw new UpdateResourceFailedException('Could not create collection.',$validator->errors());
         }
+    }
+
+    public static function createDefaultCollections($user_id) {
+        $collection1 = new Collections();
+        $collection1->user_id = $user_id;
+        $collection1->name = "Favorite Places";
+        $collection1->type = "place";
+        $collection1->is_private = false;
+        $collection1->save();
+        $collection2 = new Collections();
+        $collection2->user_id = $user_id;
+        $collection2->name = "Saved Places";
+        $collection2->type = "place";
+        $collection2->is_private = false;
+        $collection2->save();
+        $collection3 = new Collections();
+        $collection3->user_id = $user_id;
+        $collection3->name = "Places to Go";
+        $collection3->type = "place";
+        $collection3->is_private = false;
+        $collection3->save();
+        $collection4 = new Collections();
+        $collection4->user_id = $user_id;
+        $collection4->name = "Favorite Locations";
+        $collection4->type = "location";
+        $collection4->is_private = false;
+        $collection4->save();
+        $collection5 = new Collections();
+        $collection5->user_id = $user_id;
+        $collection5->name = "Saved Locations";
+        $collection5->type = "location";
+        $collection5->is_private = false;
+        $collection5->save();
     }
 }

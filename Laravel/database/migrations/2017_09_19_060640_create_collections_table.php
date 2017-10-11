@@ -19,7 +19,7 @@ class CreateCollectionsTable extends Migration
             $table->enum('type',['location','place','media','comment']);
             $table->boolean('is_private');
             $table->string('name');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }

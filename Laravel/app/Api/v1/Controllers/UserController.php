@@ -18,6 +18,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Dingo\Api\Routing\Helpers;
 use App\Name_cards;
 use App\Chats;
+use App\Api\v1\Controllers\CollectionController;
 use Mail;
 use Twilio;
 use DateTime;
@@ -94,6 +95,8 @@ class UserController extends Controller
         $chat->user_b_unread_count++;
         $chat->save();
 
+        CollectionController::createDefaultCollections($user->id);
+
         return $this->response->created();
     }
 
@@ -144,7 +147,7 @@ class UserController extends Controller
         {
             $account = array(
                 'email' => $user->email,
-                'email_verified' => $user->email_verfied,
+                'email_verified' => $user->email_verified,
                 'user_name' => $user->user_name,
                 'first_name' => $user->first_name,
                 'last_name' => $user->last_name,
@@ -458,7 +461,7 @@ class UserController extends Controller
         $verification = Verifications::where('email','=', $input['email'])->where('type','=', 'email')->get();
         if( is_null($verification) || ( count($verification)==0 ) ){
             return response()->json([
-                    'message' => 'name card not found',
+                    'message' => 'verification not found',
                     'error_code' => ErrorCodeUtility::VERIFICATION_NOT_FOUND,
                     'status_code' => '404'
                 ], 404);
