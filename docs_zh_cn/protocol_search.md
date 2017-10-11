@@ -12,7 +12,7 @@
 
 该接口可充当自动补全使用。
 
-# request
+## request
 
 	GET /search
 	{
@@ -36,7 +36,7 @@
 
 如果需要发起批量搜索，可以使用该接口。
 
-# request
+## request
 
 	GET /search／bulk
 	[
@@ -46,8 +46,8 @@
 
 ### response
 
-	[{}, {}] array of search result object.
+	[[], []] array of search result array.
 
 ### example
 
-搜索
+同时在category_name及data中搜索关键字"abc"。
