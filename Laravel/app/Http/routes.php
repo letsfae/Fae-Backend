@@ -191,6 +191,11 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae'], 'namesp
     $api->get('/collections/{collection_id}', 'CollectionController@getOne');
     $api->post('/collections/{collection_id}/save/{type}/{pin_id}', 'CollectionController@save');
     $api->delete('/collections/{collection_id}/save/{type}/{pin_id}', 'CollectionController@unsave');
+    // search
+    $api->get('/search', 'SearchController@search');
+    $api->post('/search', 'SearchController@search');
+    $api->get('/search/bulk', 'SearchController@bulk');
+    $api->post('/search/bulk', 'SearchController@bulk');
 });
 
 /**

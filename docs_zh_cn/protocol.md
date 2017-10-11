@@ -77,6 +77,7 @@ Base URL：`https://api.letsfae.com/`
 
 - [用户及认证类](protocol_users.md)
 - [地图及各类Pin](protocol_maps.md)
+- [搜索类](protocol_search.md)
 - [用户对于pin的操作](protocol_pins.md)
 - [联系人类](protocol_contacts.md)
 - [聊天类](protocol_chats.md)
