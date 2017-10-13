@@ -21,10 +21,11 @@
 		"location": { // optional, user location, but needs to be set if sort by geo_location
 			"latitude": "",
 			"longitude": ""
-		}
+		}, 
+		"radius": 500, // optional, meter
 		"size": 10, // optional, defaults to 10
 		"offset": 0, // optional, defaults to 0
-		"sort": [{"created_at": "desc"}], // optional, defaults to [{"created_at": "desc"}], could be "created_at", "geo_location", "name"; order matters.
+		"sort": [{"name": "desc"}], // optional, defaults to [{"name": "desc"}], could be "geo_location", "name"; order matters.
 		"source": "category_name" // required, could be "category_name", "data"
 	}
 
@@ -38,7 +39,7 @@
 
 ### request
 
-	GET /search／bulk
+	GET /search/bulk
 	[
 		{search object},
 		...
