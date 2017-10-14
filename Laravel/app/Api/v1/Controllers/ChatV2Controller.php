@@ -256,8 +256,16 @@ class ChatV2Controller extends Controller
                     'status_code' => '403'
                 ], 403);
         }
+
+        $messages = array();
+                    
         $message = Redis::LPOP($this->request->self_user_id.':'.$chat_id);
-        return $this->response->array($arr = json_decode($message, true));
+        while(!is_null($message)){
+            $messages[] = json_decode($message, true);
+            $message = Redis::LPOP($this->request->self_user_id.':'.$chat_id);
+        }
+        
+        return $this->response->array($messages);
     }
 
     private function sendValidation(Request $request)
