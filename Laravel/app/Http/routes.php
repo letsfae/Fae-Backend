@@ -176,7 +176,7 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae'], 'namesp
     // feedback
     $api->post('/feedback', 'FeedbackController@sendFeedback');
     // places
-    $api->get('/pins/places/{place_id}', 'PlaceController@getOne');
+    $api->get('/places/{place_id}', 'PlaceController@getOne');
     // locations
     $api->post('/locations', 'LocationController@create');
     $api->post('/locations/{location_id}', 'LocationController@update');
