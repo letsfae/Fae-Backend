@@ -158,6 +158,12 @@ class CollectionController extends Controller {
         //         ], 403);
         //     }
         // }
+        
+        // print_r("haha");
+
+        // $place = Places::find(15);
+        // print_r($place);
+        // return ;
         $pinOperation = new PinOperationController($this->request);
         return $pinOperation->save($collection_id, $type, $pin_id);
     }

@@ -35,9 +35,8 @@ class PlaceController extends Controller implements PinInterface {
     }
 
      public static function getPinObject($place_id, $user_id) {
-        $place = Places::find($place_id);
-        if(is_null($place))
-        {
+        $place = Places::find((int)$place_id);
+        if(is_null($place)){
             return null;
         }
 
@@ -46,9 +45,12 @@ class PlaceController extends Controller implements PinInterface {
         return array(
             'place_id' => $place->id, 
             'name' => $place->name,
+            'priceRange' => $place->priceRange,
+            'hour' => $place->hour_data,
+            'url' => $place->url,
             'geolocation' => [
-                'latitude' => $place->geolocation->getLat(), 
-                'longitude' => $place->geolocation->getLng()], 
+                'latitude' => $place->location['lat'], 
+                'longitude' => $place->location['lon']], 
             'location' => [
                 'city' => $place->city,
                 'country' => $place->country, 
@@ -65,7 +67,7 @@ class PlaceController extends Controller implements PinInterface {
                 'class4' => $place->class_four,
                 'class4_icon_id' => $place->class_four_idx],
             'saved_count' => $place->saved_count,
-            'user_pin_operations' => PinOperationController::getOperations('place', $$place->id, $user_id)
+            'user_pin_operations' => PinOperationController::getOperations('place', $place->id, $user_id)
         );
      }
 

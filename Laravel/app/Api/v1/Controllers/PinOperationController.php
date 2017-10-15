@@ -310,7 +310,7 @@ class PinOperationController extends Controller {
             }
             else if($type == 'place')
             {
-                $obj = Places::find($pin_id);
+                $obj = Places::find((int)$pin_id);
             }
             else if($type == 'location')
             {
@@ -1050,7 +1050,7 @@ class PinOperationController extends Controller {
         }
         else if ($type == 'place')
         {
-            $obj = Places::find($pin_id);
+            $obj = Places::find((int)$pin_id);
         }
         else if ($type == 'location')
         {
