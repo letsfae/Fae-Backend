@@ -195,8 +195,8 @@ class ChatRoomV2Controller extends Controller implements PinInterface
         if (is_null(Users::find($user_id)))
         {
             return response()->json([
-                    'message' => 'user_id is not integer',
-                    'error_code' => ErrorCodeUtility::INPUT_ID_NOT_NUMERIC,
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
                     'status_code' => '400'
                 ], 400);
         }
