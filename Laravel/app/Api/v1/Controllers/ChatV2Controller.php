@@ -71,7 +71,10 @@ class ChatV2Controller extends Controller
         }
         $chat->save();
 
-        Redis::RPUSH($receiver_id.':'.$chat->id,  json_encode($this->request->toArray()));
+        $chat_message = $this->request->toArray();
+        $chat_message['message_sender_id'] = $sender_id;
+        $chat_message['message_timestamp'] = $chat->updated_at->format('Y-m-d H:i:s');
+        Redis::RPUSH($receiver_id.':'.$chat->id,  json_encode($chat_message));
 
         if(Config::get('app.pushback')==true) {
             $sessions = Sessions::where('user_id', $receiver_id)->get();
@@ -229,8 +232,34 @@ class ChatV2Controller extends Controller
                     'status_code' => '404'
                 ], 404);
         }
-        $message = Redis::LPOP($this->request->self_user_id.':'.$chat->id);
-        return $this->response->array(json_decode($message, true));
+
+        
+        $messages = array();           
+        $message_count = 0;
+        $message = '';
+        while(!is_null($message = Redis::LPOP($this->request->self_user_id.':'.$chat_id))){
+            $message_obj = json_decode($message, true);
+            $message_obj['chat_id'] =  $chat_id;
+            $messages[] = $message_obj;
+            $message_count++;
+            if($message_count == 50){
+                break;
+            }
+        }
+        $unread_count = 0;
+        if($this->request->self_user_id == $chat->user_a_id){
+            $chat->user_a_unread_count -=$message_count;
+            $unread_count = $chat->user_a_unread_count;
+        }
+        else{
+            $chat->user_b_unread_count -=$message_count;
+            $unread_count = $chat->user_b_unread_count;
+        }
+        $chat->save();
+        return response()->json([
+                    'unread_count' => $unread_count,
+                    'messages' => $messages
+                ], 200);
     }
 
     public function getMessageByChatId($chat_id) {
@@ -259,15 +288,32 @@ class ChatV2Controller extends Controller
                 ], 403);
         }
 
-        $messages = array();
-                    
-        $message = Redis::LPOP($this->request->self_user_id.':'.$chat_id);
-        while(!is_null($message)){
-            $messages[] = json_decode($message, true);
-            $message = Redis::LPOP($this->request->self_user_id.':'.$chat_id);
+        $messages = array();           
+        $message_count = 0;
+        $message = '';
+        while(!is_null($message = Redis::LPOP($this->request->self_user_id.':'.$chat_id))){
+            $message_obj = json_decode($message, true);
+            $message_obj['chat_id'] =  $chat_id;
+            $messages[] = $message_obj;
+            $message_count++;
+            if($message_count == 50){
+                break;
+            }
         }
-        
-        return $this->response->array($messages);
+        $unread_count = 0;
+        if($this->request->self_user_id == $chat->user_a_id){
+            $chat->user_a_unread_count -=$message_count;
+            $unread_count = $chat->user_a_unread_count;
+        }
+        else{
+            $chat->user_b_unread_count -=$message_count;
+            $unread_count = $chat->user_b_unread_count;
+        }
+        $chat->save();
+        return response()->json([
+                    'unread_count' => $unread_count,
+                    'messages' => $messages
+                ], 200);
     }
 
     private function sendValidation(Request $request)

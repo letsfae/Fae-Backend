@@ -428,7 +428,7 @@ Status: 200
 
 	-----
 
-	[
+	messages: [
 		{
 			"chat_id": @number,
 			"message": @string,
