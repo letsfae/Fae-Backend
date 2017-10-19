@@ -48,6 +48,8 @@ class PlaceController extends Controller implements PinInterface {
             'priceRange' => $place->priceRange,
             'hour' => $place->hour_data,
             'url' => $place->url,
+            'img' => $place->img,
+            'phone' => $place->phone,
             'geolocation' => [
                 'latitude' => $place->location['lat'], 
                 'longitude' => $place->location['lon']], 

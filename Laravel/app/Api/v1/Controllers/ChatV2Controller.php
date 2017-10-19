@@ -78,7 +78,9 @@ class ChatV2Controller extends Controller
             $sender = Users::find($sender_id);
             foreach($sessions as $key=>$value) {
                 if ($value->is_mobile && !empty($value->device_id)){
-                    $message = PushNotification::Message($sender->user_name.': '.$this->request->message,array(
+                    $message = PushNotification::Message(
+                        ($chat->last_message_type=='text')?($sender->user_name.': '.$this->request->message) : ($sender->user_name.' sent you a '.$chat->last_message_type),
+                        array(
                         'badge' => SyncController::getAPNSCount($receiver_id),
                         'custom' => array('custom data' => array(
                             'type' => 'chat_new_message',

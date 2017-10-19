@@ -206,13 +206,16 @@ class MapController extends Controller
                 //             'radius' => $radius, 'max_count' => $max_count));
             }
             foreach ($places as $place) {
-                //$info[] = PlaceController::getPinObject($place['id'], $this->request->self_user_id);    
+                //$info[] = PlaceController::getPinObject($place['id'], $this->request->self_user_id);  
+                // print_r($place);
                 $info[] = array(
                     'place_id' => $place["id"], 
                     'name' => $place["name"],
                     'priceRange' => array_key_exists("priceRange", $place) ? $place["priceRange"] : '',
                     'hour' => array_key_exists("hour_data", $place) ? $place["hour_data"] : '',
                     'url' => array_key_exists("url", $place) ? $place["url"] : '',
+                    'img' => array_key_exists("img", $place) ? $place["img"] : '',
+                    'phone' => array_key_exists("phone", $place) ? $place["phone"] : '',
                     'geolocation' => [
                         'latitude' => $place["location"]["lat"], 
                         'longitude' => $place["location"]["lon"]], 
