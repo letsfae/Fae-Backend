@@ -237,9 +237,9 @@ class ChatV2Controller extends Controller
         $messages = array();           
         $message_count = 0;
         $message = '';
-        while(!is_null($message = Redis::LPOP($this->request->self_user_id.':'.$chat_id))){
+        while(!is_null($message = Redis::LPOP($this->request->self_user_id.':'.$chat->id))){
             $message_obj = json_decode($message, true);
-            $message_obj['chat_id'] =  $chat_id;
+            $message_obj['chat_id'] =  $chat->id;
             $messages[] = $message_obj;
             $message_count++;
             if($message_count == 50){
