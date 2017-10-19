@@ -454,7 +454,14 @@ Status: 200
 		"type": @string,
 		"is_private": @bool,
 		"created_at": @string,
-		"pin_id": [@number] 该collection包含的该type下的pin_id
+		"last_updated_at": @string, update包括对于collection本身的更新以及对于pin的添加与删除
+		"pins": [
+			{
+				"pin_id": @number,
+				"added_at": @string 加入collection的时间
+			}
+			...
+		]
 	}
 
 ## 收藏pin到collection

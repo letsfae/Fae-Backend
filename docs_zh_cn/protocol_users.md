@@ -178,6 +178,7 @@ Status: 200
 
 	{
 		"existence": @boolean
+		"user_id": @number 如果existence为false，该值为null
 	}
 
 ## 根据phone批量获取用户id
@@ -205,12 +206,13 @@ Status: 200
 	[
 		{
 			"phone": @string,
-			"user_id": @number
+			"user_id": @number,
+			"relation": {relation object}
 		},
 		...
 	]
 
-phone并不惟一，即会有重复。
+phone惟一。
 
 ## 获取用户账户信息 get account :white_check_mark:
 
@@ -366,6 +368,18 @@ yes
 ### response
 
 Status: 201
+
+## 删除电话号码 delete phone
+
+`DELETE /users/account/phone`
+
+### auth
+
+yes
+
+### response
+
+Status: 204
 
 ## 验证电话 verify phone :white_check_mark:
 

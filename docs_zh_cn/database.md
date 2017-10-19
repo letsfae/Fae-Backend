@@ -166,6 +166,7 @@
 - content_text string
 - created_at
 - geolocation point
+- file_id string
 
 ## chat_rooms
 - id PK
@@ -269,6 +270,7 @@
 - id PK
 - user_id
 - created_at
+- last_updated_at 注意区分和updated_at的区别。该字段包括对于collection本身的更新以及对于pin的添加与删除
 - type enum(location,place,media,comment)
 - is_private boolean
 - name
