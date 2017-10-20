@@ -455,6 +455,7 @@ Status: 200
 		"is_private": @bool,
 		"created_at": @string,
 		"last_updated_at": @string, update包括对于collection本身的更新以及对于pin的添加与删除
+		"count": @number, pin的数量，因为在获取collection总表的时候不会返回具体的pin id，因此需要后端记录该数量
 		"pins": [
 			{
 				"pin_id": @number,

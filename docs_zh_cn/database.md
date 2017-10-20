@@ -275,6 +275,7 @@
 - is_private boolean
 - name
 - description text
+- count
 
 ## collection_of_pins
 - id PK
