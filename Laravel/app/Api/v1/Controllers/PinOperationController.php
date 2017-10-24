@@ -34,7 +34,7 @@ class PinOperationController extends Controller {
         $this->request = $request;
     }
 
-    public function save($collection_id, $type, $pin_id) {
+    public function save($collection_id, $type, $pin_id, $collection) {
         if(!is_numeric($pin_id))
         {
             return response()->json([
@@ -76,13 +76,7 @@ class PinOperationController extends Controller {
         $collection_of_pins->type = $type;
         $collection_of_pins->pin_id = $pin_id;
         $collection_of_pins->save();
-
-        // if(is_null($obj_pin_operation->saved)) {
-        //     $obj_pin_operation->saved = $collection_id;
-        // } else {
-        //     $obj_pin_operation->saved .= ",".$collection_id;
-        // }
-
+        
         $obj_pin_operation->saved = PinUtility::AddIdToList($obj_pin_operation->saved, $collection_id);
         $obj_pin_operation->updateSavedTimestamp();
         $obj_pin_operation->save();
@@ -90,12 +84,16 @@ class PinOperationController extends Controller {
         $obj = self::getObj($type, $pin_id);
         $obj->saved_count++;
         $obj->save();
+
+        $collection->count++;
+        $collection->updateLastUpdatedAt();
+        $collection->save();
         return $this->response->created();
 
 
     }
 
-    public function unsave($collection_id, $type, $pin_id) {
+    public function unsave($collection_id, $type, $pin_id, $collection) {
         if(!is_numeric($pin_id))
         {
             return response()->json([
@@ -134,15 +132,6 @@ class PinOperationController extends Controller {
 
         $collection_of_pins->delete();
 
-        // $saved_collections = array_map('intval', explode(',', $obj_pin_operation->saved));
-        // $new_saved_collections = array();
-        // foreach ($saved_collections as $saved_collection_id) {
-        //     if($saved_collection_id != $collection_id) {
-        //         $new_saved_collections[] = $saved_collection_id;
-        //     }
-        // }
-        // $obj_pin_operation->saved = implode(',', $new_saved_collections);
-
         $obj_pin_operation->saved = PinUtility::deleteIdFromList($obj_pin_operation->saved, $collection_id);
         $obj_pin_operation->updateSavedTimestamp();
         $obj_pin_operation->save();
@@ -150,6 +139,10 @@ class PinOperationController extends Controller {
         $obj = self::getObj($type, $pin_id);
         $obj->saved_count--;
         $obj->save();
+
+        $collection->count--;
+        $collection->updateLastUpdatedAt();
+        $collection->save();
         return $this->response->noContent();
     }
 
@@ -253,12 +246,15 @@ class PinOperationController extends Controller {
             return array('is_liked' => false, 'liked_timestamp' => null, 
                          'is_saved' => false, 'saved_timestamp' => null,
                          'feeling' => null, 'feeling_timestamp' => null,
-                         'is_read'  => false, 'read_timestamp'  => null);  
+                         'is_read'  => false, 'read_timestamp'  => null,
+                         'memo' => null, 'memo_timestamp' => null);  
         }
         return array('is_liked' => $pin_operation->liked, 'liked_timestamp' => $pin_operation->liked_timestamp, 
                      'is_saved' => $pin_operation->saved, 'saved_timestamp' => $pin_operation->saved_timestamp,
                      'feeling' => $pin_operation->feeling, 'feeling_timestamp' => $pin_operation->feeling_timestamp,
-                     'is_read'  => true, 'read_timestamp'  => $pin_operation->created_at->format('Y-m-d H:i:s'));
+                     'is_read'  => true, 'memo' => $pin_operation->memo,
+                     'memo_timestamp' => $pin_operation->memo_timestamp,
+                     'read_timestamp'  => $pin_operation->created_at->format('Y-m-d H:i:s'));
     }
 
     public function read($type, $pin_id)

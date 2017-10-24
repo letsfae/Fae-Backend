@@ -47,6 +47,7 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae'], 'namesp
     $api->post('/users/account/email/verify', 'UserController@verifyEmail');
     $api->post('/users/account/phone', 'UserController@updatePhone');
     $api->post('/users/account/phone/verify', 'UserController@verifyPhone');
+    $api->delete('/users/account/phone', 'UserController@deletePhone');
     // profile
     $api->post('/users/profile', 'UserProfileController@updateSelfProfile');
     $api->get('/users/profile', 'UserProfileController@getSelfProfile');

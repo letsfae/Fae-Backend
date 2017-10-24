@@ -418,7 +418,7 @@ yes
 | content | text | 内容 |
 | geo_latitude | number | 纬度 |
 | geo_longitude | number | 经度 |
-| file_id | string | 关联的图片id号 |
+| file_ids | string | 关联的图片id号 |
 
 ### response
 
@@ -463,7 +463,7 @@ Status: 200
 			"latitude": @number,
 			"longitude": @number
 		},
-		"file_id": @string,
+		"file_ids": @string,
 		"created_at": @string,
 		"user_pin_operations": {
 			"memo": @string

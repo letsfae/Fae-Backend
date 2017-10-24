@@ -12,6 +12,7 @@ use Dingo\Api\Exception\UpdateResourceFailedException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 use App\Api\v1\Controllers\PinOperationController;
+use App\Api\v1\Controllers\FileController;
 use App\Users;
 use App\Locations;
 use App\PinHelper;
@@ -36,6 +37,18 @@ class LocationController extends Controller implements PinInterface
     {
         $this->createValidation($this->request);
         $location = new Locations();
+        if($this->request->has('file_ids')) {
+            if(!FileController::existsByString($this->request->file_ids))
+            {
+                return response()->json([
+                        'message' => 'files not found',
+                        'error_code' => ErrorCodeUtility::FILE_NOT_FOUND,
+                        'status_code' => '404'
+                    ], 404);
+            }
+            FileController::refByString($this->request->file_ids);
+        }
+        $location->file_ids = $this->request->file_ids;
         $location->content = $this->request->content;
         $location->geolocation = new Point($this->request->geo_latitude,$this->request->geo_longitude);
         $location->user_id = $this->request->self_user_id;
@@ -79,6 +92,27 @@ class LocationController extends Controller implements PinInterface
         {
             $location->geolocation = new Point($this->request->geo_latitude,$this->request->geo_longitude);
         }
+        if($this->request->has('file_ids'))
+        {
+            if($this->request->file_ids == 'null')
+            {
+                FileController::updateRefByString($location->file_ids, $this->request->file_ids);
+                $location->file_ids = null;
+            }
+            else if(FileController::existsByString($this->request->file_ids))
+            {
+                FileController::updateRefByString($location->file_ids, $this->request->file_ids);
+                $location->file_ids = $this->request->file_ids;
+            }
+            else
+            {
+                return response()->json([
+                    'message' => 'file not found',
+                    'error_code' => ErrorCodeUtility::FILE_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
+            }
+        }
         $location->save();
         return $this->response->created();
     }
@@ -101,14 +135,6 @@ class LocationController extends Controller implements PinInterface
                     'status_code' => '404'
                 ], 404);
         }
-        // if($location == -1)
-        // {
-        //     return response()->json([
-        //             'message' => 'You can not access this location',
-        //             'error_code' => ErrorCodeUtility::NOT_OWNER_OF_PIN,
-        //             'status_code' => '403'
-        //         ], 403);
-        // }
         return $this->response->array($location);
     }    
 
@@ -139,7 +165,7 @@ class LocationController extends Controller implements PinInterface
                     'status_code' => '403'
                 ], 403);
         }
-
+        FileController::derefByString($location->file_ids);
         PinOperationController::deletePinOperations('location', $location->id);
         PinOperationController::deletePinComments('location', $location->id);
         Collection_of_pins::where('type', 'location')->where('pin_id', $location->id)->delete();
@@ -157,14 +183,6 @@ class LocationController extends Controller implements PinInterface
                     'status_code' => '400'
                 ], 400);
         }
-        // if($user_id != $this->request->self_user_id)
-        // {
-        //     return response()->json([
-        //             'message' => 'You can not access these locations',
-        //             'error_code' => ErrorCodeUtility::NOT_OWNER_OF_PIN,
-        //             'status_code' => '403'
-        //         ], 403);
-        // }
         if (is_null(Users::find($user_id)))
         {
             return response()->json([
@@ -201,6 +219,7 @@ class LocationController extends Controller implements PinInterface
                 'content' => $location->content, 
                 'geolocation' => ['latitude' => $location->geolocation->getLat(), 
                 'longitude' => $location->geolocation->getLng()], 
+                'file_ids' => $location->file_ids,
                 'saved_count' => $location->saved_count,
                 'user_pin_operations' => PinOperationController::getOperations('location', $location->id, $user_id),
                 'created_at' => $location->created_at->format('Y-m-d H:i:s')
@@ -220,15 +239,12 @@ class LocationController extends Controller implements PinInterface
         {
             return null;
         }
-        // else if($location->user_id != $user_id)
-        // {
-        //     return -1;
-        // }
         return array(
             'location_id' => $location->id,
             'content' => $location->content, 
             'geolocation' => ['latitude' => $location->geolocation->getLat(), 
             'longitude' => $location->geolocation->getLng()], 
+            'file_ids' => $location->file_ids,
             'saved_count' => $location->saved_count,
             'user_pin_operations' => PinOperationController::getOperations('location', $location_id, $user_id),
             'created_at' => $location->created_at->format('Y-m-d H:i:s')
@@ -240,6 +256,7 @@ class LocationController extends Controller implements PinInterface
         $validator = Validator::make($request->all(), [
             'geo_longitude' => 'required|numeric|between:-180,180',
             'geo_latitude' => 'required|numeric|between:-90,90',
+            'file_ids' => 'filled|regex:/^(\d+\;){0,5}\d+$/',
             'content' => 'required|string'
         ]);
         if($validator->fails())
@@ -251,9 +268,10 @@ class LocationController extends Controller implements PinInterface
     private function updateValidation(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'geo_longitude' => 'filled|required_with:geo_latitude|required_without:content|numeric|between:-180,180',
-            'geo_latitude' => 'filled|required_with:geo_longitude|required_without:content|numeric|between:-90,90',
-            'content' => 'filled|required_without_all:geo_longitude,geo_latitude|string'
+            'geo_longitude' => 'filled|required_with:geo_latitude|required_without:content,file_ids|numeric|between:-180,180',
+            'geo_latitude' => 'filled|required_with:geo_longitude|required_without:content,file_ids|numeric|between:-90,90',
+            'content' => 'filled|required_without_all:geo_longitude,geo_latitude,file_ids|string',
+            'file_ids' => 'required|required_without_all:geo_longitude,geo_latitude,content|regex:/^(\d+\;){0,5}\d+$/'
         ]);
         if($validator->fails())
         {

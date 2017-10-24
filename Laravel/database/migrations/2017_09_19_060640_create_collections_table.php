@@ -20,6 +20,8 @@ class CreateCollectionsTable extends Migration
             $table->boolean('is_private');
             $table->string('name');
             $table->text('description')->nullable();
+            $table->timestamp('last_updated_at');
+            $table->integer('count')->default(0);
             $table->timestamps();
         });
     }

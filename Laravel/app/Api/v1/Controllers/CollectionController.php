@@ -36,6 +36,7 @@ class CollectionController extends Controller {
         $collection->description = $this->request->description;
         $collection->type = $this->request->type;
         $collection->is_private = $this->request->is_private == 'true' ? true : false;
+        $collection->updateLastUpdatedAt();
         $collection->save();
         return $this->response->created(null, array('collection_id' => $collection->id));
     }
@@ -73,6 +74,7 @@ class CollectionController extends Controller {
         if($this->request->has('is_private')){
             $collection->is_private = $this->request->is_private == 'true' ? true : false;
         }
+        $collection->updateLastUpdatedAt();
         $collection->save();
         return $this->response->created();
     }
@@ -113,9 +115,9 @@ class CollectionController extends Controller {
                     'status_code' => '403'
                 ], 403);
         }
-        $pins = DB::select("SELECT pin_id FROM collection_of_pins WHERE collection_id = :collection_id",
+        $pins = DB::select("SELECT pin_id, created_at as added_at FROM collection_of_pins WHERE collection_id = :collection_id",
                             array('collection_id' => $collection_id));
-        $result['pin_id'] = $pins;
+        $result['pins'] = $pins;
         return $this->response->array($result);
     }
 
@@ -139,33 +141,8 @@ class CollectionController extends Controller {
                 'status_code' => '400'
             ], 400);
         }
-        // if($type = 'location') {
-        //     $location = Locations::find($pin_id);
-        //     if(is_null($location))
-        //     {
-        //         return response()->json([
-        //             'message' => 'location not found',
-        //             'error_code' => ErrorCodeUtility::LOCATIONS_NOT_FOUND,
-        //             'status_code' => '404'
-        //         ], 404);
-        //     }
-        //     if($location->user_id != $this->request->self_user_id)
-        //     {
-        //         return response()->json([
-        //             'message' => 'You can not save this location',
-        //             'error_code' => ErrorCodeUtility::NOT_OWNER_OF_PIN,
-        //             'status_code' => '403'
-        //         ], 403);
-        //     }
-        // }
-        
-        // print_r("haha");
-
-        // $place = Places::find(15);
-        // print_r($place);
-        // return ;
         $pinOperation = new PinOperationController($this->request);
-        return $pinOperation->save($collection_id, $type, $pin_id);
+        return $pinOperation->save($collection_id, $type, $pin_id, $collection);
     }
 
     public function unsave($collection_id, $type, $pin_id) {
@@ -188,27 +165,8 @@ class CollectionController extends Controller {
                 'status_code' => '400'
             ], 400);
         }
-        // if($type = 'location') {
-        //     $location = Locations::find($pin_id);
-        //     if(is_null($location))
-        //     {
-        //         return response()->json([
-        //             'message' => 'location not found',
-        //             'error_code' => ErrorCodeUtility::LOCATIONS_NOT_FOUND,
-        //             'status_code' => '404'
-        //         ], 404);
-        //     }
-        //     if($location->user_id != $this->request->self_user_id)
-        //     {
-        //         return response()->json([
-        //             'message' => 'You can not save this location',
-        //             'error_code' => ErrorCodeUtility::NOT_OWNER_OF_PIN,
-        //             'status_code' => '403'
-        //         ], 403);
-        //     }
-        // }
         $pinOperation = new PinOperationController($this->request);
-        return $pinOperation->unsave($collection_id, $type, $pin_id);
+        return $pinOperation->unsave($collection_id, $type, $pin_id, $collection);
     }
 
     private function collectionFormatting($collection) {
@@ -217,7 +175,8 @@ class CollectionController extends Controller {
         }
         return array("collection_id" => $collection->id, "name" => $collection->name, 
                      "description" => $collection->description, "type" => $collection->type,
-                     "is_private" => $collection->is_private, "created_at" => $collection->created_at->format('Y-m-d H:i:s'));
+                     "is_private" => $collection->is_private, "created_at" => $collection->created_at->format('Y-m-d H:i:s'),
+                     "count" => $collection->count, "last_updated_at" => $collection->last_updated_at);
     }
 
     private function createOneValidation(Request $request) {
@@ -251,30 +210,35 @@ class CollectionController extends Controller {
         $collection1->name = "Favorite Places";
         $collection1->type = "place";
         $collection1->is_private = false;
+        $collection1->updateLastUpdatedAt();
         $collection1->save();
         $collection2 = new Collections();
         $collection2->user_id = $user_id;
         $collection2->name = "Saved Places";
         $collection2->type = "place";
         $collection2->is_private = false;
+        $collection2->updateLastUpdatedAt();
         $collection2->save();
         $collection3 = new Collections();
         $collection3->user_id = $user_id;
         $collection3->name = "Places to Go";
         $collection3->type = "place";
         $collection3->is_private = false;
+        $collection3->updateLastUpdatedAt();
         $collection3->save();
         $collection4 = new Collections();
         $collection4->user_id = $user_id;
         $collection4->name = "Favorite Locations";
         $collection4->type = "location";
         $collection4->is_private = false;
+        $collection4->updateLastUpdatedAt();
         $collection4->save();
         $collection5 = new Collections();
         $collection5->user_id = $user_id;
         $collection5->name = "Saved Locations";
         $collection5->type = "location";
         $collection5->is_private = false;
+        $collection5->updateLastUpdatedAt();
         $collection5->save();
     }
 }
