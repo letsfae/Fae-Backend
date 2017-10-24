@@ -8,6 +8,7 @@ use Dingo\Api\Exception\UpdateResourceFailedException;
 use Illuminate\Routing\Controller;
 use Dingo\Api\Routing\Helpers;
 use App\Api\v1\Controllers\UserController;
+use App\Name_cards;
 use Auth;
 use App\Users;
 use Validator;
@@ -30,11 +31,11 @@ class ExistenceController extends Controller {
             throw new AccessDeniedHttpException('Bad request, Please verify your email format!');
         }
         $user = Users::where('email', '=', $email)->first();
-        $existence = True;
-        if ($user == null) {
-            $existence = False;
-        }
-        $result = array('existence' => $existence);
+        $existence = is_null($user) ? false : true;
+        $user_id = is_null($user) ? null : $user->id;
+        $user_name = is_null($user) ? null : $user->user_name;
+        $nick_name = is_null($user) ? null : Name_cards::find($user->id)->nick_name;
+        $result = array('existence' => $existence, 'user_id' => $user_id, 'user_name' => $user_name, 'nick_name' => $nick_name);
         return $this->response->array($result);
     }
 
@@ -50,7 +51,9 @@ class ExistenceController extends Controller {
         $user = Users::whereRaw('LOWER(user_name) = ?', [strtolower($this->request->user_name)])->first();
         $existence = is_null($user) ? false : true;
         $user_id = is_null($user) ? null : $user->id;
-        $result = array('existence' => $existence, 'user_id' => $user_id);
+        $user_name = is_null($user) ? null : $user->user_name;
+        $nick_name = is_null($user) ? null : Name_cards::find($user->id)->nick_name;
+        $result = array('existence' => $existence, 'user_id' => $user_id, 'user_name' => $user_name, 'nick_name' => $nick_name);
         return $this->response->array($result);
     }
 
