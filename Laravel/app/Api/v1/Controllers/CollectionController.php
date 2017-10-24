@@ -173,7 +173,7 @@ class CollectionController extends Controller {
         if($this->request->self_user_id != $collection->user_id && $collection->is_private == true) {
             return null;
         }
-        return array("collection_id" => $collection->id, "name" => $collection->name, 
+        return array("collection_id" => $collection->id, "name" => $collection->name, "user_id" => $collection->user_id,
                      "description" => $collection->description, "type" => $collection->type,
                      "is_private" => $collection->is_private, "created_at" => $collection->created_at->format('Y-m-d H:i:s'),
                      "count" => $collection->count, "last_updated_at" => $collection->last_updated_at);
