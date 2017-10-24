@@ -450,6 +450,7 @@ Status: 200
 	{
 		"collection_id": @number,
 		"name": @string,
+		"user_id": @number,
 		"description": @string,
 		"type": @string,
 		"is_private": @bool,
