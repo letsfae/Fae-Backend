@@ -11,4 +11,9 @@ class Collections extends Model
     {
     	return $this->belongsTo('App\Users','user_id','id');
     }
+    public function updateLastUpdatedAt()
+    {
+        $this->last_updated_at = $this->freshTimestamp();
+        return $this->save();
+    }
 }

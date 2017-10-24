@@ -7,6 +7,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Dingo\Api\Exception\UpdateResourceFailedException;
 use Illuminate\Routing\Controller;
 use Dingo\Api\Routing\Helpers;
+use App\Api\v1\Controllers\UserController;
 use Auth;
 use App\Users;
 use Validator;
@@ -46,7 +47,10 @@ class ExistenceController extends Controller {
         {            
             throw new AccessDeniedHttpException('Bad request, Please verify your user_name format!');
         }
-        $result = array('existence' => Users::whereRaw('LOWER(user_name) = ?', [strtolower($this->request->user_name)])->exists());
+        $user = Users::whereRaw('LOWER(user_name) = ?', [strtolower($this->request->user_name)])->first();
+        $existence = is_null($user) ? false : true;
+        $user_id = is_null($user) ? null : $user->id;
+        $result = array('existence' => $existence, 'user_id' => $user_id);
         return $this->response->array($result);
     }
 
@@ -65,7 +69,8 @@ class ExistenceController extends Controller {
             $users = Users::where('phone', $phone)->get();
             foreach($users as $user)
             {
-                $result[] = array('phone' => $phone, 'user_id' => $user->id);
+                $result[] = array('phone' => $phone, 'user_id' => $user->id, 
+                                  'relation' => UserController::getRelationBetween($this->request->self_user_id, $user->id));
             }
         }
         return $this->response->array($result);

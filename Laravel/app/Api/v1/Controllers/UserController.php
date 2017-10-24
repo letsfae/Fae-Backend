@@ -10,6 +10,10 @@ use App\Users;
 use App\User_exts;
 use App\Sessions;
 use App\Verifications;
+use App\Friends;
+use App\Friend_requests;
+use App\Follows;
+use App\Blocks;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Dingo\Api\Exception\StoreResourceFailedException;
 use Dingo\Api\Exception\UpdateResourceFailedException;
@@ -492,7 +496,7 @@ class UserController extends Controller
         // validation
         $input = $this->request->all();
         $validator = Validator::make($input, [
-            'phone' => 'required|max:20|regex:/^\([0-9]+\)[0-9]+$/'
+            'phone' => 'required|unique:users,phone|max:20|regex:/^\([0-9]+\)[0-9]+$/'
         ]);
         
         if($validator->fails())
@@ -596,7 +600,29 @@ class UserController extends Controller
         }
     }
 
-    public function getRelation($user_id) {
-        
+    public function deletePhone() {
+        $user = Users::find($this->request->self_user_id);
+        $user->phone = null;
+        $user->save();
     }
+
+    public function getRelation($user_id) {
+        return $this->response->array($this->getRelationBetween($this->request->self_user_id, $user_id));
+    }
+
+    public static function getRelationBetween($user1, $user2) {
+        $is_friend = Friends::where('user_id', $user1)->where('friend_id', $user2)->exists();
+        $friend_requested = Friend_requests::where('user_id', $user1)
+                                           ->where('requested_user_id', $user2)->exists();
+        $friend_requested_by = Friend_requests::where('user_id', $user2)
+                                              ->where('requested_user_id', $user1)->exists();
+        $blocked = Blocks::where('user_id', $user1)->where('block_id', $user2)->exists();
+        $blocked_by = Blocks::where('user_id', $user2)->where('block_id', $user1)->exists();
+        $followed = Follows::where('user_id', $user1)->where('followee_id', $user2)->exists();
+        $followed_by = Follows::where('user_id', $user2)->where('followee_id', $user1)->exists();
+        return array("is_friend" => $is_friend, "friend_requested" => $friend_requested,
+                     "friend_requested_by" => $friend_requested_by, "blocked" => $blocked,
+                     "blocked_by" => $blocked_by, "followed" => $followed, "followed_by" => $followed_by);
+    }
+
 }
