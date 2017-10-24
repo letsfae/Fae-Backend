@@ -21,7 +21,7 @@ class CreateUsersTable extends Migration
             $table->string('user_name',30);
             $table->string('first_name',20)->nullable();
             $table->string('last_name',20)->nullable();
-            $table->unique('phone',20)->nullable();
+            $table->string('phone',20)->nullable();
             $table->boolean('phone_verified')->default(false);
             $table->enum('gender',['male','female'])->nullable();
             $table->date('birthday')->nullable();
@@ -31,6 +31,7 @@ class CreateUsersTable extends Migration
             $table->timestamps();
             $table->unique('user_name');
             $table->unique('email');
+            $table->unique('phone');
         });
     }
 
