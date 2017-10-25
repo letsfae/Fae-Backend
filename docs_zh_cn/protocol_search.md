@@ -22,11 +22,11 @@
 			"latitude": "",
 			"longitude": ""
 		}, 
-		"radius": 500, // optional, meter
+		"radius": 500, // optional, meter, available with location
 		"size": 10, // optional, defaults to 10
 		"offset": 0, // optional, defaults to 0
 		"sort": [{"name": "desc"}], // optional, defaults to [{"name": "desc"}], could be "geo_location", "name"; order matters.
-		"source": "category_name" // required, could be "category_name", "data"
+		"source": "categories" // required, could be "categories", "name"
 	}
 
 ### response
@@ -51,4 +51,4 @@
 
 ### example
 
-同时在category_name及data中搜索关键字"abc"。
+同时在categories及name中搜索关键字"abc"。
