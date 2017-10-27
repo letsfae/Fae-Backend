@@ -111,7 +111,7 @@ class PinUtility
         $obj = null;
         if($type == 'collection') {
             $result[] = true;
-            $obj = Collections::find($id);
+            $obj = Collections::where('id',$id)->lockForUpdate()->first();
             if(is_null($obj)) {
                 $result[] = response()->json([
                                 'message' => 'collection not found',

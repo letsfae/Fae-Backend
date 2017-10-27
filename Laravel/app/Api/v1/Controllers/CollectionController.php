@@ -122,6 +122,7 @@ class CollectionController extends Controller {
     }
 
     public function save($collection_id, $type, $pin_id) {
+        DB::beginTransaction();
         $result = PinUtility::validation('collection', $collection_id);
         if($result[0]) {
             return $result[1];
@@ -146,6 +147,7 @@ class CollectionController extends Controller {
     }
 
     public function unsave($collection_id, $type, $pin_id) {
+        DB::beginTransaction();
         $result = PinUtility::validation('collection', $collection_id);
         if($result[0]) {
             return $result[1];

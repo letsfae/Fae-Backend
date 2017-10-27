@@ -88,12 +88,13 @@ class PinOperationController extends Controller {
         $collection->count++;
         $collection->updateLastUpdatedAt();
         $collection->save();
+
+        DB::commit();
         return $this->response->created();
-
-
     }
 
     public function unsave($collection_id, $type, $pin_id, $collection) {
+        
         if(!is_numeric($pin_id))
         {
             return response()->json([
@@ -143,6 +144,8 @@ class PinOperationController extends Controller {
         $collection->count--;
         $collection->updateLastUpdatedAt();
         $collection->save();
+        
+        DB::commit();
         return $this->response->noContent();
     }
 
