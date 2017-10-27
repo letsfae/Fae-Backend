@@ -16,6 +16,7 @@ use App\Api\v1\Controllers\FileController;
 use App\Users;
 use App\Locations;
 use App\PinHelper;
+use App\Collections;
 use App\Collection_of_pins;
 use Phaza\LaravelPostgis\Eloquent\PostgisTrait;
 use Phaza\LaravelPostgis\Geometries\Point;
@@ -168,7 +169,13 @@ class LocationController extends Controller implements PinInterface
         FileController::derefByString($location->file_ids);
         PinOperationController::deletePinOperations('location', $location->id);
         PinOperationController::deletePinComments('location', $location->id);
-        Collection_of_pins::where('type', 'location')->where('pin_id', $location->id)->delete();
+        $collection_of_pins = Collection_of_pins::where('type', 'location')->where('pin_id', $location->id)->get();
+        foreach ($collection_of_pins as $collection_of_pin) {
+            $collection = Collections::find($collection_of_pin->collection_id);
+            $collection->count--;
+            $collection->save();
+            $collection_of_pin->delete();
+        }
         $location->delete();
         return $this->response->noContent();
     }
