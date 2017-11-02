@@ -59,7 +59,7 @@ class ExistenceController extends Controller {
 
     public function getUserByPhoneBatched() {
         $validator = Validator::make($this->request->all(), [
-            'phone' => 'required|string|between:-180,180|regex:/^(\([0-9]+\)[0-9]+\;)*\([0-9]+\)[0-9]+$/'
+            'phone' => 'required|string|regex:/^(\([0-9]+\)[0-9]+\;)*\([0-9]+\)[0-9]+$/'
         ]);
         if($validator->fails())
         {

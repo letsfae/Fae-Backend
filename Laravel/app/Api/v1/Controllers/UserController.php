@@ -496,7 +496,7 @@ class UserController extends Controller
         // validation
         $input = $this->request->all();
         $validator = Validator::make($input, [
-            'phone' => 'required|unique:users,phone|max:20|regex:/^\([0-9]+\)[0-9]+$/'
+            'phone' => 'required|max:20|regex:/^\([0-9]+\)[0-9]+$/'
         ]);
         
         if($validator->fails())
