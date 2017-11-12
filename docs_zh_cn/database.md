@@ -28,6 +28,13 @@
 - show_gender
 - show_birthday
 
+## user_settings
+- user_id FK
+- email_subscription default true
+- show_name_card_options default true
+- measurement_units default imperial (imperial / metric)
+- shadow_location_system_effect 
+
 ## verifications
 - id PK
 - object string(50) 具体字段

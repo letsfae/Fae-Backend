@@ -102,6 +102,9 @@ no
 | Name | Type | Description |
 | --- | --- | --- |
 | email | string(50) | 电邮 |
+| phone | string((国家号)电话) | phone number |
+
+email、phone只能出现其中一个。
 
 code有效时长为发送出来后的30分钟，30分钟内再次获取code为原code。
 
@@ -122,7 +125,10 @@ no
 | Name | Type | Description |
 | --- | --- | --- |
 | email | string(50) | 电邮 |
+| phone | string((国家号)电话) | phone number |
 | code | string(6) | 邮件中的6位验证数字（用字符串形式传递） |
+
+email、phone只能出现其中一个。
 
 ### response
 
@@ -141,8 +147,11 @@ no
 | Name | Type | Description |
 | --- | --- | --- |
 | email | string(50) | 电邮 |
+| phone | string((国家号)电话) | phone number |
 | code | string(6) | 邮件中的6位验证数字（用字符串形式传递） |
 | password | string(8-16) | 密码 |
+
+email、phone只能出现其中一个。
 
 ### response
 
@@ -203,16 +212,15 @@ yes
 
 Status: 200
 
-	[
-		{
-			"phone": @string,
+	{
+		"xxxx": {
 			"user_id": @number,
 			"relation": {relation object}
 		},
 		...
-	]
+	}
 
-phone惟一。
+`xxxx`为电话号码。
 
 ## 获取用户账户信息 get account :white_check_mark:
 
@@ -354,6 +362,11 @@ Status: 201
 `POST /users/account/phone`
 
 更新phone number后该号码手机会收到验证码，需调用verify phone接口完成phone验证。code有效时长为发送出来后的30分钟。
+
+关于电话的一些说明：
+- 电话全局唯一。
+- 后一个持有该电话号码的人将覆盖前一个。例：假设之前A持有电话N，后B持有了N，如果B将N通过了个verification，则此时N归B所有，A的号码将被清空。
+- phone不同于email，可能会被重复使用，因此phone不经过verification之前无效。
 
 ### auth
 
@@ -709,4 +722,43 @@ Status: 200
 		{...},
 		{...}
 	]
+
+
+## 更新settings
+
+`POST /users/settings`
+
+### auth
+
+yes
+
+### parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| email_subscription | bool | 是否订阅email，默认true |
+| show_name_card_options | bool | 是否显示namecard options，默认true |
+| measurement_units | string(imperial,metric) | 单位，默认imperial |
+| shadow_location_system_effect | string(min, normal, max) | shadow效果（目前无效） |
+
+### response
+
+Status: 201
+
+
+## 获取settings
+
+`GET /users/settings`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	{
+
+	}
 

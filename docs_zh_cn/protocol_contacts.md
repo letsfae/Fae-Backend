@@ -258,8 +258,9 @@ yes
 
 调用该接口后：
 
-- 如果已经是好友，则好友关系解除且不可再加为好友。
-- 如果不是好友，则不可加为好友。
+- 无论用户之间是什么关系，都可以进行block操作。
+- 在block之前是好友关系（即is_friend为true），block之后双方依然存在于对方的friend list中，is_friend依然为true。被block的一方出现在block那方的block list中。
+- 在block之前是非好友关系（即friend_requested或friend_requested_by为true，或二者不存在关系），解除request关系（request关系变为false，双方的request或request_sent列表里不再有对方）。被block的一方出现在block那方的block list中。
 
 ### response
 
