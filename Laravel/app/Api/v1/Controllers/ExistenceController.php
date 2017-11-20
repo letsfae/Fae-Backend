@@ -69,11 +69,10 @@ class ExistenceController extends Controller {
         $result = array();
         foreach($phones as $phone)
         {
-            $users = Users::where('phone', $phone)->get();
-            foreach($users as $user)
-            {
-                $result[] = array('phone' => $phone, 'user_id' => $user->id, 
-                                  'relation' => UserController::getRelationBetween($this->request->self_user_id, $user->id));
+            $user = Users::where('phone', $phone)->first();
+            if(!is_null($user)) {
+                $result[$phone] = array('user_id' => $user->id, 
+                    'relation' => UserController::getRelationBetween($this->request->self_user_id, $user->id));
             }
         }
         return $this->response->array($result);

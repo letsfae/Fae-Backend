@@ -29,7 +29,7 @@ class BlockController extends Controller {
     public function add() {
     	//validation
         $validator = Validator::make($this->request->all(), [
-            'user_id' => 'required|numeric',
+            'user_id' => 'required|exists:users,id',
         ]);
         if($validator->fails()){
             throw new StoreResourceFailedException('Could not request block.',$validator->errors());
@@ -46,24 +46,8 @@ class BlockController extends Controller {
         //find both users
         $self_user_id = $this->request->self_user_id;
         $self_user = Users::where('id', $self_user_id)->first();
-        if ($self_user == null) {
-            return response()->json([
-                    'message' => 'user not found',
-                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
-                    'status_code' => '404'
-                ], 404);
-        }
-        
         $requested_user_id = $this->request->user_id;
         $requested_user = Users::where('id', $requested_user_id)->first();
-        if ($requested_user == null) {
-            return response()->json([
-                    'message' => 'request user not found',
-                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
-                    'status_code' => '404'
-                ], 404);
-        }
-
         
         //find the request if exist
         $curr_block = Blocks::where('user_id', $self_user_id)->where('block_id', $requested_user_id)->first();
@@ -73,17 +57,8 @@ class BlockController extends Controller {
             $new_block->user_id = $self_user_id;
             $new_block->block_id = $requested_user_id;
             $new_block->save();
-
-            //delete the friend if exists
-	        $curr_friend = Friends::where('user_id', $self_user_id)->where('friend_id', $requested_user_id)->first();
-	        if ($curr_friend != null) {
-	            $curr_friend->delete();
-	        }
-	        
-	        $curr_friend = Friends::where('friend_id', $self_user_id)->where('user_id', $requested_user_id)->first();
-	        if ($curr_friend != null) {
-	            $curr_friend->delete();
-	        }
+            Friend_requests::where('user_id', $self_user_id)->where('requested_user_id', $requested_user_id)->delete();
+            Friend_requests::where('user_id', $requested_user_id)->where('requested_user_id', $self_user_id)->delete();
         }
         return $this->response->created();
     }

@@ -40,6 +40,10 @@ class Users extends Model implements AuthenticatableContract
     {
         return $this->hasOne('App\User_exts','user_id','id');
     }
+    public function hasOneSettings() 
+    {
+        return $this->hasOne('App\UserSettings','user_id','id');
+    }
     public function hasManyCollections()
     {
         return $this->hasMany('App\Collections', 'user_id', 'id');

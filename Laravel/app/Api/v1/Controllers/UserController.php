@@ -8,6 +8,7 @@ use Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Users;
 use App\User_exts;
+use App\UserSettings;
 use App\Sessions;
 use App\Verifications;
 use App\Friends;
@@ -61,6 +62,9 @@ class UserController extends Controller
         $user_exts = new User_exts;
         $user_exts->user_id = $user->id;
         $user_exts->save();
+        $user_setting = new UserSettings;
+        $user_setting->user_id = $user->id;
+        $user_setting->save();
         $nameCard = new Name_cards;
         $nameCard->user_id = $user->id;
         $nameCard->save();
@@ -493,9 +497,7 @@ class UserController extends Controller
     }
 
     public function updatePhone() {
-        // validation
-        $input = $this->request->all();
-        $validator = Validator::make($input, [
+        $validator = Validator::make($this->request->all(), [
             'phone' => 'required|max:20|regex:/^\([0-9]+\)[0-9]+$/'
         ]);
         
@@ -504,57 +506,31 @@ class UserController extends Controller
     		throw new StoreResourceFailedException('Could not verify.',$validator->errors());
     	}
         
-        $user = Users::where('phone','=',$input['phone'])->get();
-        if( ( count($user)!=0 ) ){
-            $current_user = Users::find($this->request->self_user_id);
-            if ($current_user->phone != $user[0]->phone){
-                return response()->json([
-                    'message' => 'phone number already exists',
-                    'error_code' => ErrorCodeUtility::PHONE_ALREADY_EXISTS,
-                    'status_code' => '422'
-                ], 422);
-            }
-        }
-        
         // generate code & store user_id and code to verification table
         $verification_code = (string)rand(111111,999999);
-        $verification = Verifications::where('phone','=', $input['phone'])->where('type','=', 'phone')->get();
-        if( is_null($verification) || ( count($verification)==0 ) ){
+        $verification = Verifications::where('phone', $this->request->phone)->where('type', 'phone')->first();
+        if( is_null($verification) ){
             $new_verification = new Verifications;
             $new_verification->type = 'phone';
-            $new_verification->phone = $input['phone'];
+            $new_verification->phone = $this->request->phone;
             $new_verification->code = $verification_code;
             $new_verification->save();
         }else{
-            if ($verification[0]->created_at->diffInMinutes()>30) {
-                $verification[0]->delete();
-                
-                $new_verification = new Verifications;
-                $new_verification->type = 'phone';
-                $new_verification->phone = $input['phone'];
-                $new_verification->code = $verification_code;
-                $new_verification->save();
+            if ($verification->created_at->diffInMinutes()>30) {
+                $verification->code = $verification_code;
+                $verification->save();
             }else{
-                $verification_code = $verification[0]->code;
+                $verification_code = $verification->code;
             }
         }
-        
-        // send code to this phone
-        $user = Users::find($this->request->self_user_id);
-        $user->phone = $input['phone'];
-        $user->phone_verified = false;
-        $user->save();
-        
-        Twilio::message($input['phone'], $verification_code);
+
+        Twilio::message($this->request->phone, $verification_code);
         
         return $this->response->created();        
     }
 
     public function verifyPhone() {
-        // validation
-        $input = $this->request->all();
-        
-        $validator = Validator::make($input, [
+        $validator = Validator::make($this->request->all(), [
             'phone' => 'required|max:20|regex:/^\([0-9]+\)[0-9]+$/',
             'code' => 'required|string|max:6'
         ]);
@@ -565,30 +541,32 @@ class UserController extends Controller
     	}
         
         // compare user_id and code with data in verification table
-        $verification = Verifications::where('phone','=', $input['phone'])->where('type','=', 'phone')->get();
-        if( is_null($verification) || ( count($verification)==0 ) ){
+        $verification = Verifications::where('phone', $this->request->phone)->where('type', 'phone')->first();
+        if( is_null($verification)){
             return response()->json([
-                    'message' => 'name card not found',
+                    'message' => 'verification not found',
                     'error_code' => ErrorCodeUtility::VERIFICATION_NOT_FOUND,
                     'status_code' => '404'
                 ], 404);
         }else{
-            if($verification[0]->code == $input['code']){
-                if ($verification[0]->created_at->diffInMinutes()>30){
+            if($verification->code == $this->request->code){
+                if ($verification->created_at->diffInMinutes()>30){
                     return response()->json([
                         'message' => 'verification timeout',
                         'error_code' => ErrorCodeUtility::VERIFICATION_TIMEOUT,
                         'status_code' => '403'
                     ], 403);
                 }
-                $verification[0]->delete();
-                
-                //$user = Users::where('email','=',$input['email'])->get();
+                $verification->delete();
+                $user = Users::where('phone', $this->request->phone)->first();
+                if(!is_null($user)) {
+                    $user->phone = null;
+                    $user->phone_verified = false;
+                }
                 $user = Users::find($this->request->self_user_id);
-                $user->phone = $input['phone'];
+                $user->phone = $this->request->phone;
                 $user->phone_verified = true;
                 $user->save();
-                
                 return $this->response->created();
             }else{
                 return response()->json([
@@ -603,6 +581,7 @@ class UserController extends Controller
     public function deletePhone() {
         $user = Users::find($this->request->self_user_id);
         $user->phone = null;
+        $user->phone_verified = false;
         $user->save();
     }
 
