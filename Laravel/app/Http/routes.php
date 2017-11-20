@@ -63,8 +63,8 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae'], 'namesp
     $api->delete('/users/{user_id}/name_card/save', 'UserNameCardController@unsaveNameCard');
     $api->get('/users/name_card/saved', 'UserNameCardController@getSavedNameCardList');
     // settings
-    $api->get('/users/settings', 'UserSettingController@get')
-    $api->post('/users/settings', 'UserSettingController@update')
+    $api->get('/users/settings', 'UserSettingController@get');
+    $api->post('/users/settings', 'UserSettingController@update');
     // status
     $api->post('/users/status', 'UserController@updateSelfStatus');
     $api->get('/users/status', 'UserController@getSelfStatus');
