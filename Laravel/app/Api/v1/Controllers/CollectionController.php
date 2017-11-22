@@ -95,7 +95,7 @@ class CollectionController extends Controller {
         $collection_of_pins = Collection_of_pins::where('collection_id', $collection->id)->get();
         $pinOperation = new PinOperationController($this->request);
         foreach ($collection_of_pins as $collection_of_pin) {
-            $pinOperation->unsave($collection_id, $collection_of_pin->type, $collection_of_pin->pin_id);
+            $pinOperation->unsave($collection_id, $collection_of_pin->type, $collection_of_pin->pin_id, $collection);
         }
         $collection->delete();
         return $this->response->noContent();
