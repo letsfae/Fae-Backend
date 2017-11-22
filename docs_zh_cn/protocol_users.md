@@ -103,6 +103,7 @@ no
 | --- | --- | --- |
 | email | string(50) | 电邮 |
 | phone | string((国家号)电话) | phone number |
+| user_name | string | user name |
 
 email、phone只能出现其中一个。
 
@@ -126,6 +127,7 @@ no
 | --- | --- | --- |
 | email | string(50) | 电邮 |
 | phone | string((国家号)电话) | phone number |
+| user_name | string | user name |
 | code | string(6) | 邮件中的6位验证数字（用字符串形式传递） |
 
 email、phone只能出现其中一个。
@@ -149,6 +151,7 @@ no
 | email | string(50) | 电邮 |
 | phone | string((国家号)电话) | phone number |
 | code | string(6) | 邮件中的6位验证数字（用字符串形式传递） |
+| user_name | string | user name |
 | password | string(8-16) | 密码 |
 
 email、phone只能出现其中一个。
