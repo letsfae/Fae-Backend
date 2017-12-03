@@ -110,6 +110,7 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae'], 'namesp
     $api->delete('/follows/{followee_id}', 'FollowController@unfollow');
     // blocks
     $api->post('/blocks', 'BlockController@add');
+    $api->get('/blocks', 'BlockController@get');
     $api->delete('/blocks/{user_id}', 'BlockController@delete');
     // chats
     $api->post('/chats', 'ChatController@send');

@@ -242,7 +242,7 @@ yes
 
 Status: 204
 
-## 屏蔽某人 :white_check_mark:
+## 屏蔽某人
 
 `POST /blocks`
 
@@ -266,7 +266,27 @@ yes
 
 Status: 201
 
-## 解除屏蔽 :white_check_mark:
+## 返回屏蔽列表
+
+`GET /blocks`
+
+### auth
+
+yes
+
+### response
+
+Status: 200
+
+	[
+		{
+			"user_id": @number,
+			"user_name": @string
+		},
+		...
+	]
+
+## 解除屏蔽
 
 `DELETE /blocks/:user_id`
 

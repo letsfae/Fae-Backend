@@ -90,4 +90,8 @@ class BlockController extends Controller {
         }
         return $this->response->noContent();
     }
+
+    public function get() {
+        
+    }
 }
