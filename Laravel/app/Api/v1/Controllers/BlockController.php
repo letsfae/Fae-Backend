@@ -90,4 +90,14 @@ class BlockController extends Controller {
         }
         return $this->response->noContent();
     }
+    
+    public function get() {
+        $blocks = Blocks::where('user_id', $this->request->self_user_id)->get();
+        $result = array();
+        foreach ($blocks as $block) {
+            $user = Users::find($block->block_id);
+            $result[] = array('user_id' => $block->block_id, 'user_name' => is_null($user) ? null : $user->user_name);
+        }
+        return $this->response->array($result);
+    }
 }
