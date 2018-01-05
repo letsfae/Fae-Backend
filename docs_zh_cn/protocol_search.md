@@ -27,7 +27,7 @@
 		"offset": 0, // optional, defaults to 0
 		"sort": [{"name": "desc"}], // optional, defaults to [{"name": "desc"}], could be "geo_location", "name"; order matters.
 		"source": "categories", // required, could be "categories", "name",
-		"filter": [{"class1": "Food"}, {"class1": "Drinks"}] // optional, only works when source is "name"
+		"filter": {"class1": "Food"} // optional, only works when source is "name"
 	}
 
 ### response
