@@ -194,7 +194,11 @@ class ChatController extends Controller
             $user = Users::find($with_user_id);
             if(is_null($user))
             {
-                return $this->response->errorNotFound();
+                return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
             }
             $time = date("Y-m-d H:i:s");
             $last_message_sender = Users::find($chat->last_message_sender_id);
