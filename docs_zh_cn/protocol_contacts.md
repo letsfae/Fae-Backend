@@ -36,6 +36,9 @@ yes
 | Name | Type | Description |
 | --- | --- | --- |
 | friend_request_id | number | 好友请求id |
+| requested_user_id | number | 被请求用户id |
+
+两者二选一即可，如果同时出现，以friend_request_id为准。
 
 ### response
 
@@ -54,6 +57,9 @@ yes
 | Name | Type | Description |
 | --- | --- | --- |
 | friend_request_id | number | 好友请求id |
+| requested_user_id | number | 被请求用户id |
+
+两者二选一即可，如果同时出现，以friend_request_id为准。
 
 ### response
 
@@ -72,6 +78,9 @@ yes
 | Name | Type | Description |
 | --- | --- | --- |
 | friend_request_id | number | 好友请求id |
+| requested_user_id | number | 被请求用户id |
+
+两者二选一即可，如果同时出现，以friend_request_id为准。
 
 撤销后，对方不会收到撤销的push notification。
 
