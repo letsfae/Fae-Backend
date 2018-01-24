@@ -23,6 +23,15 @@ resend设为true后会向被请求方客户端重新推送好友请求。
 
 Status: 201
 
+| Error Code | Description |
+| --- | --- |
+| 404-3 | User不存在 |
+| 400-23 | 不允许给自己发送好友请求 |
+| 400-20 | 已经发送过好友请求 |
+| 400-21 | 已经是好友 |
+| 400-22 | 对方给你发送过好友请求 |
+| 400-6 | 已屏蔽 |
+
 ## 确认好友请求 :white_check_mark:
 
 `POST /friends/accept`
@@ -41,6 +50,11 @@ yes
 
 Status: 201
 
+| Error Code | Description |
+| --- | --- |
+| 404-12 | Friend Request不存在 |
+| 400-6 | 已屏蔽 |
+
 ## 忽略好友请求 :white_check_mark:
 
 `POST /friends/ignore`
@@ -58,6 +72,10 @@ yes
 ### response
 
 Status: 201
+
+| Error Code | Description |
+| --- | --- |
+| 404-12 | Friend Request不存在 |
 
 ## 撤销好友请求 :white_check_mark:
 
@@ -78,6 +96,11 @@ yes
 ### response
 
 Status: 201
+
+| Error Code | Description |
+| --- | --- |
+| 404-12 | Friend Request不存在 |
+| 403-6 | 不是好友请求发起者，无权撤销 |
 
 ## 删除好友 :white_check_mark:
 
@@ -121,6 +144,10 @@ Status: 200
 
 此处冗余了user_name及email，方便显示。
 
+| Error Code | Description |
+| --- | --- |
+| 404-3 | User不存在 |
+
 ## 获取所有已经发送的好友请求
 
 `GET /friends/request_sent`
@@ -147,6 +174,10 @@ Status: 200
 		...		
 	]
 
+| Error Code | Description |
+| --- | --- |
+| 404-3 | User不存在 |
+
 ## 获取好友列表 :white_check_mark:
 
 `GET /friends`
@@ -168,6 +199,10 @@ yes
 		...
 	]
 
+| Error Code | Description |
+| --- | --- |
+| 404-3 | User不存在 |
+
 ## 关注某人 :white_check_mark:
 
 `POST /follows`
@@ -185,6 +220,12 @@ yes
 ### response
 
 Status: 201
+
+| Error Code | Description |
+| --- | --- |
+| 404-3 | User不存在 |
+| 400-17 | 不允许关注自己 |
+| 400-18 | 已关注 |
 
 ## 关注user的人（user被关注） :white_check_mark:
 
@@ -208,6 +249,11 @@ yes
 		...
 	]
 
+| Error Code | Description |
+| --- | --- |
+| 404-3 | User不存在 |
+| 400-3 | 输入ID非数字 |
+
 ## user关注的人 :white_check_mark:
 
 `GET /follows/:user_id/followee`
@@ -230,6 +276,11 @@ yes
 		...
 	]
 
+| Error Code | Description |
+| --- | --- |
+| 404-3 | User不存在 |
+| 400-3 | 输入ID非数字 |
+
 ## 取消关注某人 :white_check_mark:
 
 `DELETE /follows/:followee_id`
@@ -241,6 +292,11 @@ yes
 ### response
 
 Status: 204
+
+| Error Code | Description |
+| --- | --- |
+| 400-19 | 未关注 |
+| 400-3 | 输入ID非数字 |
 
 ## 屏蔽某人
 
@@ -265,6 +321,10 @@ yes
 ### response
 
 Status: 201
+
+| Error Code | Description |
+| --- | --- |
+| 400-16 | 不允许拉黑自己 |
 
 ## 返回屏蔽列表
 
@@ -297,3 +357,7 @@ yes
 ### response
 
 Status: 204
+
+| Error Code | Description |
+| --- | --- |
+| 404-3 | User不存在 |
