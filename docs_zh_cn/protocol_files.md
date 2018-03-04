@@ -78,6 +78,10 @@ Status: 200
 		"custom_tag": @string
 	}
 
+| Error Code | Description |
+| --- | --- |
+| 404-11 | File不存在 |
+
 # 文件类专项接口
 
 ## 设置头像 set self avatar :white_check_mark:
@@ -253,6 +257,12 @@ yes
 
 Status: 201
 
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+| 404-5 | Chat Room不存在 |
+| 404-8 | Chat Room User不存在 |
+
 ## 获取聊天室cover_image
 
 `GET /files/chat_rooms/:chat_room_id/cover_image`
@@ -267,6 +277,10 @@ Status: 200
 
 Body图片数据。
 
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+
 ## 获取地点图片 :white_check_mark:
 
 `GET /files/places/:place_id/image`
@@ -280,3 +294,8 @@ no
 Status: 200
 
 Body图片数据。
+
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+| 404-18 | Image不存在 |

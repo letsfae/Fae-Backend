@@ -30,7 +30,7 @@ class UserNameCardController extends Controller
         {
             return response()->json([
                     'message' => 'name card not found',
-                    'error_code' => ErrorCodeUtility::VERIFICATION_NOT_FOUND,
+                    'error_code' => ErrorCodeUtility::NAME_CARD_NOT_FOUND,
                     'status_code' => '404'
                 ], 404);
         }

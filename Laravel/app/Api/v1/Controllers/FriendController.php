@@ -140,15 +140,22 @@ class FriendController extends Controller {
     public function acceptRequest() {
         //validation
         $validator = Validator::make($this->request->all(), [
-            'friend_request_id' => 'required|numeric',
+            'friend_request_id' => 'filled|required_without:requested_user_id|numeric',
+            'requested_user_id' => 'filled|required_without:friend_request_id|numeric'
         ]);
         if($validator->fails()){
             throw new StoreResourceFailedException('Could not accept friend request.',$validator->errors());
         }
         
         //find the request by id
-        $curr_request_id = $this->request->friend_request_id;
-        $curr_request = Friend_requests::where('id', $curr_request_id)->first();
+        $curr_request = null;
+        if($this->request->has('friend_request_id')) {
+            $curr_request = Friend_requests::where('id', $this->request->friend_request_id)->first();
+        } else {
+            $curr_request = Friend_requests::where('user_id', $this->request->requested_user_id)
+                                           ->where('requested_user_id', $this->request->self_user_id)
+                                           ->first();
+        }
         if ($curr_request == null) {
             return response()->json([
                     'message' => 'friend request not found',
@@ -222,15 +229,23 @@ class FriendController extends Controller {
     public function ignoreRequest() {
         //validation
         $validator = Validator::make($this->request->all(), [
-            'friend_request_id' => 'required|numeric',
+            'friend_request_id' => 'filled|required_without:requested_user_id|numeric',
+            'requested_user_id' => 'filled|required_without:friend_request_id|numeric'
         ]);
         if($validator->fails()){
             throw new StoreResourceFailedException('Could not accept friend request.',$validator->errors());
         }
         
         //find the request by id
-        $curr_request_id = $this->request->friend_request_id;
-        $curr_request = Friend_requests::where('id', $curr_request_id)->first();
+        $curr_request = null;
+        if($this->request->has('friend_request_id')) {
+            $curr_request = Friend_requests::where('id', $this->request->friend_request_id)->first();
+        } else {
+            $curr_request = Friend_requests::where('user_id', $this->request->requested_user_id)
+                                           ->where('requested_user_id', $this->request->self_user_id)
+                                           ->first();
+        }
+
         if ($curr_request == null) {
             return response()->json([
                     'message' => 'friend request not found',
@@ -395,12 +410,21 @@ class FriendController extends Controller {
 
     public function withdrawRequest() {
         $validator = Validator::make($this->request->all(), [
-            'friend_request_id' => 'required|numeric',
+            'friend_request_id' => 'filled|required_without:requested_user_id|numeric',
+            'requested_user_id' => 'filled|required_without:friend_request_id|numeric'
         ]);
         if($validator->fails()){
             throw new UpdateResourceFailedException('Could not accept friend request.',$validator->errors());
         }
-        $curr_request = Friend_requests::where('id', $this->request->friend_request_id)->first();
+
+        $curr_request = null;
+        if($this->request->has('friend_request_id')) {
+            $curr_request = Friend_requests::where('id', $this->request->friend_request_id)->first();
+        } else {
+            $curr_request = Friend_requests::where('user_id', $this->request->self_user_id)
+                                           ->where('requested_user_id', $this->request->requested_user_id)
+                                           ->first();
+        }
         if ($curr_request == null) {
             return response()->json([
                     'message' => 'friend request not found',

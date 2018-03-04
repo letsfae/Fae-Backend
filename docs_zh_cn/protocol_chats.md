@@ -36,6 +36,11 @@ Status: 201
 
 chat_id为聊天双方的聊天室id，对服务器来说，A和B聊天及B和A聊天被视为在同一个聊天室中进行。
 
+| Error Code | Description |
+| --- | --- |
+| 400-1 | 发消息前未标记已读 |
+| 400-2 | 不允许给自己发送消息 |
+
 ## 获取未读消息 get unread message :white_check_mark:
 
 `GET /chats/unread`
@@ -66,6 +71,10 @@ Status: 200
 结果按照last_message_timestamp降序排序。
 
 可通过unread_count来获取有几条消息未读，从而实现“阅后即焚”（即通过unread_count来实现只获取最近的n条消息）。
+
+| Error Code | Description |
+| --- | --- |
+| 404-1 | last message sender不存在 |
 
 ## 获取两名用户之间的消息（通过chat_id）
 
@@ -102,6 +111,12 @@ Status: 200
 		{...}
 	]
 
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+| 404-2 | Chat不存在 |
+| 403-1 | 用户未参与该会话 |
+
 ## 获取两名用户之间的消息（通过user_id）
 
 `GET /chats/:user_a_id/:user_b_id`
@@ -111,6 +126,11 @@ a与b的顺序不敏感。
 其余同`通过chat_id获取`的接口。
 
 该接口可视为`根据聊天双方user_id获取chat_id`与`获取两名用户之间的消息（通过chat_id）`接口的合并操作。
+
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+| 403-1 | 用户未参与该会话 |
 
 ## 标记已读消息 mark read :white_check_mark:
 
@@ -131,6 +151,11 @@ yes
 ### response
 
 Status: 201
+
+| Error Code | Description |
+| --- | --- |
+| 403-1 | 用户未参与该会话 |
+| 404-2 | Chat不存在 |
 
 ## 获取该用户所有聊天消息 get chat history :white_check_mark:
 
@@ -166,6 +191,12 @@ Status: 200
 
 结果按照last_message_timestamp降序排序。
 
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+| 404-3 | User不存在 |
+| 404-2 | Chat不存在 |
+
 ## 删除聊天（室） delete chat :white_check_mark:
 
 `DELETE /chats/:chat_id`
@@ -179,6 +210,11 @@ yes
 ### response
 
 Status: 204
+
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+| 404-2 | Chat不存在 |
 
 ## 根据聊天双方user_id获取chat_id :white_check_mark:
 
@@ -197,6 +233,12 @@ Status: 200
 	{
 		"chat_id": @number
 	}
+
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+| 404-2 | Chat不存在 |
+| 403-1 | 用户未参与该会话 |
 
 
 ----------
@@ -225,6 +267,17 @@ yes
 ### response
 
 Status: 201
+
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+| 404-5 | Chat Room不存在 |
+| 400-4 | Chat Room已满，无法加入 |
+| 404-6 | Session不存在 |
+| 400-5 | 当前客户端非手机，无法使用定位模块 |
+| 404-7 | Location(坐标)不存在 |
+| 403-3 | 距离太远，禁止操作 |
+| 400-1 | 发消息前未标记已读 |
 
 ## 获取所有含有未读消息的ChatRoom :white_check_mark:
 
@@ -262,6 +315,10 @@ Status: 200
 
 结果按照last_message_timestamp降序排序。
 
+| Error Code | Description |
+| --- | --- |
+| 404-1 | last message sender不存在 |
+
 ## 标记已读ChatRoom :white_check_mark:
 
 `POST /chat_rooms/:chat_room_id/message/read`
@@ -275,6 +332,11 @@ yes
 ### response
 
 Status: 201
+
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+| 404-8 | Chat Room User不存在 |
 
 ## 获取用户参与（不是“创建”）的所有ChatRoom :white_check_mark:
 
@@ -314,6 +376,10 @@ Status: 200
 
 结果按照last_message_timestamp降序排序。
 
+| Error Code | Description |
+| --- | --- |
+| 404-1 | last message sender不存在 |
+
 ## 获取ChatRoom中所有用户 :white_check_mark:
 
 `GET /chat_rooms/:chat_room_id/users`
@@ -336,6 +402,10 @@ Status: 200
 		{...}
 	]
 
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+| 404-5 | Chat Room不存在 |
 
 # 聊天接口（新）
 

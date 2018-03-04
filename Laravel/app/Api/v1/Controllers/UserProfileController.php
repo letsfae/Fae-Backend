@@ -10,6 +10,7 @@ use App\Users;
 use App\User_exts;
 use App\Sessions;
 use App\Verifications;
+use App\Name_cards;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Dingo\Api\Exception\StoreResourceFailedException;
 use Dingo\Api\Exception\UpdateResourceFailedException;
@@ -46,6 +47,15 @@ class UserProfileController extends Controller
                     'status_code' => '404'
                 ], 404);
         }
+        $nameCard = Name_cards::find($user_id);
+        if(is_null($nameCard))
+        {
+            return response()->json([
+                    'message' => 'name card not found',
+                    'error_code' => ErrorCodeUtility::NAME_CARD_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
+        }
         $user_exts = User_exts::find($user_id);
         if(is_null($user_exts)) 
         {
@@ -55,7 +65,8 @@ class UserProfileController extends Controller
                     'status_code' => '404'
                 ], 404);
         }
-        $profile = array('user_id' => $user->id, 'mini_avatar' => $user->mini_avatar, 'last_login_at' => $user->last_login_at);
+        $profile = array('user_id' => $user->id, 'mini_avatar' => $user->mini_avatar, 'last_login_at' => $user->last_login_at,
+                         'nick_name' => $nameCard->nick_name);
         if($user_exts->show_user_name)
         {
             $profile['user_name'] = $user->user_name;
@@ -91,9 +102,19 @@ class UserProfileController extends Controller
                     'status_code' => '404'
                 ], 404);
         }
+        $nameCard = Name_cards::find($user_id);
+        if(is_null($nameCard))
+        {
+            return response()->json([
+                    'message' => 'name card not found',
+                    'error_code' => ErrorCodeUtility::NAME_CARD_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
+        }
         $profile = array('user_id' => $user->id, 'user_name' => $user->user_name, 'mini_avatar' => $user->mini_avatar, 
                          'birthday' => $user->birthday, 'email' => $user->email, 'phone' => $user->phone, 
-                         'gender' => $user->gender, 'last_login_at' => $user->last_login_at);
+                         'gender' => $user->gender, 'last_login_at' => $user->last_login_at, 
+                         'nick_name' => $nameCard->nick_name);
         return $this->response->array($profile);
     }
 

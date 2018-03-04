@@ -68,6 +68,8 @@
 | 404-15 | Name Card不存在 |
 | 404-16 | Location(PIN)不存在 |
 | 404-17 | Collection不存在 |
+| 404-18 | Image不存在 |
+| 404-19 | Place不存在 |
 
 ## 405 Method Not Allowed
 | Error Code | Description |
