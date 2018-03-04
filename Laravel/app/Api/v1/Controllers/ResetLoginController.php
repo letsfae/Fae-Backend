@@ -114,7 +114,8 @@ class ResetLoginController extends Controller
                 $message->to($this->request->email)->subject('Fae-Reset your password');
             });
         }else{
-            Twilio::message($this->request->phone, $verification_code);
+            $message = $verification_code." This is your Fae Maps Verification Code.\nHappy Discovering!";
+            Twilio::message($this->request->phone, $message);
         }
         
 
