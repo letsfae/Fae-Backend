@@ -102,6 +102,7 @@ Status: 200
 		"mini_avatar": @number,
 		"location_updated_at": @string,
 		"short_intro": @string,
+		"show_name_card_options": @bool,
 		"geolocation": [
 			{
 				"latitude": @number,
