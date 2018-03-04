@@ -524,7 +524,8 @@ class UserController extends Controller
             }
         }
 
-        Twilio::message($this->request->phone, $verification_code);
+        $message = $verification_code. " This is your Fae Maps Verification Code.\nHappy Discovering!";
+        Twilio::message($this->request->phone, $message);
         
         return $this->response->created();        
     }
