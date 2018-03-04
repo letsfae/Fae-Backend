@@ -87,7 +87,7 @@ class PlaceController extends Controller implements PinInterface {
         {
             return response()->json([
                     'message' => 'place not found',
-                    //'error_code' => ErrorCodeUtility::CHAT_ROOM_NOT_FOUND,
+                    'error_code' => ErrorCodeUtility::PLACE_NOT_FOUND,
                     'status_code' => '404'
                 ], 404);
         }
@@ -107,7 +107,7 @@ class PlaceController extends Controller implements PinInterface {
             $file = Storage::disk('local')->get('placePicture/'.$place_id.'.jpg');
         } catch(\Exception $e) {
             return response()->json([
-                'message' => 'Bad request, image not found',
+                'message' => ErrorCodeUtility::IMAGE_NOT_FOUND,
                 'status_code' => '404',
             ], 404);
         }

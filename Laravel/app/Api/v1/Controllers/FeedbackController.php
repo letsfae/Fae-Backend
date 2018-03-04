@@ -7,6 +7,7 @@ use Illuminate\Routing\Controller;
 use Dingo\Api\Routing\Helpers;
 use App\Api\v1\Utilities\MailUtility;
 use Dingo\Api\Exception\UpdateResourceFailedException;
+use App\Api\v1\Utilities\ErrorCodeUtility;
 use Validator;
 
 class FeedbackController extends Controller
@@ -34,7 +35,11 @@ class FeedbackController extends Controller
     			$email = 'feedback@letsfae.com';
     			break;
     		default:
-    			return $this->response->errorBadRequest('wrong type');
+    			return response()->json([
+                            'message' => 'wrong type',
+                            'error_code' => ErrorCodeUtility::WRONG_TYPE,
+                            'status_code' => '400'
+                            ], 400);
     	}
         $content = $this->request->content;
         MailUtility::sendMail('support@letsfae.com', $email, $title, $content, $this->request->type, $this->request->self_user_id);

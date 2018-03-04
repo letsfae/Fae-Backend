@@ -28,6 +28,11 @@ yes
 
 Status: 201
 
+| Error Code | Description |
+| --- | --- |
+| 400-5 | 当前客户端非手机，无法使用定位模块 |
+| 404-6 | Session不存在 |
+
 如果返回422，可能原因是当前并非移动设备。
 
 取地图数据 :white_check_mark:
@@ -109,6 +114,10 @@ Status: 200
 		]
 	}
 
+| Error Code | Description |
+| --- | --- |
+| 400-7 | 输入type错误 |
+
 ## 创建新tag :white_check_mark:
 
 `POST /tags`
@@ -185,6 +194,11 @@ Status: 200
 		"color": @string
 	}
 
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+| 404-4 | Tag不存在 |
+
 ## 获取指定tag的pin :white_check_mark:
 
 `GET /tags/:tag_id/pin`
@@ -216,6 +230,11 @@ Status: 200
 		{...},
 		{...}
 	]
+
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+| 404-4 | Tag不存在 |
 
 ----------
 
@@ -252,6 +271,10 @@ Status: 201
 		"chat_room_id": @number
 	}
 
+| Error Code | Description |
+| --- | --- |
+| 404-4 | Tag不存在 |
+
 ## 更新ChatRoom :white_check_mark:
 
 `POST /chat_rooms/:chat_room_id`
@@ -267,6 +290,13 @@ yes
 ### response
 
 Status: 201
+
+| Error Code | Description |
+| --- | --- |
+| 404-4 | Tag不存在 |
+| 404-5 | Chat Room不存在 |
+| 400-3 | 输入ID非数字 |
+| 403-2 | 用户不是PIN创建人，无权操作修改 |
 
 ## 获取ChatRoom :white_check_mark:
 
@@ -307,6 +337,11 @@ Status: 200
 		]
 	}
 
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+| 404-5 | Chat Room不存在 |
+
 ## 获取某个用户创建的所有ChatRoom :white_check_mark:
 
 `GET /chat_rooms/users/:user_id`
@@ -340,6 +375,10 @@ Status: 200
 	]
 
 具体数组内对象同“创建ChatRoom”所得到的对象。
+
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
 
 ## 删除ChatRoom
 
@@ -401,6 +440,11 @@ Status: 200
 		}
 	}
 
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+| 404-19 | Place不存在 |
+
 ## 发布location
 
 `POST /locations`
@@ -428,6 +472,10 @@ Status: 201
 		"location_id": @number
 	}
 
+| Error Code | Description |
+| --- | --- |
+| 404-11 | File不存在 |
+
 ## 更新location
 
 `POST /locations/:location_id`
@@ -443,6 +491,13 @@ yes
 ### response
 
 Status: 201
+
+| Error Code | Description |
+| --- | --- |
+| 404-11 | File不存在 |
+| 404-16 | Location(PIN)不存在 |
+| 400-3 | 输入ID非数字 |
+| 403-2 | 用户不是PIN创建人，无权操作修改 |
 
 ## 获取location		
 
@@ -469,6 +524,11 @@ Status: 200
 			"memo": @string
 		}
 	}
+
+| Error Code | Description |
+| --- | --- |
+| 404-16 | Location(PIN)不存在 |
+| 400-3 | 输入ID非数字 |
 
 ## 获取该用户的所有location
 
@@ -504,6 +564,11 @@ Status: 200
 
 具体数组内对象同“获取location”所得到的对象。
 
+| Error Code | Description |
+| --- | --- |
+| 404-3 | User不存在 |
+| 400-3 | 输入ID非数字 |
+
 ## 删除location
 
 `DELETE /locations/:location_id`
@@ -515,3 +580,9 @@ yes
 ### response
 
 Status: 204
+
+| Error Code | Description |
+| --- | --- |
+| 404-16 | Location(PIN)不存在 |
+| 400-3 | 输入ID非数字 |
+| 403-2 | 用户不是PIN创建人，无权操作修改 |

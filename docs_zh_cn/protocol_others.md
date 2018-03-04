@@ -42,3 +42,7 @@ yes
 ### response
 
 Status: 201
+
+| Error Code | Description |
+| --- | --- |
+| 400-7 | 输入type错误 |

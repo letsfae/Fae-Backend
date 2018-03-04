@@ -75,6 +75,8 @@ class ErrorCodeUtility
 	const NAME_CARD_NOT_FOUND = '404-15';
 	const LOCATIONS_NOT_FOUND = '404-16';
 	const COLLECTION_NOT_FOUND = '404-17';
+	const IMAGE_NOT_FOUND = '404-18';
+	const PLACE_NOT_FOUND = '404-19';
 
     //405 Method Not Allowed
     /*
