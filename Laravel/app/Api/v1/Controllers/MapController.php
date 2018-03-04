@@ -12,6 +12,7 @@ use App\Comments;
 use App\ChatRooms;
 use App\Medias;
 use App\User_exts;
+use App\UserSettings;
 use App\Name_cards;
 use App\Users;
 use App\Places;
@@ -101,6 +102,9 @@ class MapController extends Controller
                 {
                     continue;
                 }
+
+                $user_setting = UserSettings::find($session->user_id);
+
                 $nameCard = Name_cards::find($session->user_id);
                 $birthDate = $user->birthday;
                 $birthDate = explode("-", $birthDate);
@@ -115,6 +119,7 @@ class MapController extends Controller
                            'mini_avatar' => $user->mini_avatar, 
                            'location_updated_at' => $session->location_updated_at,
                            'short_intro' => $nameCard->short_intro,
+                           'show_name_card_options' => $user_setting->show_name_card_options,
                            'geolocation'=>[
                            ['latitude'=>$locations[0]->getLat(),'longitude'=>$locations[0]->getLng()],
                            ['latitude'=>$locations[1]->getLat(),'longitude'=>$locations[1]->getLng()],

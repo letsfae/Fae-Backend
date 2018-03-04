@@ -52,16 +52,27 @@ class SearchController extends Controller {
             $radius = $postbody["radius"];
 
             $data["body"]["query"]["filtered"]["filter"] = [
-                "geo_distance"=> [
-                    "distance" => $radius."m",
-                    "distance_type" => "sloppy_arc", 
-                    "places.location"=> [
-                        "lat" => $latitude,
-                        "lon" => $longitude
-                    ]
-                ]
+                        "geo_distance" => [
+                            "distance" => $radius."m",
+                            "distance_type" => "sloppy_arc", 
+                            "places.location"=> [
+                                "lat" => $latitude,
+                                "lon" => $longitude
+                            ]
+                        ]
             ];
         }
+
+        // if(array_key_exists('filter', $postbody)){
+        //     foreach ($postbody["filter"] as $key => $value){
+        //         print_r($value);
+        //         $data["body"]["query"]["filtered"]["filter"]["bool"]["should"] +=[
+        //             "class_one" =>"Little Sister"
+        //         ];
+        //          $data["body"]["query"]["filtered"]["filter"]["bool"] += ["minimum_should_match"=>2];
+        //     }
+        // }
+        //print_r($data);
 
         if(array_key_exists('sort', $postbody)){
             $data["body"]["sort"] = $postbody["sort"];
@@ -155,6 +166,15 @@ class SearchController extends Controller {
             $validator = Validator::make($postbody, [
                 'sort.name' => 'string|between:desc, asc',
                 'sort.geo_location' => 'string|between:desc, asc',
+            ]);
+            if($validator->fails()){
+                throw new StoreResourceFailedException('Could not search.',$validator->errors());
+            }
+        }
+
+        if (array_key_exists('filter', $postbody)){
+            $validator = Validator::make($postbody, [
+                'filter.class_one' => 'string',
             ]);
             if($validator->fails()){
                 throw new StoreResourceFailedException('Could not search.',$validator->errors());

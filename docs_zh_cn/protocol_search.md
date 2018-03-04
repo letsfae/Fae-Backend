@@ -26,6 +26,7 @@
 		"size": 10, // optional, defaults to 10
 		"offset": 0, // optional, defaults to 0
 		"sort": [{"name": "desc"}], // optional, defaults to [{"name": "desc"}], could be "geo_location", "name"; order matters.
+		"filter": [{"class_one": "Food"}], // optional, could be "class_one" only
 		"source": "categories" // required, could be "categories", "name"
 	}
 
