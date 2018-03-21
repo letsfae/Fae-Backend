@@ -207,7 +207,7 @@ class UserNameCardController extends Controller
     private function updateNameCardValidation(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nick_name' => 'filled|required_without_all:short_intro,tag_ids,show_age,show_gender|alpha_num:50',
+            'nick_name' => 'filled|required_without_all:short_intro,tag_ids,show_age,show_gender|regex:/^[a-zA-Z0-9\s!@#\$%\^\&*\)\(\+=\._-]*[a-zA-Z0-9]+[a-zA-Z0-9\s!@#\$%\^\&*\)\(\+=\._-]*$/|max:50',
             'short_intro' => 'filled|required_without_all:nick_name,tag_ids,show_age,show_gender|string|max:200',
             'tag_ids' => 'filled|required_without_all:nick_name,short_intro,show_age,show_gender|regex:/^(\d+\;){0,2}\d+$/',
             'show_age' => 'filled|required_without_all:nick_name,short_intro,tag_ids,show_gender|in:true,false',
@@ -220,7 +220,7 @@ class UserNameCardController extends Controller
                 if($request->has('nick_name') || $request->has('tag_ids') || $request->has('show_age') || $request->has('show_gender'))
                 {
                     $validator = Validator::make($request->all(), [
-                        'nick_name' => 'filled|alpha_num:50',
+                        'nick_name' => 'filled|regex:/^[a-zA-Z0-9\s!@#\$%\^\&*\)\(\+=\._-]*[a-zA-Z0-9]+[a-zA-Z0-9\s!@#\$%\^\&*\)\(\+=\._-]*$/|max:50',
                         'tag_ids' => 'filled|regex:/^(\d+\;){0,2}\d+$/',
                         'show_age' => 'filled|in:true,false',
                         'show_gender' => 'filled|in:true,false'
