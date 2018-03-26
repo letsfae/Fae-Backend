@@ -138,6 +138,12 @@ return response()->json([
                     'status_code' => '401'
                 ], 401);
 
+return response()->json([
+                    'message' => 'email not registered or not verified',
+                    'error_code' => ErrorCodeUtility::EMAIL_NOT_VALID,
+                    'status_code' => '401'
+                ], 401);
+
 
 
 

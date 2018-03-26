@@ -51,7 +51,17 @@ class UserController extends Controller
                 ], 422);
         }
         $user = new Users;
-        $user->email = strtolower($this->request->email);
+        if($this->request->has('email')) {
+            $email = strtolower($this->request->email);
+            if(Users::where('email',$email)->where('email_verified',true)->exists()) {
+                return response()->json([
+                    'message' => 'email already exists',
+                    'error_code' => ErrorCodeUtility::EMAIL_ALREADY_EXISTS,
+                    'status_code' => '422'
+                ], 422);
+            }
+            $user->email = $email;
+        }
         $user->user_name = $this->request->user_name;
         $user->password = bcrypt($this->request->password);
         $user->first_name = $this->request->first_name;
@@ -300,8 +310,8 @@ class UserController extends Controller
             $input['email'] = strtolower($input['email']);
         }
         $validator = Validator::make($input, [
-            'email' => 'required|unique:users,email|max:50|email',
-            'user_name' => 'required|regex:/^[a-zA-Z0-9]*[_\-.]?[a-zA-Z0-9]*$/|min:3|max:20',
+            'email' => 'filled|max:50|email',
+            'user_name' => 'required|unique:users,user_name|regex:/^[a-zA-Z0-9]*[_\-.]?[a-zA-Z0-9]*$/|min:3|max:20',
             'password' => 'required|between:8,16',
             'first_name' => 'required|string|max:50',
             'last_name' => 'required|string|max:50',
@@ -374,39 +384,30 @@ class UserController extends Controller
 
     public function updateEmail() {
         // validation
-        $input = $this->request->all();
-        if($this->request->has('email')){
-    	    $input['email'] = strtolower($input['email']);
-        }
-        
-        $validator = Validator::make($input, [
+        $validator = Validator::make($this->request->all(), [
             'email' => 'required|max:50|email'
         ]);
-        
         if($validator->fails())
     	{
     		throw new StoreResourceFailedException('Could not verify.',$validator->errors());
     	}
-        
-        $user = Users::where('email','=',$input['email'])->get();
-        if( ( count($user)!=0 ) ){
-            $current_user = Users::find($this->request->self_user_id);
-            if ($current_user->email != $user[0]->email){
-                return response()->json([
-                    'message' => 'email already exists',
-                    'error_code' => ErrorCodeUtility::EMAIL_ALREADY_EXISTS,
-                    'status_code' => '422'
-                ], 422);
-            }
+
+        $email = strtolower($this->request->email);
+        if(Users::where('email',$email)->where('email_verified',true)->exists()) {
+            return response()->json([
+                'message' => 'email already exists',
+                'error_code' => ErrorCodeUtility::EMAIL_ALREADY_EXISTS,
+                'status_code' => '422'
+            ], 422);
         }
         
         // generate code & store user_id and code to verification table
         $verification_code = (string)rand(111111,999999);
-        $verification = Verifications::where('email','=', $input['email'])->where('type','=', 'email')->get();
+        $verification = Verifications::where('email','=', $email)->where('type','=', 'email')->get();
         if( is_null($verification) || ( count($verification)==0 ) ){
             $new_verification = new Verifications;
             $new_verification->type = 'email';
-            $new_verification->email = $input['email'];
+            $new_verification->email = $email;
             $new_verification->code = $verification_code;
             $new_verification->save();
         }else{
@@ -415,7 +416,7 @@ class UserController extends Controller
                 
                 $new_verification = new Verifications;
                 $new_verification->type = 'email';
-                $new_verification->email = $input['email'];
+                $new_verification->email = $email;
                 $new_verification->code = $verification_code;
                 $new_verification->save();
             }else{
@@ -423,23 +424,23 @@ class UserController extends Controller
             }
         }
         
-        $email = "Hello!\n\n";
-        $email = $email."This is Fae Support. Below is the code for updating your email. Please enter the code on your device and proceed to creating your new password. The code will be valid for 3 hours and when a new one is issued.\n";
-        $email = $email."\n".$verification_code."\n\n";
-        $email = $email."Have a wonderful day!\n";
-        $email = $email."Fae Support\n\n";
-        $email = $email."*If you did not request this change then please ignore the email.\n";
+        $email_to_send = "Hello!\n\n";
+        $email_to_send = $email_to_send."This is Fae Support. Below is the code for updating your email. Please enter the code on your device and proceed to creating your new password. The code will be valid for 3 hours and when a new one is issued.\n";
+        $email_to_send = $email_to_send."\n".$verification_code."\n\n";
+        $email_to_send = $email_to_send."Have a wonderful day!\n";
+        $email_to_send = $email_to_send."Fae Support\n\n";
+        $email_to_send = $email_to_send."*If you did not request this change then please ignore the email.\n";
         
         
         
         
         // send code to this email
         $user = Users::find($this->request->self_user_id);
-        $user->email = $input['email'];
+        $user->email = $email;
         $user->email_verified = false;
         $user->save();
         
-        Mail::raw($email, function ($message) {
+        Mail::raw($email_to_send, function ($message) {
             $message->from('support@letsfae.com', 'Fae Support');
 
             $message->to($this->request->email)->subject('Fae-Update Email verification');
@@ -484,6 +485,12 @@ class UserController extends Controller
                 $user->email = $input['email'];
                 $user->email_verified = true;
                 $user->save();
+
+                $users = Users::where('email',$input['email'])->where('id','!=',$this->request->self_user_id)->where('email_verified',true)->get();
+                foreach ($users as $user) {
+                    $user->email_verified = false;
+                    $user->save();
+                }
                 
                 return $this->response->created();
             }else{

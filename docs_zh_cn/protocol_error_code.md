@@ -31,6 +31,7 @@
 | Error Code | Description |
 | --- | --- |
 | 401-1 | 密码不正确 |
+| 401-2 | 邮箱未验证或者不存在 |
 
 ## 402 Payment Required
 | Error Code | Description |
