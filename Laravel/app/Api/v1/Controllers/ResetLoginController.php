@@ -52,7 +52,7 @@ class ResetLoginController extends Controller
         if($this->request->has('email')){
             $input_key = 'email';
             $input_value = $input['email'];
-            $user = Users::where($input_key, '=', $input_value)->first();
+            $user = Users::where($input_key, '=', $input_value)->where('email_verified',true)->first();
         }else{
             $input_key = 'phone';
             $input_value = $input['phone'];
@@ -147,11 +147,11 @@ class ResetLoginController extends Controller
         if($this->request->has('email')){
             $input_key = 'email';
             $input_value = $input['email'];
-            $user = Users::where($input_key, '=', $input_value)->first();
+            $user = Users::where($input_key, '=', $input_value)->where('email_verified', true)->first();
         }else{
             $input_key = 'phone';
             $input_value = $input['phone'];
-            $user = Users::where($input_key, '=', $input_value)->where('user_name', '=', $input['user_name'])->first();
+            $user = Users::where($input_key, '=', $input_value)->where('user_name', $input['user_name'])->first();
         }
 
         if( is_null($user) ){
@@ -215,11 +215,19 @@ class ResetLoginController extends Controller
         if($this->request->has('email')){
             $input_key = 'email';
             $input_value = $input['email'];
-            $user = Users::where($input_key, '=', $input_value)->first();
+            $user = Users::where($input_key, '=', $input_value)->where('email_verified', true)->first();
         }else{
             $input_key = 'phone';
             $input_value = $input['phone'];
             $user = Users::where($input_key, '=', $input_value)->where('user_name', '=', $input['user_name'])->first();
+        }
+
+        if( is_null($user) ){
+            return response()->json([
+                    'message' => 'user not found',
+                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
+                    'status_code' => '404'
+                ], 404);
         }
 
         // compare user_id and code with data in verification table

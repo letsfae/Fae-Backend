@@ -27,6 +27,7 @@ class AuthenticationController extends Controller {
         // check user existance with email or username
         $email = '';
         $user_name = '';
+        $users = null;
         if ($this->request->has('email')){
             $email = strtolower($this->request->email);
         }
@@ -35,23 +36,23 @@ class AuthenticationController extends Controller {
         }
         $password = $this->request->password;
         if (!empty($user_name) && empty($email)){
-            $user_table = Users::where('user_name', 'ilike',$user_name)->first();
-            if ($user_table == null) {
+            $users = Users::where('user_name', 'ilike',$user_name)->first();
+            if ($users == null) {
                 return response()->json([
                     'message' => 'user not found',
                     'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
                     'status_code' => '404'
                 ], 404);
             }
-            $email = $user_table->email;
-        }
-        $users = Users::where('email', '=', $email)->first();
-        if ($users == null) {
-            return response()->json([
-                    'message' => 'user not found',
-                    'error_code' => ErrorCodeUtility::USER_NOT_FOUND,
-                    'status_code' => '404'
-                ], 404);
+        } else {
+            $users = Users::where('email', $email)->where('email_verified',true)->first();
+            if(is_null($users)){
+                return response()->json([
+                        'message' => 'email not registered or not verified',
+                        'error_code' => ErrorCodeUtility::EMAIL_NOT_VALID,
+                        'status_code' => '401'
+                    ], 401);
+            }
         }
         //forbid user when login time over 3;
         if ($users->login_count >= 6){
