@@ -4,8 +4,8 @@ return array(
 
     'appNameIOS'     => array(
         'environment' =>'development',
-        'certificate' =>'/usr/share/nginx/html/dev/Fae-Backend/certificate.pem',
-        'passPhrase'  =>'A1234567',
+        'certificate' =>'/usr/share/nginx/html/dev/Fae-Backend/certificates.pem',
+        'passPhrase'  =>'faefae789!',
         'service'     =>'apns'
     ),
     'appNameAndroid' => array(

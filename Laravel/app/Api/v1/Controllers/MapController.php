@@ -153,7 +153,18 @@ class MapController extends Controller
                                     ]
                                 ]
                             ]
-                        ]
+                        ],
+                        "sort" => [[
+                            "_geo_distance" => [
+                                "location" => [ 
+                                    "lat" => $latitude,
+                                    "lon" => $longitude
+                                ],
+                                "order" => "asc",
+                                "unit" => "m", 
+                                "distance_type" => "sloppy_arc" 
+                            ]
+                        ]]
                     ],
                     "index" => "foursquare",
                     "type" => "places"
@@ -190,7 +201,18 @@ class MapController extends Controller
                                     ]
                                 ]
                             ]
-                        ]
+                        ],
+                        "sort" => [[
+                            "_geo_distance" => [
+                                "location" => [ 
+                                    "lat" => $latitude,
+                                    "lon" => $longitude
+                                ],
+                                "order" => "asc",
+                                "unit" => "m", 
+                                "distance_type" => "sloppy_arc" 
+                            ]
+                        ]]
                     ],
                     "index" => "foursquare",
                     "type" => "places"

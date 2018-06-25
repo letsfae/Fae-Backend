@@ -38,25 +38,30 @@ class ResetLoginController extends Controller
         $validator = Validator::make($input, [
             'email' => 'required_without:phone|max:50|email',
             'phone' => 'required_without:email|max:20|regex:/^\([0-9]+\)[0-9]+$/',
-            'user_name' => 'required_with:phone|regex:/^[a-zA-Z0-9]*[_\-.]?[a-zA-Z0-9]*$/|min:3|max:20',
+            'user_name' => 'regex:/^[a-zA-Z0-9]*[_\-.]?[a-zA-Z0-9]*$/|min:3|max:20',
         ]);
+
+        if($this->request->has('phone') && !($this->request->has('user_name')||$this->request->has('email')))
+        	throw new StoreResourceFailedException('Could not verify.');
         
-        if($validator->fails())
-    	{
+        if($validator->fails()){
     		throw new StoreResourceFailedException('Could not verify.',$validator->errors());
     	}
         
         $input_key = '';
         $input_value = '';
         $user = null;
-        if($this->request->has('email')){
-            $input_key = 'email';
-            $input_value = $input['email'];
-            $user = Users::where($input_key, '=', $input_value)->where('email_verified',true)->first();
-        }else{
-            $input_key = 'phone';
+        if($this->request->has('phone')){
+        	$input_key = 'phone';
             $input_value = $input['phone'];
-            $user = Users::where($input_key, '=', $input_value)->where('user_name', '=', $input['user_name'])->first();
+            if($this->request->has('user_name'))
+            	$user = Users::where($input_key, '=', $input_value)->where('user_name', '=', $input['user_name'])->first();
+            else
+            	$user = Users::where('email', '=', $input['email'])->where('email_verified',true)->first();
+        }else{
+          	$input_key = 'email';
+            $input_value = $input['email'];
+            $user = Users::where($input_key, '=', $input_value)->where('email_verified',true)->first();  
         }
         if( is_null($user) ){
             return response()->json([
@@ -99,7 +104,10 @@ class ResetLoginController extends Controller
         }
         
 
-        if( $input_key == 'email' ){
+        if( $input_key == 'phone' ){
+        	$message = $verification_code." This is your Fae Maps Verification Code.\nHappy Discovering!";
+            Twilio::message($this->request->phone, $message);            
+        }else{
             // send code to this email
             $email = "Hello!\n\n";
             $email = $email."This is Fae Support. Below is the code for resetting your password. Please enter the code on your device and proceed to creating your new password. The code is valid for 3 hours or when a new one is issued.\n";
@@ -113,9 +121,6 @@ class ResetLoginController extends Controller
 
                 $message->to($this->request->email)->subject('Fae-Reset your password');
             });
-        }else{
-            $message = $verification_code." This is your Fae Maps Verification Code.\nHappy Discovering!";
-            Twilio::message($this->request->phone, $message);
         }
         
 
@@ -133,9 +138,12 @@ class ResetLoginController extends Controller
         $validator = Validator::make($input, [
             'email' => 'required_without:phone|max:50|email',
             'phone' => 'required_without:email|max:20|regex:/^\([0-9]+\)[0-9]+$/',
-            'user_name' => 'required_with:phone|regex:/^[a-zA-Z0-9]*[_\-.]?[a-zA-Z0-9]*$/|min:3|max:20',
+            'user_name' => 'regex:/^[a-zA-Z0-9]*[_\-.]?[a-zA-Z0-9]*$/|min:3|max:20',
             'code' => 'required|string|max:6'
         ]);
+
+        if($this->request->has('phone') && !($this->request->has('user_name')||$this->request->has('email')))
+        	throw new StoreResourceFailedException('Could not verify.');
         
         if($validator->fails()){
     		throw new StoreResourceFailedException('Could not verify.',$validator->errors());
@@ -144,14 +152,17 @@ class ResetLoginController extends Controller
         $input_key = '';
         $input_value = '';
         $user = null;
-        if($this->request->has('email')){
-            $input_key = 'email';
-            $input_value = $input['email'];
-            $user = Users::where($input_key, '=', $input_value)->where('email_verified', true)->first();
-        }else{
-            $input_key = 'phone';
+        if($this->request->has('phone')){
+        	$input_key = 'phone';
             $input_value = $input['phone'];
-            $user = Users::where($input_key, '=', $input_value)->where('user_name', $input['user_name'])->first();
+            if($this->request->has('user_name'))
+            	$user = Users::where($input_key, '=', $input_value)->where('user_name', '=', $input['user_name'])->first();
+            else
+            	$user = Users::where('email', '=', $input['email'])->where('email_verified',true)->first();
+        }else{
+          	$input_key = 'email';
+            $input_value = $input['email'];
+            $user = Users::where($input_key, '=', $input_value)->where('email_verified',true)->first();  
         }
 
         if( is_null($user) ){
@@ -200,11 +211,13 @@ class ResetLoginController extends Controller
         $validator = Validator::make($input, [
             'email' => 'required_without:phone|max:50|email',
             'phone' => 'required_without:email|max:20|regex:/^\([0-9]+\)[0-9]+$/',
-            'user_name' => 'required_with:phone|regex:/^[a-zA-Z0-9]*[_\-.]?[a-zA-Z0-9]*$/|min:3|max:20',
+            'user_name' => 'regex:/^[a-zA-Z0-9]*[_\-.]?[a-zA-Z0-9]*$/|min:3|max:20',
             'password' => 'required|between:8,16',
             'code' => 'required|string|max:6'
         ]);
         
+        if($this->request->has('phone') && !($this->request->has('user_name')||$this->request->has('email')))
+        	throw new StoreResourceFailedException('Could not verify.');
         if($validator->fails()) {
     		throw new StoreResourceFailedException('Could not reset.',$validator->errors());
     	}
@@ -212,14 +225,17 @@ class ResetLoginController extends Controller
         $input_key = '';
         $input_value = '';
         $user = null;
-        if($this->request->has('email')){
-            $input_key = 'email';
-            $input_value = $input['email'];
-            $user = Users::where($input_key, '=', $input_value)->where('email_verified', true)->first();
-        }else{
-            $input_key = 'phone';
+        if($this->request->has('phone')){
+        	$input_key = 'phone';
             $input_value = $input['phone'];
-            $user = Users::where($input_key, '=', $input_value)->where('user_name', '=', $input['user_name'])->first();
+            if($this->request->has('user_name'))
+            	$user = Users::where($input_key, '=', $input_value)->where('user_name', '=', $input['user_name'])->first();
+            else
+            	$user = Users::where('email', '=', $input['email'])->where('email_verified',true)->first();
+        }else{
+          	$input_key = 'email';
+            $input_value = $input['email'];
+            $user = Users::where($input_key, '=', $input_value)->where('email_verified',true)->first();  
         }
 
         if( is_null($user) ){
