@@ -145,7 +145,7 @@ class SearchController extends Controller {
             'radius' => 'required_with:location',
             'size' => 'integer',
             'offset' => 'integer',
-            'source' => 'required|string|in:categories,name',
+            'source' => 'required|string|in:categories,name,class_one',
 
         ]);
         if($validator->fails()){
