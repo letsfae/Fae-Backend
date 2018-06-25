@@ -34,6 +34,11 @@ user_name格式要求为：仅可包含大小写字母、数字及`_`/`-`/`.`，
 
 Status: 201
 
+| Error Code | Description |
+| --- | --- |
+| 422-2 | User Name已存在 |
+| 422-3 | E-Mail已存在 |
+
 ## 登陆 :white_check_mark:
 
 `POST /authentication`
@@ -77,6 +82,11 @@ Status: 201
 
 last_login_at为最后一次登录时间（将在logout后被更新）。如果为null，则为初次登录。
 
+| Error Code | Description |
+| --- | --- |
+| 404-3 | User不存在 |
+| 401-2 | 邮箱未验证或者不存在 |
+
 ## 登出 logout :white_check_mark:
 
 `DELETE /authentication`
@@ -113,6 +123,10 @@ code有效时长为发送出来后的30分钟，30分钟内再次获取code为�
 
 Status: 201
 
+| Error Code | Description |
+| --- | --- |
+| 404-3 | User不存在 |
+
 ## 验证重置登陆code :white_check_mark:
 
 `POST /reset_login/code/verify`
@@ -135,6 +149,13 @@ email、phone只能出现其中一个。如果phone出现，则user_name必须�
 ### response
 
 Status: 201
+
+| Error Code | Description |
+| --- | --- |
+| 404-3 | User不存在 |
+| 404-14 | Verification不存在 |
+| 403-4 | verification超时 |
+| 403-5 | 验证码错误 |
 
 ## 验证code后重置密码 :white_check_mark:
 
@@ -159,6 +180,13 @@ email、phone只能出现其中一个。如果phone出现，则user_name必须�
 ### response
 
 Status: 201
+
+| Error Code | Description |
+| --- | --- |
+| 404-3 | User不存在 |
+| 404-14 | Verification不存在 |
+| 403-4 | verification超时 |
+| 403-5 | 验证码错误 |
 
 ## 验证email是否存在 :white_check_mark:
 
@@ -251,6 +279,10 @@ Status: 200
 		"last_login_at": @string
 	}
 
+| Error Code | Description |
+| --- | --- |
+| 404-3 | User不存在 |
+
 ## 更新账户信息 update account :white_check_mark:
 
 `POST /users/account`
@@ -278,6 +310,11 @@ yes
 
 Status: 201
 
+| Error Code | Description |
+| --- | --- |
+| 404-3 | User不存在 |
+| 422-2 | User Name已存在 |
+
 ## 测试自身密码是否正确 verify password :white_check_mark:
 
 `POST /users/account/password/verify`
@@ -300,6 +337,10 @@ Status: 201
 
 错误后会返回login_count。
 
+| Error Code | Description |
+| --- | --- |
+| 401-1 | 密码不正确 |
+
 ## 更新自己的密码 update password :white_check_mark:
 
 `POST /users/account/password`
@@ -321,6 +362,10 @@ Status: 201
 
 错误后会返回login_count。
 
+| Error Code | Description |
+| --- | --- |
+| 401-1 | 密码不正确 |
+
 ## 更新自己的邮箱 update email :white_check_mark:
 
 `POST /users/account/email`
@@ -341,6 +386,10 @@ yes
 
 Status: 201
 
+| Error Code | Description |
+| --- | --- |
+| 422-3 | E-Mail已存在 |
+
 ## 验证邮箱 verify email :white_check_mark:
 
 `POST /users/account/email/verify`
@@ -359,6 +408,11 @@ yes
 ### response
 
 Status: 201
+
+| Error Code | Description |
+| --- | --- |
+| 404-14 | Verification不存在 |
+| 403-5 | 验证码错误 |
 
 ## 更新自己的电话 update phone :white_check_mark:
 
@@ -416,6 +470,12 @@ yes
 
 Status: 201
 
+| Error Code | Description |
+| --- | --- |
+| 404-14 | Verification不存在 |
+| 403-4 | verification超时 |
+| 403-5 | 验证码错误 |
+
 ----------
 
 注意profile级接口和account级接口的区别：account接口只能用户自身set/get，主要负责基础用户信息及密码的维护；profile接口可以由用户自身set/get并被其他用户get，profile接口中不光可以设置除了account接口之外的字段，同时也作为account接口权限包装。
@@ -445,6 +505,11 @@ Status: 200
 		"last_login_at": @string
 	}
 
+| Error Code | Description |
+| --- | --- |
+| 404-3 | User不存在 |
+| 404-15 | Name Card不存在 |
+
 ## 获取其他用户资料 get profile :white_check_mark:
 
 `GET /users/:user_id/profile`
@@ -452,6 +517,12 @@ Status: 200
 其余同get self profile。
 
 需要注意的是，获取到的字段仅包含用户设定为公开的字段。
+
+| Error Code | Description |
+| --- | --- |
+| 404-3 | User不存在 |
+| 404-15 | Name Card不存在 |
+| 400-3 | 输入ID非数字 |
 
 ## 更新自己的资料 update self profile (待定)
 
@@ -473,6 +544,10 @@ yes
 
 Status: 201
 
+| Error Code | Description |
+| --- | --- |
+| 404-3 | User不存在 |
+
 ## 获取用户自己的资料隐私设定 get self profile privacy
 
 `GET /users/profile/privacy`
@@ -492,6 +567,10 @@ Status: 200
 		"show_birthday": @boolean,
 		"show_gender": @boolean
 	}
+
+| Error Code | Description |
+| --- | --- |
+| 404-3 | User不存在 |
 
 ## 更新自己的资料隐私设定 update self profile privacy
 
@@ -519,6 +598,10 @@ yes
 
 Status: 201
 
+| Error Code | Description |
+| --- | --- |
+| 404-3 | User不存在 |
+
 ## 获取用户自己的状态 get self status :white_check_mark:
 
 `GET /users/status`
@@ -541,6 +624,10 @@ Status: 200
 
 用户的状态不被服务器保留：即当用户的第一台设备登陆时，状态置位为online，最后一台设备退出时，状态置位为offline。
 
+| Error Code | Description |
+| --- | --- |
+| 404-3 | User不存在 |
+
 ## 获取其他用户状态 get status :white_check_mark:
 
 `GET /users/:user_id/status`
@@ -548,6 +635,10 @@ Status: 200
 基本同get self status。
 
 需要注意的是，获取其他用户的状态时（自身user_id除外），该用户的invisible状态将无法获取到（即使该用户状态为invisible，返回状态仍为offline）。
+
+| Error Code | Description |
+| --- | --- |
+| 404-3 | User不存在 |
 
 ## 更新自己的状态 update self status :white_check_mark:
 
@@ -627,11 +718,19 @@ Status: 200
 		"age": @string 同account中的设置(通过birthday计算得来)，当且仅当show_age为true时才具有该字段
 	}
 
+| Error Code | Description |
+| --- | --- |
+| 404-15 | Name Card不存在 |
+
 ## 获取自己的NameCard :white_check_mark:
 
 `GET /users/name_card`
 
 其余同获取某个用户NameCard。
+
+| Error Code | Description |
+| --- | --- |
+| 404-15 | Name Card不存在 |
 
 ## 获取所有NameCard所属的tag :white_check_mark:
 
@@ -681,6 +780,10 @@ yes
 
 Status: 201
 
+| Error Code | Description |
+| --- | --- |
+| 404-4 | Tag不存在 |
+
 ## 保存NameCard :white_check_mark:
 
 `POST /users/:user_id/name_card/save`
@@ -693,6 +796,12 @@ yes
 
 Status: 201
 
+| Error Code | Description |
+| --- | --- |
+| 404-3 | User不存在 |
+| 400-3 | 输入ID非数字 |
+| 400-10 | 已save |
+
 ## 取消保存NameCard :white_check_mark:
 
 `DELETE /users/:user_id/name_card/save`
@@ -704,6 +813,11 @@ yes
 ### response
 
 Status: 204
+
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+| 400-9 | 未save |
 
 ## 获取所有保存的namecard :white_check_mark:
 

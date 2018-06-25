@@ -14,6 +14,12 @@ yes
 
 Status: 201
 
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+| 400-7 | 输入type错误 |
+| 404-13 | PIN不存在 |
+
 ## Like 点赞 :white_check_mark:
 
 `POST /pins/:type/:pin_id/like`
@@ -28,6 +34,15 @@ yes
 
 Status: 201
 
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+| 400-7 | 输入type错误 |
+| 404-13 | PIN不存在 |
+| 400-8 | 已Like |
+| 403-3 | 距离太远，禁止操作 |
+| 404-7 | Location(坐标)不存在 |
+
 ## Unlike （注意不是dislike） :white_check_mark:
 
 `DELETE /pins/:type/:pin_id/like`
@@ -41,6 +56,13 @@ yes
 ### response
 
 Status: 204
+
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+| 400-7 | 输入type错误 |
+| 404-13 | PIN不存在 |
+| 400-11 | 未like |
 
 ## 创建memo
 
@@ -64,6 +86,10 @@ yes
 
 Status: 201
 
+| Error Code | Description |
+| --- | --- |
+| 404-13 | PIN不存在 |
+
 ## 删除memo
 
 `DELETE /pins/:type/:pin_id/memo`
@@ -77,6 +103,10 @@ yes
 ### response
 
 Status: 204
+
+| Error Code | Description |
+| --- | --- |
+| 404-13 | PIN不存在 |
 
 ## Feeling :white_check_mark:
 
@@ -98,6 +128,12 @@ yes
 
 Status: 201
 
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+| 400-7 | 输入type错误 |
+| 404-13 | PIN不存在 |
+
 ## Remove Feeling :white_check_mark:
 
 `DELETE /pins/:type/:pin_id/feeling`
@@ -111,6 +147,13 @@ yes
 ### response
 
 Status: 204
+
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+| 400-7 | 输入type错误 |
+| 404-13 | PIN不存在 |
+| 400-15 | 未发过表情 |
 
 ## comment 评论 :white_check_mark:
 
@@ -137,6 +180,14 @@ Status: 201
 		"pin_comment_id": @number
 	}
 
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+| 400-7 | 输入type错误 |
+| 404-13 | PIN不存在 |
+| 403-3 | 距离太远，禁止操作 |
+| 404-7 | Location(坐标)不存在 |
+
 ## update comment 更新评论
 
 `POST /pins/comments/:pin_comment_id`
@@ -153,6 +204,12 @@ yes
 
 Status: 201
 
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+| 404-9 | Comment不存在 |
+| 403-2 | 用户不是PIN创建人，无权操作修改 |
+
 ## Uncomment :white_check_mark:
 
 `DELETE /pins/comments/:pin_comment_id`
@@ -166,6 +223,13 @@ yes
 ### response
 
 Status: 204
+
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+| 404-9 | Comment不存在 |
+| 403-2 | 用户不是PIN创建人，无权操作修改 |
+| 404-13 | PIN不存在 |
 
 ## 获取saved pin
 
@@ -278,6 +342,11 @@ Status: 200
 		"comments": @number
 	}
 
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+| 404-3 | User不存在 |
+
 ## 获取pin的评论 :white_check_mark:
 
 `GET /pins/:type/:pin_id/comments`
@@ -322,6 +391,12 @@ Status: 200
 		{...}
 	]
 
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+| 400-7 | 输入type错误 |
+| 404-13 | PIN不存在 |
+
 ## 对于comment的vote :white_check_mark:
 
 `POST /pins/comments/:pin_comment_id/vote`
@@ -342,6 +417,13 @@ yes
 
 Status: 201
 
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+| 404-9 | Comment不存在 |
+| 400-12 | 已vote up |
+| 400-13 | 已vote down |
+
 ## cancel对于comment的vote :white_check_mark:
 
 `DELETE /pins/comments/:pin_comment_id/vote`
@@ -353,6 +435,12 @@ yes
 ### response
 
 Status: 204
+
+| Error Code | Description |
+| --- | --- |
+| 400-3 | 输入ID非数字 |
+| 404-9 | Comment不存在 |
+| 400-14 | 未vote |
 
 ## 获取用户自身pin的相关统计 :white_check_mark:
 
@@ -423,6 +511,10 @@ Status: 200
 
 type不可修改，其余字段同创建collection（必须至少存在一个字段）。
 
+| Error Code | Description |
+| --- | --- |
+| 403-7 | 用户不是collection创建者，无权操作修改 |
+
 ## 删除collection
 
 `DELETE /collections/:collection_id`
@@ -434,6 +526,10 @@ yes
 ### response
 
 Status: 204
+
+| Error Code | Description |
+| --- | --- |
+| 403-7 | 用户不是collection创建者，无权操作修改 |
 
 ## 获取一个collection
 
@@ -466,6 +562,10 @@ Status: 200
 		]
 	}
 
+| Error Code | Description |
+| --- | --- |
+| 403-7 | 用户不是collection创建者，无权操作修改 |
+
 ## 收藏pin到collection
 
 `POST /collections/:collection_id/save/:type/:pin_id`
@@ -478,6 +578,11 @@ yes
 
 Status: 201
 
+| Error Code | Description |
+| --- | --- |
+| 403-7 | 用户不是collection创建者，无权操作修改 |
+| 400-7 | 输入type错误 |
+
 ## 从collection删除一个pin的收藏
 
 `DELETE /collections/:collection_id/save/:type/:pin_id`
@@ -489,3 +594,8 @@ yes
 ### response
 
 Status: 204
+
+| Error Code | Description |
+| --- | --- |
+| 403-7 | 用户不是collection创建者，无权操作修改 |
+| 400-7 | 输入type错误 |
