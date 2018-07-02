@@ -879,6 +879,7 @@ Status: 200
 		"email_subscription": @bool,
 		"show_name_card_options": @bool,
 		"measurement_units": @string,
-		"shadow_location_system_effect": @string(min, normal, max)
+		"shadow_location_system_effect": @string(min, normal, max),
+		"others": @string
 	}
 

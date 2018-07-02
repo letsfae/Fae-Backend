@@ -41,6 +41,9 @@ class UserSettingController extends Controller
     	if($this->request->has('shadow_location_system_effect')) {
     		$user_setting->shadow_location_system_effect = $this->request->shadow_location_system_effect;
     	}
+        if($this->request->has('others')) {
+            $user_setting->others = $this->request->others;
+        }
     	$user_setting->save();
     	return $this->response->created();
     }
@@ -48,10 +51,11 @@ class UserSettingController extends Controller
     private function updateValidation(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email_subscription' => 'filled|required_without_all:show_name_card_options,measurement_units,shadow_location_system_effect|in:true,false',
-            'show_name_card_options' => 'filled|required_without_all:email_subscription,measurement_units,shadow_location_system_effect|in:true,false',
-            'measurement_units' => 'filled|required_without_all:email_subscription,show_name_card_options,shadow_location_system_effect|in:imperial,metric',
-            'shadow_location_system_effect' => 'filled|required_without_all:email_subscription,show_name_card_options,measurement_units|in:min,normal,max',
+            'email_subscription' => 'filled|required_without_all:show_name_card_options,measurement_units,shadow_location_system_effect,others|in:true,false',
+            'show_name_card_options' => 'filled|required_without_all:email_subscription,measurement_units,shadow_location_system_effect,others|in:true,false',
+            'measurement_units' => 'filled|required_without_all:email_subscription,show_name_card_options,shadow_location_system_effect,others|in:imperial,metric',
+            'shadow_location_system_effect' => 'filled|required_without_all:email_subscription,show_name_card_options,measurement_units,others|in:min,normal,max',
+            'others' => 'filled|required_without_all:email_subscription,show_name_card_options,measurement_units,shadow_location_system_effect',
         ]);
         if($validator->fails())
         {

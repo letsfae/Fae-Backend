@@ -118,7 +118,7 @@ return [
             'driver'   => 'mongodb',
             'host'     => env('DB_HOST', '127.0.0.1'),
             'port'     => env('DB_PORT', 27017),
-            'database' => 'foursquare_final',
+            'database' => 'foursquare_beta',
             // 'username' => env('DB_USERNAME', null),
             // 'password' => env('DB_PASSWORD', null),
         ],

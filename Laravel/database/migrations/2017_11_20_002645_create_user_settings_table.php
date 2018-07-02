@@ -19,6 +19,7 @@ class CreateUserSettingsTable extends Migration
             $table->boolean('show_name_card_options')->default(true);
             $table->enum('measurement_units', ['imperial', 'metric'])->default('imperial');
             $table->enum('shadow_location_system_effect', ['min', 'normal','max'])->nullable();
+            $table->string('others',70)->nullable();
             $table->primary('user_id');
         });
     }
