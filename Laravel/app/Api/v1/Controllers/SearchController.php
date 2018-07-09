@@ -32,7 +32,7 @@ class SearchController extends Controller {
                             "match" => [
                                 $postbody["source"] => [
                                     "query" => $postbody["content"],
-                                    "fuzziness" => 3,
+                                    "fuzziness" => $postbody["source"]=="name" ? 3 : 0 ,
                                     "prefix_length" => 2,
                                 ]
 
@@ -77,6 +77,7 @@ class SearchController extends Controller {
         if(array_key_exists('sort', $postbody)){
             $data["body"]["sort"] = $postbody["sort"];
             foreach ($postbody["sort"] as $key => $sort) {
+                //print_r($sort);
                 if(array_key_exists('geo_location', $sort)){
                     if(array_key_exists('location', $postbody)){
                         $data["body"]["sort"][$key] = array(
@@ -93,13 +94,14 @@ class SearchController extends Controller {
                                 "lon" => $longitude
                             ]
                         ]);
-                    }else{
-                        array_splice($data["body"]["sort"], $key, 1);
                     }
-                    
+                }else if(array_key_exists('name', $sort)){
+                    $data["body"]["sort"][$key] = ["name" => ["order"=>$sort["name"]]];
+                }else if(array_key_exists('_score', $sort)){
+                    $data["body"]["sort"][$key] = ["_score" => ["order"=>$sort["_score"]]];
                 }
             }
-
+            //print_r($data);
         }
 
         $raw_places = Elasticsearch::search($data)['hits']['hits'];
@@ -166,6 +168,7 @@ class SearchController extends Controller {
             $validator = Validator::make($postbody, [
                 'sort.name' => 'string|between:desc, asc',
                 'sort.geo_location' => 'string|between:desc, asc',
+                'sort._source' => 'string|in:desc',
             ]);
             if($validator->fails()){
                 throw new StoreResourceFailedException('Could not search.',$validator->errors());

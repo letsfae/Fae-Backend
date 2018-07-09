@@ -87,6 +87,23 @@ last_login_at为最后一次登录时间（将在logout后被更新）。如果�
 | 404-3 | User不存在 |
 | 401-2 | 邮箱未验证或者不存在 |
 
+## 游客登录  :white_check_mark:
+
+`GET /guest_authentication`
+
+### auth
+
+no
+
+### response
+
+Status: 201
+
+	{
+		"token": @string,
+		"session_id": @number
+	}
+
 ## 登出 logout :white_check_mark:
 
 `DELETE /authentication`

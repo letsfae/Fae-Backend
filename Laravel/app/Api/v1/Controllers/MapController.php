@@ -49,6 +49,7 @@ class MapController extends Controller
         $in_duration_str = $this->request->has('in_duration') ? $this->request->in_duration : 'false';
         $in_duration = $in_duration_str == 'true' ? true : false;
         $user_updated_in = $this->request->has('user_updated_in') ? $this->request->user_updated_in : 0;
+        $offset = $this->request->has('offset') ? $this->request->offset : 0;
         $info = array();
         $type = array();
         if($this->request->type == 'user')
@@ -135,6 +136,7 @@ class MapController extends Controller
                  $data = [
                     "body" => [
                         "size" => $max_count,
+                        "from" => $offset,
                         "query"=> [
                             "filtered"=> [
                                 "query"=> [
@@ -188,6 +190,7 @@ class MapController extends Controller
                 $data = [
                     "body" => [
                         "size" => $max_count,
+                        "from" => $offset,
                         "query"=> [
                             "filtered"=> [
                                 "filter"=> [

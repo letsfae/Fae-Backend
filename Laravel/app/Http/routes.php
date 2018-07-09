@@ -20,6 +20,7 @@ $api = app('Dingo\Api\Routing\Router');
 $api->version('v1', ['namespace' => 'App\Api\v1\Controllers'], function ($api) {
     $api->post('/users', 'UserController@signUp');
     $api->post('/authentication', 'AuthenticationController@login');
+    $api->get('/guest_authentication', 'AuthenticationController@guestLogin');
 
     // verification
     $api->post('/reset_login/code', 'ResetLoginController@sendResetCode');
@@ -33,6 +34,15 @@ $api->version('v1', ['namespace' => 'App\Api\v1\Controllers'], function ($api) {
     
     // test
     $api->post('/test/push_notification', 'TestController@sendPushNotification');
+});
+
+$api->version('v1', ['middleware' => 'api.auth', 'providers' => ['guest'], 'namespace' => 'App\Api\v1\Controllers'], function ($api) {
+    $api->get('/map', 'MapController@getMap');
+    // search
+    $api->get('/search', 'SearchController@search');
+    $api->post('/search', 'SearchController@search');
+    $api->get('/search/bulk', 'SearchController@bulk');
+    $api->post('/search/bulk', 'SearchController@bulk');
 });
 
 $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae'], 'namespace' => 'App\Api\v1\Controllers'], function ($api) {
@@ -74,7 +84,7 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae'], 'namesp
     // synchronization
     $api->get('/sync', 'SyncController@getSync');
     // map
-    $api->get('/map', 'MapController@getMap');
+    //$api->get('/map', 'MapController@getMap');
     $api->post('/map/user', 'MapController@updateUserLocation');
     // // comment
     // $api->post('/comments', 'CommentController@create');
@@ -196,11 +206,7 @@ $api->version('v1', ['middleware' => 'api.auth', 'providers' => ['fae'], 'namesp
     $api->get('/collections/{collection_id}', 'CollectionController@getOne');
     $api->post('/collections/{collection_id}/save/{type}/{pin_id}', 'CollectionController@save');
     $api->delete('/collections/{collection_id}/save/{type}/{pin_id}', 'CollectionController@unsave');
-    // search
-    $api->get('/search', 'SearchController@search');
-    $api->post('/search', 'SearchController@search');
-    $api->get('/search/bulk', 'SearchController@bulk');
-    $api->post('/search/bulk', 'SearchController@bulk');
+    
 });
 
 /**

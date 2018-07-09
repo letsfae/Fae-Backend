@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use App\Sessions;
 
-class FaeAuthorizationProvider extends Authorization
+class FaeGuestAuthorizationProvider extends Authorization
 {
     // protected $auth;
 
@@ -31,15 +31,15 @@ class FaeAuthorizationProvider extends Authorization
                 $session = Sessions::find($session_id);
                 if(! is_null($session))
                 {
-                    if($user_id === strval($session->user_id) && $token === $session->token) 
+                    if($token === $session->token) 
                     {
                         // overwrite
-                        $request->self_user_id = $user_id;
+                        $request->self_user_id = -1;
                         $request->self_session_id = $session_id;
                         $request->self_device_id = $session->device_id;
                         return;
                     }
-                    throw new UnauthorizedHttpException('Guest User');
+                    //throw new UnauthorizedHttpException('Invalid authentication header');
                 }
             } catch(\Exception $e) {
                 throw new UnauthorizedHttpException('Invalid authentication header');

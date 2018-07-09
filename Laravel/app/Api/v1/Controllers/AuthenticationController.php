@@ -247,4 +247,36 @@ class AuthenticationController extends Controller {
         }
         return $this->response->noContent();
     }
+
+    public function guestLogin(){
+        // check header
+        $client_version = $this->request->header('Fae-Client-Version'); 
+        $input = array('client_version' => $client_version);
+        $validator = Validator::make($input, [
+            'client_version' => 'required|max:50',
+        ]);
+        if($validator->fails()) {            
+             throw new AccessDeniedHttpException('Bad request, Please verify your input client_version header!');             
+        }
+
+        $user_id= -1;
+        $token = str_random(30);
+
+        //create session in DB
+        $session = new Sessions();
+        $session->token = $token;
+        $session->is_mobile = false;
+        $session->device_id = null;
+        
+        $session->client_version = $client_version;
+        $session->save();
+        $session_id = $session->id;
+
+
+        $content = array('token' => $token, 'session_id' => $session_id);
+        if(Config::get('app.debug')) {
+            $content['debug_base64ed'] = base64_encode($user_id.':'.$token.':'.$session_id);
+        }
+        return $this->response->created(null, $content);
+    }
 }
