@@ -29,10 +29,12 @@ class SearchController extends Controller {
                 "query"=> [
                     "filtered"=> [
                         "query"=> [
-                            "match" => [
+                            $postbody["source"]=="name" ? "match": "match_phrase" => [
                                 $postbody["source"] => [
                                     "query" => $postbody["content"],
-                                    "fuzziness" => $postbody["source"]=="name" ? 3 : 0 ,
+                                    "fuzziness" => $postbody["source"]=="name" ? 3 : 0,
+                                    //"type"=>"multi_field",
+                                    //"minimum_should_match" => "95%",
                                     "prefix_length" => 2,
                                 ]
 
