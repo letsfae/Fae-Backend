@@ -69,7 +69,7 @@ class PlaceController extends Controller implements PinInterface {
                 'class4' => $place->class_four,
                 'class4_icon_id' => $place->class_four_idx],
             'saved_count' => $place->saved_count,
-            'user_pin_operations' => PinOperationController::getOperations('place', $place->id, $user_id)
+            'user_pin_operations' => ($user_id==-1)?null:PinOperationController::getOperations('place', $place->id, $user_id)
         );
      }
 

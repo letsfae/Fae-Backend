@@ -162,7 +162,7 @@ class MapController extends Controller
                                     "lat" => $latitude,
                                     "lon" => $longitude
                                 ],
-                                "order" => "asc",
+                                "order" => $this->request->has('offset') ? "asc" : "RANDOM",
                                 "unit" => "m", 
                                 "distance_type" => "sloppy_arc" 
                             ]
@@ -211,7 +211,7 @@ class MapController extends Controller
                                     "lat" => $latitude,
                                     "lon" => $longitude
                                 ],
-                                "order" => "asc",
+                                "order" => $this->request->has('offset') ? "asc" : "RANDOM",
                                 "unit" => "m", 
                                 "distance_type" => "sloppy_arc" 
                             ]
